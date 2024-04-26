@@ -16,3 +16,19 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@font-face {
+  font-family: 'TT Firs Neue';
+  src: url('../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Regular.ttf');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'TT Firs Neue';
+  src: url('../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf');
+  font-weight: 500; /* 500 is typically the weight for Medium */
+}
+
+body {
+  font-family: 'TT Firs Neue', sans-serif;
+}
