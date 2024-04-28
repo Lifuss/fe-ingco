@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const Footer = () => {
   return (
-    <footer className="bg-orangeLight relative flex flex-col items-center pb-14 pt-[18px] text-lg lg:flex-row lg:px-[60px]">
+    <footer className="relative flex flex-col items-center bg-orangeLight pb-14 pt-[18px] text-lg lg:flex-row lg:px-[60px] ">
       <Image
         src={'/logo.png'}
         width={200}
@@ -32,7 +32,7 @@ const Footer = () => {
                 height="32"
                 className="stroke transform border-white transition-all hover:scale-110 hover:fill-white hover:stroke-white"
               >
-                <g clip-path="url(#clip0_808_272)">
+                <g clipPath="url(#clip0_808_272)">
                   <g filter="url(#filter0_d_808_272)">
                     <path
                       d="M29.3332 16.0001C29.3332 8.64008 23.3598 2.66675 15.9998 2.66675C8.63984 2.66675 2.6665 8.64008 2.6665 16.0001C2.6665 22.4534 7.25317 27.8267 13.3332 29.0667V20.0001H10.6665V16.0001H13.3332V12.6667C13.3332 10.0934 15.4265 8.00008 17.9998 8.00008H21.3332V12.0001H18.6665C17.9332 12.0001 17.3332 12.6001 17.3332 13.3334V16.0001H21.3332V20.0001H17.3332V29.2667C24.0665 28.6001 29.3332 22.9201 29.3332 16.0001Z"

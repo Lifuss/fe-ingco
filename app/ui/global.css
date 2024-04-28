@@ -32,3 +32,23 @@ input[type='number']::-webkit-outer-spin-button {
 body {
   font-family: 'TT Firs Neue', sans-serif;
 }
+body > main {
+  flex-grow: 1;
+}
+
+/* Slider dots styles */
+div.slick-dots ul {
+  display: flex;
+  gap: 8px;
+}
+
+div.slick-dots li {
+  width: fit-content;
+}
+
+li.slick-active > div {
+  width: 16px;
+  background-color: #f59e0b;
+  transition: all 0.3s;
+}
+/* End Slider dots styles */
