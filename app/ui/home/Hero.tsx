@@ -29,7 +29,7 @@ let slides = Array.from({ length: 4 }, (_, i) => i + 1);
 const Hero = () => {
   // TODO rewrite login to register href + responsive
   return (
-    <section className="flex flex-col-reverse px-5 py-5 pt-2">
+    <section className="mb-10 flex flex-col-reverse px-5 pt-2">
       <div className="">
         <h1 className="mb-4 mr-auto text-start text-2xl">
           Оптові Постачання для Бізнесу: будівельні та домашні інструменти
