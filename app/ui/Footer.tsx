@@ -13,18 +13,16 @@ const Footer = () => {
       />
       <ul className="mx-auto grid grid-cols-2 gap-y-2 lg:flex lg:gap-20 2xl:gap-32">
         <li className="flex flex-col lg:order-none">
-          <a className="transition-colors hover:text-white" href="#">
-            Клієнтам
-          </a>
-          <a className="transition-colors hover:text-white" href="#">
+          <p className="font-medium">Клієнтам</p>
+          <Link className="transition-colors hover:text-white" href="/">
             Про нас
-          </a>
+          </Link>
           <a className="transition-colors hover:text-white" href="#">
             Підтримка
           </a>
         </li>
         <li className="order-last col-span-2 justify-self-center lg:order-none lg:col-span-1">
-          <p className="mb-1">Соціальні мережі</p>
+          <p className="mb-1 font-medium ">Соціальні мережі</p>
           <div className="flex justify-center gap-2">
             <Link href="https://facebook.com" target="_blank">
               <svg

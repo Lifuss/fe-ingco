@@ -1,12 +1,18 @@
 'use client';
 
+import { selectCurrency } from '@/lib/appState/main/selectors';
 import clsx from 'clsx';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import Modal from 'react-modal';
+import { useSelector } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 
 const HeaderFace = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
+  const currency = useSelector(selectCurrency);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -14,22 +20,24 @@ const HeaderFace = () => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
-  // TODO: implement actual links + responsive
+  // TODO: responsive
   return (
-    <header className="flex items-center justify-between bg-orangeLight px-5 py-2">
-      <Image
-        src={'/logo.png'}
-        width={125}
-        height={31}
-        alt="Ingco company logo"
-        className="mb-4 lg:mb-0"
-      />
-      <ul className="text-lg">
+    <header className="flex items-center justify-between bg-orangeLight px-5 py-2 md:px-[60px]">
+      <Link href="/">
+        <Image
+          src={'/logo.png'}
+          width={125}
+          height={31}
+          alt="Ingco company logo"
+          className="mb-4 lg:mb-0"
+        />
+      </Link>
+      <ul className="text-lg md:flex md:gap-6">
         <li>
-          <a href="">Про нас</a>
+          <Link href="#aboutUs">Про нас</Link>
         </li>
         <li>
-          <a href="">Бренд</a>
+          <Link href="#aboutBrand">Бренд</Link>
         </li>
         <li>
           <button onClick={openModal} className="inline-flex items-baseline">
@@ -63,16 +71,28 @@ const HeaderFace = () => {
             }
           >
             <div className="flex flex-col gap-2 text-blue-500 ">
-              <a className="hover:text-gray-700" href="tel:+380988392107">
+              <Link className="hover:text-gray-700" href="tel:+380988392107">
                 +380 98-83-92-107
-              </a>
-              <a className="hover:text-gray-700" href="tel:+380964123628">
+              </Link>
+              <Link className="hover:text-gray-700" href="tel:+380964123628">
                 +380 96-41-23-628
-              </a>
+              </Link>
             </div>
           </Modal>
         </li>
       </ul>
+      {isTablet && (
+        // TODO: add real data
+        <ul
+          className="text-sm lg:flex lg:text-base"
+          title="Курс по долара та євро по Монобанку (оновлюється кожні 30 хвилин)"
+        >
+          <li className="border-b-2 border-black pr-1 lg:border-b-0 lg:border-r-2">
+            USD: {currency?.USD}
+          </li>
+          <li className="lg:pl-1">EUR: {currency?.EUR}</li>
+        </ul>
+      )}
       <svg
         viewBox="0 0 36 36"
         fill="none"
