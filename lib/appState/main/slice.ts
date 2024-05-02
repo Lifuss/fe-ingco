@@ -1,4 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { fetchCurrencyRatesThunk } from './operations';
+
+// Define the type for your payload
+interface PayloadCurrencyRates {
+  lastUpdate: string;
+  USD: number;
+  EUR: number;
+  // ... your payload properties here
+}
 
 const initialState = {
   isAuth: false,
@@ -7,34 +16,20 @@ const initialState = {
   loading: false,
   error: null,
   currencyRates: {
-    USD: 10,
-    EUR: 20,
+    USD: 0,
+    EUR: 0,
+    lastUpdate: new Date().toISOString(),
   },
 };
 
 const appStateSlice = createSlice({
   name: 'appState',
   initialState,
-  reducers: {
-    login(state, action) {
-      state.isAuth = true;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-    },
-    logout(state) {
-      state.isAuth = false;
-      state.user = {};
-      state.token = null;
-    },
-    setLoading(state, action) {
-      state.loading = action.payload;
-    },
-    setError(state, action) {
-      state.error = action.payload;
-    },
-    setCurrencyRate(state, action) {
-      state.currencyRates = action.payload;
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
+      state.currencyRates = payload as PayloadCurrencyRates;
+    });
   },
 });
 

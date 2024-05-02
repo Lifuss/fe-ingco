@@ -8,11 +8,11 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 import { useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import CurrencyRate from '../CurrencyRate';
 
 const HeaderFace = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
-  const currency = useSelector(selectCurrency);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -81,18 +81,7 @@ const HeaderFace = () => {
           </Modal>
         </li>
       </ul>
-      {isTablet && (
-        // TODO: add real data
-        <ul
-          className="text-sm lg:flex lg:text-base"
-          title="Курс по долара та євро по Монобанку (оновлюється кожні 30 хвилин)"
-        >
-          <li className="border-b-2 border-black pr-1 lg:border-b-0 lg:border-r-2">
-            USD: {currency?.USD}
-          </li>
-          <li className="lg:pl-1">EUR: {currency?.EUR}</li>
-        </ul>
-      )}
+      {isTablet && <CurrencyRate />}
       <svg
         viewBox="0 0 36 36"
         fill="none"

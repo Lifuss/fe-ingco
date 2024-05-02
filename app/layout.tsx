@@ -18,13 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <StoreProvider>
-      <html lang="en">
-        <body className={`flex min-h-screen flex-col antialiased`}>
+    <html lang="en">
+      <body className={`flex min-h-screen flex-col antialiased`}>
+        <StoreProvider>
           {children}
           <Footer />
-        </body>
-      </html>
-    </StoreProvider>
+        </StoreProvider>
+      </body>
+    </html>
   );
 }
