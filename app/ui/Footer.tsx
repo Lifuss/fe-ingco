@@ -73,10 +73,14 @@ const Footer = () => {
           </div>
         </li>
         <li className="lg:order-none">
-          Контакти
+          <p className="font-medium">Контакти</p>
           <div className="flex flex-col">
-            <a href="tel:+380988392107">+380 98-83-92-107</a>
-            <a href="tel:+380964123628">+380 96-41-23-628</a>
+            <a className="text-blue-600" href="tel:+380988392107">
+              +380 98-83-92-107
+            </a>
+            <a className="text-blue-600" href="tel:+380964123628">
+              +380 96-41-23-628
+            </a>
           </div>
         </li>
       </ul>

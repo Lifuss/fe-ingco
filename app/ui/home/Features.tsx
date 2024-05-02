@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const Features = () => {
   return (
-    <section className="mb-10 px-5">
+    <section className="mb-5 px-5">
       <h2 className="mb-4 text-center text-2xl">Чому ми?</h2>
       <ul className="flex flex-col items-center gap-4">
         <li className="flex items-center gap-2 ">

@@ -20,16 +20,16 @@ const HeaderFace = () => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
-  // TODO: responsive
+  // TODO: responsive, зробити бургер для меню і курсу
   return (
     <header className="flex items-center justify-between bg-orangeLight px-5 py-2 md:px-[60px]">
-      <Link href="/">
+      <Link href="/" className="h-[32px]">
         <Image
           src={'/logo.png'}
           width={125}
           height={31}
           alt="Ingco company logo"
-          className="mb-4 lg:mb-0"
+          className="mb-4 inline-flex lg:mb-0"
         />
       </Link>
       <ul className="text-lg md:flex md:gap-6">

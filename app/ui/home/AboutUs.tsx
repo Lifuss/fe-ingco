@@ -1,5 +1,5 @@
 import Image from 'next/image';
-
+// TODO: пропрацювати блок адресу
 const AboutUs = () => {
   return (
     <section className="mb-10 px-4" id="aboutUs">

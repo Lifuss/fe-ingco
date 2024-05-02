@@ -6,6 +6,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
+// TODO закгрулити краї картиники
+
 var settings = {
   dots: true,
   infinite: true,
@@ -29,23 +31,23 @@ let slides = Array.from({ length: 4 }, (_, i) => i + 1);
 const Hero = () => {
   // TODO rewrite login to register href + responsive
   return (
-    <section className="mb-10 flex flex-col-reverse px-5 pt-2">
+    <section className="mb-10 flex flex-col-reverse px-5 pt-3">
       <div className="">
         <h1 className="mb-4 mr-auto text-start text-2xl">
           Оптові Постачання для Бізнесу: будівельні та домашні інструменти
         </h1>
-        <p className="mb-4 mr-auto flex w-[200px] flex-wrap text-end text-xl">
+        <p className="mb-6 mr-auto flex w-[200px] flex-wrap text-end text-xl">
           <span className="mr mr-1 font-medium">Офіційний імпортер</span>
           продукції в Україні
         </p>
         <Link
           href={'/login'}
-          className="mr-auto flex w-[200px] justify-center rounded-lg bg-[#f59e0b] py-2 text-lg text-white"
+          className="mx-auto flex w-[230px] justify-center rounded-lg bg-[#f59e0b] py-3 text-lg text-white"
         >
           Зареєструватися
         </Link>
       </div>
-      <ul className="mb-6">
+      <ul className="mb-9">
         <li>
           <Slider {...settings}>
             {slides.map((slide) => (
