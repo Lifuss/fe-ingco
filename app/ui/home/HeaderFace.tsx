@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import Modal from 'react-modal';
-import { useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import CurrencyRate from '../CurrencyRate';
 import AuthButtons from './AuthButtons';
@@ -23,8 +22,8 @@ const HeaderFace = () => {
   };
   // TODO: low prior - зробити меню бургер для мобільної верстки
   return (
-    <header className="flex items-center justify-between bg-orangeLight px-5 py-2 font-medium md:px-[60px] lg:py-8 lg:tracking-tight">
-      <Link href="/" className="h-fit">
+    <header className="flex items-center justify-between bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:py-8 lg:tracking-tight">
+      <Link href="/" className="h-[31px] lg:h-[52px]">
         <Image
           src={'/logo.png'}
           width={isDesktop ? 198 : 125}
@@ -41,13 +40,22 @@ const HeaderFace = () => {
           <Link href="#aboutBrand">Бренд</Link>
         </li>
         <li className="transition-colors ease-out hover:text-white">
-          <button onClick={openModal} className="inline-flex items-baseline">
+          <button
+            onClick={openModal}
+            className={clsx(
+              'inline-flex items-baseline transition-colors ease-out hover:text-white',
+              modalIsOpen && 'text-white',
+            )}
+          >
             Зв&apos;язатися
             <svg
               viewBox="0 0 16 9"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className={clsx('ml-1 h-2 w-4', modalIsOpen && 'rotate-180')}
+              className={clsx(
+                'ml-1 h-2 w-4 transition-transform ease-out',
+                modalIsOpen && 'rotate-180',
+              )}
             >
               <path
                 d="M1.3335 1.33325L8.00016 7.99992L14.6668 1.33325"
@@ -68,7 +76,7 @@ const HeaderFace = () => {
               },
             }}
             className={
-              'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3'
+              'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3 shadow-lg md:left-[51%] md:top-[55px]'
             }
           >
             <div className="flex flex-col gap-2 text-blue-500 ">

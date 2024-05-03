@@ -14,14 +14,14 @@ const CurrencyRate = () => {
 
   return (
     <ul
-      className="lg-items-center text-sm lg:flex lg:text-lg lg:tracking-tight"
+      className="lg-items-center text-sm lg:flex lg:gap-3 lg:text-lg lg:tracking-tight"
       title="Курс валют (USD, EUR) згідно курсу закупівлі в Монобанку, оновлення кожні 30хв."
     >
-      <li className="relative pr-1">
+      <li className="relative">
         USD: {currency?.USD}
-        <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-2px] lg:top-0 lg:h-[1rem] lg:w-[2px] lg:translate-y-1/3"></div>
+        <div className="absolute bottom-0 h-[2px] w-full bg-black max-sm:left-0 lg:right-[-8px] lg:top-0 lg:h-[1rem] lg:w-[2px] lg:translate-y-[22%]"></div>
       </li>
-      <li className="lg:pl-1">EUR: {currency?.EUR}</li>
+      <li>EUR: {currency?.EUR}</li>
     </ul>
   );
 };

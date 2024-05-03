@@ -2,9 +2,11 @@ import Image from 'next/image';
 // TODO: пропрацювати блок адресу
 const AboutUs = () => {
   return (
-    <section className="mb-10 px-4" id="aboutUs">
-      <h2 className="mb-4 text-center text-2xl">Про нас</h2>
-      <div className="flex flex-col gap-4">
+    <section className="mb-10 px-5 md:px-[60px]" id="aboutUs">
+      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl">
+        Про нас
+      </h2>
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-5">
         <Image
           src={'/aboutUsImg.png'}
           alt="man and women in building suits present company logo"
@@ -13,7 +15,7 @@ const AboutUs = () => {
           className="mx-auto rounded-lg"
         />
 
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2 text-sm lg:text-base">
           <p>
             Ми є одним із найпопулярніших та надійних магазинів будівельних та
             домашніх інструментів у нашому регіоні. Наша компанія вже багато

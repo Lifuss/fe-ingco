@@ -11,15 +11,15 @@ const Footer = () => {
         alt="Ingco company logo"
         className="mb-4 lg:mb-0"
       />
-      <ul className="mx-auto grid grid-cols-2 gap-y-2 lg:flex lg:gap-20 2xl:gap-32">
+      <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 2xl:gap-32">
         <li className="flex flex-col lg:order-none">
           <p className="font-medium">Клієнтам</p>
-          <Link className="transition-colors hover:text-white" href="/">
+          <Link className="transition-colors hover:text-white" href="#">
             Про нас
           </Link>
-          <a className="transition-colors hover:text-white" href="#">
+          <Link className="transition-colors hover:text-white" href="#">
             Підтримка
-          </a>
+          </Link>
         </li>
         <li className="order-last col-span-2 justify-self-center lg:order-none lg:col-span-1">
           <p className="mb-1 font-medium ">Соціальні мережі</p>
