@@ -10,7 +10,7 @@ export default function LoginPage() {
             <AcmeLogo />
           </div>
         </div>
-        <LoginForm />
+        {/* <LoginForm /> */}
       </div>
     </main>
   );
