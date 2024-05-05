@@ -2,20 +2,20 @@ import Image from 'next/image';
 // TODO: пропрацювати блок адресу
 const AboutUs = () => {
   return (
-    <section className="mb-10 px-5 md:px-[60px]" id="aboutUs">
-      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl">
+    <section className="mb-10 px-5 md:px-[60px] 2xl:mb-20" id="aboutUs">
+      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl xl:text-5xl">
         Про нас
       </h2>
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-5 xl:gap-16">
         <Image
           src={'/aboutUsImg.png'}
-          alt="man and women in building suits present company logo"
-          width={489}
-          height={364}
-          className="mx-auto rounded-lg"
+          alt="Головний вхід в магазин INGCO в мисті Вижниця"
+          width={467}
+          height={524}
+          className="mx-auto rounded-lg xl:shrink-0"
         />
 
-        <div className="flex flex-col gap-2 text-sm lg:text-base">
+        <div className="flex flex-col gap-2 text-sm lg:text-base xl:h-[524px] xl:justify-between xl:text-xl 2xl:text-2xl">
           <p>
             Ми є одним із найпопулярніших та надійних магазинів будівельних та
             домашніх інструментів у нашому регіоні. Наша компанія вже багато

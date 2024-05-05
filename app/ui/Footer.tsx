@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const Footer = () => {
   return (
-    <footer className="relative flex flex-col items-center bg-orangeLight pb-14 pt-[18px] text-lg lg:flex-row lg:px-[60px] ">
+    <footer className="relative flex flex-col items-center bg-orangeLight pb-14 pt-[18px] text-lg lg:flex-row lg:px-[60px] 2xl:text-xl ">
       <Image
         src={'/logo.png'}
         width={200}
@@ -11,7 +11,7 @@ const Footer = () => {
         alt="Ingco company logo"
         className="mb-4 lg:mb-0"
       />
-      <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 2xl:gap-32">
+      <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 xl:gap-32 xl:pr-[115px] ">
         <li className="flex flex-col lg:order-none">
           <p className="font-medium">Клієнтам</p>
           <Link className="transition-colors hover:text-white" href="#">

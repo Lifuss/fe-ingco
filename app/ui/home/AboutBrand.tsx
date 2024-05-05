@@ -6,19 +6,19 @@ const AboutBrand = () => {
       className="mb-5 px-5 md:mb-16 md:px-[60px] lg:mb-24"
       id="aboutBrand"
     >
-      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl">
+      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl xl:text-5xl">
         Бренд INGCO
       </h2>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-5 xl:gap-16">
         <Image
           src={'/brandImg.png'}
           alt="man and women in building suits present company logo"
           width={489}
           height={364}
-          className="mx-auto rounded-lg md:h-[200px] lg:h-[236px]"
+          className="mx-auto rounded-lg md:h-[200px] lg:h-[236px] xl:h-auto"
         />
 
-        <div className="flex flex-col gap-2 text-sm lg:text-base">
+        <div className="flex flex-col gap-2 text-sm lg:text-base xl:h-[364px] xl:justify-between xl:text-xl 2xl:text-2xl">
           <p>
             Компанія INGCO — приклад вдалого поєднання якості й ціни в області
             інструменту. Бренд протягом 15 років займає одну з провідних позицій
