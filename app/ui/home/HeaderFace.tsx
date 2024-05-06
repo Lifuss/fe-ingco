@@ -34,10 +34,10 @@ const HeaderFace = () => {
       </Link>
       <ul className="text-lg md:flex md:gap-6 lg:text-[20px] xl:gap-10 2xl:text-2xl">
         <li className="transition-colors ease-out hover:text-white">
-          <Link href="#aboutUs">Про нас</Link>
+          <Link href="/#aboutUs">Про нас</Link>
         </li>
         <li className="transition-colors ease-out hover:text-white">
-          <Link href="#aboutBrand">Бренд</Link>
+          <Link href="/#aboutBrand">Бренд</Link>
         </li>
         <li className="transition-colors ease-out hover:text-white">
           <button

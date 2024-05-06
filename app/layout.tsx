@@ -3,6 +3,7 @@ import { inter } from '@/app/ui/fonts';
 import { Metadata } from 'next';
 import Footer from './ui/Footer';
 import StoreProvider from './StoreProvider';
+import HeaderFace from './ui/home/HeaderFace';
 
 export const metadata: Metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`flex min-h-screen flex-col antialiased`}>
         <StoreProvider>
+          <HeaderFace />
           {children}
           <Footer />
         </StoreProvider>
