@@ -1,50 +1,50 @@
 'use client';
 
-import { AtSymbolIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { Button } from './button';
-import { useFormState, useFormStatus } from 'react-dom';
 import Link from 'next/link';
-import { authenticate } from '@/lib/actions';
+import { loginThunk } from '@/lib/appState/auth/operation';
+import { useAppDispatch } from '@/lib/hooks';
 
 export default function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const dispatch = useAppDispatch();
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const login = form.login.value;
+    const password = form.password.value;
+    dispatch(loginThunk({ login, password }));
+  };
   return (
-    <form action={dispatch} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
         <div className="w-full">
           <div>
-            <label className="mb-2 block text-base" htmlFor="email">
-              Email
+            <label className="mb-2 block text-base" htmlFor="login">
+              Логін
             </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-10 text-base outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Ваш email"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+            <input
+              className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              id="login"
+              type="text"
+              name="login"
+              placeholder="Ваш лоігн"
+              required
+            />
           </div>
           <div className="mt-4">
             <label className="mb-2 block text-base" htmlFor="password">
               Пароль
             </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-10 text-base outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Введіть пароль"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+            <input
+              className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Введіть пароль"
+              required
+              minLength={6}
+            />
           </div>
         </div>
         <Link
@@ -67,25 +67,12 @@ export default function LoginForm() {
           className="flex h-8 items-end space-x-1"
           aria-live="polite"
           aria-atomic="true"
-        >
-          {/* {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )} */}
-        </div>
+        ></div>
       </div>
     </form>
   );
 }
 
 function LoginButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button className="mt-4 w-full text-2xl" aria-disabled={pending}>
-      Увійти
-    </Button>
-  );
+  return <Button className="mt-4 w-full text-2xl">Увійти</Button>;
 }
