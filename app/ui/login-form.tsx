@@ -1,39 +1,16 @@
 'use client';
 
-import {
-  AtSymbolIcon,
-  KeyIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
+import { AtSymbolIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
 import Link from 'next/link';
-// import { authenticate } from '../../lib/actions';
+import { authenticate } from '@/lib/actions';
 
 export default function LoginForm() {
-  // const [errorMessage, dispatch] = useFormState(authenticate, undefined);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const email = form.email.value;
-    const password = form.password.value;
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (response.ok) {
-      const user = await response.json();
-      // dispatch({ type: 'success', user });
-    } else {
-      const { error } = await response.json();
-      // dispatch({ type: 'failure', error });
-    }
-  };
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
 
   return (
-    <form action={handleSubmit} className="space-y-3">
+    <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
         <div className="w-full">
           <div>

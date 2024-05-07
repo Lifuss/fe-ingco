@@ -12,17 +12,27 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
+import { authSlice } from './auth/slice';
 
-const persistConfig = {
-  key: 'root',
+const persistMainConfig = {
+  key: 'main',
   whitelist: ['currencyRates'],
   storage,
 };
+const persistAuthConfig = {
+  key: 'auth',
+  whitelist: ['token'],
+  storage,
+};
 
-const persistedReducer = persistReducer(persistConfig, mainSlice);
+const persistedMainReducer = persistReducer(persistMainConfig, mainSlice);
+const persistedAuthReducer = persistReducer(persistAuthConfig, authSlice);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: {
+    persistedMainReducer,
+    persistedAuthReducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

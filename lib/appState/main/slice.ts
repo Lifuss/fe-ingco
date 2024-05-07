@@ -10,11 +10,6 @@ interface PayloadCurrencyRates {
 }
 
 const initialState = {
-  isAuth: false,
-  user: {},
-  token: null,
-  loading: false,
-  error: null,
   currencyRates: {
     USD: 0,
     EUR: 0,

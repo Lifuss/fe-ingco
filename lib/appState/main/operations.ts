@@ -7,7 +7,7 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       let newBody: { lastUpdate?: string; USD?: number; EUR?: number } = {};
-      const state = thunkApi.getState() as RootState;
+      const { persistedMainReducer: state } = thunkApi.getState() as RootState;
 
       if (
         Date.now() - new Date(state.currencyRates.lastUpdate).getTime() >
