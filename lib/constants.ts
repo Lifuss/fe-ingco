@@ -16,3 +16,12 @@ export const featuresContentArray = [
     img: '/features/featuresIcon_4.png',
   },
 ];
+
+export const productsCategories = [
+  'Батарейна продукція P20S',
+  'Батарейна продукція',
+  'Бензиновий інструмент ',
+  'Електро інструмент',
+  'Ручний інструмент',
+  'Розхідник',
+];
