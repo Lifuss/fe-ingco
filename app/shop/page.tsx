@@ -32,7 +32,7 @@ export default function Page() {
             ))}
           </ul>
         </aside>
-        <div>
+        <div className="grow">
           <Table />
         </div>
       </main>
