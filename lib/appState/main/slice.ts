@@ -1,5 +1,6 @@
+import { rawData } from './../../../app/shop/page';
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchCurrencyRatesThunk } from './operations';
+import { fetchCurrencyRatesThunk, fetchMainTableDataThunk } from './operations';
 
 // Define the type for your payload
 interface PayloadCurrencyRates {
@@ -15,6 +16,17 @@ const initialState = {
     EUR: 0,
     lastUpdate: new Date().toISOString(),
   },
+  products: [
+    {
+      article: '',
+      name: '',
+      image: '',
+      price: '',
+      priceRetailRecommendation: '',
+      countInStock: 0,
+      _id: '',
+    },
+  ],
 };
 
 const appStateSlice = createSlice({
@@ -25,6 +37,10 @@ const appStateSlice = createSlice({
     builder.addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
       state.currencyRates = payload as PayloadCurrencyRates;
     });
+    // TODO: now is throwing an error
+    // .addCase(fetchMainTableDataThunk.fulfilled, (state, { payload }) => {
+    //   state.products = payload;
+    // });
   },
 });
 

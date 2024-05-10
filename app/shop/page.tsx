@@ -1,7 +1,56 @@
+'use client';
+
 import { productsCategories } from '@/lib/constants';
 import Table from './table/table';
+import { useEffect, useMemo } from 'react';
+import { useAppDispatch } from '@/lib/hooks';
+import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { useSelector } from 'react-redux';
+import { selectProducts } from '@/lib/appState/main/selectors';
+
+export type rawData = {
+  article: string;
+  name: string;
+  image: string;
+  price: string;
+  priceRetailRecommendation: string;
+  countInStock: number;
+  _id: string;
+};
 
 export default function Page() {
+  const dispatch = useAppDispatch();
+  const selectedProducts = useSelector(selectProducts);
+  useEffect(() => {
+    dispatch(fetchMainTableDataThunk());
+  }, [dispatch]);
+
+
+  // const rowData = useMemo(
+  //   () => [
+  //     {
+  //       codeCol: 'CDLI20028',
+  //       nameCol: 'Акумуляторний шуруповерт P20S CDLI20028 INGCO',
+  //       photoCol: '/homeSlider/sliderImg1.png',
+  //       favoriteCol: true,
+  //       priceCol: '71,27',
+  //       rrcCol: '3500',
+  //       availableCol: 'Так',
+  //       _id: '1g',
+  //     },
+  //     {
+  //       codeCol: 'react-table',
+  //       nameCol: 'rocks',
+  //       _id: '2a',
+  //     },
+  //     {
+  //       codeCol: 'whatever',
+  //       nameCol: 'you want',
+  //       _id: '3s',
+  //     },
+  //   ],
+  //   [],
+  // );
   return (
     <>
       <main className="flex gap-6 px-[60px] pt-8">
@@ -33,7 +82,7 @@ export default function Page() {
           </ul>
         </aside>
         <div className="grow">
-          <Table />
+          <Table rawData={selectedProducts} />
         </div>
       </main>
     </>

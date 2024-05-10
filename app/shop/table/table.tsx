@@ -1,9 +1,39 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTable } from 'react-table';
+import { rawData } from '../page';
+import Image from 'next/image';
 
-const Table = () => {
+type TProps = {
+  rawData: rawData[];
+};
+type rowProduct = {
+  codeCol: string;
+  nameCol: string;
+  photoCol: string;
+  favoriteCol: boolean;
+  priceCol: string;
+  rrcCol: string;
+  availableCol: string;
+  _id: string;
+};
+
+const Table = ({ rawData = [] }: TProps) => {
   const [quantities, setQuantities] = useState({});
+
+  const data = rawData.map((product) => {
+    const row: rowProduct = {
+      codeCol: product.article,
+      nameCol: product.name,
+      photoCol: product.image,
+      favoriteCol: true,
+      priceCol: product.price,
+      rrcCol: product.priceRetailRecommendation,
+      availableCol: product.countInStock > 0 ? 'Так' : 'Ні',
+      _id: product._id,
+    };
+    return row;
+  });
 
   const quantitiesRef = useRef({});
 
@@ -15,36 +45,6 @@ const Table = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(quantities);
-  }, [quantities]);
-  const data = useMemo(
-    () => [
-      {
-        codeCol: 'CDLI20028',
-        nameCol: 'Акумуляторний шуруповерт P20S CDLI20028 INGCO',
-        photoCol: "/homeSlider/sliderImg1.png",
-        favoriteCol: true,
-        priceCol: '71,27',
-        rrcCol: '3500',
-        availableCol: 'Так',
-
-        _id: '1g',
-      },
-      {
-        codeCol: 'react-table',
-        nameCol: 'rocks',
-        _id: '2a',
-      },
-      {
-        codeCol: 'whatever',
-        nameCol: 'you want',
-        _id: '3s',
-      },
-    ],
-    [],
-  );
-
   const columns = [
     {
       Header: 'Код',
@@ -52,25 +52,27 @@ const Table = () => {
     },
     {
       Header: 'Назва',
-        accessor: 'nameCol',
-        Cell: ({ row }) => (
-            <button
-                className="text-left min-w-[300px]"
-                onClick={() => {
-                    console.log(row.values.nameCol);
-                }}
-            >
-                {row.values.nameCol}
-            </button>
-        ),
+      accessor: 'nameCol',
+      Cell: ({ row }) => (
+        <button
+          className="min-w-[300px] text-left"
+          onClick={() => {
+            console.log(row.values.nameCol);
+          }}
+        >
+          {row.values.nameCol}
+        </button>
+      ),
     },
     {
       Header: 'Фото',
       accessor: 'photoCol',
       Cell: ({ row }) => (
-        <img
+        <Image
           src={row.values.photoCol}
           alt={row.values.nameCol}
+          width={40}
+          height={40}
           className="h-11 w-11"
         />
       ),
@@ -102,8 +104,8 @@ const Table = () => {
           onChange={(e) => {
             handleQuantityChange(row.original._id, e.target.value);
           }}
-              defaultValue={row.values.quantityCol}
-              placeholder='0'
+          defaultValue={row.values.quantityCol}
+          placeholder="0"
         />
       ),
     },
@@ -148,8 +150,9 @@ const Table = () => {
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
               <th
-                className="border-[1px] border-gray-300 py-2 px-3 bg-gray-100 font-medium"
                 {...column.getHeaderProps()}
+                key={column.render('Header')}
+                className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
               >
                 {column.render('Header')}
               </th>
@@ -165,7 +168,7 @@ const Table = () => {
               {row.cells.map((cell) => {
                 return (
                   <td
-                    className="border-[1px] px-1 text-center border-gray-300"
+                    className="border-[1px] border-gray-300 px-1 text-center"
                     {...cell.getCellProps()}
                   >
                     {cell.render('Cell')}

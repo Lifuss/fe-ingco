@@ -36,3 +36,17 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
     }
   },
 );
+
+export const fetchMainTableDataThunk = createAsyncThunk(
+  'mainTable/fetch',
+  async (_, thunkApi) => {
+    try {
+      const { data } = await axios.get('http://localhost:3030/api/products');
+      console.log('data', data);
+
+      return data;
+    } catch (error) {
+      thunkApi.rejectWithValue(error);
+    }
+  },
+);
