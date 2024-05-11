@@ -4,6 +4,7 @@ import Features from './ui/home/Features';
 import Hero from './ui/home/Hero';
 
 export default function Page() {
+  //TODO: refactor svg blocks to components
   return (
     <>
       <main>

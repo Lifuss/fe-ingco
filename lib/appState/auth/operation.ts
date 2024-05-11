@@ -14,7 +14,7 @@ export const loginThunk = createAsyncThunk(
       console.log(credentials);
 
       const { data } = await apiIngco.post('/users/login', credentials);
-      console.log(data);
+      console.log('data >', data, 'time >', Date.now());
 
       return data;
     } catch (error) {

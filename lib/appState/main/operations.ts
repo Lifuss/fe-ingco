@@ -42,8 +42,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const { data } = await axios.get('http://localhost:3030/api/products');
-      console.log('data', data);
-
+      console.log('data fetched >', data, '\n', 'time >', Date.now());
       return data;
     } catch (error) {
       thunkApi.rejectWithValue(error);

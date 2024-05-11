@@ -16,6 +16,7 @@ const initialState = {
     EUR: 0,
     lastUpdate: new Date().toISOString(),
   },
+  tableLoading: false,
   products: [
     {
       article: '',
@@ -34,13 +35,18 @@ const appStateSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
-      state.currencyRates = payload as PayloadCurrencyRates;
-    });
-    // TODO: now is throwing an error
-    // .addCase(fetchMainTableDataThunk.fulfilled, (state, { payload }) => {
-    //   state.products = payload;
-    // });
+    builder
+      .addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
+        state.currencyRates = payload as PayloadCurrencyRates;
+      })
+      .addCase(fetchMainTableDataThunk.pending, (state) => {
+        state.tableLoading = true;
+      })
+      // TODO: now is throwing an error
+      .addCase(fetchMainTableDataThunk.fulfilled, (state, { payload }) => {
+        state.products = payload;
+        state.tableLoading = false;
+      });
   },
 });
 
