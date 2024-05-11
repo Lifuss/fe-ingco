@@ -21,8 +21,8 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         const { data } = await axios.get(
           'https://api.monobank.ua/bank/currency',
         );
-        newBody.USD = data[0].rateBuy;
-        newBody.EUR = data[1].rateBuy;
+        newBody.USD = parseFloat(data[0].rateSell.toFixed(1));
+        newBody.EUR = parseFloat(data[1].rateSell.toFixed(1));
 
         if (!newBody.USD || !newBody.EUR) {
           throw new Error('Currency rates not found');
