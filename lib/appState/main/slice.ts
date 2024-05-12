@@ -1,4 +1,3 @@
-import { rawData } from './../../../app/shop/page';
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchCurrencyRatesThunk, fetchMainTableDataThunk } from './operations';
 
@@ -42,7 +41,6 @@ const appStateSlice = createSlice({
       .addCase(fetchMainTableDataThunk.pending, (state) => {
         state.tableLoading = true;
       })
-      // TODO: now is throwing an error
       .addCase(fetchMainTableDataThunk.fulfilled, (state, { payload }) => {
         state.products = payload;
         state.tableLoading = false;

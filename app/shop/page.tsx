@@ -2,9 +2,9 @@
 
 import { productsCategories } from '@/lib/constants';
 import Table from './table/table';
+import withAuth from '../PrivateRouting';
 
-
-export default function Page() {
+function Page() {
   return (
     <>
       <main className="flex gap-14 px-[60px] pt-8">
@@ -42,3 +42,5 @@ export default function Page() {
     </>
   );
 }
+
+export default withAuth(Page);

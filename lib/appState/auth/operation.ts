@@ -13,12 +13,26 @@ export const loginThunk = createAsyncThunk(
     try {
       console.log(credentials);
 
-      const { data } = await apiIngco.post('/users/login', credentials);
-      console.log('data >', data, 'time >', Date.now());
+      const response = await apiIngco.post('/users/login', credentials);
 
-      return data;
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      console.log('data >', response.data, 'time >', Date.now());
+
+      return response.data;
     } catch (error) {
-      thunkApi.rejectWithValue(error);
+      if (axios.isAxiosError(error)) {
+        const errorInfo = {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+        };
+        return thunkApi.rejectWithValue(errorInfo); 
+      }
+
+      return thunkApi.rejectWithValue(error.message);
     }
   },
 );

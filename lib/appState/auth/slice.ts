@@ -8,6 +8,8 @@ const initialState = {
     role: '',
   },
   token: '',
+  isAuthenticated: false,
+  isLoading: false,
 };
 
 const authStateSlice = createSlice({
@@ -15,12 +17,22 @@ const authStateSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(loginThunk.fulfilled, (state, { payload }) => {
-      state.token = payload.token;
-      state.user.isVerified = payload.isVerified;
-      state.user.login = payload.login;
-      state.user.role = payload.role;
-    });
+    builder
+      .addCase(loginThunk.pending, (state, _) => {
+        state.isLoading = true;
+      })
+      .addCase(loginThunk.fulfilled, (state, { payload }) => {
+        state.token = payload.token;
+        state.user.isVerified = payload.isVerified;
+        state.user.login = payload.login;
+        state.user.role = payload.role;
+        state.isAuthenticated = true;
+        state.isLoading = false;
+      })
+      .addCase(loginThunk.rejected, (state, _) => {
+        state.isAuthenticated = false;
+        state.isLoading = false;
+      });
   },
 });
 

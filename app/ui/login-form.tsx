@@ -3,17 +3,41 @@
 import { Button } from './button';
 import Link from 'next/link';
 import { loginThunk } from '@/lib/appState/auth/operation';
-import { useAppDispatch } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { redirect, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
+  const { isLoading, isAuthenticated } = useAppSelector(
+    (state) => state.persistedAuthReducer,
+  );
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      redirect('/shop');
+    }
+  }, [isAuthenticated]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const login = form.login.value;
     const password = form.password.value;
-    dispatch(loginThunk({ login, password }));
+    dispatch(loginThunk({ login, password }))
+      .unwrap()
+      .then(() => {
+        console.log('login success');
+
+        router.push('/shop');
+
+        console.log('redirected');
+      })
+      .catch((error) => {
+        // TODO: пропрацювати помилки авторизації та вивести їх на екран
+        console.error('Error in login:', error);
+      });
   };
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
@@ -53,7 +77,7 @@ export default function LoginForm() {
         >
           Забули пароль?
         </Link>
-        <LoginButton />
+        {!isLoading ? <LoginButton /> : <h2> Завантаження</h2>}
         <p className="mt-8 text-center">
           Немає облікового запису?{' '}
           <Link
