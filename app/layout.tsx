@@ -1,8 +1,7 @@
 import '@/app/ui/global.css';
-import { inter } from '@/app/ui/fonts';
 import { Metadata } from 'next';
 import Footer from './ui/Footer';
-import StoreProvider from './StoreProvider';
+import StoreProvider from './service/StoreProvider';
 import HeaderFace from './ui/home/HeaderFace';
 
 export const metadata: Metadata = {

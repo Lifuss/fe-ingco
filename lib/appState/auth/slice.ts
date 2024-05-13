@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { loginThunk } from './operation';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { loginThunk, refreshTokenThunk, registerThunk } from './operation';
 
 const initialState = {
   user: {
@@ -18,10 +18,7 @@ const authStateSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginThunk.pending, (state, _) => {
-        state.isLoading = true;
-      })
-      .addCase(loginThunk.fulfilled, (state, { payload }) => {
+      .addCase(registerThunk.fulfilled, (state, { payload }) => {
         state.token = payload.token;
         state.user.isVerified = payload.isVerified;
         state.user.login = payload.login;
@@ -29,10 +26,38 @@ const authStateSlice = createSlice({
         state.isAuthenticated = true;
         state.isLoading = false;
       })
-      .addCase(loginThunk.rejected, (state, _) => {
-        state.isAuthenticated = false;
-        state.isLoading = false;
-      });
+      .addMatcher(
+        isAnyOf(loginThunk.fulfilled, refreshTokenThunk.fulfilled),
+        (state, { payload }) => {
+          state.token = payload.token;
+          state.user.isVerified = payload.isVerified;
+          state.user.login = payload.login;
+          state.user.role = payload.role;
+          state.isAuthenticated = true;
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          loginThunk.pending,
+          registerThunk.pending,
+          refreshTokenThunk.pending,
+        ),
+        (state, _) => {
+          state.isLoading = true;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          loginThunk.rejected,
+          refreshTokenThunk.rejected,
+          registerThunk.rejected,
+        ),
+        (state, _) => {
+          state.isLoading = false;
+          state.isAuthenticated = false;
+        },
+      );
   },
 });
 

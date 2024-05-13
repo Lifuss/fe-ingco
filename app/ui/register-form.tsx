@@ -3,14 +3,17 @@
 import { Button } from './button';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
-import { useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useEffect } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { registerThunk } from '@/lib/appState/auth/operation';
 
 export default function RegisterForm() {
   const { isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -18,27 +21,35 @@ export default function RegisterForm() {
     }
   }, [isAuthenticated]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = event.target;
-    const email = form.email.value;
-    const password = form.password.value;
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (response.ok) {
-      const user = await response.json();
-      // dispatch({ type: 'success', user });
-    } else {
-      const { error } = await response.json();
-      // dispatch({ type: 'failure', error });
-    }
+    const form = event.currentTarget;
+    const credential = {
+      email: form.email.value.trim(),
+      lastName: form.lastName.value.trim(),
+      firstName: form.firstName.value.trim(),
+      surName: form.surName.value.trim(),
+      phone: form.phone.value.trim(),
+      edrpou: form.edrpou.value.trim(),
+      about: form.about.value.trim(),
+    };
+    dispatch(registerThunk(credential))
+      .unwrap()
+      .then(() => {
+        console.log('login success');
+
+        router.push('/shop');
+
+        console.log('redirected');
+      })
+      .catch((error) => {
+        // TODO: пропрацювати помилки авторизації та вивести їх на екран
+        console.error('Error in login:', error);
+      });
   };
 
   return (
-    <form action={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
         <div className="flex w-full flex-col gap-2">
           <div className="flex gap-5">

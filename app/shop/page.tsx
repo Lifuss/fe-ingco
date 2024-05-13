@@ -2,7 +2,7 @@
 
 import { productsCategories } from '@/lib/constants';
 import Table from './table/table';
-import withAuth from '../PrivateRouting';
+import withAuth from '../service/PrivateRouting';
 
 function Page() {
   return (

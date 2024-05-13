@@ -1,13 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { apiIngco } from '../auth/operation';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
-  async (_, thunkApi) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       let newBody: { lastUpdate?: string; USD?: number; EUR?: number } = {};
-      const { persistedMainReducer: state } = thunkApi.getState() as RootState;
+      const { persistedMainReducer: state } = getState() as RootState;
 
       if (
         Date.now() - new Date(state.currencyRates.lastUpdate).getTime() >
@@ -32,20 +33,20 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         return state.currencyRates;
       }
     } catch (error) {
-      thunkApi.rejectWithValue(error);
+      rejectWithValue(error);
     }
   },
 );
 
 export const fetchMainTableDataThunk = createAsyncThunk(
   'mainTable/fetch',
-  async (_, thunkApi) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('http://localhost:3030/api/products');
+      const { data } = await apiIngco.get('/products');
       console.log('data fetched >', data, '\n', 'time >', Date.now());
       return data;
     } catch (error) {
-      thunkApi.rejectWithValue(error);
+      rejectWithValue(error);
     }
   },
 );

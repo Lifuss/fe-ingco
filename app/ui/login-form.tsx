@@ -23,8 +23,8 @@ export default function LoginForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const login = form.login.value;
-    const password = form.password.value;
+    const login = form.login.value.trim();
+    const password = form.password.value.trim();
     dispatch(loginThunk({ login, password }))
       .unwrap()
       .then(() => {
@@ -39,6 +39,7 @@ export default function LoginForm() {
         console.error('Error in login:', error);
       });
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
