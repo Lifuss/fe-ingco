@@ -26,6 +26,11 @@ export default function withAuth(
       return null;
     }
 
+    if (user.isVerified === false) {
+      console.log('need to verify email');
+      redirect('/');
+    }
+
     return <Component {...props} />;
   };
 }
