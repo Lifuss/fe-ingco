@@ -40,9 +40,11 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
 
 export const fetchMainTableDataThunk = createAsyncThunk(
   'mainTable/fetch',
-  async (_, { rejectWithValue }) => {
+  async (query: { query: string; page: number }, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.get('/products');
+      const { data } = await apiIngco.get('/products', {
+        params: { page: query.page, q: query.query, limit: 2 },
+      });
       console.log('data fetched >', data, '\n', 'time >', Date.now());
       return data;
     } catch (error) {

@@ -16,6 +16,9 @@ const initialState = {
     lastUpdate: new Date().toISOString(),
   },
   tableLoading: false,
+  page: 1,
+  limit: 10,
+  totalPages: 0,
   products: [
     {
       article: '',
@@ -42,8 +45,11 @@ const appStateSlice = createSlice({
         state.tableLoading = true;
       })
       .addCase(fetchMainTableDataThunk.fulfilled, (state, { payload }) => {
-        state.products = payload;
+        state.products = payload.products;
         state.tableLoading = false;
+        state.page = payload.page;
+        state.limit = payload.limit;
+        state.totalPages = payload.totalPages;
       });
   },
 });

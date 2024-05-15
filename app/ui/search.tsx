@@ -20,7 +20,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
       params.delete('query');
     }
     replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  }, 500);
 
   return (
     <div className="relative flex w-2/5 flex-shrink-0">

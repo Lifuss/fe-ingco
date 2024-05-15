@@ -3,9 +3,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTable } from 'react-table';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { useSelector } from 'react-redux';
-import { selectProducts } from '@/lib/appState/main/selectors';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { usePathname, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Pagination from '@/app/ui/Pagination';
 
 export type rawData = {
   article: string;
@@ -18,15 +19,36 @@ export type rawData = {
 };
 
 const Table = () => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  console.log('searchParams', searchParams);
+
   const dispatch = useAppDispatch();
 
-  const { products, tableLoading } = useAppSelector(
+  const { products, totalPages, tableLoading } = useAppSelector(
     (state) => state.persistedMainReducer,
   );
+  console.log('products', products);
+
+  let page = searchParams.get('page')
+    ? parseInt(searchParams.get('page') as string)
+    : 1;
+  page = !page || page < 1 ? 1 : page;
+
+  let query = searchParams.get('query') || '';
+
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
   useEffect(() => {
-    dispatch(fetchMainTableDataThunk());
-  }, [dispatch]);
+    dispatch(fetchMainTableDataThunk({ page, query }));
+  }, [dispatch, page, query]);
+
+  const prevPage = page - 1 > 0 ? page - 1 : 1;
+  const nextPage = page + 1;
 
   const [quantities, setQuantities] = useState({});
 
@@ -177,46 +199,52 @@ const Table = () => {
     useTable({ columns, data });
 
   return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup, headerGroupIndex) => (
-          <tr
-            {...headerGroup.getHeaderGroupProps()}
-            key={`thead-${headerGroupIndex}`}
-          >
-            {headerGroup.headers.map((column, columnIndex) => (
-              <th
-                {...column.getHeaderProps()}
-                key={`th-${columnIndex}`}
-                className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
-              >
-                {column.render('Header')}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, rowIndex) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
-              {row.cells.map((cell, cellIndex) => {
-                return (
-                  <td
-                    {...cell.getCellProps()}
-                    key={`td-${cellIndex}`}
-                    className="border-[1px] border-gray-300 px-1 text-center"
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                );
-              })}
+    <>
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup, headerGroupIndex) => (
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={`thead-${headerGroupIndex}`}
+            >
+              {headerGroup.headers.map((column, columnIndex) => (
+                <th
+                  {...column.getHeaderProps()}
+                  key={`th-${columnIndex}`}
+                  className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
+                >
+                  {column.render('Header')}
+                </th>
+              ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row, rowIndex) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
+                {row.cells.map((cell, cellIndex) => {
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      key={`td-${cellIndex}`}
+                      className="border-[1px] border-gray-300 px-1 text-center"
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <div className="mx-auto mt-5 w-fit">
+        <Pagination totalPages={totalPages} />
+      </div>
+    </>
   );
 };
 
