@@ -8,15 +8,18 @@ import Modal from 'react-modal';
 import { useMediaQuery } from 'react-responsive';
 import CurrencyRate from '../CurrencyRate';
 import AuthButtons from './AuthButtons';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Search from '../search';
-import { useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { logoutThunk } from '@/lib/appState/auth/operation';
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
@@ -186,7 +189,16 @@ const Header = () => {
                 </div>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <button className="relative">
+                <button
+                  className="relative"
+                  onClick={() => {
+                    dispatch(logoutThunk())
+                      .unwrap()
+                      .then(() => {
+                        router.push('/');
+                      });
+                  }}
+                >
                   {avatarSVG}{' '}
                   <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-3px] lg:top-0 lg:h-7 lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
                 </button>

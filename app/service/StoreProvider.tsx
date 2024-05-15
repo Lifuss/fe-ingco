@@ -3,7 +3,6 @@ import { useRef } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, AppStore, persistor } from '../../lib/appState/store';
-import RefreshUser from './RefreshUser';
 
 export default function StoreProvider({
   children,

@@ -6,8 +6,9 @@ import { loginThunk } from '@/lib/appState/auth/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import withAuth from '../service/PrivateRouting';
 
-export default function LoginForm() {
+function LoginForm() {
   const dispatch = useAppDispatch();
   const { isLoading, isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
@@ -28,11 +29,7 @@ export default function LoginForm() {
     dispatch(loginThunk({ login, password }))
       .unwrap()
       .then(() => {
-        console.log('login success');
-
         router.push('/shop');
-
-        console.log('redirected');
       })
       .catch((error) => {
         // TODO: пропрацювати помилки авторизації та вивести їх на екран
@@ -101,3 +98,5 @@ export default function LoginForm() {
 function LoginButton() {
   return <Button className="mt-4 w-full text-2xl">Увійти</Button>;
 }
+
+export default withAuth(LoginForm);

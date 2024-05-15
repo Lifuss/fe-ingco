@@ -43,7 +43,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
   async (query: { query: string; page: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.get('/products', {
-        params: { page: query.page, q: query.query, limit: 2 },
+        params: { page: query.page, q: query.query, limit: 10 },
       });
       console.log('data fetched >', data, '\n', 'time >', Date.now());
       return data;
