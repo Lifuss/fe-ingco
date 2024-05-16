@@ -62,6 +62,11 @@ const Table = () => {
     });
   };
 
+  const image = document.createElement('div');
+  image.className = `absolute  z-50 h-[200px] w-[200px]`;
+  // ReactDOM.createPortal(image, document.body);
+  document.body.appendChild(image);
+
   const data = useMemo(() => {
     return products.map((product) => ({
       codeCol: product.article,
@@ -99,15 +104,27 @@ const Table = () => {
       {
         Header: 'Фото',
         accessor: 'photoCol',
-        Cell: ({ row }) => (
-          <Image
-            src={`http://localhost:3030${row.values.photoCol}`}
-            alt={row.values.nameCol}
-            width={40}
-            height={40}
-            className="h-11 w-11"
-          />
-        ),
+        Cell: ({ row }) => {
+          return (
+            <Image
+              src={`http://localhost:3030${row.values.photoCol}`}
+              alt={row.values.nameCol}
+              width={40}
+              height={40}
+              className="h-11 w-11"
+              onMouseEnter={(e) => {
+                console.log('Mouse over');
+                image.innerHTML = `<img src="http://localhost:3030${row.values.photoCol}" alt="${row.values.nameCol}" />`;
+                image.style.top = `${e.clientY + 20}px`;
+                image.style.left = `${e.clientX + 20}px`;
+              }}
+              onMouseOut={() => {
+                console.log('Mouse out');
+                image.innerHTML = '';
+              }}
+            />
+          );
+        },
       },
       {
         Header: 'Улюблене',
