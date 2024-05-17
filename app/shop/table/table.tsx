@@ -7,6 +7,7 @@ import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Pagination from '@/app/ui/Pagination';
+import { addFavoriteProductThunk } from '@/lib/appState/auth/operation';
 
 export type rawData = {
   article: string;
@@ -24,9 +25,10 @@ const Table = () => {
 
   const dispatch = useAppDispatch();
 
-  const { products, totalPages, tableLoading } = useAppSelector(
-    (state) => state.persistedMainReducer,
-  );
+  const state = useAppSelector((state) => state);
+
+  const { products, totalPages } = state.persistedMainReducer;
+  const { favorites = [] } = state.persistedAuthReducer.user;
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -138,20 +140,36 @@ const Table = () => {
             className="px-2 py-1 text-white"
             onClick={() => {
               console.log(`Product ID: ${row.original._id} added to favorites`);
+              dispatch(addFavoriteProductThunk(row.original._id));
+              // TODO Не приходить оновлений стейт
             }}
           >
-            <svg
-              width="32"
-              height="28"
-              viewBox="0 0 32 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M23.0312 0.5C20.1273 0.5 17.5848 1.74875 16 3.85953C14.4152 1.74875 11.8727 0.5 8.96875 0.5C6.65719 0.502605 4.44106 1.42202 2.80654 3.05654C1.17202 4.69106 0.252605 6.90719 0.25 9.21875C0.25 19.0625 14.8455 27.0303 15.467 27.3594C15.6309 27.4475 15.814 27.4936 16 27.4936C16.186 27.4936 16.3691 27.4475 16.533 27.3594C17.1545 27.0303 31.75 19.0625 31.75 9.21875C31.7474 6.90719 30.828 4.69106 29.1935 3.05654C27.5589 1.42202 25.3428 0.502605 23.0312 0.5ZM16 25.0813C13.4322 23.585 2.5 16.7689 2.5 9.21875C2.50223 7.50382 3.18448 5.85976 4.39712 4.64712C5.60976 3.43448 7.25382 2.75223 8.96875 2.75C11.7039 2.75 14.0003 4.20688 14.9594 6.54688C15.0441 6.75321 15.1883 6.92969 15.3736 7.0539C15.5589 7.1781 15.7769 7.24441 16 7.24441C16.2231 7.24441 16.4411 7.1781 16.6264 7.0539C16.8117 6.92969 16.9559 6.75321 17.0406 6.54688C17.9997 4.20266 20.2961 2.75 23.0312 2.75C24.7462 2.75223 26.3902 3.43448 27.6029 4.64712C28.8155 5.85976 29.4978 7.50382 29.5 9.21875C29.5 16.7577 18.565 23.5836 16 25.0813Z"
-                fill="#F81414"
-              />
-            </svg>
+            {favorites.includes(row.original._id) ? (
+              <svg
+                width="30"
+                height="28"
+                viewBox="0 0 30 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className=" hover:fill-orange-500"
+              >
+                <path
+                  d="M15 27.525L12.825 25.545C5.1 18.54 0 13.905 0 8.25C0 3.615 3.63 0 8.25 0C10.86 0 13.365 1.215 15 3.12C16.635 1.215 19.14 0 21.75 0C26.37 0 30 3.615 30 8.25C30 13.905 24.9 18.54 17.175 25.545L15 27.525Z"
+                  fill="#F81414"
+                />
+              </svg>
+            ) : (
+              <svg
+                width="32"
+                height="28"
+                viewBox="0 0 32 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="fill-black hover:fill-orange-500"
+              >
+                <path d="M23.0312 0.5C20.1273 0.5 17.5848 1.74875 16 3.85953C14.4152 1.74875 11.8727 0.5 8.96875 0.5C6.65719 0.502605 4.44106 1.42202 2.80654 3.05654C1.17202 4.69106 0.252605 6.90719 0.25 9.21875C0.25 19.0625 14.8455 27.0303 15.467 27.3594C15.6309 27.4475 15.814 27.4936 16 27.4936C16.186 27.4936 16.3691 27.4475 16.533 27.3594C17.1545 27.0303 31.75 19.0625 31.75 9.21875C31.7474 6.90719 30.828 4.69106 29.1935 3.05654C27.5589 1.42202 25.3428 0.502605 23.0312 0.5ZM16 25.0813C13.4322 23.585 2.5 16.7689 2.5 9.21875C2.50223 7.50382 3.18448 5.85976 4.39712 4.64712C5.60976 3.43448 7.25382 2.75223 8.96875 2.75C11.7039 2.75 14.0003 4.20688 14.9594 6.54688C15.0441 6.75321 15.1883 6.92969 15.3736 7.0539C15.5589 7.1781 15.7769 7.24441 16 7.24441C16.2231 7.24441 16.4411 7.1781 16.6264 7.0539C16.8117 6.92969 16.9559 6.75321 17.0406 6.54688C17.9997 4.20266 20.2961 2.75 23.0312 2.75C24.7462 2.75223 26.3902 3.43448 27.6029 4.64712C28.8155 5.85976 29.4978 7.50382 29.5 9.21875C29.5 16.7577 18.565 23.5836 16 25.0813Z" />
+              </svg>
+            )}
           </button>
         ),
       },

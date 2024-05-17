@@ -137,3 +137,28 @@ export const refreshTokenThunk = createAsyncThunk(
     }
   },
 );
+
+export const addFavoriteProductThunk = createAsyncThunk(
+  'auth/addFavoriteProduct',
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      const response = await apiIngco.post(`/users/favorites/${productId}`);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorInfo = {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+        };
+        return rejectWithValue(errorInfo);
+      }
+
+      return rejectWithValue(error.message);
+    }
+  },
+);
