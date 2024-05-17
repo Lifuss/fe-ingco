@@ -21,14 +21,12 @@ export type rawData = {
 const Table = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  console.log('searchParams', searchParams);
 
   const dispatch = useAppDispatch();
 
   const { products, totalPages, tableLoading } = useAppSelector(
     (state) => state.persistedMainReducer,
   );
-  console.log('products', products);
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -36,6 +34,7 @@ const Table = () => {
   page = !page || page < 1 ? 1 : page;
 
   let query = searchParams.get('query') || '';
+  let category = searchParams.get('category') || '';
 
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
@@ -44,8 +43,8 @@ const Table = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchMainTableDataThunk({ page, query }));
-  }, [dispatch, page, query]);
+    dispatch(fetchMainTableDataThunk({ page, query, category }));
+  }, [dispatch, page, query, category]);
 
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;
@@ -62,10 +61,13 @@ const Table = () => {
     });
   };
 
-  const image = document.createElement('div');
-  image.className = `absolute  z-50 h-[200px] w-[200px]`;
-  // ReactDOM.createPortal(image, document.body);
-  document.body.appendChild(image);
+  let image = document.getElementById('image') as HTMLDivElement;
+  if (!image) {
+    image = document.createElement('div');
+    image.className = `absolute  z-50 h-[200px] w-[200px] hidden`;
+    image.id = 'image';
+    document.body.appendChild(image);
+  }
 
   const data = useMemo(() => {
     return products.map((product) => ({
@@ -113,14 +115,16 @@ const Table = () => {
               height={40}
               className="h-11 w-11"
               onMouseEnter={(e) => {
-                console.log('Mouse over');
-                image.innerHTML = `<img src="http://localhost:3030${row.values.photoCol}" alt="${row.values.nameCol}" />`;
-                image.style.top = `${e.clientY + 20}px`;
-                image.style.left = `${e.clientX + 20}px`;
+                let img = document.getElementById('image') as HTMLDivElement;
+                img.innerHTML = `<img src="http://localhost:3030${row.values.photoCol}" alt="${row.values.nameCol}" />`;
+                img.style.top = `${e.clientY + 20}px`;
+                img.style.left = `${e.clientX + 20}px`;
+                img.classList.remove('hidden');
               }}
               onMouseOut={() => {
-                console.log('Mouse out');
-                image.innerHTML = '';
+                let img = document.getElementById('image') as HTMLDivElement;
+                img.innerHTML = '';
+                img.classList.add('hidden');
               }}
             />
           );
@@ -217,46 +221,54 @@ const Table = () => {
 
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup, headerGroupIndex) => (
-            <tr
-              {...headerGroup.getHeaderGroupProps()}
-              key={`thead-${headerGroupIndex}`}
-            >
-              {headerGroup.headers.map((column, columnIndex) => (
-                <th
-                  {...column.getHeaderProps()}
-                  key={`th-${columnIndex}`}
-                  className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, rowIndex) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
-                {row.cells.map((cell, cellIndex) => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      key={`td-${cellIndex}`}
-                      className="border-[1px] border-gray-300 px-1 text-center"
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
+      {products.length === 0 ? (
+        <div className="grid place-items-center">
+          <h2 className="w-1/2 text-center text-3xl">
+            По вибраним параметрам товару більше не знайдено
+          </h2>
+        </div>
+      ) : (
+        <table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup, headerGroupIndex) => (
+              <tr
+                {...headerGroup.getHeaderGroupProps()}
+                key={`thead-${headerGroupIndex}`}
+              >
+                {headerGroup.headers.map((column, columnIndex) => (
+                  <th
+                    {...column.getHeaderProps()}
+                    key={`th-${columnIndex}`}
+                    className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
+                  >
+                    {column.render('Header')}
+                  </th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row, rowIndex) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
+                  {row.cells.map((cell, cellIndex) => {
+                    return (
+                      <td
+                        {...cell.getCellProps()}
+                        key={`td-${cellIndex}`}
+                        className="border-[1px] border-gray-300 px-1 text-center"
+                      >
+                        {cell.render('Cell')}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
 
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />

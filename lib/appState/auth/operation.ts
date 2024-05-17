@@ -112,8 +112,6 @@ export const refreshTokenThunk = createAsyncThunk(
   async (_, { rejectWithValue, getState }) => {
     const state = getState() as RootState;
     const savedToken = state.persistedAuthReducer.token;
-    console.log('savedToken', savedToken);
-
     if (!savedToken) {
       return rejectWithValue('token was not found');
     }

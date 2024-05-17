@@ -36,11 +36,7 @@ export default function RegisterForm() {
     dispatch(registerThunk(credential))
       .unwrap()
       .then(() => {
-        console.log('login success');
-
         router.push('/shop');
-
-        console.log('redirected');
       })
       .catch((error) => {
         // TODO: пропрацювати помилки авторизації та вивести їх на екран

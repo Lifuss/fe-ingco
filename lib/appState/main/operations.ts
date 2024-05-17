@@ -40,12 +40,31 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
 
 export const fetchMainTableDataThunk = createAsyncThunk(
   'mainTable/fetch',
-  async (query: { query: string; page: number }, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      query,
+      category,
+      limit = 10,
+    }: { query: string; page: number; category?: string; limit?: number },
+    { rejectWithValue },
+  ) => {
     try {
       const { data } = await apiIngco.get('/products', {
-        params: { page: query.page, q: query.query, limit: 10 },
+        params: { page, q: query, limit, category },
       });
-      console.log('data fetched >', data, '\n', 'time >', Date.now());
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const fetchCategoriesThunk = createAsyncThunk(
+  'categories/fetch',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('/categories');
       return data;
     } catch (error) {
       rejectWithValue(error);

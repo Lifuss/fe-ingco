@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchCurrencyRatesThunk, fetchMainTableDataThunk } from './operations';
+import {
+  fetchCategoriesThunk,
+  fetchCurrencyRatesThunk,
+  fetchMainTableDataThunk,
+} from './operations';
 
 // Define the type for your payload
 interface PayloadCurrencyRates {
@@ -16,6 +20,7 @@ const initialState = {
     lastUpdate: new Date().toISOString(),
   },
   tableLoading: false,
+  categories: [{ name: '', _id: '' }],
   page: 1,
   limit: 10,
   totalPages: 0,
@@ -50,6 +55,9 @@ const appStateSlice = createSlice({
         state.page = payload.page;
         state.limit = payload.limit;
         state.totalPages = payload.totalPages;
+      })
+      .addCase(fetchCategoriesThunk.fulfilled, (state, { payload }) => {
+        state.categories = payload;
       });
   },
 });
