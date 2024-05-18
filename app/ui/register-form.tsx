@@ -36,6 +36,9 @@ export default function RegisterForm() {
     dispatch(registerThunk(credential))
       .unwrap()
       .then(() => {
+        alert(
+          'Після реєстрації менеджер обробить інформацію і  вам на пошту прийде лист з підтвердженням',
+        );
         router.push('/shop');
       })
       .catch((error) => {
