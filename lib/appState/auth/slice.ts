@@ -1,6 +1,7 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
   addFavoriteProductThunk,
+  addProductToCartThunk,
   loginThunk,
   logoutThunk,
   refreshTokenThunk,
@@ -13,6 +14,7 @@ const initialState = {
     login: '',
     role: '',
     favorites: [],
+    cart: [],
   },
   token: '',
   isAuthenticated: false,
@@ -39,16 +41,20 @@ const authStateSlice = createSlice({
       .addCase(addFavoriteProductThunk.fulfilled, (state, { payload }) => {
         state.user.favorites = payload;
       })
+      .addCase(addProductToCartThunk.fulfilled, (state, { payload }) => {
+        state.user.cart = payload;
+      })
       .addMatcher(
         isAnyOf(loginThunk.fulfilled, refreshTokenThunk.fulfilled),
         (state, { payload }) => {
           state.token = payload.token;
           state.user.isVerified = payload.isVerified;
-          state.user.login = payload.login;
-          state.user.role = payload.role;
           state.isAuthenticated = true;
           state.isLoading = false;
+          state.user.login = payload.login;
+          state.user.role = payload.role;
           state.user.favorites = payload.favorites;
+          state.user.cart = payload.cart;
         },
       )
       .addMatcher(

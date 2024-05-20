@@ -162,3 +162,21 @@ export const addFavoriteProductThunk = createAsyncThunk(
     }
   },
 );
+
+export const addProductToCartThunk = createAsyncThunk(
+  'cart/add',
+  async (
+    { productId, quantity }: { productId: string; quantity: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('users/cart', {
+        productId,
+        quantity,
+      });
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
