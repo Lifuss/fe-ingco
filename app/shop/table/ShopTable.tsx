@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTable } from 'react-table';
+import { Row} from 'react-table';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -9,8 +9,10 @@ import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
   addProductToCartThunk,
+  deleteFavoriteProductThunk,
 } from '@/lib/appState/auth/operation';
 import clsx from 'clsx';
+import Table from '@/app/ui/Table';
 
 export type rawData = {
   article: string;
@@ -22,14 +24,15 @@ export type rawData = {
   _id: string;
 };
 
-const Table = () => {
+// This is a table wrapper component that fetches data from the server and displays it in a table.
+const shopTable = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
 
   const { products, totalPages } = state.persistedMainReducer;
-  let favorites = state.persistedAuthReducer.user.favorites;
+  let favorites: string[] = state.persistedAuthReducer.user.favorites;
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -61,26 +64,19 @@ const Table = () => {
     });
   };
 
-  let image = document.getElementById('image') as HTMLDivElement;
-  if (!image) {
-    image = document.createElement('div');
-    image.className = `absolute  z-50 h-[200px] w-[200px] hidden`;
-    image.id = 'image';
-    document.body.appendChild(image);
-  }
 
   function handleFavoriteClick(id: string) {
-    dispatch(addFavoriteProductThunk(id));
     const element = document.querySelector(
-      `button[data-favoriteId="${id}"]`,
+      `button[data-favorite="${id}"]`,
     ) as HTMLButtonElement;
-
     if (favorites.includes(id)) {
-      element.classList.remove('fill-orange-500 outline-yellow-500');
-      console.log('remove', id);
+      dispatch(deleteFavoriteProductThunk(id));
+      element.classList.remove('fill-orange-500');
+      element.classList.add('fill-white');
     } else {
-      element.classList.add('fill-orange-500 outline-red-500');
-      console.log('add', id);
+      dispatch(addFavoriteProductThunk(id));
+      element.classList.remove('fill-white');
+      element.classList.add('fill-orange-500');
     }
   }
 
@@ -101,13 +97,13 @@ const Table = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Код',
+        Header: 'Артикль',
         accessor: 'codeCol', // accessor is the "key" in the data
       },
       {
         Header: 'Назва',
         accessor: 'nameCol',
-        Cell: ({ row }) => (
+        Cell: ({ row }: { row: Row }) => (
           <button
             className="min-w-[300px] text-left"
             onClick={() => {
@@ -150,9 +146,17 @@ const Table = () => {
         accessor: 'favoriteCol',
         Cell: ({ row }) => (
           <button
-            className="px-2 py-1 text-white"
-            onClick={handleFavoriteClick.bind(null, row.original._id)}
-            data-favoriteId={row.original._id}
+            onClick={handleFavoriteClick.bind(
+              null,
+              (row.original as { _id: string })._id,
+            )}
+            data-favorite={(row.original as { _id: string })._id}
+            className={clsx(
+              'px-2 py-1 text-white stroke-black',
+              favorites.includes((row.original as { _id: string })._id)
+                ? ' fill-orange-500'
+                : 'fill-white',
+            )}
           >
             <svg
               width="30"
@@ -160,10 +164,7 @@ const Table = () => {
               viewBox="-2 10 35 10"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className={clsx(
-                'fill-white stroke-red-600 stroke-2 hover:fill-orange-500',
-                favorites.includes(row.original._id) && 'fill-orange-500',
-              )}
+              className="fill-inherit stroke-inherit"
             >
               <path d="M15 27.525L12.825 25.545C5.1 18.54 0 13.905 0 8.25C0 3.615 3.63 0 8.25 0C10.86 0 13.365 1.215 15 3.12C16.635 1.215 19.14 0 21.75 0C26.37 0 30 3.615 30 8.25C30 13.905 24.9 18.54 17.175 25.545L15 27.525Z" />
             </svg>
@@ -187,11 +188,14 @@ const Table = () => {
         accessor: 'quantityCol',
         Cell: ({ row }) => (
           <input
-            name={row.original._id}
+            name={(row.original as { _id: string })._id}
             type="number"
             className="h-8 w-[70px] rounded-md p-1 text-center"
             onChange={(e) => {
-              handleQuantityChange(row.original._id, e.target.value);
+              handleQuantityChange(
+                (row.original as { _id: string })._id,
+                e.target.value,
+              );
             }}
             defaultValue={row.values.quantityCol}
             placeholder="0"
@@ -206,21 +210,22 @@ const Table = () => {
           <button
             className="px-2 py-1 text-white"
             onClick={() => {
+              const id = (row.original as { _id: string })._id;
               console.log(
-                `Product ID: ${row.original._id}, Quantity: ${quantitiesRef.current[row.original._id]} product: ${row.original.product.article}`,
+                `Product ID: ${id}, Quantity: ${quantitiesRef.current[id]} product: ${row.original.product.article}`,
               );
               if (quantitiesRef.current[row.original._id] > 0) {
                 dispatch(
                   addProductToCartThunk({
-                    productId: row.original._id,
-                    quantity: quantitiesRef.current[row.original._id],
+                    productId: id,
+                    quantity: quantitiesRef.current[id],
                   }),
                 );
               } else {
                 alert('Введіть кількість товару');
               }
               const inputElement = document.querySelector(
-                `input[name="${row.original._id}"]`,
+                `input[name="${id}"]`,
               ) as HTMLInputElement;
               inputElement.value = '';
             }}
@@ -241,9 +246,6 @@ const Table = () => {
     [],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
-
   return (
     <>
       {products.length === 0 ? (
@@ -253,46 +255,7 @@ const Table = () => {
           </h2>
         </div>
       ) : (
-        <table {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup, headerGroupIndex) => (
-              <tr
-                {...headerGroup.getHeaderGroupProps()}
-                key={`thead-${headerGroupIndex}`}
-              >
-                {headerGroup.headers.map((column, columnIndex) => (
-                  <th
-                    {...column.getHeaderProps()}
-                    key={`th-${columnIndex}`}
-                    className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
-                  >
-                    {column.render('Header')}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row, rowIndex) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
-                  {row.cells.map((cell, cellIndex) => {
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        key={`td-${cellIndex}`}
-                        className="border-[1px] border-gray-300 px-1 text-center"
-                      >
-                        {cell.render('Cell')}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <Table columns={columns} data={data} />
       )}
 
       <div className="mx-auto mt-5 w-fit">
@@ -302,4 +265,4 @@ const Table = () => {
   );
 };
 
-export default Table;
+export default shopTable;

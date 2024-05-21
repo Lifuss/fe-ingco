@@ -221,9 +221,11 @@ const Header = () => {
                       </clipPath>
                     </defs>
                   </svg>
-                  <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs leading-none">
-                    {user.cart.length}
-                  </div>
+                  {user.cart.length ? (
+                    <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs leading-none">
+                      {user.cart.length}
+                    </div>
+                  ) : null}
                 </Link>
               </div>
             </>

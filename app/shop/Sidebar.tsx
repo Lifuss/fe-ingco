@@ -23,10 +23,10 @@ const Sidebar = () => {
     const params = new URLSearchParams(searchParams);
     if (categoryId === '') {
       params.delete('category');
-      return `${pathname}?${params.toString()}`;
+      return `/shop?${params.toString()}`;
     } else {
       params.set('category', categoryId);
-      return `${pathname}?${params.toString()}`;
+      return `/shop?${params.toString()}`;
     }
   };
 
@@ -51,7 +51,7 @@ const Sidebar = () => {
         {/* <Bars3Icon className="absolute left-0 top-0 h-6 w-6" /> */}
       </Link>
       <ul className="flex flex-col shadow-md">
-        {productsCategories.map((category) => (
+        {productsCategories?.map((category) => (
           <li
             className={clsx(
               'cursor-pointer border-b-2 border-gray-200 py-1 pl-1 text-base tracking-[0.01em] transition-colors hover:bg-gray-100 hover:text-gray-800',

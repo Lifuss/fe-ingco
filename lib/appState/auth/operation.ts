@@ -163,6 +163,31 @@ export const addFavoriteProductThunk = createAsyncThunk(
   },
 );
 
+export const deleteFavoriteProductThunk = createAsyncThunk(
+  'auth/deleteFavoriteProduct',
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      const response = await apiIngco.delete(`/users/favorites/${productId}`);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorInfo = {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+        };
+        return rejectWithValue(errorInfo);
+      }
+
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
   async (
@@ -173,6 +198,23 @@ export const addProductToCartThunk = createAsyncThunk(
       const { data } = await apiIngco.post('users/cart', {
         productId,
         quantity,
+      });
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const deleteProductFromCartThunk = createAsyncThunk(
+  'cart/delete',
+  async (
+    { productId, quantity = 1 }: { productId: string; quantity: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.delete(`users/cart`, {
+        data: { productId, quantity },
       });
       return data.cart;
     } catch (error) {

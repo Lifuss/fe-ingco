@@ -1,20 +1,13 @@
-'use client';
-
-import Table from './table/table';
-import withAuth from '../service/PrivateRouting';
-import Sidebar from './Sidebar';
+import ShopTable from './table/ShopTable';
 
 function Page() {
   return (
     <>
-      <main className="flex gap-14 px-[60px] pt-8">
-        <Sidebar />
-        <div className="grow">
-          <Table />
-        </div>
-      </main>
+      <div className="grow">
+        <ShopTable />
+      </div>
     </>
   );
 }
 
-export default withAuth(Page);
+export default Page;
