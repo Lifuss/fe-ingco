@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Row} from 'react-table';
+import { Row } from 'react-table';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -10,13 +10,14 @@ import {
   addFavoriteProductThunk,
   addProductToCartThunk,
   deleteFavoriteProductThunk,
-} from '@/lib/appState/auth/operation';
+} from '@/lib/appState/user/operation';
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
 
 export type rawData = {
   article: string;
   name: string;
+  category: string;
   image: string;
   price: string;
   priceRetailRecommendation: string;
@@ -25,14 +26,16 @@ export type rawData = {
 };
 
 // This is a table wrapper component that fetches data from the server and displays it in a table.
-const shopTable = () => {
+const shopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
 
   const { products, totalPages } = state.persistedMainReducer;
-  let favorites: string[] = state.persistedAuthReducer.user.favorites;
+  let favorites: rawData[] = state.persistedAuthReducer.user.favorites;
+  const favoritesList = favorites.map((product) => product._id);
+  
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -42,14 +45,26 @@ const shopTable = () => {
   let query = searchParams.get('query') || '';
   let category = searchParams.get('category') || '';
 
-  const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', pageNumber.toString());
-    return `${pathname}?${params.toString()}`;
-  };
+  let productsData = products;
+  if (isFavoritePage) {
+    productsData = favorites;
+    if (query) {
+      productsData = favorites.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase()) || product.article.toLowerCase().includes(query.toLowerCase()),
+      );
+    }
+    if (category) {
+      productsData = productsData.filter((product) =>
+        product.category.toLowerCase().includes(category.toLowerCase()),
+      );
+    }
+    productsData = productsData.slice((page - 1) * 10, page * 10);
+  }
 
   useEffect(() => {
-    dispatch(fetchMainTableDataThunk({ page, query, category }));
+    if (!isFavoritePage) {
+      dispatch(fetchMainTableDataThunk({ page, query, category }));
+    }
   }, [dispatch, page, query, category]);
 
   const [quantities, setQuantities] = useState({});
@@ -64,12 +79,11 @@ const shopTable = () => {
     });
   };
 
-
   function handleFavoriteClick(id: string) {
     const element = document.querySelector(
       `button[data-favorite="${id}"]`,
     ) as HTMLButtonElement;
-    if (favorites.includes(id)) {
+    if (favoritesList.includes(id)) {
       dispatch(deleteFavoriteProductThunk(id));
       element.classList.remove('fill-orange-500');
       element.classList.add('fill-white');
@@ -81,7 +95,7 @@ const shopTable = () => {
   }
 
   const data = useMemo(() => {
-    return products.map((product) => ({
+    return productsData.map((product) => ({
       codeCol: product.article,
       nameCol: product.name,
       photoCol: product.image,
@@ -92,7 +106,7 @@ const shopTable = () => {
       _id: product._id,
       product,
     }));
-  }, [products]);
+  }, [productsData]);
 
   const columns = useMemo(
     () => [
@@ -124,7 +138,7 @@ const shopTable = () => {
               alt={row.values.nameCol}
               width={40}
               height={40}
-              className="h-11 w-11"
+              className="mx-auto h-11 w-11"
               onMouseEnter={(e) => {
                 let img = document.getElementById('image') as HTMLDivElement;
                 img.innerHTML = `<img src="http://localhost:3030${row.values.photoCol}" alt="${row.values.nameCol}" />`;
@@ -152,10 +166,10 @@ const shopTable = () => {
             )}
             data-favorite={(row.original as { _id: string })._id}
             className={clsx(
-              'px-2 py-1 text-white stroke-black',
-              favorites.includes((row.original as { _id: string })._id)
+              'px-2 py-1 text-white',
+              favoritesList.includes((row.original as { _id: string })._id)
                 ? ' fill-orange-500'
-                : 'fill-white',
+                : 'fill-white stroke-black',
             )}
           >
             <svg
@@ -246,6 +260,10 @@ const shopTable = () => {
     [],
   );
 
+  const totalPage = isFavoritePage
+    ? Math.ceil(favorites.length / 10)
+    : totalPages;
+
   return (
     <>
       {products.length === 0 ? (
@@ -255,11 +273,13 @@ const shopTable = () => {
           </h2>
         </div>
       ) : (
-        <Table columns={columns} data={data} />
+        <div className="w-3/4">
+          <Table columns={columns} data={data} />
+        </div>
       )}
 
-      <div className="mx-auto mt-5 w-fit">
-        <Pagination totalPages={totalPages} />
+      <div className="mx-auto mt-5 w-[43%] pb-10">
+        <Pagination totalPages={totalPage} />
       </div>
     </>
   );

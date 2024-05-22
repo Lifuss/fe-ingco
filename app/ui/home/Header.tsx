@@ -8,17 +8,37 @@ import Modal from 'react-modal';
 import { useMediaQuery } from 'react-responsive';
 import CurrencyRate from '../CurrencyRate';
 import AuthButtons from './AuthButtons';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Search from '../search';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { logoutThunk } from '@/lib/appState/auth/operation';
+import UserModal from '../UserModal';
+
+export const avatarSVG = (
+  <svg
+    viewBox="0 0 36 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-9 w-9"
+  >
+    <path
+      d="M6 27C6 25.4087 6.63214 23.8826 7.75736 22.7574C8.88258 21.6321 10.4087 21 12 21H24C25.5913 21 27.1174 21.6321 28.2426 22.7574C29.3679 23.8826 30 25.4087 30 27C30 27.7956 29.6839 28.5587 29.1213 29.1213C28.5587 29.6839 27.7956 30 27 30H9C8.20435 30 7.44129 29.6839 6.87868 29.1213C6.31607 28.5587 6 27.7956 6 27Z"
+      stroke="#111827"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M18 15C20.4853 15 22.5 12.9853 22.5 10.5C22.5 8.01472 20.4853 6 18 6C15.5147 6 13.5 8.01472 13.5 10.5C13.5 12.9853 15.5147 15 18 15Z"
+      stroke="#111827"
+      strokeWidth="2"
+    />
+  </svg>
+);
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
   const pathname = usePathname();
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector(
     (state) => state.persistedAuthReducer,
@@ -32,26 +52,6 @@ const Header = () => {
   };
   // TODO: low prior - зробити меню бургер для мобільної верстки
 
-  const avatarSVG = (
-    <svg
-      viewBox="0 0 36 36"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-9 w-9"
-    >
-      <path
-        d="M6 27C6 25.4087 6.63214 23.8826 7.75736 22.7574C8.88258 21.6321 10.4087 21 12 21H24C25.5913 21 27.1174 21.6321 28.2426 22.7574C29.3679 23.8826 30 25.4087 30 27C30 27.7956 29.6839 28.5587 29.1213 29.1213C28.5587 29.6839 27.7956 30 27 30H9C8.20435 30 7.44129 29.6839 6.87868 29.1213C6.31607 28.5587 6 27.7956 6 27Z"
-        stroke="#111827"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M18 15C20.4853 15 22.5 12.9853 22.5 10.5C22.5 8.01472 20.4853 6 18 6C15.5147 6 13.5 8.01472 13.5 10.5C13.5 12.9853 15.5147 15 18 15Z"
-        stroke="#111827"
-        strokeWidth="2"
-      />
-    </svg>
-  );
   return (
     <header className="flex items-center justify-between bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link href="/shop" className="h-[31px] lg:h-[52px]">
@@ -189,19 +189,7 @@ const Header = () => {
                 </div>
               </div>
               <div className="flex items-center justify-center gap-2">
-                <button
-                  className="relative"
-                  onClick={() => {
-                    dispatch(logoutThunk())
-                      .unwrap()
-                      .then(() => {
-                        router.push('/');
-                      });
-                  }}
-                >
-                  {avatarSVG}{' '}
-                  <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-3px] lg:top-0 lg:h-7 lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
-                </button>
+                <UserModal />
                 <Link href={'/shop/cart'} className="relative">
                   <svg
                     viewBox="0 0 36 36"
