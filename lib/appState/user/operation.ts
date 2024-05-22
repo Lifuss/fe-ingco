@@ -222,3 +222,28 @@ export const deleteProductFromCartThunk = createAsyncThunk(
     }
   },
 );
+
+export const createOrderThunk = createAsyncThunk(
+  'order/create',
+  async (
+    order: {
+      products: {
+        productId: string;
+        quantity: number;
+        price: number;
+        totalPriceByOneProduct: number;
+      }[];
+      shippingAddress: string;
+      totalPrice: number;
+      comment: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('orders', order);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);

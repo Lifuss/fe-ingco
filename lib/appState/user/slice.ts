@@ -2,6 +2,7 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
   addFavoriteProductThunk,
   addProductToCartThunk,
+  createOrderThunk,
   deleteFavoriteProductThunk,
   deleteProductFromCartThunk,
   loginThunk,
@@ -39,6 +40,9 @@ const authStateSlice = createSlice({
       })
       .addCase(logoutThunk.fulfilled, (state, _) => {
         return (state = initialState);
+      })
+      .addCase(createOrderThunk.fulfilled, (state, _) => {
+        state.user.cart = [];
       })
       .addMatcher(
         isAnyOf(

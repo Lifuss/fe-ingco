@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
-import { registerThunk } from '@/lib/appState/auth/operation';
+import { registerThunk } from '@/lib/appState/user/operation';
 
 export default function RegisterForm() {
   const { isAuthenticated } = useAppSelector(

@@ -13,7 +13,7 @@ export default function Table({
     useTable({ columns, data });
 
   return (
-    <table {...getTableProps()}>
+    <table {...getTableProps()} className="w-full">
       <thead>
         {headerGroups.map((headerGroup, headerGroupIndex) => (
           <tr

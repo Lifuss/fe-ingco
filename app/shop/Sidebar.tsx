@@ -21,11 +21,25 @@ const Sidebar = () => {
 
   const createPageURL = (categoryId: string) => {
     const params = new URLSearchParams(searchParams);
+    let pagePathname = pathname;
+    switch (pathname) {
+      case '/shop/cart':
+        pagePathname = '/shop';
+        break;
+      case '/shop/favorites':
+        pagePathname = 'favorites';
+        break;
+      default:
+        pagePathname;
+    }
     if (categoryId === '') {
       params.delete('category');
-      return `/shop?${params.toString()}`;
     } else {
       params.set('category', categoryId);
+    }
+    if (categoryId) {
+      return `${pagePathname}?${params.toString()}`;
+    } else {
       return `/shop?${params.toString()}`;
     }
   };

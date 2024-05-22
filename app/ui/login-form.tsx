@@ -2,7 +2,7 @@
 
 import { Button } from './button';
 import Link from 'next/link';
-import { loginThunk } from '@/lib/appState/auth/operation';
+import { loginThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';

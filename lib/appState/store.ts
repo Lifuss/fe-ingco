@@ -12,7 +12,7 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import { authSlice } from './auth/slice';
+import { authSlice } from './user/slice';
 
 const persistMainConfig = {
   key: 'main',
