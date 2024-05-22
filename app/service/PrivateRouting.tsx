@@ -1,6 +1,6 @@
 'use client';
 
-import { refreshTokenThunk } from '@/lib/appState/auth/operation';
+import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, usePathname } from 'next/navigation';
 import { useEffect } from 'react';

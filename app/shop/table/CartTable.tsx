@@ -8,12 +8,26 @@ import { Product } from '@/lib/types';
 import { Row } from 'react-table';
 import {
   addProductToCartThunk,
+  createOrderThunk,
   deleteProductFromCartThunk,
-} from '@/lib/appState/auth/operation';
+} from '@/lib/appState/user/operation';
+import Modal from 'react-modal';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
+const customModalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
 const CartTable = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const selectedCart: CartData = useAppSelector(
     (state) => state.persistedAuthReducer.user.cart,
@@ -21,7 +35,6 @@ const CartTable = () => {
   const selectedCurrency = useAppSelector(
     (state) => state.persistedMainReducer.currencyRates,
   );
-
   const handleQuantityChange = (id: string, operation: string) => {
     if (operation === 'increment') {
       dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
@@ -169,8 +182,106 @@ const CartTable = () => {
     [],
   );
 
+  function openModal() {
+    setIsOpen(true);
+  }
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Order is submitted', e.target.comment.value);
+    const order = {
+      products: selectedCart.map((item) => ({
+        productId: item.productId._id,
+        quantity: item.quantity,
+        price: item.productId.price,
+        totalPriceByOneProduct: item.productId.price * item.quantity,
+      })),
+      shippingAddress: 'test',
+      totalPrice: selectedCart.reduce((acc, item) => {
+        return acc + item.productId.price * item.quantity;
+      }, 0),
+      comment: e.target.comment.value,
+    };
+    console.log('pre dispatch order', order);
+    dispatch(createOrderThunk(order))
+      .unwrap()
+      .then((data) => {
+        console.log(data);
+        closeModal();
+        // добавити сюди toastify
+      });
+  };
+
+  const sum = selectedCart.reduce((acc, item) => {
+    return acc + item.productId.price * item.quantity;
+  }, 0);
+
   return selectedCart.length > 0 ? (
-    <Table columns={columns} data={data} />
+    <div className="">
+      <Table columns={columns} data={data} />
+      <div className="ml-auto mt-2 flex w-fit gap-2 border-b-2 text-lg">
+        <p>Загальна сума</p>
+        <p>
+          {sum}$ | {sum * selectedCurrency.USD}грн
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={() => {
+          openModal();
+        }}
+        className="ml-auto mt-4 block w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
+      >
+        Підтвердити замовлення
+      </button>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={closeModal}
+        style={customModalStyles}
+        contentLabel="Підтвердження замовлення"
+      >
+        <form
+          className="flex w-[500px] flex-col gap-4 px-5"
+          onSubmit={handleSubmit}
+        >
+          <ul className="flex flex-col gap-2 text-lg">
+            <li>
+              <p>
+                Після оформлення з вами зв'яжеться менеджер через вайбер або
+                дзвінок і уточнить деталі
+              </p>
+            </li>
+            <li>
+              <p>
+                В коментарі можете вказати бажаний тип зв'язку, а також неявні
+                деталі по типу розділеного замовлення тощо.
+              </p>
+            </li>
+            <li>
+              <p>
+                Якщо не бажаєте щоб вам передзвонювали, то вкажіть повне інфо
+                для відправки в коментарі (ПІБ, тел номер, адреса відділення НП)
+              </p>
+            </li>
+          </ul>
+          <textarea
+            className=""
+            name="comment"
+            placeholder="Коментарій до замовлення"
+          />
+
+          <button
+            type="submit"
+            className="mx-auto w-fit rounded-lg bg-[#111827] px-4 py-4 text-2xl text-white"
+          >
+            Оформити замовлення
+          </button>
+        </form>
+      </Modal>
+    </div>
   ) : (
     <div className="text-center">
       ⚠️Кошик порожній!⚠️
