@@ -39,7 +39,7 @@ const Hero = () => {
           Офіційний імпортер продукції в Україні
         </p>
         <Link
-          href={'/register'}
+          href={'/auth/register'}
           className="mx-auto flex w-[230px] justify-center rounded-lg bg-[#f59e0b] py-3 text-lg text-white transition-colors ease-out hover:bg-orange-400 md:mx-0 md:w-[300px] xl:w-[421px] xl:py-[17px] xl:text-2xl 2xl:w-[600px] 2xl:py-[25px] 2xl:text-2xl"
         >
           Зареєструватися

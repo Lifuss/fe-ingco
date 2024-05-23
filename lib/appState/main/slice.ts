@@ -33,6 +33,7 @@ const initialState = {
       priceRetailRecommendation: '',
       countInStock: 0,
       _id: '',
+      category: '',
     },
   ],
   history: [

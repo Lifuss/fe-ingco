@@ -6,7 +6,7 @@ import { fetchHistoryThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
-import { Row } from 'react-table';
+import { CellProps, Row } from 'react-table';
 
 const HistoryTable = () => {
   const dispatch = useAppDispatch();
@@ -49,7 +49,7 @@ const HistoryTable = () => {
       {
         Header: 'Номер декларації',
         accessor: 'declarationNumberCol',
-        Cell: ({ row }: { row: Row }) => {
+        Cell: ({ row }: any) => {
           return row.original.declarationNumber
             ? row.original.declarationNumber
             : '—';

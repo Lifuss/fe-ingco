@@ -41,7 +41,7 @@ export const loginThunk = createAsyncThunk(
 
       setToken(response.data.token);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,
@@ -66,7 +66,7 @@ export const registerThunk = createAsyncThunk(
 
       setToken(response.data.token);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,
@@ -92,7 +92,7 @@ export const logoutThunk = createAsyncThunk(
 
       clearToken();
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,
@@ -123,7 +123,7 @@ export const refreshTokenThunk = createAsyncThunk(
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,
@@ -148,7 +148,7 @@ export const addFavoriteProductThunk = createAsyncThunk(
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,
@@ -173,7 +173,7 @@ export const deleteFavoriteProductThunk = createAsyncThunk(
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const errorInfo = {
           message: error.message,

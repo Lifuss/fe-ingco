@@ -35,7 +35,6 @@ const shopTable = ({ isFavoritePage = false }) => {
   const { products, totalPages } = state.persistedMainReducer;
   let favorites: rawData[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
-  
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -49,8 +48,10 @@ const shopTable = ({ isFavoritePage = false }) => {
   if (isFavoritePage) {
     productsData = favorites;
     if (query) {
-      productsData = favorites.filter((product) =>
-        product.name.toLowerCase().includes(query.toLowerCase()) || product.article.toLowerCase().includes(query.toLowerCase()),
+      productsData = favorites.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query.toLowerCase()) ||
+          product.article.toLowerCase().includes(query.toLowerCase()),
       );
     }
     if (category) {
@@ -70,7 +71,7 @@ const shopTable = ({ isFavoritePage = false }) => {
   const [quantities, setQuantities] = useState({});
 
   // ref to store quantities
-  const quantitiesRef = useRef({});
+  const quantitiesRef = useRef<Record<string, number>>({});
   const handleQuantityChange = (id: string, value: string) => {
     setQuantities((prev) => {
       const updated = { ...prev, [id]: value };
@@ -220,13 +221,13 @@ const shopTable = ({ isFavoritePage = false }) => {
         Header: 'Кошик',
 
         accessor: 'cartCol',
-        Cell: ({ row }) => (
+        Cell: ({ row }: {row:any}) => (
           <button
             className="px-2 py-1 text-white"
             onClick={() => {
               const id = (row.original as { _id: string })._id;
               console.log(
-                `Product ID: ${id}, Quantity: ${quantitiesRef.current[id]} product: ${row.original.product.article}`,
+                `Product ID: ${id}, Quantity: ${quantitiesRef.current[id]} product: ${(row.original as { product: { article: string } }).product.article}`,
               );
               if (quantitiesRef.current[row.original._id] > 0) {
                 dispatch(
