@@ -71,3 +71,24 @@ export const fetchCategoriesThunk = createAsyncThunk(
     }
   },
 );
+
+export const fetchHistoryThunk = createAsyncThunk(
+  'history/fetch',
+  async (
+    {
+      page = 1,
+      q = '',
+      limit = 15,
+    }: { page: number; q: string; limit?: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.get('/orders', {
+        params: { page, q, limit },
+      });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
