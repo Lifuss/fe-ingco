@@ -26,7 +26,7 @@ export type rawData = {
 };
 
 // This is a table wrapper component that fetches data from the server and displays it in a table.
-const shopTable = ({ isFavoritePage = false }) => {
+const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -286,4 +286,4 @@ const shopTable = ({ isFavoritePage = false }) => {
   );
 };
 
-export default shopTable;
+export default ShopTable;
