@@ -3,16 +3,16 @@
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { ComponentPropsWithRef, ComponentType, FC, useEffect } from 'react';
 
 interface ComponentProps {
   [key: string]: any;
 }
 
 export default function withAuth(
-  Component: React.ComponentType<ComponentProps>,
+  Component: ComponentType<ComponentPropsWithRef<any>>,
 ) {
-  return function ProtectedRoute(props: ComponentProps) {
+  const AuthComponent: FC = (props) => {
     const dispatch = useAppDispatch();
     const pathname = usePathname();
     const { isAuthenticated, user } = useAppSelector(
@@ -27,25 +27,39 @@ export default function withAuth(
 
         if (token) {
           dispatch(refreshTokenThunk());
-        } else if (pathname !== '/login' && pathname !== '/register') {
-          redirect('/login');
+        } else if (
+          pathname !== '/auth/login' &&
+          pathname !== '/auth/register'
+        ) {
+          redirect('/auth/login');
         }
       }
     }, []);
 
-    if (!isAuthenticated && pathname !== '/login' && pathname !== '/register') {
+    if (
+      !isAuthenticated &&
+      pathname !== '/auth/login' &&
+      pathname !== '/auth/register'
+    ) {
       return null;
     }
-    // TODO: check if the register and login redirect works correctly
+
     if (
       user.isVerified === false &&
-      pathname !== '/login' &&
-      pathname !== '/register'
+      pathname !== '/auth/login' &&
+      pathname !== '/auth/register'
     ) {
+      // TODO: add toast notification
       console.log('need to verify email');
+      redirect('/');
+    }
+
+    // Admin routing
+    if (pathname.includes('/dashboard') && user.role !== 'admin') {
       redirect('/');
     }
 
     return <Component {...props} />;
   };
+  return AuthComponent;
 }

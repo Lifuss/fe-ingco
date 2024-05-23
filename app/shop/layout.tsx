@@ -1,9 +1,11 @@
 'use client';
 
-import { ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import withAuth from '../service/PrivateRouting';
 import { usePathname } from 'next/navigation';
+import Header from '../ui/home/Header';
+import Footer from '../ui/Footer';
+import { ReactNode } from 'react';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
@@ -15,26 +17,33 @@ const Layout = ({ children }: { children: ReactNode }) => {
     case '/shop/favorites':
       title = 'Обране';
       break;
+    case '/shop/history':
+      title = 'Історія замовлень';
+      break;
     default:
       pathname;
   }
 
   return (
-    <main className="flex gap-14 px-[60px] pt-8">
-      <Sidebar />
-      {pathname !== '/shop' ? (
-        <div className="w-full">
-          <h2 className="mb-8 text-center text-3xl">{title}</h2>
-          {children}
-        </div>
-      ) : (
-        children
-      )}
-      <div
-        id="image"
-        className="absolute z-50 hidden h-[200px] w-[200px]"
-      ></div>
-    </main>
+    <>
+      <Header />
+      <main className="flex gap-14 px-[60px] pt-8">
+        <Sidebar />
+        {pathname !== '/shop' ? (
+          <div className="grid w-full grid-cols-3 ">
+            <h2 className="col-span-2 mb-2 text-center text-4xl">{title}</h2>
+            <div className="col-span-3 min-h-[550px]">{children}</div>
+          </div>
+        ) : (
+          children
+        )}
+        <div
+          id="image"
+          className="absolute z-50 hidden h-[200px] w-[200px]"
+        ></div>
+      </main>
+      <Footer />
+    </>
   );
 };
 

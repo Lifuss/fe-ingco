@@ -11,20 +11,20 @@ const SwitchAuthButtons = () => {
       <Link
         className={clsx(
           'border-b-2 pb-3',
-          pathname === '/login' &&
+          pathname === '/auth/login' &&
             'pointer-events-none border-black text-black',
         )}
-        href={'/login'}
+        href={'/auth/login'}
       >
         Вхід
       </Link>
       <Link
         className={clsx(
           'grow border-b-2 pb-3 text-right',
-          pathname === '/register' &&
+          pathname === '/auth/register' &&
             'pointer-events-none border-black text-black',
         )}
-        href={'/register'}
+        href={'/auth/register'}
       >
         Реєстрація
       </Link>

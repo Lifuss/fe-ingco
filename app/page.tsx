@@ -1,20 +1,25 @@
-import { useMemo, useRef, useState } from 'react';
-import AboutBrand from './ui/home/AboutBrand';
-import AboutUs from './ui/home/AboutUs';
-import Features from './ui/home/Features';
-import Hero from './ui/home/Hero';
+'use client';
+import { refreshTokenThunk } from '@/lib/appState/user/operation';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Page() {
-  //TODO: refactor svg blocks to components
-
-  return (
-    <>
-      <main>
-        <Hero />
-        <Features />
-        <AboutBrand />
-        <AboutUs />
-      </main>
-    </>
+  const isAuthenticated = useAppSelector(
+    (state) => state.persistedAuthReducer.isAuthenticated,
   );
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    dispatch(refreshTokenThunk())
+      .unwrap()
+      .then(() => {
+        router.push('/shop');
+      })
+      .catch(() => {
+        router.push('/home');
+      });
+  }, [dispatch]);
+  return <></>;
 }

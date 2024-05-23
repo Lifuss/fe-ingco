@@ -6,14 +6,16 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { logoutThunk } from '@/lib/appState/user/operation';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 const customModalStyles = {
   content: {
     width: '150px',
     left: 'auto',
     top: '70px',
-    height: '130px',
+    height: '170px',
     borderRadius: '8px',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   },
 };
 const customModalQuestionStyles = {
@@ -32,6 +34,7 @@ const User = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const user = useAppSelector((state) => state.persistedAuthReducer.user);
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -49,12 +52,12 @@ const User = () => {
   return (
     <>
       <button
-        className="relative"
+        className={clsx('relative', isOpen && 'text-white')}
         onClick={() => {
           openModal();
         }}
       >
-        {avatarSVG}{' '}
+        {avatarSVG}
         <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-3px] lg:top-0 lg:h-7 lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
       </button>
       <Modal
@@ -68,6 +71,7 @@ const User = () => {
         }}
       >
         <div className="flex flex-col gap-2">
+          <h3 className="text-left text-lg">{user.login}</h3>
           <Link
             href={'/shop/favorites'}
             className="relative pl-5 transition-colors hover:text-blue-500"
