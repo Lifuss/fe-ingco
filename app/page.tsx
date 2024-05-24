@@ -20,6 +20,6 @@ export default function Page() {
       .catch(() => {
         router.push('/home');
       });
-  }, [dispatch]);
+  }, [dispatch, router]);
   return <></>;
 }

@@ -5,9 +5,13 @@ import { Column, useTable } from 'react-table';
 export default function Table({
   columns,
   data,
+  headerColor = 'bg-gray-100',
+  borderColor = 'border-gray-300',
 }: {
   columns: Column<{}>[];
   data: {}[];
+  headerColor?: string;
+  borderColor?: string;
 }) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
@@ -24,7 +28,7 @@ export default function Table({
               <th
                 {...column.getHeaderProps()}
                 key={`th-${columnIndex}`}
-                className="border-[1px] border-gray-300 bg-gray-100 px-3 py-2 font-medium"
+                className={`border-[1px] px-3 py-2 font-medium ${headerColor} ${borderColor}`}
               >
                 {column.render('Header')}
               </th>
@@ -42,7 +46,7 @@ export default function Table({
                   <td
                     {...cell.getCellProps()}
                     key={`td-${cellIndex}`}
-                    className="border-[1px] border-gray-300 px-1 text-center"
+                    className={`border-[1px] ${borderColor} px-1 text-center`}
                   >
                     {cell.render('Cell')}
                   </td>

@@ -12,3 +12,44 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface User {
+  _id: string;
+  email: string;
+  login: string;
+  name: string;
+  role: string;
+  isVerified: boolean;
+  firstName: string;
+  lastName: string;
+  surName: string;
+  phone: string;
+  edrpou: string;
+  orders: string[];
+  cart: {}[];
+  favorites: string[];
+  token: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Order {
+  _id: string;
+  orderCode: string;
+  user: {
+    login: string;
+    userId: string;
+  };
+  products: {
+    product: string;
+    quantity: number;
+    totalPriceByOneProduct: number;
+    _id: string;
+  }[];
+  totalPrice: number;
+  status: string;
+  isPaid: boolean;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}

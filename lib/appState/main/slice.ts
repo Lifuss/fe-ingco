@@ -20,7 +20,7 @@ const initialState = {
     lastUpdate: new Date().toISOString(),
   },
   tableLoading: false,
-  categories: [{ name: '', _id: '' }],
+  categories: [{ name: '', _id: '', count: 0 }],
   page: 1,
   limit: 10,
   totalPages: 0,
@@ -34,6 +34,7 @@ const initialState = {
       countInStock: 0,
       _id: '',
       category: '',
+      priceBulk: '',
     },
   ],
   history: [

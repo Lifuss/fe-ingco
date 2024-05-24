@@ -17,7 +17,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     dispatch(fetchCategoriesThunk());
-  }, []);
+  }, [dispatch]);
 
   const createPageURL = (categoryId: string) => {
     const params = new URLSearchParams(searchParams);

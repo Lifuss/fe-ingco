@@ -62,9 +62,11 @@ export const fetchMainTableDataThunk = createAsyncThunk(
 
 export const fetchCategoriesThunk = createAsyncThunk(
   'categories/fetch',
-  async (_, { rejectWithValue }) => {
+  async (query: string, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.get('/categories');
+      const { data } = await apiIngco.get('/categories', {
+        params: { q: query },
+      });
       return data;
     } catch (error) {
       rejectWithValue(error);

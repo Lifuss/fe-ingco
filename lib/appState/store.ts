@@ -1,3 +1,4 @@
+import { dashboardSlice } from './dashboard/slice';
 import storage from 'redux-persist/lib/storage';
 import { configureStore } from '@reduxjs/toolkit';
 import { thunk } from 'redux-thunk';
@@ -32,6 +33,7 @@ export const store = configureStore({
   reducer: {
     persistedMainReducer,
     persistedAuthReducer,
+    dashboardSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -4,7 +4,7 @@ import { Row } from 'react-table';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
@@ -28,7 +28,6 @@ export type rawData = {
 // This is a table wrapper component that fetches data from the server and displays it in a table.
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
 
@@ -66,7 +65,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     if (!isFavoritePage) {
       dispatch(fetchMainTableDataThunk({ page, query, category }));
     }
-  }, [dispatch, page, query, category]);
+  }, [dispatch, page, query, category, isFavoritePage]);
 
   const [quantities, setQuantities] = useState({});
 
@@ -221,7 +220,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         Header: 'Кошик',
 
         accessor: 'cartCol',
-        Cell: ({ row }: {row:any}) => (
+        Cell: ({ row }: { row: any }) => (
           <button
             className="px-2 py-1 text-white"
             onClick={() => {

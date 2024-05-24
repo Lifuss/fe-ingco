@@ -68,7 +68,7 @@ const listData = [
     ),
   },
   {
-    title: 'Історія замовлень',
+    title: 'Замовлення',
     link: '/dashboard/orders',
     svg: (
       <svg

@@ -7,7 +7,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <main className="grid grid-cols-6">
       <Sidebar />
-      <div className="col-span-5 bg-[#FAFAFF] px-[40px]">{children}</div>
+      <div className="col-span-5 bg-[#FAFAFF] px-[40px] pl-20 pt-10">
+        {children}
+      </div>
     </main>
   );
 };
