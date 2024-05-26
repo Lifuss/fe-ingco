@@ -16,7 +16,7 @@ const Sidebar = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchCategoriesThunk());
+    dispatch(fetchCategoriesThunk(''));
   }, [dispatch]);
 
   const createPageURL = (categoryId: string) => {
@@ -41,8 +41,10 @@ const Sidebar = () => {
       params.set('category', categoryId);
     }
     if (categoryId) {
+      params.set('page', '1');
       return `${pagePathname}?${params.toString()}`;
     } else {
+      params.set('page', '1');
       return `/shop?${params.toString()}`;
     }
   };
