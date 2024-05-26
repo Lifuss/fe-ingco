@@ -47,3 +47,22 @@ export const createProductThunk = createAsyncThunk(
     }
   },
 );
+
+export const updateProductThunk = createAsyncThunk(
+  'updateProduct',
+  async (
+    { formData, productId }: { formData: FormData; productId: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.put(`/products/${productId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);

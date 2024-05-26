@@ -82,7 +82,7 @@ const ProductTable = () => {
     return products.map((product) => ({
       articleCol: product.article,
       nameCol: product.name,
-      categoryCol: product.category,
+      categoryCol: product.category.name,
       priceCol: product.price,
       priceBulkCol: product.priceBulk,
       availabilityCol: product.countInStock,

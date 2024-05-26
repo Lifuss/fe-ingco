@@ -2,7 +2,12 @@ import { Order, User } from '@/lib/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchOrdersThunk, fetchUsersThunk } from './operations';
 
-const initialState: { users: User[]; orders: Order[]; totalPages: number, page: number } = {
+const initialState: {
+  users: User[];
+  orders: Order[];
+  totalPages: number;
+  page: number;
+} = {
   users: [],
   orders: [],
   totalPages: 0,

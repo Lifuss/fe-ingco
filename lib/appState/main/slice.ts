@@ -6,6 +6,7 @@ import {
   fetchMainTableDataThunk,
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
+import { updateProductThunk } from '../dashboard/operations';
 // Define the type for your payload
 interface PayloadCurrencyRates {
   lastUpdate: string;
@@ -64,6 +65,12 @@ const appStateSlice = createSlice({
         state.history = payload.orders;
         state.page = payload.page;
         state.totalPages = payload.totalPages;
+      })
+      .addCase(updateProductThunk.fulfilled, (state, { payload }) => {
+        const index = state.products.findIndex(
+          (product) => product._id === payload._id,
+        );
+        state.products[index] = payload;
       });
   },
 });

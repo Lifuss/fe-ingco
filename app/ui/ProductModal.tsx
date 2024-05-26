@@ -29,8 +29,6 @@ const ModalProduct = ({
   const [productQuantity, setProductQuantity] = useState(0);
   const dispatch = useAppDispatch();
 
-  console.log(product);
-
   return (
     <Modal
       isOpen={isOpen}

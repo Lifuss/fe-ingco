@@ -35,6 +35,7 @@ const User = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
+  if (user.role === 'admin') customModalStyles.content.height = '21%';
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -134,6 +135,59 @@ const User = () => {
             </svg>
             Історія
           </Link>
+          {user.role === 'admin' && (
+            <Link
+              href={'/dashboard'}
+              className="relative pl-5 transition-colors hover:text-blue-500"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute left-0 top-1 stroke-current"
+              >
+                <path
+                  d="M1.33398 1.33331H14.6673V14.6666H1.33398V1.33331Z"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M1.33398 4.66665H14.6673"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M1.33398 8H14.6673"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M4.00065 1.33331V4.66665"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M8.00065 1.33331V4.66665"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12.0007 1.33331V4.66665"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Адмінка
+            </Link>
+          )}
           <button
             onClick={openQuestionModal}
             className="relative pl-5 text-left transition-colors hover:text-blue-500"

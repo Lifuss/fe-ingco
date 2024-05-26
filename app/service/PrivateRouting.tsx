@@ -1,8 +1,9 @@
 'use client';
 
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
+import { clearAuthState } from '@/lib/appState/user/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { redirect, usePathname } from 'next/navigation';
+import { redirect, usePathname, useRouter } from 'next/navigation';
 import { ComponentPropsWithRef, ComponentType, FC, useEffect } from 'react';
 
 interface ComponentProps {
@@ -15,6 +16,7 @@ export default function withAuth(
   const AuthComponent: FC = (props) => {
     const dispatch = useAppDispatch();
     const pathname = usePathname();
+    const router = useRouter();
     const { isAuthenticated, user } = useAppSelector(
       (state) => state.persistedAuthReducer,
     );
@@ -26,7 +28,14 @@ export default function withAuth(
         const token = JSON.parse(savedUser?.token);
 
         if (token) {
-          dispatch(refreshTokenThunk());
+          dispatch(refreshTokenThunk())
+            .unwrap()
+            .catch((err) => {
+              console.log('Error in refreshToken:', err);
+              dispatch(clearAuthState());
+              // TODO add toast notification
+              router.push('/auth/login');
+            });
         } else if (
           pathname !== '/auth/login' &&
           pathname !== '/auth/register'
