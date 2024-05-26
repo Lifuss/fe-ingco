@@ -87,9 +87,9 @@ const User = () => {
             >
               <path
                 d="M8.41398 13.8733C8.18732 13.9533 7.81398 13.9533 7.58732 13.8733C5.65398 13.2133 1.33398 10.46 1.33398 5.79334C1.33398 3.73334 2.99398 2.06667 5.04065 2.06667C6.25398 2.06667 7.32732 2.65334 8.00065 3.56001C8.67398 2.65334 9.75399 2.06667 10.9607 2.06667C13.0073 2.06667 14.6673 3.73334 14.6673 5.79334C14.6673 10.46 10.3473 13.2133 8.41398 13.8733Z"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             Обране
@@ -109,27 +109,27 @@ const User = () => {
             >
               <path
                 d="M14.6673 6.66673V10.0001C14.6673 13.3334 13.334 14.6667 10.0007 14.6667H6.00065C2.66732 14.6667 1.33398 13.3334 1.33398 10.0001V6.00006C1.33398 2.66673 2.66732 1.3334 6.00065 1.3334H9.33398"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M14.6663 6.66673H11.9997C9.99967 6.66673 9.33301 6.00006 9.33301 4.00006V1.3334L14.6663 6.66673Z"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M4.66699 8.66666H8.66699"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M4.66699 11.3333H7.33366"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             Історія
@@ -148,21 +148,21 @@ const User = () => {
             >
               <path
                 d="M5.93359 5.03998C6.14026 2.63998 7.37359 1.65998 10.0736 1.65998H10.1603C13.1403 1.65998 14.3336 2.85331 14.3336 5.83331V10.18C14.3336 13.16 13.1403 14.3533 10.1603 14.3533H10.0736C7.39359 14.3533 6.16026 13.3866 5.94026 11.0266"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M10.0007 7.99995H2.41406"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M3.90033 5.76662L1.66699 7.99996L3.90033 10.2333"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             Вийти

@@ -81,8 +81,8 @@ const listData = [
         <path
           d="M7.00033 8.00004H15.0003M7.00033 13.3334H15.0003M7.00033 18.6667H12.3337M4.33366 1.33337H17.667C19.1398 1.33337 20.3337 2.52728 20.3337 4.00004V21.3334C20.3337 22.8061 19.1398 24 17.667 24H4.33366C2.8609 24 1.66699 22.8061 1.66699 21.3334V4.00004C1.66699 2.52728 2.8609 1.33337 4.33366 1.33337Z"
           stroke="white"
-          stroke-width="2.66667"
-          stroke-linecap="round"
+          strokeWidth="2.66667"
+          strokeLinecap="round"
         />
       </svg>
     ),
@@ -91,7 +91,7 @@ const listData = [
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className=" h-screen bg-[#10091A] pl-[40px] pr-6 pt-10">
+    <aside className=" h-full bg-[#10091A] pl-[40px] pr-6 pt-10">
       <Link href={'/shop'}>
         <svg
           width="91"

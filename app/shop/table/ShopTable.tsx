@@ -13,6 +13,8 @@ import {
 } from '@/lib/appState/user/operation';
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
+import ModalProduct from '@/app/ui/ProductModal';
+import { Product } from '@/lib/types';
 
 export type rawData = {
   article: string;
@@ -30,6 +32,15 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const { products, totalPages } = state.persistedMainReducer;
   let favorites: rawData[] = state.persistedAuthReducer.user.favorites;
@@ -119,8 +130,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessor: 'nameCol',
         Cell: ({ row }: { row: Row }) => (
           <button
-            className="min-w-[300px] text-left"
+            className="min-w-[300px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
+              setSelectedProduct(row.original.product);
+              openModal();
               console.log(row.values.nameCol);
             }}
           >
@@ -273,9 +286,16 @@ const ShopTable = ({ isFavoritePage = false }) => {
           </h2>
         </div>
       ) : (
-        <div className="w-3/4">
-          <Table columns={columns} data={data} />
-        </div>
+        <>
+          <div className="w-3/4">
+            <Table columns={columns} data={data} />
+          </div>
+          <ModalProduct
+            product={selectedProduct}
+            closeModal={closeModal}
+            isOpen={isModalOpen}
+          />
+        </>
       )}
 
       <div className="mx-auto mt-5 w-[43%] pb-10">
