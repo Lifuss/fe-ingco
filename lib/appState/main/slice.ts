@@ -5,6 +5,7 @@ import {
   fetchHistoryThunk,
   fetchMainTableDataThunk,
 } from './operations';
+import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 // Define the type for your payload
 interface PayloadCurrencyRates {
   lastUpdate: string;
@@ -12,43 +13,29 @@ interface PayloadCurrencyRates {
   EUR: number;
   // ... your payload properties here
 }
-
-const initialState = {
+type initialStateType = {
+  categories: Category[];
+  currencyRates: CurrencyRates;
+  tableLoading: boolean;
+  page: number;
+  limit: number;
+  totalPages: number;
+  products: Product[];
+  history: Order[];
+};
+const initialState: initialStateType = {
   currencyRates: {
     USD: 0,
     EUR: 0,
     lastUpdate: new Date().toISOString(),
   },
   tableLoading: false,
-  categories: [{ name: '', _id: '', count: 0 }],
+  categories: [],
   page: 1,
   limit: 10,
   totalPages: 0,
-  products: [
-    {
-      article: '',
-      name: '',
-      image: '',
-      price: '',
-      priceRetailRecommendation: '',
-      countInStock: 0,
-      _id: '',
-      category: '',
-      priceBulk: '',
-    },
-  ],
-  history: [
-    {
-      _id: '',
-      orderCode: '',
-      status: '',
-      products: [],
-      totalPrice: 0,
-      isPaid: false,
-      createdAt: '',
-      declarationNumber: '',
-    },
-  ],
+  products: [],
+  history: [],
 };
 
 const appStateSlice = createSlice({

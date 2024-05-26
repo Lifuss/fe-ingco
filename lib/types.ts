@@ -1,3 +1,9 @@
+export interface Category {
+  _id: string;
+  name: string;
+  count: number;
+}
+
 export interface Product {
   _id: string;
   name: string;
@@ -8,7 +14,7 @@ export interface Product {
   priceRetailRecommendation: number;
   countInStock: number;
   image: string;
-  category: string;
+  category: Category;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,4 +58,10 @@ export interface Order {
   comment: string;
   createdAt: string;
   updatedAt: string;
+  declarationNumber: string;
+}
+export interface CurrencyRates {
+  lastUpdate: string;
+  USD: number;
+  EUR: number;
 }

@@ -15,9 +15,32 @@ export const fetchUsersThunk = createAsyncThunk(
 
 export const fetchOrdersThunk = createAsyncThunk(
   'fetchOrders',
-  async ({ query: q = '', page = 1, limit = 15 }: { query: string, page?: number, limit?:number }, { rejectWithValue }) => {
+  async (
+    {
+      query: q = '',
+      page = 1,
+      limit = 15,
+    }: { query: string; page?: number; limit?: number },
+    { rejectWithValue },
+  ) => {
     try {
       const { data } = await apiIngco.get('/orders/all', { params: { q } });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const createProductThunk = createAsyncThunk(
+  'createProduct',
+  async (formData: FormData, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.post('/products', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return data;
     } catch (error) {
       rejectWithValue(error);
