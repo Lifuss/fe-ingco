@@ -11,7 +11,7 @@ import AuthButtons from './AuthButtons';
 import { usePathname } from 'next/navigation';
 import Search from '../search';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import UserModal from '../UserModal';
+import UserModal from '../modals/UserModal';
 
 export const avatarSVG = (
   <svg

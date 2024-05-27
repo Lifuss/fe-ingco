@@ -1,6 +1,6 @@
 'use client';
 import Modal from 'react-modal';
-import { avatarSVG } from './home/Header';
+import { avatarSVG } from '../home/Header';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';

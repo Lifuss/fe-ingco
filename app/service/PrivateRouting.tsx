@@ -43,7 +43,8 @@ export default function withAuth(
           redirect('/auth/login');
         }
       }
-    }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch]);
 
     if (
       !isAuthenticated &&

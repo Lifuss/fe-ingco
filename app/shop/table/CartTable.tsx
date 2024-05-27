@@ -55,8 +55,8 @@ const CartTable = () => {
       totalCol: `${item.productId.price * item.quantity}$ | ${Math.round(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
       _id: item.productId._id,
     }));
-  }, [selectedCart]);
-  
+  }, [selectedCart, selectedCurrency.USD]);
+
   const columns = useMemo(
     () => [
       {
@@ -188,6 +188,7 @@ const CartTable = () => {
         },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

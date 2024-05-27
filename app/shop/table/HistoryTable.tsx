@@ -26,7 +26,7 @@ const HistoryTable = () => {
 
   useEffect(() => {
     dispatch(fetchHistoryThunk({ page, q: query }));
-  }, [dispatch]);
+  }, [dispatch, page, query]);
 
   const columns = useMemo(
     () => [
@@ -67,7 +67,7 @@ const HistoryTable = () => {
         statusCol: item.status,
         declarationNumberCol: item.declarationNumber,
       })),
-    [history],
+    [history, usdCurrency],
   );
   return history.length ? (
     <>

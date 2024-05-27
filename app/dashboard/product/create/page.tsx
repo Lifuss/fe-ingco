@@ -16,6 +16,7 @@ const Page = () => {
     if (!categories.length) {
       dispatch(fetchCategoriesThunk(''));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -59,7 +60,7 @@ const Page = () => {
             <label>
               Фото
               <input
-                type="file"
+                type="image"
                 name="image"
                 accept="image/*"
                 className="block h-[200px] w-[200px] rounded-md"

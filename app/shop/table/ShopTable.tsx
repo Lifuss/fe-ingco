@@ -13,7 +13,7 @@ import {
 } from '@/lib/appState/user/operation';
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
-import ModalProduct from '@/app/ui/ProductModal';
+import ModalProduct from '@/app/ui/modals/ProductModal';
 import { Product } from '@/lib/types';
 
 export type rawData = {
@@ -43,7 +43,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   };
 
   const { products, totalPages } = state.persistedMainReducer;
-  let favorites: rawData[] = state.persistedAuthReducer.user.favorites;
+  let favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
 
   let page = searchParams.get('page')
@@ -66,7 +66,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }
     if (category) {
       productsData = productsData.filter((product) =>
-        product.category.toLowerCase().includes(category.toLowerCase()),
+        product.category.name.toLowerCase().includes(category.toLowerCase()),
       );
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);
@@ -132,7 +132,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <button
             className="min-w-[300px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
-              setSelectedProduct(row.original.product);
+              setSelectedProduct(row.values.product);
               openModal();
               console.log(row.values.nameCol);
             }}
@@ -270,6 +270,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

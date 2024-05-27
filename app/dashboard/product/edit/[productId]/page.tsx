@@ -1,10 +1,14 @@
 'use client';
-import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
+import {
+  createProductThunk,
+  updateProductThunk,
+} from '@/lib/appState/dashboard/operations';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Product } from '@/lib/types';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FormEvent, use, useEffect } from 'react';
+import { ChangeEvent, FormEvent, use, useEffect, useState } from 'react';
 
 type PageProps = {
   params: {
@@ -15,6 +19,7 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [imageUrl, setImageUrl] = useState('');
   const categories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
@@ -25,24 +30,47 @@ const Page = ({ params }: PageProps) => {
   );
 
   useEffect(() => {
+    if (product) {
+      setImageUrl(`http://localhost:3030${product.image}`);
+    }
+  }, [product]);
+
+  useEffect(() => {
     if (!categories.length) {
       dispatch(fetchCategoriesThunk(''));
     }
     if (!product) {
       router.back();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
+    if (data.image === 'undefined') {
+      formData.delete('image');
+    }
     console.log(data);
     dispatch(updateProductThunk({ formData, productId: params.productId }))
       .unwrap()
       .then(() => {
         router.back();
       });
+  };
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImageUrl(reader.result as string);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -78,8 +106,15 @@ const Page = ({ params }: PageProps) => {
                 type="file"
                 name="image"
                 accept="image/*"
-                className="block h-[200px] w-[200px] rounded-md"
-                required
+                className="block rounded-md"
+                onChange={handleImageChange}
+              />
+              <Image
+                src={imageUrl}
+                className="block rounded-md"
+                alt="product image"
+                width="200"
+                height="200"
               />
             </label>
 
