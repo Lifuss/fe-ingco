@@ -1,9 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  createCategoryThunk,
+  deleteCategoryThunk,
+  deleteProductThunk,
   fetchCategoriesThunk,
   fetchCurrencyRatesThunk,
   fetchHistoryThunk,
   fetchMainTableDataThunk,
+  updateCategoryThunk,
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
@@ -71,6 +75,29 @@ const appStateSlice = createSlice({
           (product) => product._id === payload._id,
         );
         state.products[index] = payload;
+      })
+      .addCase(createCategoryThunk.fulfilled, (state, { payload }) => {
+        console.log('state', state.categories);
+        console.log('payload', payload);
+
+        state.categories.push(payload);
+      })
+      .addCase(deleteProductThunk.fulfilled, (state, { payload }) => {
+        state.products = state.products.filter(
+          (product) => product._id !== payload,
+        );
+      })
+      .addCase(updateCategoryThunk.fulfilled, (state, { payload }) => {
+        console.log('payload', payload);
+        const index = state.categories.findIndex(
+          (category) => category._id === payload._id,
+        );
+        state.categories[index] = { ...state.categories[index], ...payload };
+      })
+      .addCase(deleteCategoryThunk.fulfilled, (state, { payload }) => {
+        state.categories = state.categories.filter(
+          (category) => category._id !== payload,
+        );
       });
   },
 });

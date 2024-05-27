@@ -1,23 +1,51 @@
 'use client';
 
 import Table from '@/app/ui/Table';
-import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
+import {
+  deleteCategoryThunk,
+  fetchCategoriesThunk,
+  updateCategoryThunk,
+} from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Row } from 'react-table';
+import Modal from 'react-modal';
+import { customModalStyles } from '@/app/ui/modals/CategoryModal';
+import CategoryForm from '@/app/ui/CategoryForm';
 
 const CategoryTable = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState('');
+  const [selectedName, setSelectedName] = useState('');
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const productsCategories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
 
+  const openModal = (name: string, id: string) => {
+    setSelectedId(id);
+    setSelectedName(name);
+    setIsOpen(true);
+  };
+  const closeModal = () => setIsOpen(false);
+
   let query = searchParams.get('query') || '';
 
   useEffect(() => {
     dispatch(fetchCategoriesThunk(query));
   }, [dispatch, query]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(
+      updateCategoryThunk({ id: selectedId, name: e.currentTarget[0].value }),
+    )
+      .unwrap()
+      .then(() => closeModal())
+      .catch((err) => alert(err.message));
+  };
 
   const columns = useMemo(
     () => [
@@ -32,8 +60,11 @@ const CategoryTable = () => {
       {
         Header: 'Редагувати',
         accessor: 'editCol',
-        Cell: ({ row }) => (
-          <button className="flex w-full justify-center">
+        Cell: ({ row }: { row: Row }) => (
+          <button
+            className="flex w-full justify-center"
+            onClick={() => openModal(row.values.nameCol, row.values.editCol)}
+          >
             <svg
               width="25"
               height="25"
@@ -51,7 +82,10 @@ const CategoryTable = () => {
         Header: 'Видалити',
         accessor: 'deleteCol',
         Cell: ({ row }) => (
-          <button className="flex w-full justify-center">
+          <button
+            className="flex w-full justify-center"
+            onClick={() => dispatch(deleteCategoryThunk(row.values.deleteCol))}
+          >
             <svg
               className="cursor-pointer fill-[#667085] transition-colors
             hover:fill-black"
@@ -68,6 +102,7 @@ const CategoryTable = () => {
     ],
     [],
   );
+  console.log(productsCategories);
 
   const data = useMemo(
     () =>
@@ -88,6 +123,13 @@ const CategoryTable = () => {
         headerColor="bg-blue-200"
         borderColor="border-gray-400"
       />
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={closeModal}
+        style={customModalStyles}
+      >
+        <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedName} />
+      </Modal>
       {/* <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
       </div> */}

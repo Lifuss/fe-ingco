@@ -94,3 +94,51 @@ export const fetchHistoryThunk = createAsyncThunk(
     }
   },
 );
+
+export const deleteProductThunk = createAsyncThunk(
+  'product/delete',
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      await apiIngco.delete(`/products/${productId}`);
+      return productId;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const createCategoryThunk = createAsyncThunk(
+  'category/create',
+  async (name: string, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.post('/categories', { name });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const updateCategoryThunk = createAsyncThunk(
+  'category/update',
+  async ({ id, name }: { id: string; name: string }, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.put(`/categories/${id}`, { name });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const deleteCategoryThunk = createAsyncThunk(
+  'category/delete',
+  async (categoryId: string, { rejectWithValue }) => {
+    try {
+      await apiIngco.delete(`/categories/${categoryId}`);
+      return categoryId;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
