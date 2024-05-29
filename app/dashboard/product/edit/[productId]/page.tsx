@@ -31,7 +31,9 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     if (product) {
-      setImageUrl(`http://localhost:3030${product.image}`);
+      console.log(product.image);
+
+      setImageUrl(`${process.env.NEXT_PUBLIC_API}${product.image}`);
     }
   }, [product]);
 

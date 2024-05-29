@@ -19,7 +19,7 @@ export type LoginCredentials = {
 
 // TODO: Change this to actual online API
 export const apiIngco = axios.create({
-  baseURL: 'http://localhost:3030/api',
+  baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
 });
 
 const setToken = (token: string) => {

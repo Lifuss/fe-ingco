@@ -39,9 +39,8 @@ const CategoryTable = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(
-      updateCategoryThunk({ id: selectedId, name: e.currentTarget[0].value }),
-    )
+    const inputElement = e.currentTarget[0] as HTMLInputElement;
+    dispatch(updateCategoryThunk({ id: selectedId, name: inputElement.value }))
       .unwrap()
       .then(() => closeModal())
       .catch((err) => alert(err.message));
@@ -100,9 +99,8 @@ const CategoryTable = () => {
         ),
       },
     ],
-    [],
+    [dispatch],
   );
-  console.log(productsCategories);
 
   const data = useMemo(
     () =>

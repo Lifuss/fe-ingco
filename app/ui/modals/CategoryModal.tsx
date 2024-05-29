@@ -24,7 +24,8 @@ export const CategoryModalCreate = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(createCategoryThunk(e.target[0].value as string))
+    const inputElement = e.currentTarget[0] as HTMLInputElement;
+    dispatch(createCategoryThunk(inputElement.value as string))
       .unwrap()
       .then(() => closeModal())
       .catch((err) => alert(err.message));

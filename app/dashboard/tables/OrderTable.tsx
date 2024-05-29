@@ -6,6 +6,7 @@ import { fetchOrdersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { Row } from 'react-table';
 
 const OrderTable = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +47,9 @@ const OrderTable = () => {
       {
         Header: 'Коментар',
         accessor: 'commentCol',
-        Cell: ({ row }) => <div>{row.values.commentCol ? '✅' : '❌'}</div>,
+        Cell: ({ row }: { row: Row }) => (
+          <div>{row.values.commentCol ? '✅' : '❌'}</div>
+        ),
       },
     ],
     [],

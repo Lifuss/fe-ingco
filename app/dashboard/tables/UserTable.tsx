@@ -5,6 +5,7 @@ import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { Row } from 'react-table';
 
 const UserTable = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +39,7 @@ const UserTable = () => {
       {
         Header: 'Статус верифікації',
         accessor: 'verificationStatusCol',
-        Cell: ({ row }) => (
+        Cell: ({ row }:{row: Row}) => (
           <div>{row.values.verificationStatusCol ? '✅' : '❌'}</div>
         ),
       },

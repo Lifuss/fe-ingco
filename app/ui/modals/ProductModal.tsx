@@ -53,7 +53,7 @@ const ModalProduct = ({
           <div className="flex">
             <div className="border-r-2 border-black pr-10">
               <Image
-                src={`http://localhost:3030${product.image}`}
+                src={`${process.env.NEXT_PUBLIC_API}${product.image}`}
                 alt={product.name}
                 className="mb-10 block"
                 width={245}

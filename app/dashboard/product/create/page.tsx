@@ -2,8 +2,9 @@
 import { createProductThunk } from '@/lib/appState/dashboard/operations';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FormEvent, use, useEffect } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 const Page = () => {
   const router = useRouter();
@@ -11,6 +12,7 @@ const Page = () => {
   const categories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
+  const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
     if (!categories.length) {
@@ -29,6 +31,18 @@ const Page = () => {
       .then(() => {
         router.back();
       });
+  };
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImageUrl(reader.result as string);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -60,11 +74,19 @@ const Page = () => {
             <label>
               Фото
               <input
-                type="image"
+                type="file"
                 name="image"
                 accept="image/*"
-                className="block h-[200px] w-[200px] rounded-md"
+                className="block rounded-md"
+                onChange={handleImageChange}
                 required
+              />
+              <Image
+                src={imageUrl}
+                className="block rounded-md"
+                alt="product image"
+                width="200"
+                height="200"
               />
             </label>
 

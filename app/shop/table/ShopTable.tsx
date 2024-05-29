@@ -147,14 +147,14 @@ const ShopTable = ({ isFavoritePage = false }) => {
         Cell: ({ row }) => {
           return (
             <Image
-              src={`http://localhost:3030${row.values.photoCol}`}
+              src={`${process.env.NEXT_PUBLIC_API}${row.values.photoCol}`}
               alt={row.values.nameCol}
               width={40}
               height={40}
               className="mx-auto h-11 w-11"
               onMouseEnter={(e) => {
                 let img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = `<img src="http://localhost:3030${row.values.photoCol}" alt="${row.values.nameCol}" />`;
+                img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.values.photoCol}" alt="${row.values.nameCol}" />`;
                 img.style.top = `${e.clientY + 20}px`;
                 img.style.left = `${e.clientX + 20}px`;
                 img.classList.remove('hidden');
