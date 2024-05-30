@@ -2,13 +2,25 @@
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
+import OrderModal from '@/app/ui/modals/OrderModal';
 import { fetchHistoryThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { Order } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
-import { CellProps, Row } from 'react-table';
+import { useEffect, useMemo, useState } from 'react';
 
 const HistoryTable = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  const openModal = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setSelectedOrder(null);
+    setIsModalOpen(false);
+  };
   const dispatch = useAppDispatch();
   const {
     history,
@@ -33,6 +45,16 @@ const HistoryTable = () => {
       {
         Header: 'Номер замовлення',
         accessor: 'orderCodeCol',
+        Cell: ({ row }: { row: any }) => {
+          return (
+            <button
+              onClick={() => openModal(row.original.order)}
+              className="w-full transition-colors hover:text-blue-500"
+            >
+              {row.values.orderCodeCol}
+            </button>
+          );
+        },
       },
       {
         Header: 'Дата',
@@ -66,6 +88,7 @@ const HistoryTable = () => {
         totalPriceCol: item.totalPrice * usdCurrency,
         statusCol: item.status,
         declarationNumberCol: item.declarationNumber,
+        order: item,
       })),
     [history, usdCurrency],
   );
@@ -75,6 +98,11 @@ const HistoryTable = () => {
       <div className="mx-auto mt-5 w-[43%] pb-10">
         <Pagination totalPages={totalPages} />
       </div>
+      <OrderModal
+        order={selectedOrder as Order}
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+      />
     </>
   ) : (
     <h2 className="text-center text-3xl">

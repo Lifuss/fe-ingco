@@ -42,6 +42,7 @@ export const CategoryModalCreate = () => {
         isOpen={isOpen}
         onRequestClose={closeModal}
         style={customModalStyles}
+        ariaHideApp={false}
       >
         <CategoryForm handleSubmit={handleSubmit} />
       </Modal>

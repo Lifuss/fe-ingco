@@ -6,13 +6,13 @@ import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 // import { Row } from 'react-table';
-import { Column, CellProps } from 'react-table';
 import {
   addProductToCartThunk,
   createOrderThunk,
   deleteProductFromCartThunk,
 } from '@/lib/appState/user/operation';
 import Modal from 'react-modal';
+import ModalProduct from '@/app/ui/modals/ProductModal';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -29,19 +29,32 @@ const customModalStyles = {
 
 const CartTable = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
+
   const selectedCart: CartData = useAppSelector(
     (state) => state.persistedAuthReducer.user.cart,
   );
   const selectedCurrency = useAppSelector(
     (state) => state.persistedMainReducer.currencyRates,
   );
+
   const handleQuantityChange = (id: string, operation: string) => {
     if (operation === 'increment') {
       dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
     } else {
       dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
     }
+  };
+
+  const openProductModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const closeProductModal = () => {
+    setIsModalOpen(false);
   };
 
   const data = useMemo(() => {
@@ -54,6 +67,7 @@ const CartTable = () => {
       quantityCol: item.quantity,
       totalCol: `${item.productId.price * item.quantity}$ | ${Math.round(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
       _id: item.productId._id,
+      product: item.productId,
     }));
   }, [selectedCart, selectedCurrency.USD]);
 
@@ -69,9 +83,9 @@ const CartTable = () => {
         Cell: ({ row }: any) => {
           return (
             <button
-              className="min-w-[300px] text-left"
+              className="min-w-[150px] text-left transition-colors hover:text-blue-500"
               onClick={() => {
-                console.log(row.values.nameCol);
+                openProductModal(row.original.product);
               }}
             >
               {row.values.nameCol}
@@ -293,6 +307,11 @@ const CartTable = () => {
           </button>
         </form>
       </Modal>
+      <ModalProduct
+        product={selectedProduct}
+        closeModal={closeProductModal}
+        isOpen={isModalOpen}
+      />
     </div>
   ) : (
     <div className="text-center">

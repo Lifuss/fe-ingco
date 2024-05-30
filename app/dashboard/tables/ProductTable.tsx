@@ -79,7 +79,6 @@ const ProductTable = () => {
             </Link>
             <button
               onClick={() => {
-                console.log('clicked delete', row.values.editCol);
                 dispatch(deleteProductThunk(row.values.editCol));
               }}
             >

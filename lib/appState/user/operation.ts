@@ -17,7 +17,6 @@ export type LoginCredentials = {
   password: string;
 };
 
-// TODO: Change this to actual online API
 export const apiIngco = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
 });

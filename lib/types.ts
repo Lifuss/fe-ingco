@@ -47,7 +47,10 @@ export interface Order {
     userId: string;
   };
   products: {
-    product: string;
+    product: {
+      _id: string;
+      name: string;
+    };
     quantity: number;
     totalPriceByOneProduct: number;
     _id: string;
