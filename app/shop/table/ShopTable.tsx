@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Row } from 'react-table';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -15,6 +14,7 @@ import clsx from 'clsx';
 import Table from '@/app/ui/Table';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { Product } from '@/lib/types';
+import { toast } from 'react-toastify';
 
 export type rawData = {
   article: string;
@@ -128,13 +128,12 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {
         Header: 'Назва',
         accessor: 'nameCol',
-        Cell: ({ row }: { row: Row }) => (
+        Cell: ({ row }: { row: any }) => (
           <button
-            className="min-w-[300px] text-left transition-colors hover:text-blue-500"
+            className="min-w-[150px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
-              setSelectedProduct(row.values.product);
+              setSelectedProduct(row.original.product);
               openModal();
-              console.log(row.values.nameCol);
             }}
           >
             {row.values.nameCol}
@@ -247,9 +246,13 @@ const ShopTable = ({ isFavoritePage = false }) => {
                     productId: id,
                     quantity: quantitiesRef.current[id],
                   }),
-                );
+                )
+                  .unwrap()
+                  .then(() => {
+                    toast.success(`${row.values.nameCol} додано в корзину`);
+                  });
               } else {
-                alert('Введіть кількість товару');
+                toast.warning('Введіть кількість товару');
               }
               const inputElement = document.querySelector(
                 `input[name="${id}"]`,

@@ -25,7 +25,7 @@ const Page = () => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
+
     dispatch(createProductThunk(formData))
       .unwrap()
       .then(() => {
@@ -61,23 +61,24 @@ const Page = () => {
         className="flex flex-col items-center text-lg"
         onSubmit={handleSubmit}
       >
-        <label htmlFor="name">Найменування</label>
-        <input
-          name="name"
-          required
-          id="name"
-          placeholder="Найменування"
-          className="mb-10 w-[400px] rounded-lg border-none bg-gray-300 p-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-        />
-        <div className="flex gap-8">
+        <label>
+          Найменування
+          <input
+            name="name"
+            required
+            placeholder="Найменування"
+            className="mb-10 block w-[400px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          />
+        </label>
+        <div className="flex gap-20">
           <div className="flex flex-col gap-2">
-            <label>
+            <label className="mb-4">
               Фото
               <input
                 type="file"
                 name="image"
                 accept="image/*"
-                className="block rounded-md"
+                className="block w-[150px] rounded-md p-2"
                 onChange={handleImageChange}
                 required
               />
@@ -96,7 +97,7 @@ const Page = () => {
                 name="description"
                 placeholder="Опис товару"
                 required
-                className="block rounded-md"
+                className="block min-h-[150px] rounded-lg p-2 focus:bg-blue-100"
               />
             </label>
           </div>
@@ -107,13 +108,13 @@ const Page = () => {
                 type="text"
                 name="article"
                 placeholder="Артикль"
-                className="block rounded-md"
+                className="block rounded-lg focus:bg-blue-100"
               />
             </label>
 
             <label>
               Категорія
-              <select name="category" className="rounded-mb block">
+              <select name="category" className="block rounded-lg">
                 {categories?.map((category) => (
                   <option key={category._id} value={category._id}>
                     {category.name}
@@ -128,7 +129,7 @@ const Page = () => {
                 type="number"
                 name="price"
                 placeholder="Ціна $"
-                className="rounded-mb block"
+                className="block rounded-lg focus:bg-blue-100"
                 required
               />
             </label>
@@ -138,7 +139,7 @@ const Page = () => {
               <input
                 type="number"
                 name="priceBulk"
-                className="rounded-mb block"
+                className="block rounded-lg focus:bg-blue-100"
                 placeholder="Ціна опт. $"
                 required
               />
@@ -149,7 +150,7 @@ const Page = () => {
                 type="number"
                 name="priceRetailRecommendation"
                 placeholder="РРЦ грн"
-                className="rounded-mb block"
+                className="block rounded-lg focus:bg-blue-100"
                 required
               />
             </label>
@@ -158,7 +159,7 @@ const Page = () => {
               <input
                 type="number"
                 name="countInStock"
-                className="rounded-mb block"
+                className="block rounded-lg focus:bg-blue-100"
                 required
                 placeholder="Кількість"
               />

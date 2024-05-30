@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import { registerThunk } from '@/lib/appState/user/operation';
+import { toast } from 'react-toastify';
 
 export default function RegisterForm() {
   const { isAuthenticated } = useAppSelector(
@@ -37,13 +38,17 @@ export default function RegisterForm() {
       .unwrap()
       .then(() => {
         alert(
-          'Після реєстрації менеджер обробить інформацію і  вам на пошту прийде лист з підтвердженням',
+          'Дякую за довіру\nПісля реєстрації менеджер обробить інформацію протягом 1 робочого дня і вам на пошту прийде лист з іформацією та паролем для входу в акаунт',
+        );
+        toast.info(
+          'Після реєстрації менеджер обробить інформацію протягом 1 робочого дня і вам на пошту прийде лист з іформацією та паролем для входу в акаунт',
         );
         router.push('/shop');
       })
       .catch((error) => {
         // TODO: пропрацювати помилки авторизації та вивести їх на екран
         console.error('Error in login:', error);
+        toast.error('Помилка авторизації');
       });
   };
 

@@ -5,6 +5,7 @@ import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { useState } from 'react';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 const customModalStyles = {
   content: {
@@ -34,6 +35,7 @@ const ModalProduct = ({
       isOpen={isOpen}
       onRequestClose={closeModal}
       style={customModalStyles}
+      ariaHideApp={false}
     >
       {product && (
         <div className="relative text-lg">
@@ -92,8 +94,7 @@ const ModalProduct = ({
                           }),
                         );
                       } else {
-                        // TODO add toast
-                        alert('Кількість товару не може бути менше 1');
+                        toast.error('Кількість товару не може бути менше 1');
                       }
                     }}
                   >
@@ -110,7 +111,7 @@ const ModalProduct = ({
                 </div>
               </div>
             </div>
-            <div className="pl-4">
+            <div className="min-w-[200px] pl-4">
               <p>
                 <span className="font-medium">Категорія:</span>{' '}
                 {product.category.name}

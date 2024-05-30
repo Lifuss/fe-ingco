@@ -5,6 +5,7 @@ import { clearAuthState } from '@/lib/appState/user/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, usePathname, useRouter } from 'next/navigation';
 import { ComponentPropsWithRef, ComponentType, FC, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 interface ComponentProps {
   [key: string]: any;
@@ -31,9 +32,8 @@ export default function withAuth(
           dispatch(refreshTokenThunk())
             .unwrap()
             .catch((err) => {
-              console.log('Error in refreshToken:', err);
               dispatch(clearAuthState());
-              // TODO add toast notification
+              toast.error('Сесія закінчилася. Будь ласка, увійдіть знову.');
               router.push('/auth/login');
             });
         } else if (
@@ -59,8 +59,9 @@ export default function withAuth(
       pathname !== '/auth/login' &&
       pathname !== '/auth/register'
     ) {
-      // TODO: add toast notification
-      console.log('need to verify email');
+      toast.info(
+        'Ваш статус верифікації, ще не підтверджений менеджер працює над цим.',
+      );
       redirect('/');
     }
 

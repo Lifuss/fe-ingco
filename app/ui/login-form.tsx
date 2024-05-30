@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import withAuth from '../service/PrivateRouting';
+import { toast } from 'react-toastify';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
@@ -30,10 +31,12 @@ function LoginForm() {
       .unwrap()
       .then(() => {
         router.push('/shop');
+        toast.success('💸Вітаємо в найкращому магазині ingco!💸');
       })
       .catch((error) => {
         // TODO: пропрацювати помилки авторизації та вивести їх на екран
         console.error('Error in login:', error);
+        toast.error('Помилка авторизації');
       });
   };
 

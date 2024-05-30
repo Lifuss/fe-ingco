@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { logoutThunk } from '@/lib/appState/user/operation';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { toast } from 'react-toastify';
 
 const customModalStyles = {
   content: {
@@ -46,6 +47,7 @@ const User = () => {
     dispatch(logoutThunk())
       .unwrap()
       .then(() => {
+        toast.success('Ви успішно вийшли з профілю 😭');
         router.push('/');
       });
   };
@@ -64,6 +66,7 @@ const User = () => {
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
+        ariaHideApp={false}
         style={{
           ...customModalStyles,
           overlay: {
