@@ -128,6 +128,7 @@ const Page = () => {
               <input
                 type="number"
                 name="price"
+                step="0.001"
                 placeholder="Ціна $"
                 className="block rounded-lg focus:bg-blue-100"
                 required
@@ -139,6 +140,7 @@ const Page = () => {
               <input
                 type="number"
                 name="priceBulk"
+                step="0.001"
                 className="block rounded-lg focus:bg-blue-100"
                 placeholder="Ціна опт. $"
                 required
@@ -150,6 +152,7 @@ const Page = () => {
                 type="number"
                 name="priceRetailRecommendation"
                 placeholder="РРЦ грн"
+                step="0.1"
                 className="block rounded-lg focus:bg-blue-100"
                 required
               />

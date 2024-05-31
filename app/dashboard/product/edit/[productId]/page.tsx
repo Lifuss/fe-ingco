@@ -159,6 +159,7 @@ const Page = ({ params }: PageProps) => {
               Ціна
               <input
                 type="number"
+                step="0.001"
                 defaultValue={product?.price}
                 name="price"
                 placeholder="Ціна $"
@@ -172,6 +173,7 @@ const Page = ({ params }: PageProps) => {
               <input
                 type="number"
                 defaultValue={product?.priceBulk}
+                step="0.001"
                 name="priceBulk"
                 className="block rounded-lg focus:bg-blue-100"
                 placeholder="Ціна опт. $"
@@ -185,6 +187,7 @@ const Page = ({ params }: PageProps) => {
                 defaultValue={product?.priceRetailRecommendation}
                 name="priceRetailRecommendation"
                 placeholder="РРЦ грн"
+                step="0.1"
                 className="block rounded-lg focus:bg-blue-100"
                 required
               />
