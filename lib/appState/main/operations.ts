@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
+import { toast } from 'react-toastify';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -138,6 +139,9 @@ export const deleteCategoryThunk = createAsyncThunk(
       await apiIngco.delete(`/categories/${categoryId}`);
       return categoryId;
     } catch (error) {
+      toast.error(
+        'В категорії існують привя`зані товари, видаліть їх, або змініть категорію',
+      );
       rejectWithValue(error);
     }
   },

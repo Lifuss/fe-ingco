@@ -34,6 +34,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const state = useAppSelector((state) => state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantities, setQuantities] = useState({});
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -78,30 +79,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }
   }, [dispatch, page, query, category, isFavoritePage]);
 
-  const [quantities, setQuantities] = useState({});
-
-  // ref to store quantities
-  const quantitiesRef = useRef<Record<string, number>>({});
-  const handleQuantityChange = (id: string, value: string) => {
-    setQuantities((prev) => {
-      const updated = { ...prev, [id]: value };
-      quantitiesRef.current = updated; // update ref
-      return updated; // update state
-    });
-  };
-
   function handleFavoriteClick(id: string) {
-    const element = document.querySelector(
-      `button[data-favorite="${id}"]`,
-    ) as HTMLButtonElement;
     if (favoritesList.includes(id)) {
       dispatch(deleteFavoriteProductThunk(id));
-      element.classList.remove('fill-orange-500');
-      element.classList.add('fill-white');
     } else {
       dispatch(addFavoriteProductThunk(id));
-      element.classList.remove('fill-white');
-      element.classList.add('fill-orange-500');
     }
   }
 
@@ -118,6 +100,36 @@ const ShopTable = ({ isFavoritePage = false }) => {
       product,
     }));
   }, [productsData]);
+
+  // ref to store quantities
+  const quantitiesRef = useRef<Record<string, number>>({});
+  const handleQuantityChange = (id: string, value: string) => {
+    console.log(id, value);
+
+    setQuantities((prev) => {
+      const updated = { ...prev, [id]: value };
+      quantitiesRef.current = updated; // update ref
+      return updated; // update state
+    });
+  };
+
+  const handleCartClick = (id: string, productName: string) => {
+    if (quantitiesRef.current[id] > 0) {
+      dispatch(
+        addProductToCartThunk({
+          productId: id,
+          quantity: quantitiesRef.current[id],
+        }),
+      )
+        .unwrap()
+        .then(() => {
+          toast.success(`${productName} додано в кошик`);
+        });
+      quantitiesRef.current[id] = 0;
+    } else {
+      toast.warning('Введіть кількість товару');
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -176,10 +188,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
               null,
               (row.original as { _id: string })._id,
             )}
-            data-favorite={(row.original as { _id: string })._id}
+            data-favorite={row.original._id}
             className={clsx(
               'px-2 py-1 text-white',
-              favoritesList.includes((row.original as { _id: string })._id)
+              favoritesList.includes(row.original._id)
                 ? ' fill-orange-500'
                 : 'fill-white stroke-black',
             )}
@@ -217,13 +229,23 @@ const ShopTable = ({ isFavoritePage = false }) => {
             name={(row.original as { _id: string })._id}
             type="number"
             className="h-8 w-[70px] rounded-md p-1 text-center"
-            onChange={(e) => {
+            onBlur={(e) => {
               handleQuantityChange(
                 (row.original as { _id: string })._id,
                 e.target.value,
               );
             }}
-            defaultValue={row.values.quantityCol}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const input = e.target as HTMLInputElement;
+                handleQuantityChange(
+                  (row.original as { _id: string })._id,
+                  input.value,
+                );
+                handleCartClick(row.original._id, row.values.nameCol);
+              }
+            }}
+            defaultValue={quantitiesRef.current[row.original._id] || 0}
             placeholder="0"
           />
         ),
@@ -235,30 +257,9 @@ const ShopTable = ({ isFavoritePage = false }) => {
         Cell: ({ row }: { row: any }) => (
           <button
             className="px-2 py-1 text-white"
-            onClick={() => {
-              const id = (row.original as { _id: string })._id;
-              console.log(
-                `Product ID: ${id}, Quantity: ${quantitiesRef.current[id]} product: ${(row.original as { product: { article: string } }).product.article}`,
-              );
-              if (quantitiesRef.current[row.original._id] > 0) {
-                dispatch(
-                  addProductToCartThunk({
-                    productId: id,
-                    quantity: quantitiesRef.current[id],
-                  }),
-                )
-                  .unwrap()
-                  .then(() => {
-                    toast.success(`${row.values.nameCol} додано в корзину`);
-                  });
-              } else {
-                toast.warning('Введіть кількість товару');
-              }
-              const inputElement = document.querySelector(
-                `input[name="${id}"]`,
-              ) as HTMLInputElement;
-              inputElement.value = '';
-            }}
+            onClick={() =>
+              handleCartClick(row.original._id, row.values.nameCol)
+            }
           >
             <svg
               width="36"
@@ -274,7 +275,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [favoritesList],
   );
 
   const totalPage = isFavoritePage

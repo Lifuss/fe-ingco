@@ -5,15 +5,29 @@ import Table from '@/app/ui/Table';
 import { fetchOrdersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
+import Modal from 'react-modal';
+import { customModalStyles } from '@/app/ui/modals/CategoryModal';
+import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 
 const OrderTable = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOrderCode, setSelectedOrderCode] = useState('');
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const { orders, totalPages } = useAppSelector(
     (state) => state.dashboardSlice,
   );
+  const usdRate = useAppSelector(
+    (state) => state.persistedMainReducer.currencyRates.USD,
+  );
+
+  const openModal = (id: string) => {
+    setSelectedOrderCode(id);
+    setIsOpen(true);
+  };
+  const closeModal = () => setIsOpen(false);
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -25,6 +39,10 @@ const OrderTable = () => {
   useEffect(() => {
     dispatch(fetchOrdersThunk({ page, query, limit: 20 }));
   }, [dispatch, page, query]);
+
+  const handleRowClick = (numberCol: string) => {
+    openModal(numberCol);
+  };
 
   const columns = useMemo(
     () => [
@@ -51,6 +69,10 @@ const OrderTable = () => {
           <div>{row.values.commentCol ? '✅' : '❌'}</div>
         ),
       },
+      {
+        Header: 'Сума зам. грн',
+        accessor: 'totalPrice',
+      },
     ],
     [],
   );
@@ -58,12 +80,13 @@ const OrderTable = () => {
   const data = useMemo(() => {
     return orders.map((order) => ({
       numberCol: order.orderCode,
-      dateCol: order.createdAt,
+      dateCol: new Date(order.createdAt).toLocaleDateString(),
       loginCol: order.user.login,
       statusCol: order.status,
       commentCol: order.comment,
+      totalPrice: order.totalPrice * usdRate,
     }));
-  }, [orders]);
+  }, [orders, usdRate]);
 
   return (
     <div>
@@ -72,10 +95,17 @@ const OrderTable = () => {
         data={data}
         headerColor="bg-blue-200"
         borderColor="border-gray-400"
+        rowClickable={true}
+        rowFunction={handleRowClick}
       />
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
       </div>
+      <AdminOrderModal
+        closeModal={closeModal}
+        isOpen={isOpen}
+        orderCode={selectedOrderCode}
+      />
     </div>
   );
 };

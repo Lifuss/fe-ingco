@@ -77,9 +77,6 @@ const appStateSlice = createSlice({
         state.products[index] = payload;
       })
       .addCase(createCategoryThunk.fulfilled, (state, { payload }) => {
-        console.log('state', state.categories);
-        console.log('payload', payload);
-
         state.categories.push(payload);
       })
       .addCase(deleteProductThunk.fulfilled, (state, { payload }) => {
@@ -88,7 +85,6 @@ const appStateSlice = createSlice({
         );
       })
       .addCase(updateCategoryThunk.fulfilled, (state, { payload }) => {
-        console.log('payload', payload);
         const index = state.categories.findIndex(
           (category) => category._id === payload._id,
         );

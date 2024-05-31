@@ -11,8 +11,6 @@ const OrderModal = ({
   isOpen: boolean;
   closeModal: () => void;
 }) => {
-  console.log('order', order?.products[0]);
-
   return (
     <Modal
       ariaHideApp={false}
@@ -30,10 +28,12 @@ const OrderModal = ({
           </p>
           <p>Коментар: {order.comment || '🗿'}</p>
           <p>Товари:</p>
-          <ul className="max-h-[200px] overflow-auto border-2 border-blue-300 p-2">
+          <ul className="max-h-[200px] overflow-auto border-2 border-blue-200 p-2">
             {order.products.map((product) => (
               <li key={product._id}>
-                {product.product.name} - {product.quantity} шт.
+                {product.product?.name ||
+                  'Продукт застарів та видалений з бази'}
+                - {product.quantity} шт.
               </li>
             ))}
           </ul>

@@ -24,7 +24,9 @@ export const fetchOrdersThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.get('/orders/all', { params: { q } });
+      const { data } = await apiIngco.get('/orders/all', {
+        params: { q, page, limit },
+      });
       return data;
     } catch (error) {
       rejectWithValue(error);
