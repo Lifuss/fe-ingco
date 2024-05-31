@@ -39,12 +39,30 @@ export interface User {
   updatedAt: string;
 }
 
+export enum OrderStatusEnum {
+  PendingConfirmation = 'очікує підтвердження',
+  PendingPayment = 'очікує оплати',
+  BeingCompiled = 'комплектується',
+  Shipped = 'відправлено',
+  OrderCompleted = 'замовлення виконано',
+  OrderCancelled = 'замовлення скасовано',
+}
+
 export interface Order {
   _id: string;
   orderCode: string;
   user: {
     login: string;
-    userId: string;
+    userId: {
+      _id: string;
+      email: string;
+      role: string;
+      firstName: string;
+      lastName: string;
+      surName: string;
+      phone: string;
+      edrpou: string;
+    };
   };
   products: {
     product: {

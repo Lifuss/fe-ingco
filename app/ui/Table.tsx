@@ -1,4 +1,5 @@
 // make reusable table component from react-table
+import clsx from 'clsx';
 import React from 'react';
 import { Column, useTable } from 'react-table';
 
@@ -7,11 +8,15 @@ export default function Table({
   data,
   headerColor = 'bg-gray-100',
   borderColor = 'border-gray-300',
+  rowClickable,
+  rowFunction,
 }: {
   columns: Column<{}>[];
   data: {}[];
   headerColor?: string;
   borderColor?: string;
+  rowClickable?: boolean;
+  rowFunction?: (row: any) => void;
 }) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
@@ -40,7 +45,16 @@ export default function Table({
         {rows.map((row, rowIndex) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} key={`tr-${rowIndex}`}>
+            <tr
+              {...row.getRowProps({
+                onClick: () =>
+                  rowClickable &&
+                  rowFunction &&
+                  rowFunction((row.original as { numberCol: any }).numberCol),
+              } as React.HTMLAttributes<HTMLTableRowElement>)}
+              key={`tr-${rowIndex}`}
+              className={clsx(rowClickable && 'cursor-pointer')}
+            >
               {row.cells.map((cell, cellIndex) => {
                 return (
                   <td
