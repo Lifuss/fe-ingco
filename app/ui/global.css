@@ -59,6 +59,10 @@ li.slick-active > div {
 
 ::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
+}
+body::-webkit-scrollbar {
+  height: 5px;
 }
 
 /* Track */

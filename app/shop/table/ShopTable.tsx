@@ -302,12 +302,15 @@ const ShopTable = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
-          <div className="relative w-3/4">
-            <div className="max-h-[75vh]  overflow-auto">
+          <div className="relative w-full 2xl:w-4/5">
+            <div className="max-h-[75vh] overflow-auto">
               <Table columns={columns} data={data} />
             </div>
             <div className="absolute -bottom-6 right-2">
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
+            </div>
+            <div className="mx-auto mt-5 w-fit pb-10">
+              <Pagination totalPages={totalPage} />
             </div>
           </div>
 
@@ -318,10 +321,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
           />
         </>
       )}
-
-      <div className="mx-auto mt-5 w-[43%] pb-10">
-        <Pagination totalPages={totalPage} />
-      </div>
     </>
   );
 };

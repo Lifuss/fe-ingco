@@ -53,7 +53,7 @@ const Sidebar = () => {
     <aside className="min-w-[200px]">
       <Link
         href={createPageURL('')}
-        className="relative mb-4 block py-1 shadow-md hover:bg-gray-100 hover:text-gray-800"
+        className="relative mb-2 block py-1 shadow-md hover:bg-gray-100 hover:text-gray-800 xl:mb-4"
       >
         <h2 className="text-center text-base font-medium tracking-[0.01em]">
           Каталог товарів
@@ -68,7 +68,7 @@ const Sidebar = () => {
           />
         </svg>
       </Link>
-      <ul className="flex flex-col shadow-md">
+      <ul className="flex justify-between gap-2 shadow-md xl:flex-col">
         {productsCategories?.map((category) => (
           <li
             className={clsx(
