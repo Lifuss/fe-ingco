@@ -67,13 +67,12 @@ const Sidebar = () => {
             fill="#111111"
           />
         </svg>
-        {/* <Bars3Icon className="absolute left-0 top-0 h-6 w-6" /> */}
       </Link>
       <ul className="flex flex-col shadow-md">
         {productsCategories?.map((category) => (
           <li
             className={clsx(
-              'cursor-pointer border-b-2 border-gray-200 py-1 pl-2 text-base tracking-[0.01em] transition-colors hover:bg-gray-100 hover:text-gray-800',
+              'cursor-pointer border-b-2 border-gray-200 px-2 py-1 text-base tracking-[0.01em] transition-colors hover:bg-gray-100 hover:text-gray-800',
               searchParams.get('category') === category._id &&
                 'bg-orange-200 text-gray-800',
             )}

@@ -28,6 +28,7 @@ export default function Table({
           <tr
             {...headerGroup.getHeaderGroupProps()}
             key={`thead-${headerGroupIndex}`}
+            className="sticky -top-1 z-10"
           >
             {headerGroup.headers.map((column, columnIndex) => (
               <th
