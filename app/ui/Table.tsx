@@ -22,7 +22,7 @@ export default function Table({
     useTable({ columns, data });
 
   return (
-    <table {...getTableProps()} className="w-full">
+    <table {...getTableProps()} className="w-full text-sm lg:text-base">
       <thead>
         {headerGroups.map((headerGroup, headerGroupIndex) => (
           <tr
@@ -33,7 +33,7 @@ export default function Table({
               <th
                 {...column.getHeaderProps()}
                 key={`th-${columnIndex}`}
-                className={`border-[1px] px-3 py-2 font-medium ${headerColor} ${borderColor}`}
+                className={`border-[1px] px-1 py-1 font-medium lg:px-3 lg:py-2 ${headerColor} ${borderColor}`}
               >
                 {column.render('Header')}
               </th>
@@ -60,7 +60,7 @@ export default function Table({
                   <td
                     {...cell.getCellProps()}
                     key={`td-${cellIndex}`}
-                    className={`border-[1px] ${borderColor} px-1 text-center`}
+                    className={`border-[1px] ${borderColor} px-[2px] text-center lg:px-1`}
                   >
                     {cell.render('Cell')}
                   </td>

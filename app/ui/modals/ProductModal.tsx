@@ -38,7 +38,7 @@ const ModalProduct = ({
       ariaHideApp={false}
     >
       {product && (
-        <div className="relative text-lg">
+        <div className="relative w-[700px] text-lg">
           <button className="absolute right-0 top-0" onClick={closeModal}>
             <svg
               width="24"
@@ -49,7 +49,7 @@ const ModalProduct = ({
               <path d="M20.616 0L12 8.616L3.384 0L0 3.384L8.616 12L0 20.616L3.384 24L12 15.384L20.616 24L24 20.616L15.384 12L24 3.384L20.616 0Z" />
             </svg>
           </button>
-          <h2 className="mb-5 px-2 text-center text-2xl font-medium">
+          <h2 className="mx-auto mb-5 px-6 text-center text-2xl font-medium">
             {product.name}
           </h2>
           <div className="flex">

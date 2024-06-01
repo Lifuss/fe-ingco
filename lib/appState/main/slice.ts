@@ -27,6 +27,7 @@ type initialStateType = {
   totalPages: number;
   products: Product[];
   history: Order[];
+  total: number;
 };
 const initialState: initialStateType = {
   currencyRates: {
@@ -39,6 +40,7 @@ const initialState: initialStateType = {
   page: 1,
   limit: 10,
   totalPages: 0,
+  total: 0,
   products: [],
   history: [],
 };
@@ -61,6 +63,7 @@ const appStateSlice = createSlice({
         state.page = payload.page;
         state.limit = payload.limit;
         state.totalPages = payload.totalPages;
+        state.total = payload.total;
       })
       .addCase(fetchCategoriesThunk.fulfilled, (state, { payload }) => {
         state.categories = payload;

@@ -43,7 +43,12 @@ const ShopTable = ({ isFavoritePage = false }) => {
     setIsModalOpen(false);
   };
 
-  const { products, totalPages } = state.persistedMainReducer;
+  const {
+    products,
+    total,
+    totalPages,
+    currencyRates: { USD },
+  } = state.persistedMainReducer;
   let favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
 
@@ -97,9 +102,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
       rrcCol: product.priceRetailRecommendation,
       availableCol: product.countInStock > 0 ? 'Так' : 'Ні',
       _id: product._id,
+      priceUahCol: Math.ceil(product.price * USD),
       product,
     }));
-  }, [productsData]);
+  }, [productsData, USD]);
 
   // ref to store quantities
   const quantitiesRef = useRef<Record<string, number>>({});
@@ -214,6 +220,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessor: 'priceCol',
       },
       {
+        Header: 'Ціна(грн)',
+        accessor: 'priceUahCol',
+      },
+      {
         Header: 'РРЦ(грн)',
         accessor: 'rrcCol',
       },
@@ -292,9 +302,15 @@ const ShopTable = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
-          <div className="w-3/4">
-            <Table columns={columns} data={data} />
+          <div className="relative w-3/4">
+            <div className="max-h-[75vh]  overflow-auto">
+              <Table columns={columns} data={data} />
+            </div>
+            <div className="absolute -bottom-6 right-2">
+              {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
+            </div>
           </div>
+
           <ModalProduct
             product={selectedProduct}
             closeModal={closeModal}

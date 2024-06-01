@@ -46,7 +46,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       page,
       query,
       category,
-      limit = 10,
+      limit = 30,
     }: { query: string; page: number; category?: string; limit?: number },
     { rejectWithValue },
   ) => {

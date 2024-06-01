@@ -56,3 +56,24 @@ li.slick-active > div {
   transition: all 0.3s;
 }
 /* End Slider dots styles */
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #a3a3a3;
+  border-radius: 8px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #dfa644d8;
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #da9011;
+}
