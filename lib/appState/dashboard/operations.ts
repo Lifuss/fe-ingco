@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
+import { User } from '@/lib/types';
 
 export const fetchUsersThunk = createAsyncThunk(
   'fetchUsers',
@@ -65,6 +66,33 @@ export const updateProductThunk = createAsyncThunk(
       return data;
     } catch (error) {
       rejectWithValue(error);
+    }
+  },
+);
+
+export const createUserThunk = createAsyncThunk(
+  'createUser',
+  async (
+    credentials: {
+      firstName: string;
+      lastName: string;
+      surName: string;
+      email: string;
+      login: string;
+      password: string;
+      role: 'user' | 'admin';
+      phone: string;
+      edrpou?: string;
+      about?: string;
+      address?: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('/users', credentials);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
     }
   },
 );

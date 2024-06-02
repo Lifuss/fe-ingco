@@ -1,6 +1,11 @@
 import { Order, User } from '@/lib/types';
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchOrdersThunk, fetchUsersThunk } from './operations';
+import {
+  createUserThunk,
+  fetchOrdersThunk,
+  fetchUsersThunk,
+} from './operations';
+import { toast } from 'react-toastify';
 
 const initialState: {
   users: User[];
@@ -26,6 +31,9 @@ const Slice = createSlice({
       .addCase(fetchOrdersThunk.fulfilled, (state, { payload }) => {
         state.orders = payload.orders;
         state.totalPages = payload.totalPages;
+      })
+      .addCase(createUserThunk.fulfilled, (state, { payload }) => {
+        state.users.push(payload);
       });
   },
 });

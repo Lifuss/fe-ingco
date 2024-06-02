@@ -17,7 +17,6 @@ const AdminOrderModal = ({
 }: AdminOrderModalProps) => {
   const orders = useAppSelector((state) => state.dashboardSlice.orders);
   const order = orders.find((order) => order.orderCode === orderCode);
-  console.log(order);
   if (!order) return null;
   const { products, user, totalPrice, status, isPaid } = order;
 

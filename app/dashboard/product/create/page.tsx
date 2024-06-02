@@ -1,4 +1,5 @@
 'use client';
+import ToBackButton from '@/app/ui/ToBackButton';
 import { createProductThunk } from '@/lib/appState/dashboard/operations';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -47,14 +48,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="absolute left-10 top-10">
-        <button
-          onClick={() => router.back()}
-          className="rounded-lg bg-blue-300 p-2 text-lg transition-colors hover:bg-blue-500"
-        >
-          Назад
-        </button>
-      </div>
+      <ToBackButton />
       <h1 className="mb-6 text-center text-4xl 2xl:mb-20">
         Створення продукту
       </h1>

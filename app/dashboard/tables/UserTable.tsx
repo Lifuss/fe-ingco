@@ -39,7 +39,7 @@ const UserTable = () => {
       {
         Header: 'Статус верифікації',
         accessor: 'verificationStatusCol',
-        Cell: ({ row }:{row: Row}) => (
+        Cell: ({ row }: { row: Row }) => (
           <div>{row.values.verificationStatusCol ? '✅' : '❌'}</div>
         ),
       },
@@ -52,7 +52,7 @@ const UserTable = () => {
       users?.map((user) => ({
         emailCol: user.email,
         loginCol: user.login,
-        activeDateCol: user.updatedAt,
+        activeDateCol: new Date(user.updatedAt).toLocaleDateString(),
         verificationStatusCol: user.isVerified,
       })),
     [users],

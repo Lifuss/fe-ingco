@@ -13,6 +13,7 @@ import {
 } from '@/lib/appState/user/operation';
 import Modal from 'react-modal';
 import ModalProduct from '@/app/ui/modals/ProductModal';
+import { toast } from 'react-toastify';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -231,13 +232,11 @@ const CartTable = () => {
       }, 0),
       comment,
     };
-    console.log('pre dispatch order', order);
     dispatch(createOrderThunk(order))
       .unwrap()
       .then((data) => {
-        console.log(data);
         closeModal();
-        // добавити сюди toastify
+        toast.success('Замовлення успішно оформлено');
       });
   };
 

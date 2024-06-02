@@ -110,8 +110,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
   // ref to store quantities
   const quantitiesRef = useRef<Record<string, number>>({});
   const handleQuantityChange = (id: string, value: string) => {
-    console.log(id, value);
-
     setQuantities((prev) => {
       const updated = { ...prev, [id]: value };
       quantitiesRef.current = updated; // update ref
