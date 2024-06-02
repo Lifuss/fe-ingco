@@ -6,17 +6,17 @@ const Page = () => {
   return (
     <div className="w-4/5">
       <h1 className="mb-10 text-4xl">Управління продуктами</h1>
-      <div className="mb-10 flex justify-between">
+      <div className="mb-10 flex justify-between gap-2 text-sm xl:text-base 2xl:text-lg">
         <Search placeholder="Артикль або найменування" />
-        <div>
+        <div className="flex gap-4">
           <Link
             href={'/dashboard/product/create'}
-            className="mr-4 rounded-xl bg-blue-400 p-4 text-lg text-white transition-colors hover:bg-blue-700"
+            className="rounded-xl bg-blue-400 p-2 text-center text-white transition-colors hover:bg-blue-700 xl:p-4"
           >
             Створити новий продукт
           </Link>
           <button
-            className="cursor-help rounded-xl bg-gray-400 p-4 text-lg text-white"
+            className="cursor-help rounded-xl bg-gray-400 p-2 text-center text-white xl:p-4"
             title="В майбутніх планах"
           >
             Створити опт ексель

@@ -53,7 +53,7 @@ const Hero = () => {
               src={`/homeSlider/sliderImg${slide}.png`}
               width={450}
               height={250}
-              alt="test"
+              alt="Презентаційні інструменти INGCO"
               className="mx-auto mb-4 md:mb-2"
             />
           ))}

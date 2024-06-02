@@ -82,7 +82,9 @@ const Page = ({ params }: PageProps) => {
           Назад
         </button>
       </div>
-      <h1 className="mb-20 text-center text-4xl">Створення продукту</h1>
+      <h1 className="mb-6 text-center text-4xl 2xl:mb-20">
+        Створення продукту
+      </h1>
 
       <form
         className="flex flex-col items-center text-lg"
@@ -95,7 +97,7 @@ const Page = ({ params }: PageProps) => {
           required
           id="name"
           placeholder="Найменування"
-          className="mb-10 block w-[400px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="mb-4 block w-[400px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600 2xl:mb-10"
         />
         <div className="flex gap-20">
           <div className="flex flex-col gap-2">
@@ -111,7 +113,7 @@ const Page = ({ params }: PageProps) => {
               <Image
                 src={imageUrl}
                 className="block rounded-md"
-                alt="product image"
+                alt="Фото товару"
                 width="200"
                 height="200"
               />

@@ -8,7 +8,7 @@ const Footer = () => {
         src={'/logo.png'}
         width={200}
         height={50}
-        alt="Ingco company logo"
+        alt="Лого компанії INGCO"
         className="mb-4 lg:mb-0"
       />
       <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 xl:gap-32 xl:pr-[115px] ">
@@ -67,7 +67,7 @@ const Footer = () => {
                 src={'/socials/viber.svg'}
                 width={32}
                 height={32}
-                alt="viber logo"
+                alt="Лого Viber"
               />
             </Link>
           </div>
@@ -75,11 +75,23 @@ const Footer = () => {
         <li className="lg:order-none">
           <p className="font-medium">Контакти</p>
           <div className="flex flex-col">
-            <a className="text-blue-600" href="tel:+380988392107">
+            <a
+              className="text-blue-600 hover:text-white"
+              href="tel:+380988392107"
+            >
               +380 98-83-92-107
             </a>
-            <a className="text-blue-600" href="tel:+380964123628">
+            <a
+              className="text-blue-600 hover:text-white"
+              href="tel:+380964123628"
+            >
               +380 96-41-23-628
+            </a>
+            <a
+              href="mailto:ingco-service@ukr.net"
+              className="text-blue-600 hover:text-white"
+            >
+              ingco-service@ukr.net
             </a>
           </div>
         </li>

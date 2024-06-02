@@ -7,6 +7,7 @@ import { Product } from '@/lib/types';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 
+
 const customModalStyles = {
   content: {
     top: '50%',

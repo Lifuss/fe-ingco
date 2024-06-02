@@ -49,10 +49,10 @@ const AboutUs = () => {
             <div>
               <p className="font-medium">Email:</p>
               <a
-                href="mailto:example@gmail.com"
+                href="mailto:ingco-service@ukr.net"
                 className="text-blue-400 hover:text-orangeLight"
               >
-                example@gmail.com
+                ingco-service@ukr.net
               </a>
             </div>
           </div>

@@ -51,23 +51,26 @@ const Header = () => {
   // TODO: low prior - зробити меню бургер для мобільної верстки
 
   return (
-    <header className="flex items-center justify-between bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
-      <Link href="/shop" className="h-[31px] lg:h-[52px]">
+    <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
+      <Link
+        href="/shop"
+        className="flex h-[31px] items-center justify-center md:block lg:h-[52px]"
+      >
         <Image
           src={'/logo.png'}
           width={isDesktop ? 198 : 125}
           height={isDesktop ? 52 : 31}
-          alt="Ingco company logo"
+          alt="Лого компанії INGCO"
           className="mb-4 inline-flex lg:mb-0"
         />
       </Link>
-      {pathname === '/' ? (
+      {pathname === '/home' ? (
         <ul className="text-lg md:flex md:gap-6 lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
-            <Link href="/#aboutUs">Про нас</Link>
+            <Link href="/home#aboutUs">Про нас</Link>
           </li>
           <li className="transition-colors ease-out hover:text-white">
-            <Link href="/#aboutBrand">Бренд</Link>
+            <Link href="/home#aboutBrand">Бренд</Link>
           </li>
           <li className="transition-colors ease-out hover:text-white">
             <button
@@ -129,7 +132,7 @@ const Header = () => {
             <>
               <div className="flex gap-10">
                 <CurrencyRate />
-                <div className="transition-colors ease-out hover:text-white">
+                <div className="flex items-center transition-colors ease-out hover:text-white">
                   <button
                     onClick={openModal}
                     className={clsx(

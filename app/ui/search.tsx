@@ -21,12 +21,12 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }, 500);
 
   return (
-    <div className="relative flex w-2/5 flex-shrink-0">
+    <div className="relative flex w-fit flex-shrink-0 xl:w-2/5">
       <label htmlFor="search" className="sr-only">
         Search
       </label>
       <input
-        className="peer block w-full rounded-2xl border border-black bg-transparent py-[13px] pl-10 text-base outline-2 transition-colors placeholder:text-[#717171] focus:border-gray-300 focus:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+        className="peer block w-full rounded-2xl border border-black bg-transparent py-[4px] pl-10 text-base outline-2 transition-colors placeholder:text-[#717171] focus:border-gray-300 focus:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 lg:py-[13px]"
         placeholder={placeholder}
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get('query')?.toString()}

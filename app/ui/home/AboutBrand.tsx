@@ -12,7 +12,7 @@ const AboutBrand = () => {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-5 xl:gap-16">
         <Image
           src={'/brandImg.png'}
-          alt="man and women in building suits present company logo"
+          alt="Чоловік і жінка презентують інструменти INGCO"
           width={489}
           height={364}
           className="mx-auto rounded-lg md:h-[200px] lg:h-[236px] xl:h-auto"

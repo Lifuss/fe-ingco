@@ -1,6 +1,6 @@
 // make reusable table component from react-table
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Column, useTable } from 'react-table';
 
 export default function Table({
@@ -21,14 +21,26 @@ export default function Table({
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
 
+  const tableRef = useRef<HTMLTableElement | null>(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [data]);
+
   return (
-    <table {...getTableProps()} className="w-full text-sm lg:text-base">
+    <table
+      {...getTableProps()}
+      className="w-full text-sm lg:text-base"
+      ref={tableRef}
+    >
       <thead>
         {headerGroups.map((headerGroup, headerGroupIndex) => (
           <tr
             {...headerGroup.getHeaderGroupProps()}
             key={`thead-${headerGroupIndex}`}
-            className="sticky -top-1 z-10"
+            className="sticky -top-1"
           >
             {headerGroup.headers.map((column, columnIndex) => (
               <th
