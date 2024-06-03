@@ -64,7 +64,7 @@ const Header = () => {
           className="mb-4 inline-flex lg:mb-0"
         />
       </Link>
-      {pathname === '/home' ? (
+      {!pathname.includes('/shop') ? (
         <ul className="text-lg md:flex md:gap-6 lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutUs">Про нас</Link>

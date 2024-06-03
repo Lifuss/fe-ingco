@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
-import { User } from '@/lib/types';
+import { Order, User } from '@/lib/types';
 
 export const fetchUsersThunk = createAsyncThunk(
   'fetchUsers',
@@ -93,6 +93,37 @@ export const createUserThunk = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(error);
+    }
+  },
+);
+
+interface NewProduct {
+  _id: string;
+  quantity: number;
+  totalPriceByOneProduct: number;
+  product: string;
+  price: number;
+}
+
+interface UpdateOrder
+  extends Omit<
+    Order,
+    'products' | 'user' | 'orderCode' | 'createdAt' | 'updatedAt'
+  > {
+  products: NewProduct[];
+}
+
+export const updateOrderThunk = createAsyncThunk(
+  'updateOrder',
+  async (
+    { orderId, updateOrder }: { orderId: string; updateOrder: UpdateOrder },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.put(`/orders/${orderId}`, updateOrder);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
     }
   },
 );

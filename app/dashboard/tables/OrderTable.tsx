@@ -10,10 +10,11 @@ import { Row } from 'react-table';
 import Modal from 'react-modal';
 import { customModalStyles } from '@/app/ui/modals/CategoryModal';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
+import { Order } from '@/lib/types';
 
 const OrderTable = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOrderCode, setSelectedOrderCode] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | any>();
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const { orders, totalPages } = useAppSelector(
@@ -24,7 +25,8 @@ const OrderTable = () => {
   );
 
   const openModal = (id: string) => {
-    setSelectedOrderCode(id);
+    const order = orders.find((order) => order.orderCode === id);
+    setSelectedOrder(order);
     setIsOpen(true);
   };
   const closeModal = () => setIsOpen(false);
@@ -84,7 +86,7 @@ const OrderTable = () => {
       loginCol: order.user.login,
       statusCol: order.status,
       commentCol: order.comment,
-      totalPrice: order.totalPrice * usdRate,
+      totalPrice: Math.ceil(order.totalPrice * usdRate),
     }));
   }, [orders, usdRate]);
 
@@ -104,7 +106,7 @@ const OrderTable = () => {
       <AdminOrderModal
         closeModal={closeModal}
         isOpen={isOpen}
-        orderCode={selectedOrderCode}
+        order={selectedOrder}
       />
     </div>
   );

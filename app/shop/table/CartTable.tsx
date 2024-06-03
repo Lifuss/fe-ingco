@@ -66,7 +66,7 @@ const CartTable = () => {
       priceCol: item.productId.price,
       rrcCol: item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
-      totalCol: `${item.productId.price * item.quantity}$ | ${Math.round(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
+      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.round(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
       _id: item.productId._id,
       product: item.productId,
     }));
@@ -104,7 +104,7 @@ const CartTable = () => {
               alt={row.values.nameCol}
               width={40}
               height={40}
-              className="h-11 w-11"
+              className="mx-auto h-11 w-11"
               onMouseEnter={(e) => {
                 let img = document.getElementById('image') as HTMLDivElement;
                 img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.values.photoCol}" alt="${row.values.nameCol}" />`;
@@ -223,13 +223,19 @@ const CartTable = () => {
       products: selectedCart.map((item) => ({
         productId: item.productId._id,
         quantity: item.quantity,
-        price: item.productId.price,
-        totalPriceByOneProduct: item.productId.price * item.quantity,
+        price: Number(item.productId.price.toFixed(2)),
+        totalPriceByOneProduct: Number(
+          (item.productId.price * item.quantity).toFixed(2),
+        ),
       })),
       shippingAddress: 'test',
-      totalPrice: selectedCart.reduce((acc, item) => {
-        return acc + item.productId.price * item.quantity;
-      }, 0),
+      totalPrice: Number(
+        selectedCart
+          .reduce((acc, item) => {
+            return acc + item.productId.price * item.quantity;
+          }, 0)
+          .toFixed(2),
+      ),
       comment,
     };
     dispatch(createOrderThunk(order))
@@ -240,9 +246,11 @@ const CartTable = () => {
       });
   };
 
-  const sum = selectedCart.reduce((acc, item) => {
-    return acc + item.productId.price * item.quantity;
-  }, 0);
+  const sum = selectedCart
+    .reduce((acc, item) => {
+      return acc + item.productId.price * item.quantity;
+    }, 0)
+    .toFixed(2);
 
   return selectedCart.length > 0 ? (
     <div className="">
@@ -250,7 +258,7 @@ const CartTable = () => {
       <div className="ml-auto mt-2 flex w-fit gap-2 border-b-2 text-lg">
         <p>Загальна сума</p>
         <p>
-          {sum}$ | {sum * selectedCurrency.USD}грн
+          {sum}$ | {Math.ceil(+sum * selectedCurrency.USD)}грн
         </p>
       </div>
       <button

@@ -174,7 +174,10 @@ function RegisterButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button className="mt-4 w-full text-2xl" aria-disabled={pending}>
+    <Button
+      className="text-2x mt-4 w-full  bg-orangeLight text-2xl hover:bg-orange-400"
+      aria-disabled={pending}
+    >
       Зареєструватися
     </Button>
   );

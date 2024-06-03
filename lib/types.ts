@@ -70,11 +70,12 @@ export interface Order {
       name: string;
     };
     quantity: number;
+    price: number;
     totalPriceByOneProduct: number;
     _id: string;
   }[];
   totalPrice: number;
-  status: string;
+  status: OrderStatusEnum;
   isPaid: boolean;
   comment: string;
   createdAt: string;

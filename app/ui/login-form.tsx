@@ -83,7 +83,7 @@ function LoginForm() {
           Немає облікового запису?{' '}
           <Link
             className="w-fit text-base underline transition-all duration-200 ease-out hover:text-orangeLight"
-            href={'/register'}
+            href={'/auth/register'}
           >
             Зареєструватися
           </Link>
@@ -99,7 +99,11 @@ function LoginForm() {
 }
 
 function LoginButton() {
-  return <Button className="mt-4 w-full text-2xl">Увійти</Button>;
+  return (
+    <Button className="mt-4 w-full bg-orangeLight text-2xl hover:bg-orange-400">
+      Увійти
+    </Button>
+  );
 }
 
 export default withAuth(LoginForm);
