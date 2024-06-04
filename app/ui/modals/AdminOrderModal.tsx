@@ -8,20 +8,21 @@ import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 
-const modifiedStyles = {
-  ...customModalStyles,
-  content: {
-    ...customModalStyles.content,
-    width: '800px',
-  },
-};
-
 type AdminOrderModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   order: Order;
 };
 
+const modifiedStyles = {
+  ...customModalStyles,
+  content: {
+    ...customModalStyles.content,
+    width: '768px',
+    overflow: 'auto',
+    maxHeight: '95vh',
+  },
+};
 const AdminOrderModal = ({
   isOpen,
   closeModal,
@@ -85,6 +86,22 @@ const AdminOrderModal = ({
       style={modifiedStyles}
       ariaHideApp={false}
     >
+      <div onClick={closeModal} className="absolute right-2 top-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 cursor-pointer"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </div>
       <form onSubmit={handleSubmit} className="text-lg">
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>
         <h3 className="w-full border-t border-gray-400">Клієнт:</h3>

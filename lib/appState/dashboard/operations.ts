@@ -2,39 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
 
-export const fetchUsersThunk = createAsyncThunk(
-  'fetchUsers',
-  async ({ query: q = '' }: { query: string }, { rejectWithValue }) => {
-    try {
-      const { data } = await apiIngco.get('/users', { params: { q } });
-      return data;
-    } catch (error) {
-      rejectWithValue(error);
-    }
-  },
-);
-
-export const fetchOrdersThunk = createAsyncThunk(
-  'fetchOrders',
-  async (
-    {
-      query: q = '',
-      page = 1,
-      limit = 15,
-    }: { query: string; page?: number; limit?: number },
-    { rejectWithValue },
-  ) => {
-    try {
-      const { data } = await apiIngco.get('/orders/all', {
-        params: { q, page, limit },
-      });
-      return data;
-    } catch (error) {
-      rejectWithValue(error);
-    }
-  },
-);
-
+// products thunks
 export const createProductThunk = createAsyncThunk(
   'createProduct',
   async (formData: FormData, { rejectWithValue }) => {
@@ -70,6 +38,22 @@ export const updateProductThunk = createAsyncThunk(
   },
 );
 
+// users thunks
+export const fetchUsersThunk = createAsyncThunk(
+  'fetchUsers',
+  async (
+    { query: q = '', role = 'user' }: { query: string; role: 'user' | 'admin' },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.get('/users', { params: { q, role } });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
 export const createUserThunk = createAsyncThunk(
   'createUser',
   async (
@@ -97,6 +81,22 @@ export const createUserThunk = createAsyncThunk(
   },
 );
 
+export const updateUserThunk = createAsyncThunk(
+  'updateUser',
+  async (
+    user: Omit<User, 'token' | 'createdAt' | 'updatedAt'>,
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.put(`/users/${user._id}`, user);
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+
 interface NewProduct {
   _id: string;
   quantity: number;
@@ -112,6 +112,28 @@ interface UpdateOrder
   > {
   products: NewProduct[];
 }
+
+// orders thunks
+export const fetchOrdersThunk = createAsyncThunk(
+  'fetchOrders',
+  async (
+    {
+      query: q = '',
+      page = 1,
+      limit = 15,
+    }: { query: string; page?: number; limit?: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.get('/orders/all', {
+        params: { q, page, limit },
+      });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
 
 export const updateOrderThunk = createAsyncThunk(
   'updateOrder',

@@ -1,13 +1,18 @@
 'use client';
 
 import Table from '@/app/ui/Table';
+import AdminUserModal from '@/app/ui/modals/AdminUserModal';
 import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { User } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 
 const UserTable = () => {
+  const [isAdministrator, setIsAdministrator] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | any>();
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const users = useAppSelector((state) => state.dashboardSlice.users);
@@ -17,10 +22,11 @@ const UserTable = () => {
     : 1;
   page = !page || page < 1 ? 1 : page;
   let query = searchParams.get('query') || '';
+  let role: 'admin' | 'user' = isAdministrator ? 'admin' : 'user';
 
   useEffect(() => {
-    dispatch(fetchUsersThunk({ query }));
-  }, [dispatch, query]);
+    dispatch(fetchUsersThunk({ query, role }));
+  }, [dispatch, query, role]);
 
   const columns = useMemo(
     () => [
@@ -58,13 +64,40 @@ const UserTable = () => {
     [users],
   );
 
+  const openModal = (login: string) => {
+    const user = users.find((user) => user.login === login);
+    setSelectedUser(user);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => setIsOpen(false);
+
+  const handleRowClick = (data: { loginCol: string }) => {
+    openModal(data.loginCol);
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAdministrator(e.target.checked);
+  };
+
   return (
     <div>
+      <label className="mb-2 flex w-fit items-center gap-2">
+        Адміністратор
+        <input type="checkbox" name="role" onChange={handleCheckboxChange} />
+      </label>
       <Table
         columns={columns}
         data={data}
         headerColor="bg-blue-200"
         borderColor="border-gray-400"
+        rowClickable={true}
+        rowFunction={handleRowClick}
+      />
+      <AdminUserModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        user={selectedUser}
       />
       {/* <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />

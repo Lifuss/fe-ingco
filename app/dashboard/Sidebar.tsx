@@ -91,7 +91,7 @@ const listData = [
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className=" h-full bg-[#10091A] pl-[40px] pr-6 pt-10">
+    <aside className=" h-full bg-[#10091A] pl-[20px] pr-6 pt-10 2xl:pl-[40px]">
       <Link href={'/shop'}>
         <svg
           width="91"

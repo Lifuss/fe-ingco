@@ -5,6 +5,7 @@ import {
   fetchOrdersThunk,
   fetchUsersThunk,
   updateOrderThunk,
+  updateUserThunk,
 } from './operations';
 import { toast } from 'react-toastify';
 
@@ -42,6 +43,11 @@ const Slice = createSlice({
         );
         state.orders[index] = payload;
         toast.success('Замовлення успішно змінено');
+      })
+      .addCase(updateUserThunk.fulfilled, (state, { payload }) => {
+        const index = state.users.findIndex((user) => user._id === payload._id);
+        state.users[index] = payload;
+        toast.success('Користувач успішно змінений');
       });
   },
 });

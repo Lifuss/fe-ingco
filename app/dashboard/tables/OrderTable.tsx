@@ -7,8 +7,6 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
-import Modal from 'react-modal';
-import { customModalStyles } from '@/app/ui/modals/CategoryModal';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order } from '@/lib/types';
 
@@ -35,15 +33,14 @@ const OrderTable = () => {
     ? parseInt(searchParams.get('page') as string)
     : 1;
   page = !page || page < 1 ? 1 : page;
-
   let query = searchParams.get('query') || '';
 
   useEffect(() => {
     dispatch(fetchOrdersThunk({ page, query, limit: 20 }));
   }, [dispatch, page, query]);
 
-  const handleRowClick = (numberCol: string) => {
-    openModal(numberCol);
+  const handleRowClick = (data: { numberCol: string }) => {
+    openModal(data.numberCol);
   };
 
   const columns = useMemo(

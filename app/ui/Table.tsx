@@ -61,9 +61,7 @@ export default function Table({
             <tr
               {...row.getRowProps({
                 onClick: () =>
-                  rowClickable &&
-                  rowFunction &&
-                  rowFunction((row.original as { numberCol: any }).numberCol),
+                  rowClickable && rowFunction && rowFunction(row.original),
               } as React.HTMLAttributes<HTMLTableRowElement>)}
               key={`tr-${rowIndex}`}
               className={clsx(rowClickable && 'cursor-pointer')}

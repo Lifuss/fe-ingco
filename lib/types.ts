@@ -31,12 +31,16 @@ export interface User {
   surName: string;
   phone: string;
   edrpou: string;
-  orders: string[];
+  orders: [
+    { _id: string; orderCode: string; status: string; totalPrice: number },
+  ];
   cart: {}[];
   favorites: string[];
   token: string;
+  address?: string;
   createdAt: string;
   updatedAt: string;
+  password?: string;
 }
 
 export enum OrderStatusEnum {
