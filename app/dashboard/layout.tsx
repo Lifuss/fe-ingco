@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import withAuth from '../service/PrivateRouting';
 import Sidebar from './Sidebar';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -9,6 +10,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <Sidebar />
       <div className="relative col-span-5 bg-[#FAFAFF] px-[40px] pl-20 pt-10">
         {children}
+        <SpeedInsights />
       </div>
     </main>
   );
