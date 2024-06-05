@@ -290,16 +290,19 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
             <h3 className="w-full text-lg font-medium">Замовлення:</h3>
           </div>
           <ul>
-            <li className="grid grid-cols-3">
+            <li className="grid grid-cols-3 border-b border-gray-200">
               <p className="font-medium">Номер</p>
               <p className="font-medium">Статус</p>
-              <p className="font-medium">Сума</p>
+              <p className="font-medium">Сума $</p>
             </li>
             {orders.map((order) => (
-              <li key={order._id} className="grid grid-cols-3">
-                <p className="w-[150px]">{order.orderCode}</p>
-                <p className="w-[150px]">{order.status}</p>
-                <p className="w-[150px]">{order.totalPrice.toFixed(2)}</p>
+              <li
+                key={order._id}
+                className="grid grid-cols-3 border-b border-gray-200"
+              >
+                <p>{order.orderCode}</p>
+                <p>{order.status}</p>
+                <p>{order.totalPrice.toFixed(2)}</p>
               </li>
             ))}
           </ul>

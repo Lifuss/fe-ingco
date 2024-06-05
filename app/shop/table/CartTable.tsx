@@ -64,9 +64,12 @@ const CartTable = () => {
       nameCol: item.productId.name,
       photoCol: item.productId.image,
       priceCol: item.productId.price,
+      priceUahCol: Math.ceil(
+        item.productId.price * +selectedCurrency.USD.toFixed(2),
+      ),
       rrcCol: item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
-      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.round(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
+      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
       _id: item.productId._id,
       product: item.productId,
     }));
@@ -124,6 +127,10 @@ const CartTable = () => {
       {
         Header: 'Ціна($)',
         accessor: 'priceCol',
+      },
+      {
+        Header: 'Ціна(грн)',
+        accessor: 'priceUahCol',
       },
       {
         Header: 'РРЦ(грн)',

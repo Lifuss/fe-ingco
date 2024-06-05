@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { Row } from 'react-table';
 
 const HistoryTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,11 +70,11 @@ const HistoryTable = () => {
         accessor: 'statusCol',
       },
       {
-        Header: 'Номер декларації',
+        Header: 'Номер декларації НП',
         accessor: 'declarationNumberCol',
-        Cell: ({ row }: any) => {
-          return row.original.declarationNumber
-            ? row.original.declarationNumber
+        Cell: ({ row }: { row: Row }) => {
+          return row.values.declarationNumberCol
+            ? row.values.declarationNumberCol
             : '—';
         },
       },
@@ -85,7 +86,7 @@ const HistoryTable = () => {
       history.map((item) => ({
         orderCodeCol: item.orderCode,
         createdAtCol: new Date(item.createdAt).toLocaleDateString(),
-        totalPriceCol: item.totalPrice * usdCurrency,
+        totalPriceCol: Math.ceil(item.totalPrice * usdCurrency),
         statusCol: item.status,
         declarationNumberCol: item.declarationNumber,
         order: item,
