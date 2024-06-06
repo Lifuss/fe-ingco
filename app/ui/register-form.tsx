@@ -68,6 +68,7 @@ export default function RegisterForm() {
                 name="lastName"
                 placeholder="Прізвище"
                 required
+                pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
               />
             </div>
             <div>
@@ -81,6 +82,7 @@ export default function RegisterForm() {
                 name="firstName"
                 placeholder="Ім'я"
                 required
+                pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
               />
             </div>
           </div>
@@ -95,6 +97,7 @@ export default function RegisterForm() {
               name="surName"
               placeholder="По батькові"
               required
+              pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
             />
           </div>
           <div className="flex gap-5">
@@ -107,8 +110,9 @@ export default function RegisterForm() {
                 id="phone"
                 type="phone"
                 name="phone"
-                placeholder="+38"
+                placeholder="067..."
                 required
+                pattern="\[0-9]{10}"
               />
             </div>
             <div>
@@ -122,6 +126,7 @@ export default function RegisterForm() {
                 name="edrpou"
                 placeholder="ЄДРПОУ"
                 required
+                pattern="\[0-9]{8}"
               />
             </div>
           </div>
@@ -146,7 +151,7 @@ export default function RegisterForm() {
               className="peer block max-h-56 w-full rounded-2xl border border-[#1d1c1c] pb-[20px] pl-4 pt-[10px] text-base outline-2 placeholder:text-gray-500"
               name="about"
               id="about"
-              placeholder="Необов'язкове поле про свою діяльність та цілі"
+              placeholder="Необов'язкове поле про свою діяльність та цілі (якщо номер тел. не український, то вкажіть країну)"
             />
           </div>
         </div>
@@ -155,7 +160,7 @@ export default function RegisterForm() {
           Вже зареєстровані та верифіковані?{' '}
           <Link
             className="w-fit text-base underline transition-all duration-200 ease-out hover:text-orangeLight"
-            href={'/register'}
+            href={'/auth/login'}
           >
             Ввійти в акаунт
           </Link>
