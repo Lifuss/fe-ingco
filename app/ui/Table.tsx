@@ -66,10 +66,12 @@ export default function Table({
               key={`tr-${rowIndex}`}
               className={clsx(
                 rowClickable && 'cursor-pointer',
+                // @ts-ignore
                 row.original?.availableCol &&
                   'pointer-events-none cursor-context-menu opacity-40',
               )}
               title={
+                // @ts-ignore
                 row.original?.availableCol
                   ? 'Немає на складі в Україні'
                   : undefined
