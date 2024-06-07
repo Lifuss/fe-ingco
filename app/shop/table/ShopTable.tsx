@@ -100,7 +100,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       favoriteCol: true,
       priceCol: product.price,
       rrcCol: product.priceRetailRecommendation,
-      availableCol: product.countInStock > 0 ? 'Так' : 'Ні',
+      availableCol: product.countInStock <= 0,
       _id: product._id,
       priceUahCol: Math.ceil(product.price * USD),
       product,
@@ -146,7 +146,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessor: 'nameCol',
         Cell: ({ row }: { row: any }) => (
           <button
-            className="min-w-[150px] text-left transition-colors hover:text-blue-500"
+            className="min-w-[250px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
               setSelectedProduct(row.original.product);
               openModal();
@@ -226,11 +226,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessor: 'rrcCol',
       },
       {
-        Header: 'В наявності',
-        accessor: 'availableCol',
-      },
-      {
-        Header: 'Кількість',
+        Header: 'К-сть',
         accessor: 'quantityCol',
         Cell: ({ row }) => (
           <input
@@ -304,7 +300,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
             <div className="max-h-[75vh] overflow-auto">
               <Table columns={columns} data={data} />
             </div>
-            <div className="absolute -bottom-6 right-2">
+            <div className="absolute bottom-14 right-2">
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
             </div>
             <div className="mx-auto mt-5 w-fit pb-10">

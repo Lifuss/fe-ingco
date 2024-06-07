@@ -26,9 +26,9 @@ const OrderModal = ({
           <p>
             Дата створення: {new Date(order.createdAt).toLocaleDateString()}
           </p>
-          <p>Коментар: {order.comment || '🗿'}</p>
+          <p>Коментар: {order.comment || '- 🧑‍🎤'}</p>
           <p>Товари:</p>
-          <ul className="max-h-[200px] overflow-auto border-2 border-blue-200 p-2">
+          <ul className="max-h-[200px] overflow-auto border-2 border-orange-200 p-2">
             {order.products.map((product) => (
               <li key={product._id}>
                 {product.product?.name ||

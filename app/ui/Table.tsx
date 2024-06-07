@@ -64,7 +64,16 @@ export default function Table({
                   rowClickable && rowFunction && rowFunction(row.original),
               } as React.HTMLAttributes<HTMLTableRowElement>)}
               key={`tr-${rowIndex}`}
-              className={clsx(rowClickable && 'cursor-pointer')}
+              className={clsx(
+                rowClickable && 'cursor-pointer',
+                row.original?.availableCol &&
+                  'pointer-events-none cursor-context-menu opacity-40',
+              )}
+              title={
+                row.original?.availableCol
+                  ? 'Немає на складі в Україні'
+                  : undefined
+              }
             >
               {row.cells.map((cell, cellIndex) => {
                 return (

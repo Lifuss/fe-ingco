@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import StoreProvider from './service/StoreProvider';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: {
@@ -34,6 +35,7 @@ export default function RootLayout({
             theme="light"
             transition={Bounce}
           />
+          <SpeedInsights />
           {children}
         </StoreProvider>
       </body>
