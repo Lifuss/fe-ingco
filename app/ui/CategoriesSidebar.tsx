@@ -1,4 +1,5 @@
 'use client';
+
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import clsx from 'clsx';
@@ -26,11 +27,20 @@ const Sidebar = () => {
       case '/shop/cart':
         pagePathname = '/shop';
         break;
+      case '/retail/cart':
+        pagePathname = '/retail';
+        break;
       case '/shop/favorites':
+        pagePathname = 'favorites';
+        break;
+      case '/retail/favorites':
         pagePathname = 'favorites';
         break;
       case '/shop/history':
         pagePathname = '/shop';
+        break;
+      case '/retail/history':
+        pagePathname = '/retail';
         break;
       default:
         pagePathname;

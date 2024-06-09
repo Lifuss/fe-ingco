@@ -1,6 +1,6 @@
 'use client';
 
-import Sidebar from './Sidebar';
+import CategoriesSidebar from '../ui/CategoriesSidebar';
 import withAuth from '../service/PrivateRouting';
 import { usePathname } from 'next/navigation';
 import Header from '../ui/home/Header';
@@ -28,7 +28,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <>
       <Header />
       <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
-        <Sidebar />
+        <CategoriesSidebar />
         {pathname !== '/shop' ? (
           <div className="grid w-full grid-cols-3 ">
             <h2 className="col-span-2 mb-2 text-center text-4xl">{title}</h2>

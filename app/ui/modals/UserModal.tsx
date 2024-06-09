@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { logoutThunk } from '@/lib/appState/user/operation';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
 
@@ -32,6 +32,7 @@ const customModalQuestionStyles = {
 
 const User = () => {
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -51,6 +52,8 @@ const User = () => {
         router.push('/');
       });
   };
+
+  const pathVariants = pathname.includes('/shop') ? 'shop' : 'retail';
 
   return (
     <>
@@ -77,7 +80,7 @@ const User = () => {
         <div className="flex flex-col gap-2">
           <h3 className="text-left text-lg">{user.login}</h3>
           <Link
-            href={'/shop/favorites'}
+            href={`/${pathVariants}/favorites`}
             className="relative pl-5 transition-colors hover:text-blue-500"
             onClick={closeModal}
           >
@@ -99,7 +102,7 @@ const User = () => {
             Обране
           </Link>
           <Link
-            href={'/shop/history'}
+            href={`/${pathVariants}/history`}
             className="relative pl-5 transition-colors hover:text-blue-500"
             onClick={closeModal}
           >

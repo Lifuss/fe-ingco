@@ -59,10 +59,8 @@ export default function withAuth(
       pathname !== '/auth/login' &&
       pathname !== '/auth/register'
     ) {
-      toast.info(
-        'Ваш статус верифікації, ще не підтверджений менеджер працює над цим.',
-      );
-      redirect('/');
+      toast.info('Ваш статус верифікації, не підтверджений');
+      redirect('/home');
     }
 
     // Admin routing

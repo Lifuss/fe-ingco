@@ -64,7 +64,7 @@ const Header = () => {
           className="mb-4 inline-flex lg:mb-0"
         />
       </Link>
-      {!pathname.includes('/shop') ? (
+      {pathname === '/home' ? (
         <ul className="text-lg md:flex md:gap-6 lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutUs">Про нас</Link>
@@ -122,6 +122,20 @@ const Header = () => {
               </div>
             </Modal>
           </li>
+          <li className="flex">
+            <Link
+              href="/retail"
+              className="border-r border-black pr-1 transition-colors ease-out hover:text-white"
+            >
+              Роздріб
+            </Link>
+            <Link
+              className="pl-1 transition-colors ease-out hover:text-white"
+              href="/shop"
+            >
+              Гуртом
+            </Link>
+          </li>
         </ul>
       ) : (
         <Search placeholder="Пошук" />
@@ -132,66 +146,73 @@ const Header = () => {
             <>
               <div className="flex gap-10">
                 <CurrencyRate />
-                <div className="flex items-center transition-colors ease-out hover:text-white">
-                  <button
-                    onClick={openModal}
-                    className={clsx(
-                      'inline-flex items-baseline text-lg transition-colors ease-out hover:text-white',
-                      modalIsOpen && 'text-white',
-                    )}
-                  >
-                    Зв&apos;язатися
-                    <svg
-                      viewBox="0 0 16 9"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                {pathname !== '/home' && (
+                  <div className="flex items-center transition-colors ease-out hover:text-white">
+                    <button
+                      onClick={openModal}
                       className={clsx(
-                        'ml-1 h-2 w-4 transition-transform ease-out',
-                        modalIsOpen && 'rotate-180',
+                        'inline-flex items-baseline text-lg transition-colors ease-out hover:text-white',
+                        modalIsOpen && 'text-white',
                       )}
                     >
-                      <path
-                        d="M1.3335 1.33325L8.00016 7.99992L14.6668 1.33325"
-                        stroke="#111827"
-                        strokeWidth="1.33333"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  <Modal
-                    isOpen={modalIsOpen}
-                    onRequestClose={closeModal}
-                    contentLabel="Example Modal"
-                    style={{
-                      overlay: {
-                        backgroundColor: 'none',
-                      },
-                    }}
-                    className={
-                      'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3 shadow-lg md:left-[51%] md:top-[55px] xl:left-[77%] xl:top-[60px] 2xl:left-[78%] 2xl:top-[60px]'
-                    }
-                  >
-                    <div className="flex flex-col gap-2 text-blue-500 2xl:text-xl">
-                      <Link
-                        className="hover:text-gray-700"
-                        href="tel:+380988392107"
+                      Зв&apos;язатися
+                      <svg
+                        viewBox="0 0 16 9"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={clsx(
+                          'ml-1 h-2 w-4 transition-transform ease-out',
+                          modalIsOpen && 'rotate-180',
+                        )}
                       >
-                        +380 98-83-92-107
-                      </Link>
-                      <Link
-                        className="hover:text-gray-700"
-                        href="tel:+380964123628"
-                      >
-                        +380 96-41-23-628
-                      </Link>
-                    </div>
-                  </Modal>
-                </div>
+                        <path
+                          d="M1.3335 1.33325L8.00016 7.99992L14.6668 1.33325"
+                          stroke="#111827"
+                          strokeWidth="1.33333"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                    <Modal
+                      isOpen={modalIsOpen}
+                      onRequestClose={closeModal}
+                      contentLabel="Example Modal"
+                      style={{
+                        overlay: {
+                          backgroundColor: 'none',
+                        },
+                      }}
+                      className={
+                        'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3 shadow-lg md:left-[51%] md:top-[55px] xl:left-[77%] xl:top-[60px] 2xl:left-[78%] 2xl:top-[60px]'
+                      }
+                    >
+                      <div className="flex flex-col gap-2 text-blue-500 2xl:text-xl">
+                        <Link
+                          className="hover:text-gray-700"
+                          href="tel:+380988392107"
+                        >
+                          +380 98-83-92-107
+                        </Link>
+                        <Link
+                          className="hover:text-gray-700"
+                          href="tel:+380964123628"
+                        >
+                          +380 96-41-23-628
+                        </Link>
+                      </div>
+                    </Modal>
+                  </div>
+                )}
               </div>
               <div className="flex items-center justify-center gap-2">
                 <UserModal />
-                <Link href={'/shop/cart'} className="relative">
+                <Link
+                  href={
+                    pathname.includes('shop') ? '/shop/cart' : '/retail/cart'
+                  }
+                  className="relative"
+                >
                   <svg
                     viewBox="0 0 36 36"
                     fill="none"
