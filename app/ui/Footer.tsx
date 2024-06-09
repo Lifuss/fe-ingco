@@ -14,7 +14,10 @@ const Footer = () => {
       <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 xl:gap-32 xl:pr-[115px] ">
         <li className="flex flex-col lg:order-none">
           <p className="font-medium">Клієнтам</p>
-          <Link className="transition-colors hover:text-white" href="#">
+          <Link
+            className="transition-colors hover:text-white"
+            href="/home/#about"
+          >
             Про нас
           </Link>
           <Link className="transition-colors hover:text-white" href="#">

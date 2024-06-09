@@ -72,7 +72,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }
     if (category) {
       productsData = productsData.filter((product) =>
-        product.category.name.toLowerCase().includes(category.toLowerCase()),
+        //@ts-expect-error
+        product.category.includes(category),
       );
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);

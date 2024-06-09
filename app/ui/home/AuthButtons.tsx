@@ -12,20 +12,11 @@ const AuthButtons = () => {
         href={'/auth/login'}
         className={clsx(
           'relative block text-center transition-colors ease-out hover:text-white',
-          pathname === '/auth/login' && 'pointer-events-none text-white',
+          (pathname === '/auth/login' && 'pointer-events-none text-white') ||
+            (pathname === '/auth/register' && 'pointer-events-none text-white'),
         )}
       >
         Вхід
-        <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-8px] lg:top-0 lg:h-[1rem] lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-10px] 2xl:translate-y-[36%]"></div>
-      </Link>
-      <Link
-        href={'/auth/register'}
-        className={clsx(
-          'relative block text-center transition-colors ease-out hover:text-white',
-          pathname === '/auth/register' && 'pointer-events-none text-white',
-        )}
-      >
-        Реєстрація
       </Link>
     </div>
   );
