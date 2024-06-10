@@ -7,7 +7,6 @@ import { Product } from '@/lib/types';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 
-
 const customModalStyles = {
   content: {
     top: '50%',
@@ -23,10 +22,12 @@ const ModalProduct = ({
   product,
   isOpen,
   closeModal,
+  isRetail = false,
 }: {
   product: Product | null;
   isOpen: boolean;
   closeModal: () => void;
+  isRetail?: boolean;
 }) => {
   const [productQuantity, setProductQuantity] = useState(0);
   const dispatch = useAppDispatch();
@@ -63,39 +64,58 @@ const ModalProduct = ({
                 height={135}
               />
               <div className="flex justify-between">
-                <div>
-                  <p title="Ціна в дол. амер. за 1 одиницю">
-                    Ціна $: {product.price}
-                  </p>
-                  <p title="Рекомендована роздрібна ціна в грн">
-                    РРЦ: {product.priceRetailRecommendation}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1 text-2xl">
-                    <button
-                      onClick={() => setProductQuantity(productQuantity - 1)}
-                    >
-                      -
-                    </button>
-                    <p>{productQuantity}</p>
-                    <button
-                      onClick={() => setProductQuantity(productQuantity + 1)}
-                    >
-                      +
-                    </button>
+                {!isRetail ? (
+                  <div>
+                    <p title="Ціна в дол. амер. за 1 одиницю">
+                      Ціна $: {product.price}
+                    </p>
+                    <p title="Рекомендована роздрібна ціна в грн">
+                      РРЦ: {product.priceRetailRecommendation} грн
+                    </p>
                   </div>
+                ) : (
+                  <div>
+                    <p title="Ціна з одиницю товару">
+                      Ціна: {product.priceRetailRecommendation} грн
+                    </p>
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  {!isRetail && (
+                    <div className="flex gap-1 text-2xl">
+                      <button
+                        onClick={() => setProductQuantity(productQuantity - 1)}
+                      >
+                        -
+                      </button>
+                      <p>{productQuantity}</p>
+                      <button
+                        onClick={() => setProductQuantity(productQuantity + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
                   <button
                     onClick={() => {
-                      if (productQuantity > 0) {
+                      if (!isRetail) {
+                        if (productQuantity > 0) {
+                          dispatch(
+                            addProductToCartThunk({
+                              productId: product._id,
+                              quantity: productQuantity,
+                            }),
+                          );
+                        } else {
+                          toast.error('Кількість товару не може бути менше 1');
+                        }
+                      } else {
                         dispatch(
                           addProductToCartThunk({
                             productId: product._id,
-                            quantity: productQuantity,
+                            quantity: 1,
                           }),
                         );
-                      } else {
-                        toast.error('Кількість товару не може бути менше 1');
                       }
                     }}
                   >

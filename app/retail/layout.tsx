@@ -64,10 +64,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
         ) : (
           children
         )}
-        <div
-          id="image"
-          className="absolute z-50 hidden h-[200px] w-[200px]"
-        ></div>
       </main>
       <Footer />
     </>
