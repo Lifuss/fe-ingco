@@ -265,7 +265,7 @@ const RetailCartTable = () => {
         <div className="flex flex-col gap-2">
           <div className="flex">
             <label className="flex flex-col">
-              <span>Ім'я</span>
+              <span>Ім&apos;я</span>
               <input
                 required
                 type="text"
