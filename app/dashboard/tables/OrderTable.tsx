@@ -37,7 +37,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
 
   useEffect(() => {
     dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail }));
-  }, [dispatch, page, query]);
+  }, [dispatch, page, query, isRetail]);
 
   const handleRowClick = (data: { numberCol: string }) => {
     openModal(data.numberCol);

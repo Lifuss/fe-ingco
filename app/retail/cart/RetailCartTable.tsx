@@ -72,7 +72,7 @@ const RetailCartTable = () => {
       _id: item.productId._id,
       product: item.productId,
     }));
-  }, [selectedCart, selectedCurrency.USD]);
+  }, [selectedCart]);
 
   const columns = useMemo(
     () => [
