@@ -125,12 +125,12 @@ const Header = () => {
             </Modal>
           </li>
           <li className="flex">
-            <Link
+            {/* <Link
               href="/retail"
               className="border-r border-black pr-1 transition-colors ease-out hover:text-white"
             >
               Роздріб
-            </Link>
+            </Link> */}
             <Link
               className="pl-1 transition-colors ease-out hover:text-white"
               href="/shop"
