@@ -40,7 +40,7 @@ const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
 
   useEffect(() => {
     dispatch(fetchHistoryThunk({ page, q: query, isRetail }));
-  }, [dispatch, page, query]);
+  }, [dispatch, page, query, isRetail]);
 
   const columns = useMemo(
     () => [
