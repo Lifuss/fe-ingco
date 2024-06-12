@@ -196,7 +196,7 @@ const RetailCartTable = () => {
         },
       },
     ],
-    [],
+    [dispatch, handleQuantityChange],
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
