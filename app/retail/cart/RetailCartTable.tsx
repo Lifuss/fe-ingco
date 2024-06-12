@@ -196,7 +196,8 @@ const RetailCartTable = () => {
         },
       },
     ],
-    [dispatch, handleQuantityChange],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch],
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
