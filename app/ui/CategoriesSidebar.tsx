@@ -20,6 +20,7 @@ const Sidebar = () => {
     dispatch(fetchCategoriesThunk(''));
   }, [dispatch]);
 
+  const isShop = pathname.includes('/shop');
   const createPageURL = (categoryId: string) => {
     const params = new URLSearchParams(searchParams);
     let pagePathname = pathname;
@@ -62,7 +63,7 @@ const Sidebar = () => {
   return (
     <aside className="min-w-[200px]">
       <Link
-        href={createPageURL('')}
+        href={isShop ? '/shop' : '/retail'}
         className="relative mb-2 block py-1 shadow-md hover:bg-gray-100 hover:text-gray-800 xl:mb-4"
       >
         <h2 className="text-center text-base font-medium tracking-[0.01em]">

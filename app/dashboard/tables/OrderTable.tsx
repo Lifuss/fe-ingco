@@ -10,7 +10,7 @@ import { Row } from 'react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order } from '@/lib/types';
 
-const OrderTable = () => {
+const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | any>();
   const dispatch = useAppDispatch();
@@ -36,7 +36,7 @@ const OrderTable = () => {
   let query = searchParams.get('query') || '';
 
   useEffect(() => {
-    dispatch(fetchOrdersThunk({ page, query, limit: 20 }));
+    dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail }));
   }, [dispatch, page, query]);
 
   const handleRowClick = (data: { numberCol: string }) => {
@@ -80,7 +80,7 @@ const OrderTable = () => {
     return orders.map((order) => ({
       numberCol: order.orderCode,
       dateCol: new Date(order.createdAt).toLocaleDateString(),
-      loginCol: order.user.login,
+      loginCol: 'login' in order.user ? order.user.login : order.user.email,
       statusCol: order.status,
       commentCol: order.comment,
       totalPrice: Math.ceil(order.totalPrice * usdRate),
@@ -104,6 +104,7 @@ const OrderTable = () => {
         closeModal={closeModal}
         isOpen={isOpen}
         order={selectedOrder}
+        isRetail={isRetail}
       />
     </div>
   );

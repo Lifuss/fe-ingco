@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
-  addProductToCartThunk,
+  addProductToRetailCartThunk,
   deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import ModalProduct from '@/app/ui/modals/ProductModal';
@@ -15,6 +15,7 @@ import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import clsx from 'clsx';
 import { useMediaQuery } from 'react-responsive';
+import TextPlaceholder from '../ui/TextPlaceholder';
 
 export type rawData = {
   article: string;
@@ -44,7 +45,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     setIsModalOpen(false);
   };
 
-  const { products, total, totalPages } = state.persistedMainReducer;
+  const { products, totalPages } = state.persistedMainReducer;
   let favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
 
@@ -91,7 +92,7 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   const handleCartClick = (id: string, productName: string) => {
     dispatch(
-      addProductToCartThunk({
+      addProductToRetailCartThunk({
         productId: id,
         quantity: 1,
       }),
@@ -109,10 +110,17 @@ const ProductList = ({ isFavoritePage = false }) => {
   return (
     <>
       {products.length === 0 ? (
-        <div className="grid place-items-center">
-          <h2 className="w-1/2 text-center text-3xl">
-            По вибраним параметрам товару більше не знайдено
-          </h2>
+        <div className="pt-10">
+          <TextPlaceholder
+            title="Не знайдено 🥲"
+            text={
+              isFavoritePage
+                ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'
+                : 'Спробуйте змінити параметри пошуку або категорії'
+            }
+            titleSize="4xl"
+            textSize="xl"
+          />
         </div>
       ) : (
         <>
@@ -142,9 +150,10 @@ const ProductList = ({ isFavoritePage = false }) => {
                 return (
                   <li
                     key={article}
-                    className="flex h-[320px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg"
+                    className="relative flex h-[320px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg"
                   >
                     <div
+                      className="grow"
                       onClick={() => {
                         setSelectedProduct(product);
                         openModal();
@@ -156,6 +165,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                           alt={name}
                           layout="fill"
                           objectFit="contain"
+                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                         />
                       </div>
 
@@ -178,30 +188,54 @@ const ProductList = ({ isFavoritePage = false }) => {
                         ))}
                       </p>
                     </div>
-                    <div className="flex items-center justify-end">
-                      <p
-                        className="border-r border-black pr-1 text-base font-medium"
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          openModal();
-                        }}
-                      >
-                        {priceRetailRecommendation} грн
-                      </p>
+                    <div className="flex items-center justify-between">
                       <button
-                        className="fill-black pl-1 hover:fill-orange-500"
-                        onClick={() => handleCartClick(_id, name)}
+                        onClick={handleFavoriteClick.bind(null, _id)}
+                        data-favorite={_id}
+                        className={clsx(
+                          'text-white',
+                          favoritesList.includes(_id)
+                            ? ' fill-orange-500'
+                            : 'fill-white stroke-black',
+                        )}
                       >
                         <svg
                           width="24"
                           height="24"
-                          viewBox="0 0 36 36"
+                          viewBox="-2 10 35 10"
                           fill="none"
-                          className="fill-black hover:fill-orange-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="fill-inherit stroke-inherit"
                         >
-                          <path d="M35.7068 9.98438C35.6036 9.83783 35.4667 9.71821 35.3077 9.6356C35.1486 9.553 34.972 9.50982 34.7928 9.5097H10.9169L9.1096 3.2772C8.40085 0.823013 6.71669 0.558075 6.02594 0.558075H1.207C0.589344 0.558075 0.0898438 1.05814 0.0898438 1.6752C0.0898438 2.29226 0.589906 2.79229 1.20697 2.79229H6.02534C6.17778 2.79229 6.64297 2.79229 6.96025 3.8886L13.1776 26.7379C13.3126 27.22 13.7519 27.5529 14.253 27.5529H29.4394C29.9108 27.5529 30.3315 27.2576 30.4908 26.8138L35.8435 11.0048C35.9667 10.6622 35.9155 10.2808 35.7068 9.98438H35.7068ZM28.6532 25.3193H15.101L11.5448 11.7445H33.2045L28.6532 25.3193ZM26.4376 29.8171C24.884 29.8171 23.6251 31.076 23.6251 32.6296C23.6251 34.1832 24.884 35.4421 26.4376 35.4421C27.9912 35.4421 29.2501 34.1832 29.2501 32.6296C29.2501 31.076 27.9912 29.8171 26.4376 29.8171ZM16.3126 29.8171C14.759 29.8171 13.5001 31.076 13.5001 32.6296C13.5001 34.1832 14.759 35.4421 16.3126 35.4421C17.8662 35.4421 19.1251 34.1832 19.1251 32.6296C19.1251 31.076 17.8662 29.8171 16.3126 29.8171Z" />
+                          <path d="M15 27.525L12.825 25.545C5.1 18.54 0 13.905 0 8.25C0 3.615 3.63 0 8.25 0C10.86 0 13.365 1.215 15 3.12C16.635 1.215 19.14 0 21.75 0C26.37 0 30 3.615 30 8.25C30 13.905 24.9 18.54 17.175 25.545L15 27.525Z" />
                         </svg>
                       </button>
+
+                      <div className="flex items-center justify-end">
+                        <p
+                          className="border-r border-black pr-1 text-base font-medium"
+                          onClick={() => {
+                            setSelectedProduct(product);
+                            openModal();
+                          }}
+                        >
+                          {priceRetailRecommendation} грн
+                        </p>
+                        <button
+                          className="fill-black pl-1 hover:fill-orange-500"
+                          onClick={() => handleCartClick(_id, name)}
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 36 36"
+                            fill="none"
+                            className="fill-black hover:fill-orange-500"
+                          >
+                            <path d="M35.7068 9.98438C35.6036 9.83783 35.4667 9.71821 35.3077 9.6356C35.1486 9.553 34.972 9.50982 34.7928 9.5097H10.9169L9.1096 3.2772C8.40085 0.823013 6.71669 0.558075 6.02594 0.558075H1.207C0.589344 0.558075 0.0898438 1.05814 0.0898438 1.6752C0.0898438 2.29226 0.589906 2.79229 1.20697 2.79229H6.02534C6.17778 2.79229 6.64297 2.79229 6.96025 3.8886L13.1776 26.7379C13.3126 27.22 13.7519 27.5529 14.253 27.5529H29.4394C29.9108 27.5529 30.3315 27.2576 30.4908 26.8138L35.8435 11.0048C35.9667 10.6622 35.9155 10.2808 35.7068 9.98438H35.7068ZM28.6532 25.3193H15.101L11.5448 11.7445H33.2045L28.6532 25.3193ZM26.4376 29.8171C24.884 29.8171 23.6251 31.076 23.6251 32.6296C23.6251 34.1832 24.884 35.4421 26.4376 35.4421C27.9912 35.4421 29.2501 34.1832 29.2501 32.6296C29.2501 31.076 27.9912 29.8171 26.4376 29.8171ZM16.3126 29.8171C14.759 29.8171 13.5001 31.076 13.5001 32.6296C13.5001 34.1832 14.759 35.4421 16.3126 35.4421C17.8662 35.4421 19.1251 34.1832 19.1251 32.6296C19.1251 31.076 17.8662 29.8171 16.3126 29.8171Z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </li>
                 );

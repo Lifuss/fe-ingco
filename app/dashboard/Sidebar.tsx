@@ -68,8 +68,28 @@ const listData = [
     ),
   },
   {
-    title: 'Замовлення',
+    title: 'Замовлення b2b',
     link: '/dashboard/orders',
+    svg: (
+      <svg
+        width="22"
+        height="26"
+        viewBox="0 0 22 26"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7.00033 8.00004H15.0003M7.00033 13.3334H15.0003M7.00033 18.6667H12.3337M4.33366 1.33337H17.667C19.1398 1.33337 20.3337 2.52728 20.3337 4.00004V21.3334C20.3337 22.8061 19.1398 24 17.667 24H4.33366C2.8609 24 1.66699 22.8061 1.66699 21.3334V4.00004C1.66699 2.52728 2.8609 1.33337 4.33366 1.33337Z"
+          stroke="white"
+          strokeWidth="2.66667"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: 'Замовлення роз.',
+    link: '/dashboard/retailorders',
     svg: (
       <svg
         width="22"

@@ -2,7 +2,12 @@
 import Modal from 'react-modal';
 import { customModalStyles } from './CategoryModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { Order, OrderStatusEnum } from '@/lib/types';
+import {
+  Order,
+  OrderStatusEnum,
+  UserWithAuth,
+  UserWithoutAuth,
+} from '@/lib/types';
 import { Button } from '../button';
 import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
@@ -12,6 +17,7 @@ type AdminOrderModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   order: Order;
+  isRetail: boolean;
 };
 
 const modifiedStyles = {
@@ -27,6 +33,7 @@ const AdminOrderModal = ({
   isOpen,
   closeModal,
   order,
+  isRetail,
 }: AdminOrderModalProps) => {
   const { USD } = useAppSelector(
     (state) => state.persistedMainReducer.currencyRates,
@@ -38,7 +45,7 @@ const AdminOrderModal = ({
   }, [order]);
 
   if (!selectedOrder) return null;
-  const { products, user, totalPrice, status, isPaid } = selectedOrder;
+  const { products, totalPrice, status, isPaid, user } = selectedOrder;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,9 +120,19 @@ const AdminOrderModal = ({
             <p>Статус:</p>
           </div>
           <div>
-            <p>{`${user.userId.firstName} ${user.userId.lastName} ${user.userId.surName}`}</p>
-            <p>{user.userId.email}</p>
-            <p>{user.userId.phone}</p>
+            {'userId' in user ? (
+              <>
+                <p>{`${user.userId.firstName} ${user.userId.lastName} ${user.userId.surName}`}</p>
+                <p>{user.userId.email}</p>
+                <p>{user.userId.phone}</p>
+              </>
+            ) : (
+              <>
+                <p>{`${user.firstName} ${user.lastName} ${user.surName}`}</p>
+                <p>{user.email}</p>
+                <p>{user.phone}</p>
+              </>
+            )}
             <select
               name="status"
               defaultValue={status}

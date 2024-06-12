@@ -2,9 +2,14 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
   addFavoriteProductThunk,
   addProductToCartThunk,
+  addProductToRetailCartThunk,
   createOrderThunk,
+  createRetailOrderThunk,
   deleteFavoriteProductThunk,
   deleteProductFromCartThunk,
+  deleteProductFromRetailCartThunk,
+  getUserCartThunk,
+  getUserRetailCartThunk,
   loginThunk,
   logoutThunk,
   refreshTokenThunk,
@@ -18,6 +23,12 @@ const initialState = {
     role: '',
     favorites: [],
     cart: [],
+    retailCart: [],
+    firstName: '',
+    lastName: '',
+    surName: '',
+    email: '',
+    phone: '',
   },
   token: '',
   isAuthenticated: false,
@@ -48,13 +59,27 @@ const authStateSlice = createSlice({
       .addCase(createOrderThunk.fulfilled, (state, _) => {
         state.user.cart = [];
       })
+      .addCase(createRetailOrderThunk.fulfilled, (state, _) => {
+        state.user.retailCart = [];
+      })
       .addMatcher(
         isAnyOf(
+          getUserCartThunk.fulfilled,
           addProductToCartThunk.fulfilled,
           deleteProductFromCartThunk.fulfilled,
         ),
         (state, { payload }) => {
           state.user.cart = payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          getUserRetailCartThunk.fulfilled,
+          addProductToRetailCartThunk.fulfilled,
+          deleteProductFromRetailCartThunk.fulfilled,
+        ),
+        (state, { payload }) => {
+          state.user.retailCart = payload;
         },
       )
       .addMatcher(
@@ -68,6 +93,12 @@ const authStateSlice = createSlice({
           state.user.role = payload.role;
           state.user.favorites = payload.favorites;
           state.user.cart = payload.cart;
+          state.user.retailCart = payload.cartRetail;
+          state.user.firstName = payload.firstName;
+          state.user.lastName = payload.lastName;
+          state.user.email = payload.email;
+          state.user.phone = payload.phone;
+          state.user.surName = payload.surName;
         },
       )
       .addMatcher(
@@ -98,6 +129,7 @@ const authStateSlice = createSlice({
         (state, _) => {
           state.isLoading = false;
           state.isAuthenticated = false;
+          state.token = '';
         },
       );
   },

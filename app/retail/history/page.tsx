@@ -1,7 +1,7 @@
-const Page = () => {
-  return (
-    <div>Page</div>
-  )
-}
+import HistoryTable from '@/app/shop/table/HistoryTable';
 
-export default Page
+const Page = () => {
+  return <HistoryTable isRetail />;
+};
+
+export default Page;

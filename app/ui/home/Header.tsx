@@ -48,12 +48,14 @@ const Header = () => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
+
+  const isShop = pathname.includes('shop');
   // TODO: low prior - зробити меню бургер для мобільної верстки
 
   return (
     <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link
-        href="/shop"
+        href="/home"
         className="flex h-[31px] items-center justify-center md:block lg:h-[52px]"
       >
         <Image
@@ -208,9 +210,7 @@ const Header = () => {
               <div className="flex items-center justify-center gap-2">
                 <UserModal />
                 <Link
-                  href={
-                    pathname.includes('shop') ? '/shop/cart' : '/retail/cart'
-                  }
+                  href={isShop ? '/shop/cart' : '/retail/cart'}
                   className="relative"
                 >
                   <svg
@@ -231,9 +231,10 @@ const Header = () => {
                       </clipPath>
                     </defs>
                   </svg>
-                  {user.cart.length ? (
+                  {(isShop && user.cart.length) ||
+                  (!isShop && user.retailCart?.length) ? (
                     <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs leading-none">
-                      {user.cart.length}
+                      {isShop ? user.cart.length : user.retailCart.length}
                     </div>
                   ) : null}
                 </Link>

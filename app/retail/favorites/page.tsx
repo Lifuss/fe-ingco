@@ -1,5 +1,7 @@
+import ProductList from '../ProductList';
+
 const Page = () => {
-  return <div>Page</div>;
+  return <ProductList isFavoritePage />;
 };
 
 export default Page;

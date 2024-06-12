@@ -7,46 +7,48 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 // import { Row } from 'react-table';
 import {
-  addProductToCartThunk,
-  createOrderThunk,
+  addProductToRetailCartThunk,
+  createRetailOrderThunk,
   deleteProductFromCartThunk,
+  deleteProductFromRetailCartThunk,
 } from '@/lib/appState/user/operation';
-import Modal from 'react-modal';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
-const customModalStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
-
-const CartTable = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const RetailCartTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
-  const selectedCart: CartData = useAppSelector(
-    (state) => state.persistedAuthReducer.user.cart,
-  );
+  const {
+    retailCart: selectedCart,
+    firstName,
+    lastName,
+    surName,
+    phone,
+    email,
+  }: {
+    retailCart: CartData;
+    firstName: string;
+    lastName: string;
+    surName: string;
+    phone: string;
+    email: string;
+  } = useAppSelector((state) => state.persistedAuthReducer.user);
   const selectedCurrency = useAppSelector(
     (state) => state.persistedMainReducer.currencyRates,
   );
 
   const handleQuantityChange = (id: string, operation: string) => {
     if (operation === 'increment') {
-      dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
+      dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
     } else {
-      dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
+      dispatch(
+        deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }),
+      );
     }
   };
 
@@ -64,13 +66,9 @@ const CartTable = () => {
       codeCol: item.productId.article,
       nameCol: item.productId.name,
       photoCol: item.productId.image,
-      priceCol: item.productId.price,
-      priceUahCol: Math.ceil(
-        item.productId.price * +selectedCurrency.USD.toFixed(2),
-      ),
       rrcCol: item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
-      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
+      totalCol: `${item.productId.priceRetailRecommendation * item.quantity} грн`,
       _id: item.productId._id,
       product: item.productId,
     }));
@@ -126,21 +124,8 @@ const CartTable = () => {
         },
       },
       {
-        Header: 'Ціна($)',
-        accessor: 'priceCol',
-      },
-      {
         Header: 'Ціна(грн)',
-        accessor: 'priceUahCol',
-      },
-      {
-        Header: 'РРЦ(грн)',
         accessor: 'rrcCol',
-        Cell: ({ row }) => {
-          return (
-            <div title="Рекомендована роздрібна ціна">{row.values.rrcCol}</div>
-          );
-        },
       },
       {
         Header: 'Кількість',
@@ -175,7 +160,7 @@ const CartTable = () => {
         },
       },
       {
-        Header: 'Сума($|грн)',
+        Header: 'Сума',
         accessor: 'totalCol',
         Cell: ({ row }) => {
           return (
@@ -188,7 +173,7 @@ const CartTable = () => {
                 className="absolute -right-7 top-0 fill-gray-400 hover:fill-red-500"
                 onClick={() => {
                   dispatch(
-                    deleteProductFromCartThunk({
+                    deleteProductFromRetailCartThunk({
                       productId: row.original._id,
                       quantity: row.values.quantityCol,
                     }),
@@ -211,22 +196,26 @@ const CartTable = () => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-
-  function openModal() {
-    setIsOpen(true);
-  }
-  function closeModal() {
-    setIsOpen(false);
-  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)
       ?.value;
+    const firstName = (form.elements.namedItem('firstName') as HTMLInputElement)
+      ?.value;
+    const lastName = (form.elements.namedItem('lastName') as HTMLInputElement)
+      ?.value;
+    const surName = (form.elements.namedItem('surName') as HTMLInputElement)
+      ?.value;
+    const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value;
+    const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
+    const shippingAddress = (
+      form.elements.namedItem('shippingAddress') as HTMLInputElement
+    )?.value;
+
     const order = {
       products: selectedCart.map((item) => ({
         productId: item.productId._id,
@@ -236,17 +225,21 @@ const CartTable = () => {
           (item.productId.price * item.quantity).toFixed(2),
         ),
       })),
-      shippingAddress: 'test',
-      totalPrice: Number(
-        selectedCart
-          .reduce((acc, item) => {
-            return acc + item.productId.price * item.quantity;
-          }, 0)
-          .toFixed(2),
+      totalPrice: Math.ceil(
+        selectedCart.reduce((acc, item) => {
+          return acc + item.productId.priceRetailRecommendation * item.quantity;
+        }, 0),
       ),
+      shippingAddress,
+      firstName,
+      lastName,
+      surName,
+      phone,
+      email,
       comment,
+      token: localStorage.getItem('token') || '',
     };
-    dispatch(createOrderThunk(order))
+    dispatch(createRetailOrderThunk(order))
       .unwrap()
       .then((data) => {
         closeModal();
@@ -254,85 +247,108 @@ const CartTable = () => {
       });
   };
 
-  const sum = selectedCart
-    .reduce((acc, item) => {
-      return acc + item.productId.price * item.quantity;
-    }, 0)
-    .toFixed(2);
+  const sum = Math.ceil(
+    selectedCart.reduce((acc, item) => {
+      return acc + item.productId.priceRetailRecommendation * item.quantity;
+    }, 0),
+  );
 
   return selectedCart.length > 0 ? (
     <div className="">
       <Table columns={columns} data={data} />
       <div className="ml-auto mt-2 flex w-fit gap-2 border-b-2 text-lg">
         <p>Загальна сума</p>
-        <p>
-          {sum}$ | {Math.ceil(+sum * selectedCurrency.USD)}грн
-        </p>
+        <p>{sum} грн</p>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          openModal();
-        }}
-        className="ml-auto mt-4 block w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
-      >
-        Підтвердити замовлення
-      </button>
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={closeModal}
-        style={customModalStyles}
-        contentLabel="Підтвердження замовлення"
-      >
-        <form
-          className="flex w-[500px] flex-col gap-4 px-5"
-          onSubmit={handleSubmit}
-        >
-          <ul className="flex flex-col gap-2 text-lg">
-            <li>
-              <p>
-                Після оформлення з вами зв&apos;яжеться менеджер через вайбер
-                або дзвінок і уточнить деталі
-              </p>
-            </li>
-            <li>
-              <p>
-                В коментарі можете вказати бажаний тип зв&apos;язку, а також
-                неявні деталі по типу розділеного замовлення тощо.
-              </p>
-            </li>
-            <li>
-              <p>
-                Якщо не бажаєте щоб вам передзвонювали, то вкажіть повне інфо
-                для відправки в коментарі (ПІБ, тел номер, адреса відділення НП)
-              </p>
-            </li>
-          </ul>
+      <form className="flex  justify-between gap-2" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-2">
+          <div className="flex">
+            <label className="flex flex-col">
+              <span>Ім'я</span>
+              <input
+                required
+                type="text"
+                name="firstName"
+                defaultValue={firstName || ''}
+                className="border-1 rounded-s-lg border-gray-400 p-2"
+              />
+            </label>
+            <label className="flex flex-col">
+              <span>Прізвище</span>
+              <input
+                required
+                type="text"
+                name="lastName"
+                defaultValue={lastName || ''}
+                className="border-b-1 border-t-1 border-gray-400 p-2"
+              />
+            </label>
+            <label className="flex flex-col">
+              <span>По-батькові</span>
+              <input
+                required
+                type="text"
+                name="surName"
+                defaultValue={surName || ''}
+                className="border-1 rounded-e-lg border-gray-400 p-2"
+              />
+            </label>
+          </div>
+          <div className="flex">
+            <label className="flex flex-col">
+              <span>Телефон</span>
+              <input
+                required
+                type="tel"
+                name="phone"
+                defaultValue={phone || ''}
+                className="border-1 rounded-s-lg border-gray-400 p-2"
+              />
+            </label>
+            <label className="flex flex-col">
+              <span>Email</span>
+              <input
+                required
+                type="email"
+                name="email"
+                defaultValue={email || ''}
+                className="border-1 rounded-e-lg border-gray-400 p-2"
+              />
+            </label>
+          </div>
+          <label className="mb-2 flex w-1/2 flex-col">
+            <span>Адреса доставки</span>
+            <input
+              type="text"
+              name="shippingAddress"
+              className="border-1 rounded-lg border-gray-400 p-2"
+            />
+          </label>
           <textarea
-            className=""
+            className="border-1 h-24 w-1/2 rounded-lg border-gray-400 p-2"
             name="comment"
             placeholder="Коментарій до замовлення"
           />
-
-          <button
-            type="submit"
-            className="mx-auto w-fit rounded-lg bg-[#111827] px-4 py-4 text-2xl text-white"
-          >
-            Оформити замовлення
-          </button>
-        </form>
-      </Modal>
+        </div>
+        <button
+          type="submit"
+          className="ml-auto mt-auto block h-fit w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
+        >
+          Підтвердити замовлення
+        </button>
+      </form>
       <ModalProduct
         product={selectedProduct}
         closeModal={closeProductModal}
         isOpen={isModalOpen}
+        isRetail
       />
     </div>
   ) : (
     <div className="pt-10">
       <TextPlaceholder
         title="Кошик порожній 🍃"
-        text="Негайно треба добавити сюди продуктів 🛒🏃‍♂️"
+        text="Негайно треба добавити сюди пару інструментів 🛒🏃‍♂️"
         titleSize="4xl"
         textSize="xl"
       />
@@ -340,4 +356,8 @@ const CartTable = () => {
   );
 };
 
-export default CartTable;
+export default RetailCartTable;
+
+function closeModal() {
+  throw new Error('Function not implemented.');
+}

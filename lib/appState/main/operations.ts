@@ -82,12 +82,13 @@ export const fetchHistoryThunk = createAsyncThunk(
       page = 1,
       q = '',
       limit = 15,
-    }: { page: number; q: string; limit?: number },
+      isRetail,
+    }: { page: number; q: string; limit?: number; isRetail: boolean },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.get('/orders', {
-        params: { page, q, limit },
+        params: { page, q, limit, isRetail },
       });
       return data;
     } catch (error) {

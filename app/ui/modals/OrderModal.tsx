@@ -26,7 +26,11 @@ const OrderModal = ({
           <p>
             Дата створення: {new Date(order.createdAt).toLocaleDateString()}
           </p>
-          <p>Коментар: {order.comment || '- 🧑‍🎤'}</p>
+          <p>
+            Номер накладної поштової служби:{' '}
+            {order.declarationNumber || '- ще не відправлено'}
+          </p>
+          <p>Коментар: {order.comment || '- Відсутній'}</p>
           <p>Товари:</p>
           <ul className="max-h-[200px] overflow-auto border-2 border-orange-200 p-2">
             {order.products.map((product) => (

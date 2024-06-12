@@ -52,22 +52,32 @@ export enum OrderStatusEnum {
   OrderCancelled = 'замовлення скасовано',
 }
 
+export type UserWithoutAuth = {
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  surName: string;
+};
+
+export type UserWithAuth = {
+  login: string;
+  userId: {
+    _id: string;
+    email: string;
+    role: string;
+    firstName: string;
+    lastName: string;
+    surName: string;
+    phone: string;
+    edrpou: string;
+  };
+};
+
 export interface Order {
   _id: string;
   orderCode: string;
-  user: {
-    login: string;
-    userId: {
-      _id: string;
-      email: string;
-      role: string;
-      firstName: string;
-      lastName: string;
-      surName: string;
-      phone: string;
-      edrpou: string;
-    };
-  };
+  user: UserWithoutAuth | UserWithAuth;
   products: {
     product: {
       _id: string;
@@ -84,6 +94,7 @@ export interface Order {
   comment: string;
   createdAt: string;
   updatedAt: string;
+  shippingAddress?: string;
   declarationNumber: string;
 }
 export interface CurrencyRates {

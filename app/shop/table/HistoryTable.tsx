@@ -2,6 +2,7 @@
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
+import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import OrderModal from '@/app/ui/modals/OrderModal';
 import { fetchHistoryThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -10,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 
-const HistoryTable = () => {
+const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
@@ -38,7 +39,7 @@ const HistoryTable = () => {
   let query = searchParams.get('query') || '';
 
   useEffect(() => {
-    dispatch(fetchHistoryThunk({ page, q: query }));
+    dispatch(fetchHistoryThunk({ page, q: query, isRetail }));
   }, [dispatch, page, query]);
 
   const columns = useMemo(
@@ -106,9 +107,14 @@ const HistoryTable = () => {
       />
     </>
   ) : (
-    <h2 className="text-center text-3xl">
-      Ви ще нічого не замовили, тут з&apos;явиться майбутні ваші замовлення
-    </h2>
+    <div className="pt-10">
+      <TextPlaceholder
+        title="Історія порожня"
+        text="Історія порожня, здійсніть замовлення"
+        titleSize="4xl"
+        textSize="xl"
+      />
+    </div>
   );
 };
 

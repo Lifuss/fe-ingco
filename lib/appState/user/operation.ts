@@ -187,6 +187,30 @@ export const deleteFavoriteProductThunk = createAsyncThunk(
   },
 );
 
+export const getUserCartThunk = createAsyncThunk(
+  'cart/get',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('users/cart');
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const getUserRetailCartThunk = createAsyncThunk(
+  'cart/getRetail',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('users/cart/retail');
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
   async (
@@ -195,6 +219,24 @@ export const addProductToCartThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.post('users/cart', {
+        productId,
+        quantity,
+      });
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const addProductToRetailCartThunk = createAsyncThunk(
+  'cart/addRetail',
+  async (
+    { productId, quantity }: { productId: string; quantity: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('users/cart/retail', {
         productId,
         quantity,
       });
@@ -222,6 +264,23 @@ export const deleteProductFromCartThunk = createAsyncThunk(
   },
 );
 
+export const deleteProductFromRetailCartThunk = createAsyncThunk(
+  'cart/deleteRetail',
+  async (
+    { productId, quantity = 1 }: { productId: string; quantity: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.delete(`users/cart/retail`, {
+        data: { productId, quantity },
+      });
+      return data.cart;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
 export const createOrderThunk = createAsyncThunk(
   'order/create',
   async (
@@ -240,6 +299,36 @@ export const createOrderThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.post('orders', order);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const createRetailOrderThunk = createAsyncThunk(
+  'order/createRetail',
+  async (
+    order: {
+      products: {
+        productId: string;
+        quantity: number;
+        price: number;
+        totalPriceByOneProduct: number;
+      }[];
+      shippingAddress: string;
+      totalPrice: number;
+      comment: string;
+      firstName: string;
+      lastName: string;
+      surName: string;
+      phone: string;
+      email: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('orders/retail', order);
       return data;
     } catch (error) {
       rejectWithValue(error);

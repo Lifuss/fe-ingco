@@ -15,6 +15,7 @@ import Table from '@/app/ui/Table';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
+import TextPlaceholder from '@/app/ui/TextPlaceholder';
 
 export type rawData = {
   article: string;
@@ -290,10 +291,17 @@ const ShopTable = ({ isFavoritePage = false }) => {
   return (
     <>
       {products.length === 0 ? (
-        <div className="grid place-items-center">
-          <h2 className="w-1/2 text-center text-3xl">
-            По вибраним параметрам товару більше не знайдено
-          </h2>
+        <div className="pt-10">
+          <TextPlaceholder
+            title="Не знайдено 🥲"
+            text={
+              isFavoritePage
+                ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'
+                : 'Спробуйте змінити параметри пошуку або категорії'
+            }
+            titleSize="4xl"
+            textSize="xl"
+          />
         </div>
       ) : (
         <>

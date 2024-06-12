@@ -121,12 +121,13 @@ export const fetchOrdersThunk = createAsyncThunk(
       query: q = '',
       page = 1,
       limit = 15,
-    }: { query: string; page?: number; limit?: number },
+      isRetail = false,
+    }: { query: string; page?: number; limit?: number; isRetail: boolean },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.get('/orders/all', {
-        params: { q, page, limit },
+        params: { q, page, limit, isRetail },
       });
       return data;
     } catch (error) {
