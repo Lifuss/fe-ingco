@@ -58,53 +58,80 @@ const Page = () => {
         onSubmit={handleSubmit}
       >
         <label>
-          Найменування
+          <span className="text-red-600">*</span>Найменування
           <input
             name="name"
             required
             placeholder="Найменування"
-            className="mb-4 block w-[400px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600 2xl:mb-10"
+            className="mb-4 block w-[500px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600 2xl:mb-10"
           />
         </label>
         <div className="flex gap-20">
           <div className="flex flex-col gap-2">
-            <label className="mb-4">
-              Фото
+            <label className="w-[250px]">
+              <span className="text-red-600">*</span>Фото
               <input
                 type="file"
                 name="image"
                 accept="image/*"
-                className="block w-[150px] rounded-md p-2"
+                className="block w-full rounded-md p-2"
                 onChange={handleImageChange}
                 required
               />
-              <Image
-                src={imageUrl}
-                className="block rounded-md"
-                alt="Фото товару"
-                width="200"
-                height="200"
-              />
+              <div className="relative h-[200px] w-full shrink-0">
+                <Image
+                  src={imageUrl}
+                  className="block rounded-md"
+                  alt="Фото товару"
+                  layout="fill"
+                  objectFit="contain"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
+              </div>
             </label>
 
             <label>
-              Опис товару
+              <span className="text-red-600">*</span>Опис товару{' '}
+              <span className="text-sm text-gray-400">
+                1 хар-ка на рядок (enter або shift+enter)
+              </span>
               <textarea
                 name="description"
                 placeholder="Опис товару"
                 required
-                className="block min-h-[150px] rounded-lg p-2 focus:bg-blue-100"
+                className="block min-h-[150px] w-full rounded-lg p-2 focus:bg-blue-100"
               />
+              <div className="mt-2 w-full text-sm text-gray-400 hover:text-gray-700">
+                <p>
+                  В картці роздрібного магазину відображається тільки перші 3
+                  характеристики і в них обмеження на 25 символів, нижче
+                  приклади
+                </p>
+                <p>
+                  Варіант на якому важлива інформація обрізається: <br />{' '}
+                  "Номінальна напруга (В): 220-240" &gt; "Номінальна напруга
+                  (В): 2...",
+                </p>
+                <p>
+                  Більш описовий варіант: <br /> "Напруга (В): 220-240
+                  (Номінальна)" &gt; "Напруга (В): 220-240 (Н.."
+                </p>
+                <p className="mt-1">
+                  *Це не стосується модальних вікон(при кліку на картку) там
+                  повний опис без обрізань
+                </p>
+              </div>
             </label>
           </div>
           <div className="flex flex-col gap-2">
             <label>
-              Артикль
+              <span className="text-red-600">*</span>Артикль
               <input
                 type="text"
                 name="article"
                 placeholder="Артикль"
                 className="block rounded-lg focus:bg-blue-100"
+                required
               />
             </label>
 
@@ -120,7 +147,7 @@ const Page = () => {
             </label>
 
             <label htmlFor="price">
-              Ціна
+              <span className="text-red-600">*</span>Ціна
               <input
                 type="number"
                 name="price"
@@ -130,20 +157,8 @@ const Page = () => {
                 required
               />
             </label>
-
             <label>
-              Ціна опт.
-              <input
-                type="number"
-                name="priceBulk"
-                step="0.001"
-                className="block rounded-lg focus:bg-blue-100"
-                placeholder="Ціна опт. $"
-                required
-              />
-            </label>
-            <label>
-              РРЦ
+              <span className="text-red-600">*</span>РРЦ
               <input
                 type="number"
                 name="priceRetailRecommendation"
@@ -154,7 +169,18 @@ const Page = () => {
               />
             </label>
             <label>
-              К-сть в наявності
+              РРЦ зі знижкою
+              <input
+                type="number"
+                name="rrcSale"
+                step="0.001"
+                className="block rounded-lg focus:bg-blue-100"
+                placeholder="Ціна зі знижкою"
+              />
+            </label>
+
+            <label>
+              <span className="text-red-600">*</span>К-сть в наявності
               <input
                 type="number"
                 name="countInStock"

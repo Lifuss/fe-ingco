@@ -84,55 +84,83 @@ const Page = ({ params }: PageProps) => {
         className="flex flex-col items-center text-lg"
         onSubmit={handleSubmit}
       >
-        <label htmlFor="name">Найменування</label>
+        <label htmlFor="name">
+          <span className="text-red-600">*</span>Найменування
+        </label>
         <input
           name="name"
           defaultValue={product?.name}
           required
           id="name"
           placeholder="Найменування"
-          className="mb-4 block w-[400px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600 2xl:mb-10"
+          className="mb-4 block w-[500px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-600 2xl:mb-10"
         />
         <div className="flex gap-20">
           <div className="flex flex-col gap-2">
-            <label>
-              Фото
+            <label className="w-[250px]">
+              <span className="text-red-600">*</span>Фото
               <input
                 type="file"
                 name="image"
                 accept="image/*"
-                className="block w-[150px] rounded-md p-2"
+                className="block w-full rounded-md p-2"
                 onChange={handleImageChange}
               />
-              <Image
-                src={imageUrl}
-                className="block rounded-md"
-                alt="Фото товару"
-                width="200"
-                height="200"
-              />
+              <div className="relative h-[200px] w-full shrink-0">
+                <Image
+                  src={imageUrl}
+                  alt={product?.name || 'Фото товару'}
+                  layout="fill"
+                  objectFit="contain"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
+              </div>
             </label>
 
             <label>
-              Опис товару
+              <span className="text-red-600">*</span>Опис товару{' '}
+              <span className="text-sm text-gray-400">
+                1 хар-ка на рядок (enter або shift+enter)
+              </span>
               <textarea
                 name="description"
                 placeholder="Опис товару"
                 defaultValue={product?.description}
                 required
-                className="block min-h-[150px] rounded-lg p-2 focus:bg-blue-100"
+                className="block min-h-[150px] w-full rounded-lg p-2 focus:bg-blue-100"
               />
+              <div className="mt-2 w-full text-sm text-gray-400 hover:text-gray-700">
+                <p>
+                  В картці роздрібного магазину відображається тільки перші 3
+                  характеристики і в них обмеження на 25 символів, нижче
+                  приклади
+                </p>
+                <p>
+                  Варіант на якому важлива інформація обрізається: <br />{' '}
+                  "Номінальна напруга (В): 220-240" &gt; "Номінальна напруга
+                  (В): 2...",
+                </p>
+                <p>
+                  Більш описовий варіант: <br /> "Напруга (В): 220-240
+                  (Номінальна)" &gt; "Напруга (В): 220-240 (Н.."
+                </p>
+                <p className="mt-1">
+                  *Це не стосується модальних вікон(при кліку на картку) там
+                  повний опис без обрізань
+                </p>
+              </div>
             </label>
           </div>
           <div className="flex flex-col gap-2">
             <label>
-              Артикль
+              <span className="text-red-600">*</span>Артикль
               <input
                 type="text"
                 name="article"
                 defaultValue={product?.article}
                 placeholder="Артикль"
                 className="block rounded-lg focus:bg-blue-100"
+                required
               />
             </label>
 
@@ -152,7 +180,7 @@ const Page = ({ params }: PageProps) => {
             </label>
 
             <label htmlFor="price">
-              Ціна
+              <span className="text-red-600">*</span>Ціна
               <input
                 type="number"
                 step="0.001"
@@ -163,21 +191,8 @@ const Page = ({ params }: PageProps) => {
                 required
               />
             </label>
-
             <label>
-              Ціна опт.
-              <input
-                type="number"
-                defaultValue={product?.priceBulk}
-                step="0.001"
-                name="priceBulk"
-                className="block rounded-lg focus:bg-blue-100"
-                placeholder="Ціна опт. $"
-                required
-              />
-            </label>
-            <label>
-              РРЦ
+              <span className="text-red-600">*</span>РРЦ
               <input
                 type="number"
                 defaultValue={product?.priceRetailRecommendation}
@@ -189,7 +204,19 @@ const Page = ({ params }: PageProps) => {
               />
             </label>
             <label>
-              К-сть в наявності
+              РРЦ зі знижкою
+              <input
+                type="number"
+                defaultValue={product?.rrcSale}
+                step="0.001"
+                name="rrcSale"
+                className="block rounded-lg focus:bg-blue-100"
+                placeholder="Ціна зі знижкою"
+              />
+            </label>
+
+            <label>
+              <span className="text-red-600">*</span>К-сть в наявності
               <input
                 type="number"
                 defaultValue={product?.countInStock}

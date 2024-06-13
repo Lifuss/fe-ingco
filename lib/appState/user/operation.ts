@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { toast } from 'react-toastify';
 
 export type RegisterCredentials = {
   email: string;

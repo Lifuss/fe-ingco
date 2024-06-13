@@ -10,7 +10,8 @@ export interface Product {
   article: string;
   description: string;
   price: number;
-  priceBulk: number;
+  priceBulk?: number;
+  rrcSale?: number;
   priceRetailRecommendation: number;
   countInStock: number;
   image: string;

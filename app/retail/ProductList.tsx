@@ -134,6 +134,8 @@ const ProductList = ({ isFavoritePage = false }) => {
                   name,
                   description,
                   _id,
+                  rrcSale,
+                  countInStock,
                 } = product;
                 let splitDesc = description.split('\n');
                 if (splitDesc.length > 3) {
@@ -150,7 +152,10 @@ const ProductList = ({ isFavoritePage = false }) => {
                 return (
                   <li
                     key={article}
-                    className="relative flex h-[320px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg"
+                    className={clsx(
+                      'relative flex h-[320px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
+                      countInStock <= 0 && 'pointer-events-none opacity-40',
+                    )}
                   >
                     <div
                       className="grow"
@@ -159,6 +164,13 @@ const ProductList = ({ isFavoritePage = false }) => {
                         openModal();
                       }}
                     >
+                      {countInStock <= 0 && (
+                        <div className="rounded-2x absolute left-0 top-0 flex h-full w-full items-center justify-center">
+                          <p className="text-lg font-semibold text-black">
+                            Немає в наявності
+                          </p>
+                        </div>
+                      )}
                       <div className="relative h-[150px] w-full shrink-0">
                         <Image
                           src={NEXT_PUBLIC_API + image}
@@ -219,7 +231,18 @@ const ProductList = ({ isFavoritePage = false }) => {
                             openModal();
                           }}
                         >
-                          {priceRetailRecommendation} грн
+                          {rrcSale ? (
+                            <div className="flex flex-col items-end">
+                              <span className="text-xs line-through">
+                                {priceRetailRecommendation} грн
+                              </span>
+                              <span className="pl-1 text-orangeLight">
+                                {rrcSale} грн
+                              </span>
+                            </div>
+                          ) : (
+                            priceRetailRecommendation + ' грн'
+                          )}
                         </p>
                         <button
                           className="fill-black pl-1 hover:fill-orange-500"

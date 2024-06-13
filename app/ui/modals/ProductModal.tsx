@@ -1,7 +1,10 @@
 'use client';
 import Modal from 'react-modal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addProductToCartThunk } from '@/lib/appState/user/operation';
+import {
+  addProductToCartThunk,
+  addProductToRetailCartThunk,
+} from '@/lib/appState/user/operation';
 import { useState } from 'react';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
@@ -40,7 +43,7 @@ const ModalProduct = ({
       ariaHideApp={false}
     >
       {product && (
-        <div className="relative w-[700px] text-lg">
+        <div className="relative w-[750px] text-lg">
           <button className="absolute right-0 top-0" onClick={closeModal}>
             <svg
               width="24"
@@ -54,16 +57,18 @@ const ModalProduct = ({
           <h2 className="mx-auto mb-5 px-6 text-center text-2xl font-medium">
             {product.name}
           </h2>
-          <div className="flex">
-            <div className="border-r-2 border-black pr-10">
-              <Image
-                src={`${process.env.NEXT_PUBLIC_API}${product.image}`}
-                alt={product.name}
-                className="mb-10 block"
-                width={245}
-                height={135}
-              />
-              <div className="flex justify-between">
+          <div className="grid grid-cols-3">
+            <div className="col-span-1 border-r-2 border-black pr-10">
+              <div className="relative mb-10 h-[150px]">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API}${product.image}`}
+                  alt={product.name}
+                  layout="fill"
+                  objectFit="contain"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                />
+              </div>
+              <div className="flex items-center justify-between">
                 {!isRetail ? (
                   <div>
                     <p title="Ціна в дол. амер. за 1 одиницю">
@@ -73,12 +78,20 @@ const ModalProduct = ({
                       РРЦ: {product.priceRetailRecommendation} грн
                     </p>
                   </div>
-                ) : (
-                  <div>
-                    <p title="Ціна з одиницю товару">
-                      Ціна: {product.priceRetailRecommendation} грн
-                    </p>
+                ) : product.rrcSale ? (
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs line-through">
+                      {product.priceRetailRecommendation} грн
+                    </span>
+                    <span>
+                      Ціна:{' '}
+                      <span className="pl-1 text-orangeLight">
+                        {product.rrcSale} грн
+                      </span>
+                    </span>
                   </div>
+                ) : (
+                  'Ціна: ' + product.priceRetailRecommendation + ' грн'
                 )}
                 <div className="flex items-center gap-3">
                   {!isRetail && (
@@ -105,17 +118,25 @@ const ModalProduct = ({
                               productId: product._id,
                               quantity: productQuantity,
                             }),
-                          );
+                          )
+                            .unwrap()
+                            .then(() => {
+                              toast.success(`${product.name} додано в кошик`);
+                            });
                         } else {
                           toast.error('Кількість товару не може бути менше 1');
                         }
                       } else {
                         dispatch(
-                          addProductToCartThunk({
+                          addProductToRetailCartThunk({
                             productId: product._id,
                             quantity: 1,
                           }),
-                        );
+                        )
+                          .unwrap()
+                          .then(() => {
+                            toast.success(`${product.name} додано в кошик`);
+                          });
                       }
                     }}
                   >
@@ -132,7 +153,7 @@ const ModalProduct = ({
                 </div>
               </div>
             </div>
-            <div className="min-w-[200px] pl-4">
+            <div className="col-span-2 min-w-[200px] pl-4">
               <p>
                 <span className="font-medium">Категорія:</span>{' '}
                 {product.category.name}

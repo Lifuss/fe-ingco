@@ -50,8 +50,8 @@ const ProductTable = () => {
         accessor: 'priceCol',
       },
       {
-        Header: 'Ціна ОПТ',
-        accessor: 'priceBulkCol',
+        Header: 'РРЦ',
+        accessor: 'rrcCol',
       },
       {
         Header: 'Наявність',
@@ -107,7 +107,9 @@ const ProductTable = () => {
       nameCol: product.name,
       categoryCol: product.category.name,
       priceCol: product.price,
-      priceBulkCol: product.priceBulk,
+      rrcCol: product.rrcSale
+        ? product.priceRetailRecommendation + '|' + product.rrcSale
+        : product.priceRetailRecommendation,
       availabilityCol: product.countInStock,
       editCol: product._id,
     }));
