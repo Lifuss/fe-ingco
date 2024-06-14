@@ -192,13 +192,11 @@ const ProductList = ({ isFavoritePage = false }) => {
                       >
                         {name}
                       </h4>
-                      <p className="h-[50px] text-xs font-semibold text-[#9CA3AF]">
+                      <ul className="h-[50px] text-xs text-[#9CA3AF]">
                         {splitDesc.map((item, index) => (
-                          <span key={index} className="block">
-                            {item}
-                          </span>
+                          <li key={index}>{item}</li>
                         ))}
-                      </p>
+                      </ul>
                     </div>
                     <div className="flex items-center justify-between">
                       <button

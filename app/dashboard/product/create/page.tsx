@@ -150,7 +150,16 @@ const Page = () => {
                 ))}
               </select>
             </label>
-
+            <label htmlFor="enterPrice">
+              Прихідна ціна
+              <input
+                type="number"
+                name="enterPrice"
+                step="0.001"
+                placeholder="Прихідна ціна"
+                className="block rounded-lg focus:bg-blue-100"
+              />
+            </label>
             <label htmlFor="price">
               <span className="text-red-600">*</span>Ціна
               <input
@@ -162,6 +171,7 @@ const Page = () => {
                 required
               />
             </label>
+
             <label>
               <span className="text-red-600">*</span>РРЦ
               <input

@@ -161,8 +161,8 @@ const ModalProduct = ({
               <p>
                 <span className="font-medium">Артикул:</span> {product.article}
               </p>
-              <p>
-                <span className="font-medium">Хар-ки:</span>
+              <p className="text-center">
+                <span className="font-medium">Характеристики</span>
               </p>
               {product.description.split('\n').map((item, index) => (
                 <p key={index}>{item}</p>

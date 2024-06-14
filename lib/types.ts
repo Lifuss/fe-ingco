@@ -12,6 +12,7 @@ export interface Product {
   price: number;
   priceBulk?: number;
   rrcSale?: number;
+  enterPrice?: number;
   priceRetailRecommendation: number;
   countInStock: number;
   image: string;
