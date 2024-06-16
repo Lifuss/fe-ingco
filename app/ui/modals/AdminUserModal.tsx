@@ -5,7 +5,10 @@ import { User } from '@/lib/types';
 import { useAppDispatch } from '@/lib/hooks';
 import { useEffect, useState } from 'react';
 import { Button } from '../button';
-import { updateUserThunk } from '@/lib/appState/dashboard/operations';
+import {
+  deleteUserThunk,
+  updateUserThunk,
+} from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 
 type AdminUserModalProps = {
@@ -271,13 +274,35 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
           <p>{new Date(updatedAt).toLocaleDateString()}</p>
         </div>
         <div className="mt-5 flex justify-between">
-          <Button
-            type="reset"
-            onClick={handleReset}
-            className="bg-red-300 hover:bg-red-400"
-          >
-            Скасувати
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              type="reset"
+              onClick={handleReset}
+              className="bg-red-300 hover:bg-red-400"
+              title="Відновити дані до початкового стану"
+            >
+              Відновити
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                if(confirm('Ви впевнені, що хочете видалити користувача?')) {
+                  dispatch(deleteUserThunk(user._id))
+                    .unwrap()
+                    .then(() => {
+                      closeModal();
+                    })
+                    .catch((error) => {
+                      toast.error('Помилка при видаленні користувача');
+                    });
+                }
+              }}
+              title="Видалити користувача"
+              className="bg-red-300 hover:bg-red-400"
+            >
+              Видалити
+            </Button>
+          </div>
           <Button type="submit">Зберегти</Button>
         </div>
       </form>

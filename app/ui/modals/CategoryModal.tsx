@@ -1,7 +1,7 @@
 'use client';
 import { FormEvent, useState } from 'react';
 import Modal from 'react-modal';
-import CategoryForm from '../CategoryForm';
+import CategoryForm from '../forms/CategoryForm';
 import { useAppDispatch } from '@/lib/hooks';
 import { createCategoryThunk } from '@/lib/appState/main/operations';
 

@@ -97,6 +97,18 @@ export const updateUserThunk = createAsyncThunk(
   },
 );
 
+export const deleteUserThunk = createAsyncThunk(
+  'deleteUser',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      await apiIngco.delete(`/users/${userId}`);
+      return userId;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+
 interface NewProduct {
   _id: string;
   quantity: number;

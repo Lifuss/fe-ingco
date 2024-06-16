@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from './button';
+import { Button } from '../button';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';

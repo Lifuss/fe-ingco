@@ -1,5 +1,5 @@
 import SwitchAuthButtons from '../../ui/switchAuthButtons';
-import RegisterForm from '../../ui/register-form';
+import RegisterForm from '../../ui/forms/register-form';
 
 export default function LoginPage() {
   return (

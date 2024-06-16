@@ -2,6 +2,7 @@ import { Order, User } from '@/lib/types';
 import { createSlice } from '@reduxjs/toolkit';
 import {
   createUserThunk,
+  deleteUserThunk,
   fetchOrdersThunk,
   fetchUsersThunk,
   updateOrderThunk,
@@ -48,6 +49,12 @@ const Slice = createSlice({
         const index = state.users.findIndex((user) => user._id === payload._id);
         state.users[index] = payload;
         toast.success('Користувач успішно змінений');
+      })
+      .addCase(deleteUserThunk.fulfilled, (state, { payload }) => {
+        console.log(payload, 'payload');
+
+        state.users = state.users.filter((user) => user._id !== payload);
+        toast.success('Користувач успішно видалений');
       });
   },
 });
