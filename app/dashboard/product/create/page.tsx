@@ -34,58 +34,14 @@ const Page = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
 
-    const {
-      name,
-      price,
-      category,
-      enterPrice,
-      description,
-      image,
-      seoKeywords,
-      article,
-      priceRetailRecommendation,
-      rrcSale,
-      countInStock,
-      warranty,
-    } = e.currentTarget;
-
-    formData.append('name', (name as unknown as HTMLInputElement).value);
-    formData.append('price', (price as HTMLInputElement).value);
-    formData.append('category', (category as HTMLInputElement).value);
-    formData.append('enterPrice', (enterPrice as HTMLInputElement).value);
-    formData.append('description', (description as HTMLInputElement).value);
-    formData.append('image', image.files?.[0] as Blob);
-    formData.append('seoKeywords', (seoKeywords as HTMLInputElement).value);
-    formData.append('article', (article as HTMLInputElement).value);
-    formData.append(
-      'priceRetailRecommendation',
-      (priceRetailRecommendation as HTMLInputElement).value,
-    );
-    formData.append('rrcSale', (rrcSale as HTMLInputElement).value);
-    formData.append('countInStock', (countInStock as HTMLInputElement).value);
-    formData.append('warranty', (warranty as HTMLInputElement).value);
-    characteristics.forEach((item, index) => {
+    characteristics?.forEach((item, index) => {
       formData.append(`characteristics[${index}][name]`, item.name);
       formData.append(`characteristics[${index}][value]`, item.value);
     });
-
-    console.log({
-      name,
-      price,
-      category,
-      enterPrice,
-      description,
-      image,
-      seoKeywords,
-      article,
-      priceRetailRecommendation,
-      rrcSale,
-      countInStock,
-      warranty,
-      characteristics,
-    });
+    formData.delete('characteristicName');
+    formData.delete('characteristicDesc');
 
     dispatch(createProductThunk(formData))
       .unwrap()

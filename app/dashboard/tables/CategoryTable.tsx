@@ -5,14 +5,14 @@ import {
   deleteCategoryThunk,
   fetchCategoriesThunk,
   updateCategoryThunk,
-} from '@/lib/appState/main/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+} from '../../../lib/appState/main/operations';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 import Modal from 'react-modal';
-import { customModalStyles } from '@/app/ui/modals/CategoryModal';
-import CategoryForm from '@/app/ui/CategoryForm';
+import { customModalStyles } from '../../ui/modals/CategoryModal';
+import CategoryForm from '../../ui/forms/CategoryForm';
 
 const CategoryTable = () => {
   const [isOpen, setIsOpen] = useState(false);

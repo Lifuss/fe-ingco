@@ -1,4 +1,4 @@
-import LoginForm from '@/app/ui/login-form';
+import LoginForm from '../../ui/forms/login-form';
 import SwitchAuthButtons from '../../ui/switchAuthButtons';
 
 function LoginPage() {

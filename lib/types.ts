@@ -14,8 +14,11 @@ export interface Product {
   rrcSale?: number;
   enterPrice?: number;
   priceRetailRecommendation: number;
+  characteristics: { name: string; value: string }[];
   countInStock: number;
   image: string;
+  warranty: number;
+  seoKeywords: string;
   category: Category;
   createdAt: string;
   updatedAt: string;
