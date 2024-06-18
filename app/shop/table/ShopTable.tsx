@@ -28,7 +28,6 @@ export type rawData = {
   _id: string;
 };
 
-// This is a table wrapper component that fetches data from the server and displays it in a table.
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -48,7 +47,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     products,
     total,
     totalPages,
-    currencyRates: { USD },
+    currencyRates: { USD = 0 },
   } = state.persistedMainReducer;
   let favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
