@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import CategoryForm from '../forms/CategoryForm';
 import { useAppDispatch } from '@/lib/hooks';
 import { createCategoryThunk } from '@/lib/appState/main/operations';
+import { toast } from 'react-toastify';
 
 export const customModalStyles = {
   content: {
@@ -24,11 +25,25 @@ export const CategoryModalCreate = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const inputElement = e.currentTarget[0] as HTMLInputElement;
-    dispatch(createCategoryThunk(inputElement.value as string))
-      .unwrap()
-      .then(() => closeModal())
-      .catch((err) => alert(err.message));
+    const form = e.currentTarget as HTMLFormElement;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const renderSortInput = form.elements.namedItem(
+      'renderSort',
+    ) as HTMLInputElement;
+
+    if (nameInput && renderSortInput) {
+      const name = nameInput.value.trim();
+      const renderSort = Number(renderSortInput.value.trim());
+
+      dispatch(createCategoryThunk({ name, renderSort }))
+        .unwrap()
+        .then(() => closeModal())
+        .catch(
+          (err) =>
+            err.response.status === 409 &&
+            toast.error('Категорія з такою назвою вже існує'),
+        );
+    }
   };
   return (
     <>

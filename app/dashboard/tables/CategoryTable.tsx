@@ -13,20 +13,24 @@ import { Row } from 'react-table';
 import Modal from 'react-modal';
 import { customModalStyles } from '../../ui/modals/CategoryModal';
 import CategoryForm from '../../ui/forms/CategoryForm';
+import { toast } from 'react-toastify';
 
 const CategoryTable = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState('');
-  const [selectedName, setSelectedName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<{
+    name: string;
+    renderSort: number;
+  }>({ name: '', renderSort: 0 });
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const productsCategories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
 
-  const openModal = (name: string, id: string) => {
+  const openModal = (name: string, id: string, renderSort: number) => {
     setSelectedId(id);
-    setSelectedName(name);
+    setSelectedCategory({ name, renderSort });
     setIsOpen(true);
   };
   const closeModal = () => setIsOpen(false);
@@ -39,11 +43,25 @@ const CategoryTable = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const inputElement = e.currentTarget[0] as HTMLInputElement;
-    dispatch(updateCategoryThunk({ id: selectedId, name: inputElement.value }))
-      .unwrap()
-      .then(() => closeModal())
-      .catch((err) => alert(err.message));
+    const form = e.currentTarget as HTMLFormElement;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const renderSortInput = form.elements.namedItem(
+      'renderSort',
+    ) as HTMLInputElement;
+
+    if (nameInput && renderSortInput) {
+      const name = nameInput.value.trim();
+      const renderSort = Number(renderSortInput.value.trim());
+
+      dispatch(updateCategoryThunk({ id: selectedId, name, renderSort }))
+        .unwrap()
+        .then(() => closeModal())
+        .catch(
+          (err) =>
+            err.response.status === 409 &&
+            toast.error('Категорія з такою назвою вже існує'),
+        );
+    }
   };
 
   const columns = useMemo(
@@ -57,12 +75,22 @@ const CategoryTable = () => {
         accessor: 'productsCountCol',
       },
       {
+        Header: 'Сортування',
+        accessor: 'renderSortCol',
+      },
+      {
         Header: 'Редагувати',
         accessor: 'editCol',
         Cell: ({ row }: { row: Row }) => (
           <button
             className="flex w-full justify-center"
-            onClick={() => openModal(row.values.nameCol, row.values.editCol)}
+            onClick={() =>
+              openModal(
+                row.values.nameCol,
+                row.values.editCol,
+                row.values.renderSortCol,
+              )
+            }
           >
             <svg
               width="25"
@@ -109,6 +137,7 @@ const CategoryTable = () => {
         productsCountCol: category.count,
         editCol: category._id,
         deleteCol: category._id,
+        renderSortCol: category.renderSort,
       })),
     [productsCategories],
   );
@@ -125,8 +154,12 @@ const CategoryTable = () => {
         isOpen={isOpen}
         onRequestClose={closeModal}
         style={customModalStyles}
+        ariaHideApp={false}
       >
-        <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedName} />
+        <CategoryForm
+          handleSubmit={handleSubmit}
+          defaultValue={selectedCategory}
+        />
       </Modal>
       {/* <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />

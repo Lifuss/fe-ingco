@@ -111,24 +111,33 @@ export const deleteProductThunk = createAsyncThunk(
 
 export const createCategoryThunk = createAsyncThunk(
   'category/create',
-  async (name: string, { rejectWithValue }) => {
+  async (
+    { name, renderSort }: { name: string; renderSort: number },
+    { rejectWithValue },
+  ) => {
     try {
-      const { data } = await apiIngco.post('/categories', { name });
+      const { data } = await apiIngco.post('/categories', { name, renderSort });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
 
 export const updateCategoryThunk = createAsyncThunk(
   'category/update',
-  async ({ id, name }: { id: string; name: string }, { rejectWithValue }) => {
+  async (
+    { id, name, renderSort }: { id: string; name: string; renderSort: number },
+    { rejectWithValue },
+  ) => {
     try {
-      const { data } = await apiIngco.put(`/categories/${id}`, { name });
+      const { data } = await apiIngco.put(`/categories/${id}`, {
+        name,
+        renderSort,
+      });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -141,7 +150,7 @@ export const deleteCategoryThunk = createAsyncThunk(
       return categoryId;
     } catch (error) {
       toast.error(
-        'В категорії існують привя`зані товари, видаліть їх, або змініть категорію',
+        "В категорії існують прив'язані товари, видаліть їх, або змініть категорію",
       );
       rejectWithValue(error);
     }

@@ -79,11 +79,11 @@ const Sidebar = () => {
           />
         </svg>
       </Link>
-      <ul className="flex justify-between gap-2 shadow-md xl:flex-col">
+      <ul className="flex flex-wrap justify-between gap-2 shadow-md xl:flex-col">
         {productsCategories?.map((category) => (
           <li
             className={clsx(
-              'cursor-pointer border-b-2 border-gray-200 px-2 py-1 text-base tracking-[0.01em] transition-colors hover:bg-gray-100 hover:text-gray-800',
+              'cursor-pointer border-b-2 border-gray-200 px-2 py-1 text-base tracking-[0.01em] transition-colors  hover:bg-gray-100 hover:text-gray-800',
               searchParams.get('category') === category._id &&
                 'bg-orange-200 text-gray-800',
             )}
