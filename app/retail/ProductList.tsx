@@ -133,6 +133,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                   priceRetailRecommendation,
                   name,
                   description,
+                  characteristics,
                   _id,
                   rrcSale,
                   countInStock,
@@ -161,6 +162,8 @@ const ProductList = ({ isFavoritePage = false }) => {
                       className="grow"
                       onClick={() => {
                         setSelectedProduct(product);
+                        console.log('selectedProduct in ProductList', product);
+
                         openModal();
                       }}
                     >
@@ -193,9 +196,27 @@ const ProductList = ({ isFavoritePage = false }) => {
                         {name}
                       </h4>
                       <ul className="h-[50px] text-xs text-[#9CA3AF]">
-                        {splitDesc.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
+                        {characteristics.length ? (
+                          characteristics.slice(0, 3).map((item) => {
+                            let name = item.name.trim();
+                            let value = item.value.trim();
+
+                            name.length > 15 &&
+                              (name = name.slice(0, 15) + '...');
+                            value.length > 15 &&
+                              (value = value.slice(0, 15) + '...');
+
+                            return item.value !== '-' ? (
+                              <li key={item._id}>
+                                {name}: {value}
+                              </li>
+                            ) : (
+                              <li key={item._id}>{name}</li>
+                            );
+                          })
+                        ) : (
+                          <li>{splitDesc}</li>
+                        )}
                       </ul>
                     </div>
                     <div className="flex items-center justify-between">

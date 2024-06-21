@@ -153,20 +153,52 @@ const ModalProduct = ({
                 </div>
               </div>
             </div>
-            <div className="col-span-2 min-w-[200px] pl-4">
-              <p>
-                <span className="font-medium">Категорія:</span>{' '}
-                {product.category.name}
-              </p>
-              <p>
-                <span className="font-medium">Артикул:</span> {product.article}
-              </p>
-              <p className="text-center">
-                <span className="font-medium">Характеристики</span>
-              </p>
-              {product.description.split('\n').map((item, index) => (
-                <p key={index}>{item}</p>
-              ))}
+            <div className="col-span-2 min-w-[200px] pl-4 text-base">
+              <div className="mb-2 flex flex-wrap justify-between">
+                <p>
+                  <span className="font-medium">Артикул:</span>{' '}
+                  {product.article}
+                </p>
+                <p>
+                  <span className="font-medium">Категорія:</span>{' '}
+                  {product.category.name}
+                </p>
+              </div>
+              <div className="">
+                {product.description.split('\n').map((item, index) => (
+                  <p key={index}>{item}</p>
+                ))}
+              </div>
+              {product.characteristics.length > 0 && (
+                <p className="mt-2 text-center">
+                  <span className="font-medium">Характеристики</span>
+                </p>
+              )}
+
+              <div className="flex flex-col gap-2">
+                {product.characteristics?.map((item) =>
+                  item.value !== '-' ? (
+                    <div key={item._id}>
+                      <p>
+                        <span className=" font-medium">{item.name}:</span>{' '}
+                        {item.value}
+                      </p>
+                    </div>
+                  ) : (
+                    <div key={item._id}>
+                      <p>
+                        <span className=" font-medium">{item.name}</span>
+                      </p>
+                    </div>
+                  ),
+                )}
+                {product.warranty ? (
+                  <p className="">
+                    <span className="font-medium">Гарантія:</span>{' '}
+                    {product.warranty} міс.
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

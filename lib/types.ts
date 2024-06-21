@@ -15,7 +15,7 @@ export interface Product {
   rrcSale?: number;
   enterPrice?: number;
   priceRetailRecommendation: number;
-  characteristics: { name: string; value: string }[];
+  characteristics: { name: string; value: string; _id?: string }[];
   countInStock: number;
   image: string;
   warranty: number;
