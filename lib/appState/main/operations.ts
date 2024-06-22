@@ -156,3 +156,18 @@ export const deleteCategoryThunk = createAsyncThunk(
     }
   },
 );
+
+export const fetchExcelFileThunk = createAsyncThunk(
+  'excel/fetch',
+  async (sheetType: string, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('/products/sheets', {
+        params: { sheetType },
+        responseType: 'blob',
+      });
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);

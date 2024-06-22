@@ -79,7 +79,7 @@ const Sidebar = () => {
           />
         </svg>
       </Link>
-      <ul className="flex flex-wrap justify-between gap-2 shadow-md xl:flex-col">
+      <ul className="mb-4 flex flex-wrap justify-between gap-2 shadow-md xl:flex-col">
         {productsCategories?.map((category) => (
           <li
             className={clsx(
@@ -93,6 +93,11 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
+      {pathname.includes('/shop') && (
+        <Link className="rounded-md bg-orangeLight p-2" href={'/shop/export'}>
+          Експорт таблиць
+        </Link>
+      )}
     </aside>
   );
 };
