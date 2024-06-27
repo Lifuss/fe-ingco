@@ -83,7 +83,7 @@ const Footer = () => {
                 />
               </svg>
             </Link>
-            {/* <Link href={NEXT_PUBLIC_VIBER_URL} target="_blank">
+            <Link href={NEXT_PUBLIC_VIBER_URL} target="_blank">
               <svg
                 width="32"
                 height="32"
@@ -97,7 +97,7 @@ const Footer = () => {
                   fill="#111827"
                 />
               </svg>
-            </Link> */}
+            </Link>
           </div>
         </li>
         <li className="lg:order-none">
