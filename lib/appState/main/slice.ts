@@ -7,10 +7,12 @@ import {
   fetchCurrencyRatesThunk,
   fetchHistoryThunk,
   fetchMainTableDataThunk,
+  getProductByIdThunk,
   updateCategoryThunk,
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
+import { get } from 'http';
 // Define the type for your payload
 interface PayloadCurrencyRates {
   lastUpdate: string;
@@ -28,6 +30,7 @@ type initialStateType = {
   products: Product[];
   history: Order[];
   total: number;
+  product: Product;
 };
 const initialState: initialStateType = {
   currencyRates: {
@@ -43,6 +46,22 @@ const initialState: initialStateType = {
   total: 0,
   products: [],
   history: [],
+  product: {
+    _id: '',
+    name: '',
+    article: '',
+    description: '',
+    price: 0,
+    priceRetailRecommendation: 0,
+    characteristics: [],
+    countInStock: 0,
+    image: '',
+    warranty: 0,
+    seoKeywords: '',
+    category: null,
+    createdAt: '',
+    updatedAt: ''
+  },
 };
 
 const appStateSlice = createSlice({
@@ -51,6 +70,9 @@ const appStateSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getProductByIdThunk.fulfilled, (state, { payload }) => {
+        state.product = payload;
+      })
       .addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
         state.currencyRates = payload as PayloadCurrencyRates;
       })

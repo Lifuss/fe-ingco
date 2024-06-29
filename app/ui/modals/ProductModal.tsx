@@ -161,7 +161,7 @@ const ModalProduct = ({
                 </p>
                 <p>
                   <span className="font-medium">Категорія:</span>{' '}
-                  {product.category.name}
+                  {product.category?.name}
                 </p>
               </div>
               <div className="">

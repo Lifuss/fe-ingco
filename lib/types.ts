@@ -20,7 +20,7 @@ export interface Product {
   image: string;
   warranty: number;
   seoKeywords: string;
-  category: Category;
+  category: Category | null;
   createdAt: string;
   updatedAt: string;
 }

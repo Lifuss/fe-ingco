@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
@@ -30,6 +30,7 @@ export type rawData = {
 
 // This is a table wrapper component that fetches data from the server and displays it in a table.
 const ProductList = ({ isFavoritePage = false }) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
@@ -69,7 +70,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
     if (category) {
       productsData = productsData.filter((product) =>
-        product.category.name.toLowerCase().includes(category.toLowerCase()),
+        product.category?.name.toLowerCase().includes(category.toLowerCase()),
       );
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);
@@ -161,10 +162,11 @@ const ProductList = ({ isFavoritePage = false }) => {
                     <div
                       className="grow"
                       onClick={() => {
-                        setSelectedProduct(product);
-                        console.log('selectedProduct in ProductList', product);
+                        router.push(`/retail/${_id}`);
+                        // setSelectedProduct(product);
+                        // console.log('selectedProduct in ProductList', product);
 
-                        openModal();
+                        // openModal();
                       }}
                     >
                       {countInStock <= 0 && (

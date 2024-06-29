@@ -10,7 +10,18 @@ export const metadata: Metadata = {
     template: '%s | INGCO',
     default: 'INGCO',
   },
-  description: 'INGCO is a leading brand in the hardware tools industry.',
+  description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+  keywords: [
+    'INGCO',
+    'магазин',
+    'оптова торгівля',
+    'роздрібна торгівля',
+    'гуртом',
+    'hardware tools',
+    'інструменти для будівництва',
+    'інструменти для ремонту',
+    'електроінтрументи',
+  ],
 };
 
 export default function RootLayout({

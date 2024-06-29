@@ -105,7 +105,7 @@ const ProductTable = () => {
     return products.map((product) => ({
       articleCol: product.article,
       nameCol: product.name,
-      categoryCol: product.category.name,
+      categoryCol: product.category?.name,
       priceCol: product.price,
       rrcCol: product.rrcSale
         ? product.priceRetailRecommendation + '|' + product.rrcSale

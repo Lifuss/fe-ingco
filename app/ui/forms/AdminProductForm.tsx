@@ -259,7 +259,7 @@ const AdminProductForm = ({
               <select
                 name="category"
                 className="block rounded-lg"
-                defaultValue={product?.category._id}
+                defaultValue={product?.category?._id}
               >
                 {categories?.map((category) => (
                   <option key={category._id} value={category._id}>
