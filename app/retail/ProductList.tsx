@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import clsx from 'clsx';
 import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../ui/TextPlaceholder';
+import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 
 export type rawData = {
   article: string;
@@ -48,6 +49,7 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   const { products, totalPages } = state.persistedMainReducer;
   let favorites: Product[] = state.persistedAuthReducer.user.favorites;
+  const isAuth = state.persistedAuthReducer.isAuthenticated;
   const favoritesList = favorites.map((product) => product._id);
 
   let page = searchParams.get('page')
@@ -92,16 +94,25 @@ const ProductList = ({ isFavoritePage = false }) => {
   }
 
   const handleCartClick = (id: string, productName: string) => {
-    dispatch(
-      addProductToRetailCartThunk({
-        productId: id,
-        quantity: 1,
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        toast.success(`${productName} додано в кошик`);
-      });
+    if (isAuth) {
+      dispatch(
+        addProductToRetailCartThunk({
+          productId: id,
+          quantity: 1,
+        }),
+      )
+        .unwrap()
+        .then(() => {
+          toast.success(`${productName} додано в кошик`);
+        });
+    } else {
+      const { price, priceBulk, ...product } = productsData?.find(
+        (item) => item._id === id,
+      );
+      dispatch(addProductToLocalStorageCart({ product, quantity: 1 }));
+
+      toast.success(`${productName} додано в кошик`);
+    }
   };
 
   const totalPage = isFavoritePage

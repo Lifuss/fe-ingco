@@ -243,7 +243,7 @@ export const addProductToRetailCartThunk = createAsyncThunk(
       });
       return data.cart;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );

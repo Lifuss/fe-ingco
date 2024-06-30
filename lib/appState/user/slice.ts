@@ -15,6 +15,7 @@ import {
   refreshTokenThunk,
   registerThunk,
 } from './operation';
+import { Product } from '@/lib/types';
 
 const initialState = {
   user: {
@@ -30,6 +31,7 @@ const initialState = {
     email: '',
     phone: '',
   },
+  localStorageCart: [] as { product: Partial<Product>; quantity: number }[],
   token: '',
   isAuthenticated: false,
   isLoading: false,
@@ -41,6 +43,24 @@ const authStateSlice = createSlice({
   reducers: {
     clearAuthState: () => {
       return initialState;
+    },
+    addProductToLocalStorageCart: (state, { payload }) => {
+      if (
+        state.localStorageCart.find(
+          (product) => product._id === payload.product._id,
+        )
+      ) {
+        state.localStorageCart = state.localStorageCart.map((product) =>
+          product._id === payload.product._id
+            ? {
+                ...product,
+                quantity: product.quantity + payload.product.quantity,
+              }
+            : product,
+        );
+      } else {
+        state.localStorageCart.push(payload.product);
+      }
     },
   },
   extraReducers: (builder) => {
@@ -135,5 +155,6 @@ const authStateSlice = createSlice({
   },
 });
 
-export const { clearAuthState } = authStateSlice.actions;
+export const { clearAuthState, addProductToLocalStorageCart } =
+  authStateSlice.actions;
 export const authSlice = authStateSlice.reducer;

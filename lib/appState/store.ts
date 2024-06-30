@@ -22,7 +22,7 @@ const persistMainConfig = {
 };
 const persistAuthConfig = {
   key: 'auth',
-  whitelist: ['token'],
+  whitelist: ['token', 'localStorageCart'],
   storage,
 };
 
