@@ -5,16 +5,19 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
-// import { Row } from 'react-table';
 import {
   addProductToRetailCartThunk,
   createRetailOrderThunk,
-  deleteProductFromCartThunk,
   deleteProductFromRetailCartThunk,
 } from '@/lib/appState/user/operation';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
+import {
+  decreaseProductQuantityInLocalStorageCart,
+  increaseProductQuantityInLocalStorageCart,
+  removeProductFromLocalStorageCart,
+} from '@/lib/appState/user/slice';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -23,8 +26,11 @@ const RetailCartTable = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
+  const isAuth = useAppSelector(
+    (state) => state.persistedAuthReducer.isAuthenticated,
+  );
   const {
-    retailCart: selectedCart,
+    retailCart,
     firstName,
     lastName,
     surName,
@@ -38,17 +44,27 @@ const RetailCartTable = () => {
     phone: string;
     email: string;
   } = useAppSelector((state) => state.persistedAuthReducer.user);
-  const selectedCurrency = useAppSelector(
-    (state) => state.persistedMainReducer.currencyRates,
+  const localStorageCart = useAppSelector(
+    (state) => state.persistedAuthReducer.localStorageCart,
   );
 
+  let selectedCart = isAuth ? retailCart : localStorageCart;
+
   const handleQuantityChange = (id: string, operation: string) => {
-    if (operation === 'increment') {
-      dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
+    if (isAuth) {
+      if (operation === 'increment') {
+        dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
+      } else {
+        dispatch(
+          deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }),
+        );
+      }
     } else {
-      dispatch(
-        deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }),
-      );
+      if (operation === 'increment') {
+        dispatch(increaseProductQuantityInLocalStorageCart(id));
+      } else {
+        dispatch(decreaseProductQuantityInLocalStorageCart(id));
+      }
     }
   };
 
@@ -66,9 +82,11 @@ const RetailCartTable = () => {
       codeCol: item.productId.article,
       nameCol: item.productId.name,
       photoCol: item.productId.image,
-      rrcCol: item.productId.priceRetailRecommendation,
+      rrcCol: item.productId.rrcSale
+        ? item.productId.rrcSale
+        : item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
-      totalCol: `${item.productId.priceRetailRecommendation * item.quantity} грн`,
+      totalCol: `${item.productId.rrcSale ? item.productId.rrcSale * item.quantity : item.productId.priceRetailRecommendation * item.quantity} грн`,
       _id: item.productId._id,
       product: item.productId,
     }));
@@ -172,12 +190,16 @@ const RetailCartTable = () => {
               <button
                 className="absolute -right-7 top-0 fill-gray-400 hover:fill-red-500"
                 onClick={() => {
-                  dispatch(
-                    deleteProductFromRetailCartThunk({
-                      productId: row.original._id,
-                      quantity: row.values.quantityCol,
-                    }),
-                  );
+                  isAuth
+                    ? dispatch(
+                        deleteProductFromRetailCartThunk({
+                          productId: row.original._id,
+                          quantity: row.values.quantityCol,
+                        }),
+                      )
+                    : dispatch(
+                        removeProductFromLocalStorageCart(row.original._id),
+                      );
                 }}
               >
                 <svg
@@ -198,6 +220,17 @@ const RetailCartTable = () => {
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dispatch],
+  );
+
+  const sum = Math.ceil(
+    selectedCart.reduce((acc, item) => {
+      return (
+        acc +
+        (item.productId.rrcSale
+          ? item.productId.rrcSale * item.quantity
+          : item.productId.priceRetailRecommendation * item.quantity)
+      );
+    }, 0),
   );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -221,16 +254,18 @@ const RetailCartTable = () => {
       products: selectedCart.map((item) => ({
         productId: item.productId._id,
         quantity: item.quantity,
-        price: Number(item.productId.price.toFixed(2)),
-        totalPriceByOneProduct: Number(
-          (item.productId.price * item.quantity).toFixed(2),
+        price: Math.ceil(
+          item.productId.rrcSale
+            ? item.productId.rrcSale
+            : item.productId.priceRetailRecommendation,
+        ),
+        totalPriceByOneProduct: Math.ceil(
+          item.productId.rrcSale
+            ? item.productId.rrcSale * item.quantity
+            : item.productId.priceRetailRecommendation * item.quantity,
         ),
       })),
-      totalPrice: Math.ceil(
-        selectedCart.reduce((acc, item) => {
-          return acc + item.productId.priceRetailRecommendation * item.quantity;
-        }, 0),
-      ),
+      totalPrice: sum,
       shippingAddress,
       firstName,
       lastName,
@@ -243,16 +278,10 @@ const RetailCartTable = () => {
     dispatch(createRetailOrderThunk(order))
       .unwrap()
       .then((data) => {
-        closeModal();
-        toast.success('Замовлення успішно оформлено');
+        toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
+        form.reset();
       });
   };
-
-  const sum = Math.ceil(
-    selectedCart.reduce((acc, item) => {
-      return acc + item.productId.priceRetailRecommendation * item.quantity;
-    }, 0),
-  );
 
   return selectedCart.length > 0 ? (
     <div className="">
@@ -358,7 +387,3 @@ const RetailCartTable = () => {
 };
 
 export default RetailCartTable;
-
-function closeModal() {
-  throw new Error('Function not implemented.');
-}

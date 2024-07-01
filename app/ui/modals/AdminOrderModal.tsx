@@ -2,12 +2,7 @@
 import Modal from 'react-modal';
 import { customModalStyles } from './CategoryModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import {
-  Order,
-  OrderStatusEnum,
-  UserWithAuth,
-  UserWithoutAuth,
-} from '@/lib/types';
+import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../button';
 import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
@@ -118,6 +113,7 @@ const AdminOrderModal = ({
             <p>Email:</p>
             <p>Моб. номер:</p>
             <p>Статус:</p>
+            <p>Змінити статус:</p>
           </div>
           <div>
             {'userId' in user ? (
@@ -133,6 +129,7 @@ const AdminOrderModal = ({
                 <p>{user.phone}</p>
               </>
             )}
+            <p>{status}</p>
             <select
               name="status"
               defaultValue={status}
@@ -176,14 +173,20 @@ const AdminOrderModal = ({
             </div>
             <div className="font-medium ">Сума $|₴</div>
           </div>
-          <div className="max-h-[370px] overflow-auto">
+          <div className="mb-5 max-h-[370px] overflow-auto">
             {products.map((product) => (
               <div
                 key={product._id}
                 className="relative grid grid-cols-4 gap-2 border-b border-gray-400 text-center"
               >
-                <div className="text-left">{product.product.name}</div>
-                <div>{`${product.price} | ${Math.ceil(product.price * USD)}`}</div>
+                <div className="text-left text-base">
+                  {product.product.name}
+                </div>
+                <div>
+                  {!isRetail
+                    ? `${product.price} | ${Math.ceil(product.price * USD)}`
+                    : product.price + ' грн'}
+                </div>
                 <input
                   type="number"
                   defaultValue={
@@ -191,7 +194,7 @@ const AdminOrderModal = ({
                       (item) => item._id === product._id,
                     )?.quantity
                   }
-                  className="rounded-md"
+                  className="rounded-md text-center font-medium"
                   onChange={(e) => {
                     const value = e.currentTarget.value;
                     const updatedProducts = selectedOrder?.products.map(
@@ -229,7 +232,11 @@ const AdminOrderModal = ({
                     }
                   }}
                 />
-                <div>{`${product.totalPriceByOneProduct} | ${Math.ceil(product.totalPriceByOneProduct * USD)}`}</div>
+                <div>
+                  {!isRetail
+                    ? `${product.totalPriceByOneProduct} | ${Math.ceil(product.totalPriceByOneProduct * USD)}`
+                    : product.totalPriceByOneProduct + ' грн'}
+                </div>
                 <button
                   className="text-red absolute bottom-0 right-0"
                   onClick={() => {
@@ -272,8 +279,14 @@ const AdminOrderModal = ({
           </div>
           <p className="font-medium">
             Загальна сума:{' '}
-            <span className="block">{totalPrice.toFixed(2)} $</span>
-            <span>{Math.ceil(totalPrice * USD)} ₴</span>
+            {!isRetail ? (
+              <>
+                <span className="block">{totalPrice.toFixed(2)} $</span>
+                <span>{Math.ceil(totalPrice * USD)} ₴</span>
+              </>
+            ) : (
+              <span>{Math.ceil(totalPrice)} грн</span>
+            )}
           </p>
         </div>
       </form>

@@ -31,7 +31,11 @@ const initialState = {
     email: '',
     phone: '',
   },
-  localStorageCart: [] as { product: Partial<Product>; quantity: number }[],
+  localStorageCart: [] as {
+    productId: Product;
+    quantity: number;
+    _id: string;
+  }[],
   token: '',
   isAuthenticated: false,
   isLoading: false,
@@ -45,22 +49,39 @@ const authStateSlice = createSlice({
       return initialState;
     },
     addProductToLocalStorageCart: (state, { payload }) => {
-      if (
-        state.localStorageCart.find(
-          (product) => product._id === payload.product._id,
-        )
-      ) {
-        state.localStorageCart = state.localStorageCart.map((product) =>
-          product._id === payload.product._id
-            ? {
-                ...product,
-                quantity: product.quantity + payload.product.quantity,
-              }
-            : product,
-        );
+      const product = state.localStorageCart.find(
+        (product) => product._id === payload._id,
+      );
+      if (product) {
+        product.quantity += 1;
       } else {
-        state.localStorageCart.push(payload.product);
+        state.localStorageCart.push({ ...payload, quantity: 1 });
       }
+    },
+    removeProductFromLocalStorageCart: (state, { payload }) => {
+      state.localStorageCart = state.localStorageCart.filter(
+        (product) => product._id !== payload,
+      );
+    },
+    decreaseProductQuantityInLocalStorageCart: (state, { payload }) => {
+      state.localStorageCart.find((product) => {
+        if (product._id === payload) {
+          if (product.quantity === 1) {
+            state.localStorageCart = state.localStorageCart.filter(
+              (product) => product._id !== payload,
+            );
+          } else {
+            product.quantity -= 1;
+          }
+        }
+      });
+    },
+    increaseProductQuantityInLocalStorageCart: (state, { payload }) => {
+      state.localStorageCart = state.localStorageCart.map((product) =>
+        product._id === payload
+          ? { ...product, quantity: product.quantity + 1 }
+          : product,
+      );
     },
   },
   extraReducers: (builder) => {
@@ -81,6 +102,7 @@ const authStateSlice = createSlice({
       })
       .addCase(createRetailOrderThunk.fulfilled, (state, _) => {
         state.user.retailCart = [];
+        state.localStorageCart = [];
       })
       .addMatcher(
         isAnyOf(
@@ -155,6 +177,11 @@ const authStateSlice = createSlice({
   },
 });
 
-export const { clearAuthState, addProductToLocalStorageCart } =
-  authStateSlice.actions;
+export const {
+  clearAuthState,
+  addProductToLocalStorageCart,
+  increaseProductQuantityInLocalStorageCart,
+  decreaseProductQuantityInLocalStorageCart,
+  removeProductFromLocalStorageCart,
+} = authStateSlice.actions;
 export const authSlice = authStateSlice.reducer;

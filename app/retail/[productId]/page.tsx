@@ -9,6 +9,7 @@ import novaPoshtaSVG from '@/public/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
 import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
+import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 
 type PageProps = {
   params: {
@@ -19,22 +20,38 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+  const isAuth = useAppSelector(
+    (state) => state.persistedAuthReducer.isAuthenticated,
+  );
   useEffect(() => {
     console.log(params.productId);
     dispatch(getProductByIdThunk(params.productId));
   }, [dispatch, params.productId]);
 
   const handleCartClick = () => {
-    dispatch(
-      addProductToRetailCartThunk({
-        productId: product._id,
-        quantity: 1,
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        toast.success(`${product.name} додано в кошик`);
-      });
+    if (isAuth) {
+      dispatch(
+        addProductToRetailCartThunk({
+          productId: product._id,
+          quantity: 1,
+        }),
+      )
+        .unwrap()
+        .then(() => {
+          toast.success(`${product.name} додано в кошик`);
+        });
+    } else {
+      const { price, priceBulk, ...normalizeProduct } = product;
+      dispatch(
+        addProductToLocalStorageCart({
+          productId: normalizeProduct,
+          quantity: 1,
+          _id: product._id,
+        }),
+      );
+
+      toast.success(`${product.name} додано в кошик`);
+    }
   };
 
   return (

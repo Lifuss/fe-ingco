@@ -50,12 +50,11 @@ const Header = () => {
   };
 
   const isShop = pathname.includes('shop');
-  // TODO: low prior - зробити меню бургер для мобільної верстки
 
   return (
     <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link
-        href="/home"
+        href={isShop ? '/shop' : '/retail'}
         className="flex h-[31px] items-center justify-center md:block lg:h-[52px]"
       >
         <Image
@@ -125,12 +124,12 @@ const Header = () => {
             </Modal>
           </li>
           <li className="flex">
-            {/* <Link
+            <Link
               href="/retail"
               className="border-r border-black pr-1 transition-colors ease-out hover:text-white"
             >
               Роздріб
-            </Link> */}
+            </Link>
             <Link
               className="pl-1 transition-colors ease-out hover:text-white"
               href="/shop"

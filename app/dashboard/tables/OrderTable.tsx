@@ -83,9 +83,11 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
       loginCol: 'login' in order.user ? order.user.login : order.user.email,
       statusCol: order.status,
       commentCol: order.comment,
-      totalPrice: Math.ceil(order.totalPrice * usdRate),
+      totalPrice: !isRetail
+        ? Math.ceil(order.totalPrice * usdRate)
+        : order.totalPrice,
     }));
-  }, [orders, usdRate]);
+  }, [orders, usdRate, isRetail]);
 
   return (
     <div>

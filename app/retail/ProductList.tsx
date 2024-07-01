@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -10,7 +10,6 @@ import {
   addProductToRetailCartThunk,
   deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
-import ModalProduct from '@/app/ui/modals/ProductModal';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import clsx from 'clsx';
@@ -35,17 +34,8 @@ const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   const { products, totalPages } = state.persistedMainReducer;
   let favorites: Product[] = state.persistedAuthReducer.user.favorites;
@@ -86,10 +76,14 @@ const ProductList = ({ isFavoritePage = false }) => {
   }, [dispatch, page, query, category, isFavoritePage, limit]);
 
   function handleFavoriteClick(id: string) {
-    if (favoritesList.includes(id)) {
-      dispatch(deleteFavoriteProductThunk(id));
+    if (isAuth) {
+      if (favoritesList.includes(id)) {
+        dispatch(deleteFavoriteProductThunk(id));
+      } else {
+        dispatch(addFavoriteProductThunk(id));
+      }
     } else {
-      dispatch(addFavoriteProductThunk(id));
+      toast.error('Для додавання в обране потрібно увійти в профіль');
     }
   }
 
@@ -106,10 +100,16 @@ const ProductList = ({ isFavoritePage = false }) => {
           toast.success(`${productName} додано в кошик`);
         });
     } else {
-      const { price, priceBulk, ...product } = productsData?.find(
-        (item) => item._id === id,
+      const { price, priceBulk, ...product } = productsData.find(
+        (product) => product._id === id,
+      ) as Product;
+      dispatch(
+        addProductToLocalStorageCart({
+          productId: product,
+          quantity: 1,
+          _id: id,
+        }),
       );
-      dispatch(addProductToLocalStorageCart({ product, quantity: 1 }));
 
       toast.success(`${productName} додано в кошик`);
     }
@@ -174,10 +174,6 @@ const ProductList = ({ isFavoritePage = false }) => {
                       className="grow"
                       onClick={() => {
                         router.push(`/retail/${_id}`);
-                        // setSelectedProduct(product);
-                        // console.log('selectedProduct in ProductList', product);
-
-                        // openModal();
                       }}
                     >
                       {countInStock <= 0 && (
@@ -259,8 +255,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                         <p
                           className="border-r border-black pr-1 text-base font-medium"
                           onClick={() => {
-                            setSelectedProduct(product);
-                            openModal();
+                            router.push(`/retail/${_id}`);
                           }}
                         >
                           {rrcSale ? (
@@ -302,13 +297,6 @@ const ProductList = ({ isFavoritePage = false }) => {
               <Pagination totalPages={totalPage} />
             </div>
           </div>
-
-          <ModalProduct
-            product={selectedProduct}
-            closeModal={closeModal}
-            isOpen={isModalOpen}
-            isRetail
-          />
         </>
       )}
     </>
