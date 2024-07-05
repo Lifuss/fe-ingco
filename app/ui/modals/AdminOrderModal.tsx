@@ -7,6 +7,7 @@ import { Button } from '../button';
 import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
+import Icon from '../assets/Icon';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -89,20 +90,7 @@ const AdminOrderModal = ({
       ariaHideApp={false}
     >
       <div onClick={closeModal} className="absolute right-2 top-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 cursor-pointer"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <Icon icon="close" className="h-6 w-6 cursor-pointer stroke-current" />
       </div>
       <form onSubmit={handleSubmit} className="text-lg">
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>

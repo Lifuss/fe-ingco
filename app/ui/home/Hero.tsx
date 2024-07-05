@@ -6,8 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-// TODO закгрулити краї картиники
-
 var settings = {
   dots: true,
   infinite: true,

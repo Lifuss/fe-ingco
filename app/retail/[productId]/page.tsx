@@ -5,7 +5,7 @@ import { getProductByIdThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { useEffect } from 'react';
-import novaPoshtaSVG from '@/public/Nova_Poshta_2019_ua.svg';
+import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
 import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
@@ -79,8 +79,17 @@ const Page = ({ params }: PageProps) => {
                   className="flex justify-between gap-2"
                   key={characteristic._id}
                 >
-                  <h3 className="font-medium">{characteristic.name}:</h3>
-                  <p>{characteristic.value}</p>
+                  {characteristic.value !== '-' ? (
+                    <>
+                      <h3 className="font-medium">{characteristic.name}:</h3>
+                      <p>{characteristic.value}</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-medium">{characteristic.name}:</h3>
+                      <p>+</p>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>

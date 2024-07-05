@@ -10,6 +10,7 @@ import {
   updateUserThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
+import Icon from '../assets/Icon';
 
 type AdminUserModalProps = {
   isOpen: boolean;
@@ -184,20 +185,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       ariaHideApp={false}
     >
       <div onClick={closeModal} className="absolute right-2 top-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 cursor-pointer"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <Icon icon="close" className="h-6 w-6 cursor-pointer stroke-current" />
       </div>
       <h2 className="font-lg mb-4 font-medium">Редагування користувача</h2>
       <form onSubmit={handleSubmit} className="mb-2 text-lg">
@@ -286,7 +274,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
             <Button
               type="button"
               onClick={() => {
-                if(confirm('Ви впевнені, що хочете видалити користувача?')) {
+                if (confirm('Ви впевнені, що хочете видалити користувача?')) {
                   dispatch(deleteUserThunk(user._id))
                     .unwrap()
                     .then(() => {

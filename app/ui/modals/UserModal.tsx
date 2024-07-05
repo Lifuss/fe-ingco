@@ -1,6 +1,5 @@
 'use client';
 import Modal from 'react-modal';
-import { avatarSVG } from '../home/Header';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
@@ -8,6 +7,7 @@ import { logoutThunk } from '@/lib/appState/user/operation';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
+import Icon from '../assets/Icon';
 
 const customModalStyles = {
   content: {
@@ -63,7 +63,10 @@ const User = () => {
           openModal();
         }}
       >
-        {avatarSVG}
+        <Icon
+          icon="user"
+          className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"
+        />
         <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-3px] lg:top-0 lg:h-7 lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
       </button>
       <Modal
@@ -84,21 +87,10 @@ const User = () => {
             className="relative pl-5 transition-colors hover:text-blue-500"
             onClick={closeModal}
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-0 top-1 stroke-current"
-            >
-              <path
-                d="M8.41398 13.8733C8.18732 13.9533 7.81398 13.9533 7.58732 13.8733C5.65398 13.2133 1.33398 10.46 1.33398 5.79334C1.33398 3.73334 2.99398 2.06667 5.04065 2.06667C6.25398 2.06667 7.32732 2.65334 8.00065 3.56001C8.67398 2.65334 9.75399 2.06667 10.9607 2.06667C13.0073 2.06667 14.6673 3.73334 14.6673 5.79334C14.6673 10.46 10.3473 13.2133 8.41398 13.8733Z"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon
+              icon="heart"
+              className="absolute left-0 top-1 h-[18px] w-[18px] fill-inherit stroke-current stroke-2"
+            />
             Обране
           </Link>
           <Link
@@ -106,39 +98,10 @@ const User = () => {
             className="relative pl-5 transition-colors hover:text-blue-500"
             onClick={closeModal}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-0 top-1 stroke-current"
-            >
-              <path
-                d="M14.6673 6.66673V10.0001C14.6673 13.3334 13.334 14.6667 10.0007 14.6667H6.00065C2.66732 14.6667 1.33398 13.3334 1.33398 10.0001V6.00006C1.33398 2.66673 2.66732 1.3334 6.00065 1.3334H9.33398"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M14.6663 6.66673H11.9997C9.99967 6.66673 9.33301 6.00006 9.33301 4.00006V1.3334L14.6663 6.66673Z"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M4.66699 8.66666H8.66699"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M4.66699 11.3333H7.33366"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon
+              icon="history"
+              className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
+            />
             Історія
           </Link>
           {user.role === 'admin' && (
@@ -146,51 +109,10 @@ const User = () => {
               href={'/dashboard'}
               className="relative pl-5 transition-colors hover:text-blue-500"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-0 top-1 stroke-current"
-              >
-                <path
-                  d="M1.33398 1.33331H14.6673V14.6666H1.33398V1.33331Z"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M1.33398 4.66665H14.6673"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M1.33398 8H14.6673"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M4.00065 1.33331V4.66665"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M8.00065 1.33331V4.66665"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12.0007 1.33331V4.66665"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Icon
+                icon="dashboard"
+                className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
+              />
               Адмінка
             </Link>
           )}
@@ -198,33 +120,10 @@ const User = () => {
             onClick={openQuestionModal}
             className="relative pl-5 text-left transition-colors hover:text-blue-500"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute left-0 top-1 stroke-current"
-            >
-              <path
-                d="M5.93359 5.03998C6.14026 2.63998 7.37359 1.65998 10.0736 1.65998H10.1603C13.1403 1.65998 14.3336 2.85331 14.3336 5.83331V10.18C14.3336 13.16 13.1403 14.3533 10.1603 14.3533H10.0736C7.39359 14.3533 6.16026 13.3866 5.94026 11.0266"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M10.0007 7.99995H2.41406"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M3.90033 5.76662L1.66699 7.99996L3.90033 10.2333"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon
+              icon="exit"
+              className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
+            />
             Вийти
           </button>
         </div>
