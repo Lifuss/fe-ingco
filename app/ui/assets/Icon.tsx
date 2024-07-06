@@ -8,7 +8,7 @@ const Icon = ({
   className?: string | (() => void);
 }) => {
   return (
-    <svg className={clsx(className)}>
+    <svg className={clsx(className)} fill="currentColor" aria-hidden="false">
       <use href={`/icons/sprite.svg#${icon}`}></use>
     </svg>
   );

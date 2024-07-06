@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import Icon from './assets/Icon';
+import { FileSpreadsheet } from 'lucide-react';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -90,7 +91,11 @@ const Sidebar = () => {
         ))}
       </ul>
       {pathname.includes('/shop') && (
-        <Link className="rounded-md bg-orangeLight p-2" href={'/shop/export'}>
+        <Link
+          className="inline-flex items-center gap-2 rounded-md bg-orangeLight p-2"
+          href={'/shop/export'}
+        >
+          <FileSpreadsheet size={20} />
           Експорт таблиць
         </Link>
       )}

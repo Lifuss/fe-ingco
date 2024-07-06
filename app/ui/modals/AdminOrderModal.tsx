@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
+import { X } from 'lucide-react';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -90,7 +91,7 @@ const AdminOrderModal = ({
       ariaHideApp={false}
     >
       <div onClick={closeModal} className="absolute right-2 top-2">
-        <Icon icon="close" className="h-6 w-6 cursor-pointer stroke-current" />
+        <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
       <form onSubmit={handleSubmit} className="text-lg">
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>

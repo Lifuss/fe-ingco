@@ -2,33 +2,33 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Icon from '../ui/assets/Icon';
+import { Boxes, Inbox, PackageOpen, ShoppingBasket, Users } from 'lucide-react';
 
 const listData = [
   {
     title: 'Продукт',
     link: '/dashboard',
-    svg: 'product',
+    svg: <ShoppingBasket size={24} />,
   },
   {
     title: 'Категорії',
     link: '/dashboard/categories',
-    svg: 'category',
+    svg: <Boxes size={20} />,
   },
   {
     title: 'Користувачі',
     link: '/dashboard/users',
-    svg: 'users',
+    svg: <Users size={20} />,
   },
   {
     title: 'Замовлення b2b',
     link: '/dashboard/orders',
-    svg: 'orders',
+    svg: <PackageOpen size={20} />,
   },
   {
     title: 'Замовлення роз.',
     link: '/dashboard/retailorders',
-    svg: 'orders',
+    svg: <Inbox size={20} />,
   },
 ];
 const Sidebar = () => {
@@ -89,9 +89,7 @@ const Sidebar = () => {
                 'bg-[#323347]': pathname === item.link,
               })}
             >
-              <div className="w-7">
-                <Icon icon={item.svg} className="h-5 w-5" />
-              </div>
+              <div className="w-7">{item.svg}</div>
               {item.title}
             </Link>
           </li>

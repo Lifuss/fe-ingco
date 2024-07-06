@@ -11,6 +11,7 @@ import {
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
+import { X } from 'lucide-react';
 
 type AdminUserModalProps = {
   isOpen: boolean;
@@ -185,7 +186,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       ariaHideApp={false}
     >
       <div onClick={closeModal} className="absolute right-2 top-2">
-        <Icon icon="close" className="h-6 w-6 cursor-pointer stroke-current" />
+        <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
       <h2 className="font-lg mb-4 font-medium">Редагування користувача</h2>
       <form onSubmit={handleSubmit} className="mb-2 text-lg">

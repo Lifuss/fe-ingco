@@ -169,6 +169,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
               width={40}
               height={40}
               className="mx-auto h-11 w-11"
+              loading="lazy"
               onMouseEnter={(e) => {
                 let img = document.getElementById('image') as HTMLDivElement;
                 img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.values.photoCol}" alt="${row.values.nameCol}" />`;

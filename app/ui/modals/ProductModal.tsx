@@ -10,6 +10,7 @@ import { Product } from '@/lib/types';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
+import { X } from 'lucide-react';
 
 const customModalStyles = {
   content: {
@@ -46,10 +47,7 @@ const ModalProduct = ({
       {product && (
         <div className="relative w-[750px] text-lg">
           <button className="absolute right-0 top-0" onClick={closeModal}>
-            <Icon
-              icon="close"
-              className="h-6 w-6 fill-black transition-colors hover:fill-orange-500"
-            />
+            <X size={24} absoluteStrokeWidth className="cursor-pointer" />
           </button>
           <h2 className="mx-auto mb-5 px-6 text-center text-2xl font-medium">
             {product.name}

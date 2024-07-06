@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
+import { FileClock, LogOut, Table } from 'lucide-react';
 
 const customModalStyles = {
   content: {
@@ -98,10 +99,7 @@ const User = () => {
             className="relative pl-5 transition-colors hover:text-blue-500"
             onClick={closeModal}
           >
-            <Icon
-              icon="history"
-              className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
-            />
+            <FileClock size={16} className="absolute left-0 top-1" />
             Історія
           </Link>
           {user.role === 'admin' && (
@@ -109,21 +107,15 @@ const User = () => {
               href={'/dashboard'}
               className="relative pl-5 transition-colors hover:text-blue-500"
             >
-              <Icon
-                icon="dashboard"
-                className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
-              />
-              Адмінка
+              <Table size={16} className="absolute left-0 top-1" />
+              Адмін
             </Link>
           )}
           <button
             onClick={openQuestionModal}
             className="relative pl-5 text-left transition-colors hover:text-blue-500"
           >
-            <Icon
-              icon="exit"
-              className="absolute left-0 top-1 h-4 w-4 fill-inherit stroke-current stroke-2"
-            />
+            <LogOut size={16} className="absolute left-0 top-1" />
             Вийти
           </button>
         </div>

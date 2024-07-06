@@ -3,10 +3,11 @@ import ToBackButton from '../ToBackButton';
 import { ChangeEvent, FormEvent } from 'react';
 import { Product } from '@/lib/types';
 import Icon from '../assets/Icon';
+import { CircleHelp } from 'lucide-react';
 
 const questionSvg = (
   <span>
-    <Icon icon="question" className="h-5 w-5 fill-[#667085]" />
+    <CircleHelp size={20} className="text-gray-400" />
   </span>
 );
 

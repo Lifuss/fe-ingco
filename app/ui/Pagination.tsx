@@ -1,10 +1,10 @@
 'use client';
 
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { generatePagination } from '@/lib/utils';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function Pagination({ totalPages }: { totalPages: number }) {
   const pathname = usePathname();
@@ -111,11 +111,7 @@ function PaginationArrow({
   );
 
   const icon =
-    direction === 'left' ? (
-      <ArrowLeftIcon className="w-4" />
-    ) : (
-      <ArrowRightIcon className="w-4" />
-    );
+    direction === 'left' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />;
 
   return isDisabled ? (
     <div className={className}>{icon}</div>
