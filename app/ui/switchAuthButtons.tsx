@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const SwitchAuthButtons = () => {
+export default function SwitchAuthButtons() {
   const pathname = usePathname();
   return (
     <div className="mb-8 flex justify-between text-4xl text-[#7a7c7f]">
@@ -30,6 +30,4 @@ const SwitchAuthButtons = () => {
       </Link>
     </div>
   );
-};
-
-export default SwitchAuthButtons;
+}
