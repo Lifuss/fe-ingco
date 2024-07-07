@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/app/ui/button';
+import { Button } from '@/app/ui/buttons/button';
 import { getProductByIdThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';

@@ -1,5 +1,5 @@
-import SwitchRegisterForms from '../../ui/SwitchRegisterForms';
-import SwitchAuthButtons from '../../ui/SwitchAuthButtons';
+import SwitchAuthButtons from '@/app/ui/buttons/SwitchAuthButtons';
+import SwitchRegisterForms from '@/app/ui/buttons/SwitchRegisterForms';
 
 export default function LoginPage() {
   return (

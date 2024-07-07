@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/app/ui/button';
+import { Button } from '@/app/ui/buttons/button';
 import { useState } from 'react';
 
 const inputStyle =

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '../button';
+import { Button } from '../buttons/button';
 import Link from 'next/link';
 import { loginThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';

@@ -1,6 +1,6 @@
 'use client';
-import B2BRegisterForm from './forms/RegisterPartner-form';
-import B2CRegisterForm from './forms/RegisterClient-form';
+import B2BRegisterForm from '../forms/RegisterPartner-form';
+import B2CRegisterForm from '../forms/RegisterClient-form';
 import { useState } from 'react';
 import clsx from 'clsx';
 

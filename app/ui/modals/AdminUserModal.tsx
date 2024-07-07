@@ -4,7 +4,7 @@ import { customModalStyles } from './CategoryModal';
 import { User } from '@/lib/types';
 import { useAppDispatch } from '@/lib/hooks';
 import { useEffect, useState } from 'react';
-import { Button } from '../button';
+import { Button } from '../buttons/button';
 import {
   deleteUserThunk,
   updateUserThunk,

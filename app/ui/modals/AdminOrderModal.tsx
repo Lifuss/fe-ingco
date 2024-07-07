@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { customModalStyles } from './CategoryModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
-import { Button } from '../button';
+import { Button } from '../buttons/button';
 import { useEffect, useState } from 'react';
 import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
