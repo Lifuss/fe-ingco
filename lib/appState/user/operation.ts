@@ -1,17 +1,23 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
-import { toast } from 'react-toastify';
 
-export type RegisterCredentials = {
+interface Register {
   email: string;
   lastName: string;
   firstName: string;
   surName: string;
   phone: string;
+}
+
+export interface RegisterB2BCredentials extends Register {
   edrpou: string;
   about: string;
-};
+}
+
+export interface RegisterB2CCredentials extends Register {
+  password: string;
+}
 
 export type LoginCredentials = {
   login: string;
@@ -57,9 +63,38 @@ export const loginThunk = createAsyncThunk(
 
 export const registerThunk = createAsyncThunk(
   'auth/register',
-  async (credentials: RegisterCredentials, { rejectWithValue }) => {
+  async (credentials: RegisterB2BCredentials, { rejectWithValue }) => {
     try {
       const response = await apiIngco.post('/users/register', credentials);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      setToken(response.data.token);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorInfo = {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+        };
+        return rejectWithValue(errorInfo);
+      }
+
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
+export const registerClientThunk = createAsyncThunk(
+  'auth/registerClient',
+  async (credentials: RegisterB2CCredentials, { rejectWithValue }) => {
+    try {
+      const response = await apiIngco.post(
+        '/users/register/client',
+        credentials,
+      );
       if (response.status < 200 || response.status >= 300) {
         throw new Error(`HTTP error: ${response.status}`);
       }

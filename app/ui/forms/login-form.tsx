@@ -11,16 +11,18 @@ import { toast } from 'react-toastify';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
-  const { isLoading, isAuthenticated } = useAppSelector(
+  const { isLoading, isAuthenticated, isB2b } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isB2b) {
       redirect('/shop');
+    } else if (isAuthenticated && !isB2b) {
+      redirect('/retail');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isB2b]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,8 +31,8 @@ function LoginForm() {
     const password = form.password.value.trim();
     dispatch(loginThunk({ login, password }))
       .unwrap()
-      .then(() => {
-        router.push('/shop');
+      .then(({ isB2B }) => {
+        isB2B ? router.push('/shop') : router.push('/retail');
         toast.success('💸Вітаємо в найкращому магазині ingco!💸');
       })
       .catch((error) => {

@@ -87,12 +87,14 @@ const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
       history.map((item) => ({
         orderCodeCol: item.orderCode,
         createdAtCol: new Date(item.createdAt).toLocaleDateString(),
-        totalPriceCol: Math.ceil(item.totalPrice * usdCurrency),
+        totalPriceCol: !isRetail
+          ? Math.ceil(item.totalPrice * usdCurrency)
+          : item.totalPrice,
         statusCol: item.status,
         declarationNumberCol: item.declarationNumber,
         order: item,
       })),
-    [history, usdCurrency],
+    [history, usdCurrency, isRetail],
   );
   return history.length ? (
     <>
@@ -104,6 +106,7 @@ const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
         order={selectedOrder as Order}
         isOpen={isModalOpen}
         closeModal={closeModal}
+        isRetail={isRetail}
       />
     </>
   ) : (

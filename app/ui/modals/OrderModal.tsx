@@ -6,9 +6,11 @@ const OrderModal = ({
   order,
   isOpen,
   closeModal,
+  isRetail = false,
 }: {
   order: Order | null;
   isOpen: boolean;
+  isRetail?: boolean;
   closeModal: () => void;
 }) => {
   return (
@@ -21,7 +23,10 @@ const OrderModal = ({
       {order && (
         <div className="flex flex-col gap-1 text-lg">
           <h3 className="">Номер замовлення: {order.orderCode}</h3>
-          <p>Загальна сума замовлення: {order.totalPrice}$</p>
+          <p>
+            Загальна сума замовлення:{' '}
+            {isRetail ? order.totalPrice : `${order.totalPrice}$`}
+          </p>
           <p>Статус: {order.status}</p>
           <p>
             Дата створення: {new Date(order.createdAt).toLocaleDateString()}

@@ -16,6 +16,7 @@ const AboutBrand = () => {
           width={489}
           height={364}
           className="mx-auto rounded-lg md:h-[200px] lg:h-[236px] xl:h-auto"
+          loading="lazy"
         />
 
         <div className="flex flex-col gap-2 text-sm lg:text-base xl:h-[364px] xl:justify-between xl:text-xl 2xl:text-2xl">

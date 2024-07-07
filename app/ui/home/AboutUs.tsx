@@ -13,6 +13,7 @@ const AboutUs = () => {
           width={467}
           height={524}
           className="mx-auto rounded-lg xl:shrink-0"
+          loading="lazy"
         />
 
         <div className="flex flex-col gap-2 text-sm lg:text-base xl:h-[524px] xl:justify-between xl:text-xl 2xl:text-2xl">

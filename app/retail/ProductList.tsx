@@ -191,6 +191,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                           layout="fill"
                           objectFit="contain"
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                          loading="lazy"
                         />
                       </div>
 

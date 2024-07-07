@@ -36,6 +36,7 @@ const Features = () => {
                 width={width}
                 alt=""
                 className="shrink-0"
+                loading="lazy"
               />
               <p>{feature.text}</p>
             </li>

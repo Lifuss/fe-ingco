@@ -1,5 +1,5 @@
 import LoginForm from '../../ui/forms/login-form';
-import SwitchAuthButtons from '../../ui/switchAuthButtons';
+import SwitchAuthButtons from '../../ui/SwitchAuthButtons';
 
 function LoginPage() {
   return (

@@ -9,7 +9,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { registerThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 
-export default function RegisterForm() {
+export default function RegisterPartnerForm() {
   const { isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
@@ -110,7 +110,7 @@ export default function RegisterForm() {
                 id="phone"
                 type="phone"
                 name="phone"
-                placeholder="067..."
+                placeholder="38067..."
                 required
                 pattern="\[0-9]{10}"
               />
@@ -151,7 +151,7 @@ export default function RegisterForm() {
               className="peer block max-h-56 w-full rounded-2xl border border-[#1d1c1c] pb-[20px] pl-4 pt-[10px] text-base outline-2 placeholder:text-gray-500"
               name="about"
               id="about"
-              placeholder="Необов'язкове поле про свою діяльність та цілі (якщо номер тел. не український, то вкажіть країну)"
+              placeholder="Необов'язкове поле про свою діяльність та цілі, якщо ви не в Україні, то вкажіть країну, де ви знаходитесь і бажаний тип зв'язку (viber | telegram | email)"
             />
           </div>
         </div>

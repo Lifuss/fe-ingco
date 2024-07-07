@@ -38,6 +38,7 @@ const initialState = {
   }[],
   token: '',
   isAuthenticated: false,
+  isB2b: false,
   isLoading: false,
 };
 
@@ -130,6 +131,7 @@ const authStateSlice = createSlice({
           state.token = payload.token;
           state.user.isVerified = payload.isVerified;
           state.isAuthenticated = true;
+          state.isB2b = payload.isB2b;
           state.isLoading = false;
           state.user.login = payload.login;
           state.user.role = payload.role;
