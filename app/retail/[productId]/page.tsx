@@ -10,6 +10,8 @@ import Head from 'next/head';
 import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
+import { useRouter } from 'next/navigation';
+import { SearchX } from 'lucide-react';
 
 type PageProps = {
   params: {
@@ -23,6 +25,8 @@ const Page = ({ params }: PageProps) => {
   const isAuth = useAppSelector(
     (state) => state.persistedAuthReducer.isAuthenticated,
   );
+  const router = useRouter();
+
   useEffect(() => {
     console.log(params.productId);
     dispatch(getProductByIdThunk(params.productId));
@@ -54,7 +58,7 @@ const Page = ({ params }: PageProps) => {
     }
   };
 
-  return (
+  return product ? (
     <>
       <Head>
         <title>{'INGCO' + ' ' + product.article}</title>
@@ -138,6 +142,18 @@ const Page = ({ params }: PageProps) => {
         </div>
       </section>
     </>
+  ) : (
+    <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
+      <SearchX size={52} />
+      <h2 className="text-2xl">Продукт не знайдено</h2>
+
+      <Button
+        className="bg-orangeLight hover:bg-orange-400"
+        onClick={() => router.push('/retail')}
+      >
+        В каталог
+      </Button>
+    </div>
   );
 };
 
