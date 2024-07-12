@@ -6,7 +6,6 @@ import Header from '../ui/home/Header';
 import Hero from '../ui/home/Hero';
 
 export default function Page() {
-  //TODO: refactor svg blocks to components
 
   return (
     <>

@@ -46,7 +46,6 @@ export default function RegisterPartnerForm() {
         router.push('/home');
       })
       .catch((error) => {
-        // TODO: пропрацювати помилки авторизації та вивести їх на екран
         console.error('Error in login:', error);
         toast.error('Помилка авторизації');
       });
