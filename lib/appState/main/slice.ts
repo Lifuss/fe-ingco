@@ -31,6 +31,7 @@ type initialStateType = {
   history: Order[];
   total: number;
   product: Product;
+  shopView: 'table' | 'list';
 };
 const initialState: initialStateType = {
   currencyRates: {
@@ -40,6 +41,7 @@ const initialState: initialStateType = {
   },
   tableLoading: false,
   categories: [],
+  shopView: 'table',
   page: 1,
   limit: 10,
   totalPages: 0,
@@ -60,14 +62,18 @@ const initialState: initialStateType = {
     seoKeywords: '',
     category: null,
     createdAt: '',
-    updatedAt: ''
+    updatedAt: '',
   },
 };
 
 const appStateSlice = createSlice({
   name: 'appState',
   initialState,
-  reducers: {},
+  reducers: {
+    setShopView: (state, { payload }) => {
+      state.shopView = payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getProductByIdThunk.fulfilled, (state, { payload }) => {
@@ -123,4 +129,5 @@ const appStateSlice = createSlice({
   },
 });
 
+export const { setShopView } = appStateSlice.actions;
 export const mainSlice = appStateSlice.reducer;

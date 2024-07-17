@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -17,6 +17,9 @@ import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
+import { BetweenVerticalStart, Heart, Table2 } from 'lucide-react';
+import { setShopView } from '@/lib/appState/main/slice';
+import ShopList from './ShopList';
 
 export type rawData = {
   article: string;
@@ -86,13 +89,59 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }
   }, [dispatch, page, query, category, isFavoritePage]);
 
-  function handleFavoriteClick(id: string) {
-    if (favoritesList.includes(id)) {
-      dispatch(deleteFavoriteProductThunk(id));
-    } else {
-      dispatch(addFavoriteProductThunk(id));
-    }
-  }
+  const handleFavoriteClick = useCallback(
+    (id: string) => {
+      if (favoritesList.includes(id)) {
+        dispatch(deleteFavoriteProductThunk(id));
+      } else {
+        dispatch(addFavoriteProductThunk(id));
+      }
+    },
+    [dispatch, favoritesList],
+  );
+
+  // ref to store quantities
+  const quantitiesRef = useRef<Record<string, number>>({});
+  const handleQuantityChange = (id: string, value: string) => {
+    setQuantities((prev) => {
+      const updated = { ...prev, [id]: value };
+      quantitiesRef.current = updated; // update ref
+      return updated; // update state
+    });
+  };
+
+  const handleCartClick = useCallback(
+    (id: string, productName: string) => {
+      if (quantitiesRef.current[id] > 0) {
+        dispatch(
+          addProductToCartThunk({
+            productId: id,
+            quantity: quantitiesRef.current[id],
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(
+              `${quantitiesRef.current[id]} шт. - ${productName} додано в кошик`,
+            );
+          });
+        quantitiesRef.current[id] = 0;
+      } else {
+        dispatch(
+          addProductToCartThunk({
+            productId: id,
+            quantity: 1,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(`1 шт. - ${productName} додано в кошик`);
+          });
+        quantitiesRef.current[id] = 0;
+      }
+    },
+    [dispatch, quantitiesRef],
+  );
 
   const data = useMemo(() => {
     return productsData.map((product) => ({
@@ -108,35 +157,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
       product,
     }));
   }, [productsData, USD]);
-
-  // ref to store quantities
-  const quantitiesRef = useRef<Record<string, number>>({});
-  const handleQuantityChange = (id: string, value: string) => {
-    setQuantities((prev) => {
-      const updated = { ...prev, [id]: value };
-      quantitiesRef.current = updated; // update ref
-      return updated; // update state
-    });
-  };
-
-  const handleCartClick = (id: string, productName: string) => {
-    if (quantitiesRef.current[id] > 0) {
-      dispatch(
-        addProductToCartThunk({
-          productId: id,
-          quantity: quantitiesRef.current[id],
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${productName} додано в кошик`);
-        });
-      quantitiesRef.current[id] = 0;
-    } else {
-      toast.warning('Введіть кількість товару');
-    }
-  };
-
   const columns = useMemo(
     () => [
       {
@@ -199,14 +219,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
             className={clsx(
               'px-2 py-1 text-white',
               favoritesList.includes(row.original._id)
-                ? ' fill-orange-500'
+                ? ' fill-orange-500 stroke-black'
                 : 'fill-white stroke-black',
             )}
           >
-            <Icon
-              icon="heart"
-              className="h-[28px] w-[30px] fill-inherit stroke-inherit"
-            />
+            <Heart className="fill-inherit stroke-inherit stroke-1" size={30} />
           </button>
         ),
       },
@@ -253,11 +270,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
       },
       {
         Header: 'Кошик',
-
         accessor: 'cartCol',
         Cell: ({ row }: { row: any }) => (
           <button
-            className="px-2 py-1 text-white"
+            className="px-2 py-1 text-white transition-transform duration-200 hover:scale-110"
             onClick={() =>
               handleCartClick(row.original._id, row.values.nameCol)
             }
@@ -270,8 +286,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [favoritesList],
+
+    [favoritesList, handleCartClick, handleFavoriteClick],
   );
 
   const totalPage = isFavoritePage
@@ -296,8 +312,36 @@ const ShopTable = ({ isFavoritePage = false }) => {
       ) : (
         <>
           <div className="relative w-full 2xl:w-4/5">
+            <div className="mb-2 flex justify-end">
+              <button
+                onClick={() => dispatch(setShopView('table'))}
+                className={clsx(
+                  'rounded-s-xl border border-gray-500 stroke-black px-2',
+                  state.persistedMainReducer.shopView === 'table'
+                    ? 'bg-orange-300 stroke-white'
+                    : '',
+                )}
+              >
+                <Table2 className="stroke-inherit" />
+              </button>
+              <button
+                onClick={() => dispatch(setShopView('list'))}
+                className={clsx(
+                  'rounded-e-xl border border-gray-500 stroke-black px-2',
+                  state.persistedMainReducer.shopView === 'list'
+                    ? 'bg-orange-300 stroke-white'
+                    : '',
+                )}
+              >
+                <BetweenVerticalStart className="stroke-inherit" />
+              </button>
+            </div>
             <div className="max-h-[75vh] overflow-auto">
-              <Table columns={columns} data={data} />
+              {state.persistedMainReducer.shopView === 'table' ? (
+                <Table columns={columns} data={data} />
+              ) : (
+                <ShopList isFavoritePage={isFavoritePage} />
+              )}
             </div>
             <div className="absolute bottom-14 right-2">
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
