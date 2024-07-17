@@ -1,23 +1,19 @@
 'use client';
-import { useEffect } from 'react';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
-  addProductToRetailCartThunk,
+  addProductToCartThunk,
   deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import clsx from 'clsx';
 import { useMediaQuery } from 'react-responsive';
-
-import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
+import { Heart } from 'lucide-react';
 
 export type rawData = {
   article: string;
@@ -30,7 +26,19 @@ export type rawData = {
   _id: string;
 };
 
-const ShopList = ({ isFavoritePage = false }) => {
+interface ShopListProps {
+  isFavoritePage?: boolean;
+  products: Product[];
+  totalPages: number;
+  favorites: Product[];
+}
+
+const ShopList = ({
+  isFavoritePage = false,
+  products,
+  totalPages,
+  favorites,
+}: ShopListProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -38,8 +46,6 @@ const ShopList = ({ isFavoritePage = false }) => {
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
-  const { products, totalPages } = state.persistedMainReducer;
-  let favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const isAuth = state.persistedAuthReducer.isAuthenticated;
   const favoritesList = favorites.map((product) => product._id);
 
@@ -69,51 +75,29 @@ const ShopList = ({ isFavoritePage = false }) => {
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  let limit = isDesktop ? 20 : 15;
-  useEffect(() => {
-    if (!isFavoritePage) {
-      dispatch(fetchMainTableDataThunk({ page, query, category, limit }));
-    }
-  }, [dispatch, page, query, category, isFavoritePage, limit]);
-
   function handleFavoriteClick(id: string) {
-    if (isAuth) {
-      if (favoritesList.includes(id)) {
-        dispatch(deleteFavoriteProductThunk(id));
-      } else {
-        dispatch(addFavoriteProductThunk(id));
-      }
+    if (favoritesList.includes(id)) {
+      dispatch(deleteFavoriteProductThunk(id));
     } else {
-      toast.error('Для додавання в обране потрібно увійти в профіль');
+      dispatch(addFavoriteProductThunk(id));
     }
   }
 
   const handleCartClick = (id: string, productName: string) => {
-    if (isAuth) {
-      dispatch(
-        addProductToRetailCartThunk({
-          productId: id,
-          quantity: 1,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${productName} додано в кошик`);
-        });
-    } else {
-      const { price, priceBulk, ...product } = productsData.find(
-        (product) => product._id === id,
-      ) as Product;
-      dispatch(
-        addProductToLocalStorageCart({
-          productId: product,
-          quantity: 1,
-          _id: id,
-        }),
-      );
+    dispatch(
+      addProductToCartThunk({
+        productId: id,
+        quantity: 1,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        toast.success(`1 шт. - ${productName} додано в кошик`);
+      });
+  };
 
-      toast.success(`${productName} додано в кошик`);
-    }
+  const handlePushProductPage = (id: string) => {
+    router.push(`/shop/${id}`);
   };
 
   const totalPage = isFavoritePage
@@ -150,6 +134,8 @@ const ShopList = ({ isFavoritePage = false }) => {
                   _id,
                   rrcSale,
                   countInStock,
+                  price,
+                  seoKeywords,
                 } = product;
                 let splitDesc = description.split('\n');
                 if (splitDesc.length > 3) {
@@ -167,14 +153,14 @@ const ShopList = ({ isFavoritePage = false }) => {
                   <li
                     key={article}
                     className={clsx(
-                      'relative flex h-[320px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
+                      'relative flex h-[340px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
                       countInStock <= 0 && 'pointer-events-none opacity-40',
                     )}
                   >
                     <div
                       className="grow"
                       onClick={() => {
-                        router.push(`/retail/${_id}`);
+                        handlePushProductPage(_id);
                       }}
                     >
                       {countInStock <= 0 && (
@@ -198,14 +184,14 @@ const ShopList = ({ isFavoritePage = false }) => {
                       <h3 className="text-xs font-medium text-[#FACC15]">
                         {article}
                       </h3>
-                      <h4
+                      <h2
                         className={clsx(
                           ' font-medium',
                           name.length > 50 ? 'text-xs' : 'text-sm',
                         )}
                       >
                         {name}
-                      </h4>
+                      </h2>
                       <ul className="h-[50px] text-xs text-[#9CA3AF]">
                         {characteristics.length ? (
                           characteristics.slice(0, 3).map((item) => {
@@ -235,37 +221,33 @@ const ShopList = ({ isFavoritePage = false }) => {
                         onClick={handleFavoriteClick.bind(null, _id)}
                         data-favorite={_id}
                         className={clsx(
-                          'text-white',
+                          'stroke-black text-white',
                           favoritesList.includes(_id)
                             ? ' fill-orange-500'
-                            : 'fill-white stroke-black',
+                            : 'fill-white ',
                         )}
                       >
-                        <Icon
-                          icon="heart"
-                          className="h-6 w-6 fill-inherit stroke-inherit"
+                        <Heart
+                          size={24}
+                          className="fill-inherit stroke-inherit stroke-1"
                         />
                       </button>
 
-                      <div className="flex items-center justify-end">
+                      <div className="mt-2 flex items-center justify-end">
                         <p
-                          className="border-r border-black pr-1 text-base font-medium"
+                          className="flex flex-col border-r border-black pr-1 text-sm font-medium"
                           onClick={() => {
-                            router.push(`/retail/${_id}`);
+                            handlePushProductPage(_id);
                           }}
                         >
-                          {rrcSale ? (
-                            <div className="flex flex-col items-end">
-                              <span className="text-xs line-through">
-                                {priceRetailRecommendation} грн
-                              </span>
-                              <span className="pl-1 text-orangeLight">
-                                {rrcSale} грн
-                              </span>
-                            </div>
-                          ) : (
-                            priceRetailRecommendation + ' грн'
-                          )}
+                          <span>{price} $</span>
+                          <span>
+                            {Math.ceil(
+                              price *
+                                state.persistedMainReducer.currencyRates.USD,
+                            )}{' '}
+                            грн
+                          </span>
                         </p>
                         <button
                           className="fill-black pl-1 hover:fill-orange-500"
@@ -282,11 +264,6 @@ const ShopList = ({ isFavoritePage = false }) => {
                 );
               })}
             </ul>
-          </div>
-          <div className="relative w-full 2xl:w-4/5">
-            <div className="mx-auto mt-5 w-fit pb-10">
-              <Pagination totalPages={totalPage} />
-            </div>
           </div>
         </>
       )}

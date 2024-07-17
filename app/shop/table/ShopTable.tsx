@@ -336,11 +336,18 @@ const ShopTable = ({ isFavoritePage = false }) => {
                 <BetweenVerticalStart className="stroke-inherit" />
               </button>
             </div>
-            <div className="max-h-[75vh] overflow-auto">
+            <div
+              className={`${state.persistedMainReducer.shopView === 'table' && 'max-h-[75vh] overflow-auto'}`}
+            >
               {state.persistedMainReducer.shopView === 'table' ? (
                 <Table columns={columns} data={data} />
               ) : (
-                <ShopList isFavoritePage={isFavoritePage} />
+                <ShopList
+                  isFavoritePage={isFavoritePage}
+                  favorites={favorites}
+                  products={products}
+                  totalPages={totalPages}
+                />
               )}
             </div>
             <div className="absolute bottom-14 right-2">

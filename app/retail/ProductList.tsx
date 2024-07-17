@@ -17,6 +17,7 @@ import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../ui/TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Icon from '../ui/assets/Icon';
+import { Heart } from 'lucide-react';
 
 export type rawData = {
   article: string;
@@ -235,15 +236,15 @@ const ProductList = ({ isFavoritePage = false }) => {
                         onClick={handleFavoriteClick.bind(null, _id)}
                         data-favorite={_id}
                         className={clsx(
-                          'text-white',
+                          'stroke-black text-white',
                           favoritesList.includes(_id)
                             ? ' fill-orange-500'
-                            : 'fill-white stroke-black',
+                            : 'fill-white ',
                         )}
                       >
-                        <Icon
-                          icon="heart"
-                          className="h-6 w-6 fill-inherit stroke-inherit"
+                        <Heart
+                          size={24}
+                          className="fill-inherit stroke-inherit stroke-1"
                         />
                       </button>
 
