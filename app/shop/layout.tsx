@@ -30,7 +30,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CategoriesSidebar />
         {pathname !== '/shop' ? (
-          <div className="grid w-full grid-cols-3 ">
+          <div className="grid w-full grid-cols-3">
             <h2 className="col-span-2 mb-2 text-center text-4xl">{title}</h2>
             <div className="col-span-3 min-h-[550px]">{children}</div>
           </div>

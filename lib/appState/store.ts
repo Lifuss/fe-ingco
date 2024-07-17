@@ -17,7 +17,7 @@ import { authSlice } from './user/slice';
 
 const persistMainConfig = {
   key: 'main',
-  whitelist: ['currencyRates'],
+  whitelist: ['currencyRates', 'shopView'],
   storage,
 };
 const persistAuthConfig = {
