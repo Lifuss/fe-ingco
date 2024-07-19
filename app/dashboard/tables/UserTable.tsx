@@ -82,10 +82,30 @@ const UserTable = () => {
 
   return (
     <div>
-      <label className="mb-2 flex w-fit items-center gap-2">
-        Адміністратор
-        <input type="checkbox" name="role" onChange={handleCheckboxChange} />
-      </label>
+      <div className="flex gap-4">
+        <label className="mb-2 flex w-fit items-center gap-2">
+          Адміністратор
+          <input type="checkbox" name="role" onChange={handleCheckboxChange} />
+        </label>
+        {/* TODO: опрацювати ці інпути на беці і тут */}
+        {/* <label className="mb-2 flex w-fit items-center gap-2">
+          Роздріб
+          <input
+            type="checkbox"
+            name="isB2B"
+            onChange={() => console.log('isB2B')}
+          />
+        </label>
+        <label className="mb-2 flex w-fit items-center gap-2">
+          Неверифіковані
+          <input
+            type="checkbox"
+            name="isVerified"
+            onChange={() => console.log('isVerified')}
+          />
+        </label> */}
+      </div>
+
       <Table
         columns={columns}
         data={data}
