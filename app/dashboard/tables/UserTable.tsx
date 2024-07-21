@@ -5,12 +5,15 @@ import AdminUserModal from '@/app/ui/modals/AdminUserModal';
 import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { User } from '@/lib/types';
+import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 
 const UserTable = () => {
   const [isAdministrator, setIsAdministrator] = useState(false);
+  const [isB2B, setIsB2B] = useState(true);
+  const [isUserVerified, setIsUserVerified] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | any>();
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
@@ -21,12 +24,13 @@ const UserTable = () => {
     ? parseInt(searchParams.get('page') as string)
     : 1;
   page = !page || page < 1 ? 1 : page;
+
   let query = searchParams.get('query') || '';
   let role: 'admin' | 'user' = isAdministrator ? 'admin' : 'user';
 
   useEffect(() => {
-    dispatch(fetchUsersThunk({ query, role }));
-  }, [dispatch, query, role]);
+    dispatch(fetchUsersThunk({ query, role, isB2B, isUserVerified }));
+  }, [dispatch, query, role, isB2B, isUserVerified]);
 
   const columns = useMemo(
     () => [
@@ -76,34 +80,68 @@ const UserTable = () => {
     openModal(data.loginCol);
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsAdministrator(e.target.checked);
+  const handleCheckboxChange = (action: string) => {
+    switch (action) {
+      case 'admin':
+        setIsAdministrator((prev) => !prev);
+        break;
+      case 'isB2B':
+        setIsB2B((prev) => !prev);
+        break;
+      case 'isVerified':
+        setIsUserVerified((prev) => !prev);
+        break;
+      default:
+        break;
+    }
   };
 
   return (
     <div>
       <div className="flex gap-4">
-        <label className="mb-2 flex w-fit items-center gap-2">
+        <label
+          className={clsx(
+            'mb-2 flex w-fit items-center gap-2',
+            (!isB2B && 'cursor-not-allowed opacity-50') ||
+              (!isUserVerified && 'cursor-not-allowed opacity-50'),
+          )}
+        >
           Адміністратор
-          <input type="checkbox" name="role" onChange={handleCheckboxChange} />
+          <input
+            disabled={!isB2B || !isUserVerified}
+            type="checkbox"
+            name="role"
+            onChange={() => handleCheckboxChange('admin')}
+          />
         </label>
-        {/* TODO: опрацювати ці інпути на беці і тут */}
-        {/* <label className="mb-2 flex w-fit items-center gap-2">
+        <label
+          className={clsx(
+            'mb-2 flex w-fit items-center gap-2',
+            isAdministrator && 'cursor-not-allowed opacity-50 ',
+          )}
+        >
           Роздріб
           <input
             type="checkbox"
             name="isB2B"
-            onChange={() => console.log('isB2B')}
+            disabled={isAdministrator}
+            onChange={() => handleCheckboxChange('isB2B')}
           />
         </label>
-        <label className="mb-2 flex w-fit items-center gap-2">
+        <label
+          className={clsx(
+            'mb-2 flex w-fit items-center gap-2',
+            isAdministrator && 'cursor-not-allowed opacity-50 ',
+          )}
+        >
           Неверифіковані
           <input
+            disabled={isAdministrator}
             type="checkbox"
             name="isVerified"
-            onChange={() => console.log('isVerified')}
+            onChange={() => handleCheckboxChange('isVerified')}
           />
-        </label> */}
+        </label>
       </div>
 
       <Table

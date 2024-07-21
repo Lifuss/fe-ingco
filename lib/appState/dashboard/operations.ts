@@ -42,11 +42,23 @@ export const updateProductThunk = createAsyncThunk(
 export const fetchUsersThunk = createAsyncThunk(
   'fetchUsers',
   async (
-    { query: q = '', role = 'user' }: { query: string; role: 'user' | 'admin' },
+    {
+      query: q = '',
+      role = 'user',
+      isB2B,
+      isUserVerified,
+    }: {
+      query: string;
+      role: 'user' | 'admin';
+      isB2B?: boolean;
+      isUserVerified?: boolean;
+    },
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.get('/users', { params: { q, role } });
+      const { data } = await apiIngco.get('/users', {
+        params: { q, role, isB2B, isUserVerified },
+      });
       return data;
     } catch (error) {
       rejectWithValue(error);
@@ -156,6 +168,20 @@ export const updateOrderThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.put(`/orders/${orderId}`, updateOrder);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const fetchUsersStatsThunk = createAsyncThunk(
+  'fetchUsersStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('/users/stats');
+      console.log(data, 'data');
+
       return data;
     } catch (error) {
       rejectWithValue(error);

@@ -4,6 +4,7 @@ import {
   createUserThunk,
   deleteUserThunk,
   fetchOrdersThunk,
+  fetchUsersStatsThunk,
   fetchUsersThunk,
   updateOrderThunk,
   updateUserThunk,
@@ -15,11 +16,17 @@ const initialState: {
   orders: Order[];
   totalPages: number;
   page: number;
+  usersStats: {
+    notVerified: number;
+  };
 } = {
   users: [],
   orders: [],
   totalPages: 0,
   page: 1,
+  usersStats: {
+    notVerified: 0,
+  },
 };
 
 const Slice = createSlice({
@@ -55,6 +62,9 @@ const Slice = createSlice({
 
         state.users = state.users.filter((user) => user._id !== payload);
         toast.success('Користувач успішно видалений');
+      })
+      .addCase(fetchUsersStatsThunk.fulfilled, (state, { payload }) => {
+        state.usersStats = payload;
       });
   },
 });
