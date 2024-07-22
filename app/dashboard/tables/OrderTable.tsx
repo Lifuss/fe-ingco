@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order } from '@/lib/types';
+import clsx from 'clsx';
 
 const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,8 +90,29 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     }));
   }, [orders, usdRate, isRetail]);
 
+  // const handleCheckboxChange = (action: string) => {
+  //   switch (action) {
+  //     case 'admin':
+  //       setIsAdministrator((prev) => !prev);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
   return (
     <div>
+      {/* <div className="flex gap-4">
+        <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
+          <select className="rounded-xl bg-gray-200 p-2">
+            <option value="all">Всі</option>
+            <option value="pending">Очікує підтвердження</option>
+            <option value="confirmed">Підтверджено</option>
+            <option value="canceled">Скасовано</option>
+          </select>
+        </label>
+      </div> */}
+
       <Table
         columns={columns}
         data={data}
