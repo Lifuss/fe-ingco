@@ -5,9 +5,11 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../buttons/button';
 import { useEffect, useState } from 'react';
-import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
+import {
+  updateOrderThunk,
+  updateRetailOrderThunk,
+} from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
-import Icon from '../assets/Icon';
 import { X } from 'lucide-react';
 
 type AdminOrderModalProps = {
@@ -70,12 +72,19 @@ const AdminOrderModal = ({
       updatedAt,
       ...updatedOrderWithoutUser
     } = updatedOrder;
-    dispatch(
-      updateOrderThunk({
-        orderId: order._id,
-        updateOrder: updatedOrderWithoutUser,
-      }),
-    );
+    isRetail
+      ? dispatch(
+          updateRetailOrderThunk({
+            orderId: order._id,
+            updateOrder: updatedOrderWithoutUser,
+          }),
+        )
+      : dispatch(
+          updateOrderThunk({
+            orderId: order._id,
+            updateOrder: updatedOrderWithoutUser,
+          }),
+        );
     closeModal();
   };
 
@@ -106,17 +115,23 @@ const AdminOrderModal = ({
           </div>
           <div>
             {'userId' in user ? (
-              <>
-                <p>{`${user.userId.firstName} ${user.userId.lastName} ${user.userId.surName}`}</p>
-                <p>{user.userId.email}</p>
-                <p>{user.userId.phone}</p>
-              </>
-            ) : (
+              user.userId ? (
+                <>
+                  <p>{`${user.userId.firstName} ${user.userId.lastName} ${user.userId.surName}`}</p>
+                  <p>{user.userId.email}</p>
+                  <p>{user.userId.phone}</p>
+                </>
+              ) : (
+                <p>Користувач видалений</p>
+              )
+            ) : user ? (
               <>
                 <p>{`${user.firstName} ${user.lastName} ${user.surName}`}</p>
                 <p>{user.email}</p>
                 <p>{user.phone}</p>
               </>
+            ) : (
+              <p>Користувач видалений</p>
             )}
             <p>{status}</p>
             <select

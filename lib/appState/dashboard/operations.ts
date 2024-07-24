@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
+import { orderStatusEnum } from '@/app/dashboard/tables/OrderTable';
 
 // products thunks
 export const createProductThunk = createAsyncThunk(
@@ -38,7 +39,7 @@ export const updateProductThunk = createAsyncThunk(
   },
 );
 
-// users thunks
+// ----------------- users thunks
 export const fetchUsersThunk = createAsyncThunk(
   'fetchUsers',
   async (
@@ -137,7 +138,7 @@ interface UpdateOrder
   products: NewProduct[];
 }
 
-// orders thunks
+// --------------- orders thunks
 export const fetchOrdersThunk = createAsyncThunk(
   'fetchOrders',
   async (
@@ -146,12 +147,26 @@ export const fetchOrdersThunk = createAsyncThunk(
       page = 1,
       limit = 15,
       isRetail = false,
-    }: { query: string; page?: number; limit?: number; isRetail: boolean },
+      status = 'всі',
+    }: {
+      query: string;
+      page?: number;
+      limit?: number;
+      isRetail: boolean;
+      status?:
+        | 'всі'
+        | 'очікує підтвердження'
+        | 'очікує оплати'
+        | 'комплектується'
+        | 'відправлено'
+        | 'замовлення виконано'
+        | 'замовлення скасовано';
+    },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.get('/orders/all', {
-        params: { q, page, limit, isRetail },
+        params: { q, page, limit, isRetail, status },
       });
       return data;
     } catch (error) {
@@ -168,6 +183,24 @@ export const updateOrderThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.put(`/orders/${orderId}`, updateOrder);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
+
+export const updateRetailOrderThunk = createAsyncThunk(
+  'updateOrder',
+  async (
+    { orderId, updateOrder }: { orderId: string; updateOrder: UpdateOrder },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.put(
+        `/orders/retail/${orderId}`,
+        updateOrder,
+      );
       return data;
     } catch (error) {
       rejectWithValue(error);

@@ -11,6 +11,16 @@ import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order } from '@/lib/types';
 import clsx from 'clsx';
 
+export const orderStatusEnum = [
+  'всі',
+  'очікує підтвердження',
+  'очікує оплати',
+  'комплектується',
+  'відправлено',
+  'замовлення виконано',
+  'замовлення скасовано',
+] as const;
+
 const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | any>();
@@ -90,28 +100,44 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     }));
   }, [orders, usdRate, isRetail]);
 
-  // const handleCheckboxChange = (action: string) => {
-  //   switch (action) {
-  //     case 'admin':
-  //       setIsAdministrator((prev) => !prev);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
+  const handleCheckboxChange = (
+    status:
+      | 'всі'
+      | 'очікує підтвердження'
+      | 'очікує оплати'
+      | 'комплектується'
+      | 'відправлено'
+      | 'замовлення виконано'
+      | 'замовлення скасовано',
+  ) => {
+    dispatch(
+      fetchOrdersThunk({
+        page: 1,
+        query,
+        status,
+        limit: 20,
+        isRetail,
+      }),
+    );
+  };
 
   return (
     <div>
-      {/* <div className="flex gap-4">
+      <div className="flex gap-4">
         <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
-          <select className="rounded-xl bg-gray-200 p-2">
-            <option value="all">Всі</option>
-            <option value="pending">Очікує підтвердження</option>
-            <option value="confirmed">Підтверджено</option>
-            <option value="canceled">Скасовано</option>
+          <select
+            className="rounded-xl bg-gray-200 p-2"
+            // @ts-ignore
+            onChange={(e) => handleCheckboxChange(e.currentTarget.value)}
+          >
+            {orderStatusEnum.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
           </select>
         </label>
-      </div> */}
+      </div>
 
       <Table
         columns={columns}
