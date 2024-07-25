@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
-// import { Row } from 'react-table';
+import Select from 'react-select';
 import {
   addProductToCartThunk,
   createOrderThunk,
@@ -35,6 +35,7 @@ const CartTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
+  const [cityNameOptions, setCityNameOptions] = useState([]);
 
   const selectedCart: CartData = useAppSelector(
     (state) => state.persistedAuthReducer.user.cart,
@@ -261,15 +262,21 @@ const CartTable = () => {
           {sum}$ | {Math.ceil(+sum * selectedCurrency.USD)}грн
         </p>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          openModal();
-        }}
-        className="ml-auto mt-4 block w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
-      >
-        Підтвердити замовлення
-      </button>
+      <div className="flex justify-between gap-20">
+        {/* <div className="min-h-[200px] grow outline-dotted">
+          <h2 className="ml-16 text-2xl">Адреса доставки</h2>
+          <Select options={cityNameOptions} onChange={()=> fetch} />
+        </div> */}
+        <button
+          type="button"
+          onClick={() => {
+            openModal();
+          }}
+          className="ml-auto mt-4 block w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
+        >
+          Підтвердити замовлення
+        </button>
+      </div>
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
