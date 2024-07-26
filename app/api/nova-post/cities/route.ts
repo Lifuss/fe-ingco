@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const { NP_API_URL, NP_API_KEY } = process.env; // Get the Nova Post API URL from .env
 
