@@ -178,13 +178,6 @@ const ProductList = ({ isFavoritePage = false }) => {
                         router.push(`/retail/${_id}`);
                       }}
                     >
-                      {countInStock <= 0 && (
-                        <div className="rounded-2x absolute left-0 top-0 flex h-full w-full items-center justify-center">
-                          <p className="text-lg font-semibold text-black">
-                            Немає в наявності
-                          </p>
-                        </div>
-                      )}
                       <div className="relative h-[150px] w-full shrink-0">
                         <Image
                           src={NEXT_PUBLIC_API + image}
@@ -195,9 +188,13 @@ const ProductList = ({ isFavoritePage = false }) => {
                           loading="lazy"
                         />
                       </div>
-
-                      <h3 className="text-xs font-medium text-[#FACC15]">
+                      <h3 className="flex justify-between text-xs font-medium text-[#FACC15]">
                         {article}
+                        {countInStock <= 0 && (
+                          <p className="text-xs font-semibold text-black">
+                            Немає в наявності
+                          </p>
+                        )}
                       </h3>
                       <h4
                         className={clsx(
