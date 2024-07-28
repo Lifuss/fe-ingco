@@ -16,6 +16,7 @@ import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
+import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -263,10 +264,7 @@ const CartTable = () => {
         </p>
       </div>
       <div className="flex justify-between gap-20">
-        {/* <div className="min-h-[200px] grow outline-dotted">
-          <h2 className="ml-16 text-2xl">Адреса доставки</h2>
-          <Select options={cityNameOptions} onChange={()=> fetch} />
-        </div> */}
+        {/* <NovaPoshtaComponent /> */}
         <button
           type="button"
           onClick={() => {
