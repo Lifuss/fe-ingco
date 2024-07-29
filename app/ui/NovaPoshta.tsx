@@ -50,7 +50,7 @@ const NovaPoshtaComponent = () => {
 
     setIsLoading(true);
     await novaPoshta
-      .fetchWarehouses(city.value.MainDescription, '50')
+      .fetchWarehouses(city.value.MainDescription, '150')
       .then((data) => {
         setWarehouses(data);
       });

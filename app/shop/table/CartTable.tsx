@@ -10,7 +10,6 @@ import {
   createOrderThunk,
   deleteProductFromCartThunk,
 } from '@/lib/appState/user/operation';
-import Modal from 'react-modal';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
@@ -18,17 +17,6 @@ import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
-
-const customModalStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
 
 const CartTable = () => {
   const [isOpen, setIsOpen] = useState(false);
