@@ -58,8 +58,6 @@ const Slice = createSlice({
         toast.success('Користувач успішно змінений');
       })
       .addCase(deleteUserThunk.fulfilled, (state, { payload }) => {
-        console.log(payload, 'payload');
-
         state.users = state.users.filter((user) => user._id !== payload);
         toast.success('Користувач успішно видалений');
       })

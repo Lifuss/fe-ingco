@@ -24,24 +24,19 @@ export class NovaPoshta {
     return data.data[0];
   }
 
-  async fetchWarehouses(cityRef: string) {
+  async fetchWarehouses(city: string, Limit: string) {
     const url = 'https://api.novaposhta.ua/v2.0/json/';
     const requestBody = {
       apiKey: this.apiKey,
       modelName: 'AddressGeneral',
       calledMethod: 'getWarehouses',
       methodProperties: {
-        apiKey: this.apiKey,
-        modelName: 'AddressGeneral',
-        calledMethod: 'getWarehouses',
-        methodProperties: {
-          CityRef: cityRef,
-          Page: '1',
-          Limit: '50',
-        },
+        CityName: city,
+        Page: '1',
+        Limit,
       },
     };
-    const {data} = await axios.post(url, requestBody);
+    const { data } = await axios.post(url, requestBody);
     return data.data;
   }
 }

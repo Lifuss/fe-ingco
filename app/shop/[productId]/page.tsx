@@ -32,7 +32,6 @@ const Page = ({ params }: PageProps) => {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    console.log(params.productId);
     dispatch(getProductByIdThunk(params.productId));
   }, [dispatch, params.productId]);
 

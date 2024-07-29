@@ -213,8 +213,6 @@ export const fetchUsersStatsThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.get('/users/stats');
-      console.log(data, 'data');
-
       return data;
     } catch (error) {
       rejectWithValue(error);

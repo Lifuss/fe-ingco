@@ -11,7 +11,6 @@ const UsersStats = () => {
   );
 
   useEffect(() => {
-    console.log('UsersStats');
     dispatch(fetchUsersStatsThunk());
   }, [dispatch]);
 

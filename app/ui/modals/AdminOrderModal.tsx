@@ -106,7 +106,7 @@ const AdminOrderModal = ({
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>
         <h3 className="w-full border-t border-gray-400">Клієнт:</h3>
         <div className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
-          <div>
+          <div className="font-medium">
             <p>Ім&apos;я:</p>
             <p>Email:</p>
             <p>Моб. номер:</p>
@@ -147,20 +147,22 @@ const AdminOrderModal = ({
             </select>
           </div>
         </div>
-        <div className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
-          <div>
+        <div className="mb-2 flex items-center gap-5 border-b border-gray-400 pb-2 text-base">
+          <div className="flex flex-col gap-2 font-medium">
             <p>Коментар:</p>
             <p>Номер декларації:</p>
+            <p>Відділення НП</p>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <p>{order.comment || 'Відсутній ❌'}</p>
             <input
-              className="rounded-lg py-1"
+              className="max-w-[200px] rounded-lg py-1"
               type="text"
               name="declarationNumber"
               defaultValue={order.declarationNumber}
               placeholder="Номер накладної"
             />
+            <p>{order.shippingAddress}</p>
           </div>
         </div>
         <div>
@@ -198,7 +200,7 @@ const AdminOrderModal = ({
                       (item) => item._id === product._id,
                     )?.quantity
                   }
-                  className="rounded-md text-center font-medium"
+                  className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
                   onChange={(e) => {
                     const value = e.currentTarget.value;
                     const updatedProducts = selectedOrder?.products.map(

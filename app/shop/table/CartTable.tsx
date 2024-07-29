@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
-import Select from 'react-select';
 import {
   addProductToCartThunk,
   createOrderThunk,
@@ -209,9 +208,6 @@ const CartTable = () => {
     [],
   );
 
-  function openModal() {
-    setIsOpen(true);
-  }
   function closeModal() {
     setIsOpen(false);
   }
@@ -221,6 +217,10 @@ const CartTable = () => {
     const form = e.currentTarget;
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)
       ?.value;
+    const address =
+      (form.elements.namedItem('city') as HTMLInputElement)?.value +
+      ', ' +
+      (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
     const order = {
       products: selectedCart.map((item) => ({
         productId: item.productId._id,
@@ -230,7 +230,7 @@ const CartTable = () => {
           (item.productId.price * item.quantity).toFixed(2),
         ),
       })),
-      shippingAddress: 'test',
+      shippingAddress: address,
       totalPrice: Number(
         selectedCart
           .reduce((acc, item) => {
@@ -240,6 +240,7 @@ const CartTable = () => {
       ),
       comment,
     };
+
     dispatch(createOrderThunk(order))
       .unwrap()
       .then((data) => {
@@ -264,61 +265,54 @@ const CartTable = () => {
         </p>
       </div>
       <div className="flex justify-between gap-20">
-        {/* <NovaPoshtaComponent /> */}
-        <button
-          type="button"
-          onClick={() => {
-            openModal();
-          }}
-          className="ml-auto mt-4 block w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
-        >
-          Підтвердити замовлення
-        </button>
-      </div>
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={closeModal}
-        style={customModalStyles}
-        contentLabel="Підтвердження замовлення"
-      >
         <form
-          className="flex w-[500px] flex-col gap-4 px-5"
+          className="flex w-full justify-between px-5"
           onSubmit={handleSubmit}
         >
-          <ul className="flex flex-col gap-2 text-lg">
-            <li>
-              <p>
-                Після оформлення з вами зв&apos;яжеться менеджер через вайбер
-                або дзвінок і уточнить деталі
-              </p>
-            </li>
-            <li>
-              <p>
-                В коментарі можете вказати бажаний тип зв&apos;язку, а також
-                неявні деталі по типу розділеного замовлення тощо.
-              </p>
-            </li>
-            <li>
-              <p>
-                Якщо не бажаєте щоб вам передзвонювали, то вкажіть повне інфо
-                для відправки в коментарі (ПІБ, тел номер, адреса відділення НП)
-              </p>
-            </li>
-          </ul>
-          <textarea
-            className=""
-            name="comment"
-            placeholder="Коментарій до замовлення"
-          />
+          <div className="w-full">
+            <h4 className="mb-2 w-fit rounded-full border border-gray-500 p-2">
+              <Image
+                src="/icons/Nova_Poshta_2019_ua.svg"
+                alt="Nova Poshta"
+                width={100}
+                height={100}
+                className="rounded-full"
+              />
+            </h4>
+            <NovaPoshtaComponent />
+          </div>
+          <div className="flex w-[500px] flex-col">
+            <ul className="mb-4 mt-4 flex flex-col gap-1 rounded-xl border border-gray-200 p-2 text-lg">
+              <li>
+                <p>
+                  Після оформлення з вами зв&apos;яжеться менеджер для уточнення
+                </p>
+              </li>
+              <li>
+                <p>
+                  В коментарі можете вказати бажаний тип зв&apos;язку, а також
+                  неявні деталі по типу розділеного замовлення тощо.
+                </p>
+              </li>
+            </ul>
+            <label>
+              Коментарій
+              <textarea
+                className="block w-full rounded-lg border border-gray-500 p-2"
+                name="comment"
+                placeholder="Коментарій до замовлення"
+              />
+            </label>
 
-          <button
-            type="submit"
-            className="mx-auto w-fit rounded-lg bg-[#111827] px-4 py-4 text-2xl text-white"
-          >
-            Оформити замовлення
-          </button>
+            <button
+              type="submit"
+              className="mx-auto mb-20 mt-5 w-fit rounded-lg bg-[#111827] p-2 text-2xl text-white"
+            >
+              Оформити замовлення
+            </button>
+          </div>
         </form>
-      </Modal>
+      </div>
       <ModalProduct
         product={selectedProduct}
         closeModal={closeProductModal}

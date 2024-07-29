@@ -28,7 +28,6 @@ const Page = ({ params }: PageProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(params.productId);
     dispatch(getProductByIdThunk(params.productId));
   }, [dispatch, params.productId]);
 
