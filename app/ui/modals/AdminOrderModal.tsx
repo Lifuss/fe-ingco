@@ -151,7 +151,7 @@ const AdminOrderModal = ({
           <div className="flex flex-col gap-2 font-medium">
             <p>Коментар:</p>
             <p>Номер декларації:</p>
-            <p>Відділення НП</p>
+            <p>Відділення</p>
           </div>
           <div className="flex flex-col gap-2">
             <p>{order.comment || 'Відсутній ❌'}</p>
@@ -162,7 +162,9 @@ const AdminOrderModal = ({
               defaultValue={order.declarationNumber}
               placeholder="Номер накладної"
             />
-            <p>{order.shippingAddress}</p>
+            <p>
+              {order.shippingAddress || 'Адреса відсутня, потрібне уточнення'}
+            </p>
           </div>
         </div>
         <div>
