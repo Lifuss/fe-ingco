@@ -19,6 +19,7 @@ import {
   removeProductFromLocalStorageCart,
 } from '@/lib/appState/user/slice';
 import Icon from '@/app/ui/assets/Icon';
+import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -238,9 +239,11 @@ const RetailCartTable = () => {
       ?.value;
     const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
-    const shippingAddress = (
-      form.elements.namedItem('shippingAddress') as HTMLInputElement
-    )?.value;
+    const city = (form.elements.namedItem('city') as HTMLInputElement)?.value;
+    const warehouse = (form.elements.namedItem('warehouse') as HTMLInputElement)
+      ?.value;
+
+    const shippingAddress = `${city}, ${warehouse}`;
 
     const order = {
       products: selectedCart.map((item) => ({
@@ -282,11 +285,17 @@ const RetailCartTable = () => {
         <p>Загальна сума</p>
         <p>{sum} грн</p>
       </div>
-      <form className="flex  justify-between gap-2" onSubmit={handleSubmit}>
+      <form
+        className="mb-20  flex justify-between gap-2"
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-col gap-2">
-          <div className="flex">
+          <div className="flex flex-col">
+            <h3 className="mb-2 text-base font-medium">Дані для доставки</h3>
             <label className="flex flex-col">
-              <span>Ім&apos;я</span>
+              <span>
+                Ім&apos;я<span className="text-red-600">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -296,7 +305,9 @@ const RetailCartTable = () => {
               />
             </label>
             <label className="flex flex-col">
-              <span>Прізвище</span>
+              <span>
+                Прізвище<span className="text-red-600">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -306,7 +317,9 @@ const RetailCartTable = () => {
               />
             </label>
             <label className="flex flex-col">
-              <span>По-батькові</span>
+              <span>
+                По-батькові<span className="text-red-600">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -318,7 +331,9 @@ const RetailCartTable = () => {
           </div>
           <div className="flex">
             <label className="flex flex-col">
-              <span>Телефон</span>
+              <span>
+                Телефон<span className="text-red-600">*</span>
+              </span>
               <input
                 required
                 type="tel"
@@ -328,7 +343,9 @@ const RetailCartTable = () => {
               />
             </label>
             <label className="flex flex-col">
-              <span>Email</span>
+              <span>
+                Email<span className="text-red-600">*</span>
+              </span>
               <input
                 required
                 type="email"
@@ -338,26 +355,37 @@ const RetailCartTable = () => {
               />
             </label>
           </div>
-          <label className="mb-2 flex w-1/2 flex-col">
-            <span>Адреса доставки</span>
-            <input
-              type="text"
-              name="shippingAddress"
-              className="border-1 rounded-lg border-gray-400 p-2"
+        </div>
+
+        <div className="mt-auto flex h-full w-1/3 flex-col gap-4">
+          <div className="w-full">
+            <h3 className="mb-2 text-base font-medium">Перевізник</h3>
+            <h4 className="mb-2 w-fit rounded-full border border-gray-500 p-2">
+              <Image
+                src="/icons/Nova_Poshta_2019_ua.svg"
+                alt="Nova Poshta"
+                width={100}
+                height={100}
+                className="rounded-full"
+              />
+            </h4>
+            <NovaPoshtaComponent />
+          </div>
+          <label>
+            Коментарій
+            <textarea
+              className="border-1 h-24 w-full rounded-lg border-gray-400 p-2"
+              name="comment"
+              placeholder="Коментарій до замовлення"
             />
           </label>
-          <textarea
-            className="border-1 h-24 w-1/2 rounded-lg border-gray-400 p-2"
-            name="comment"
-            placeholder="Коментарій до замовлення"
-          />
+          <button
+            type="submit"
+            className="ml-auto mt-auto block h-fit w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
+          >
+            Підтвердити замовлення
+          </button>
         </div>
-        <button
-          type="submit"
-          className="ml-auto mt-auto block h-fit w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
-        >
-          Підтвердити замовлення
-        </button>
       </form>
       <ModalProduct
         product={selectedProduct}

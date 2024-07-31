@@ -60,7 +60,7 @@ const NovaPoshtaComponent = () => {
   return (
     <div className="flex max-w-[500px] flex-col gap-4 pr-10">
       <label>
-        Населений пункт
+        Населений пункт <span className="text-red-600">*</span>
         <AsyncSelect
           loadOptions={loadOptions}
           defaultOptions={defaultCities}
@@ -75,7 +75,7 @@ const NovaPoshtaComponent = () => {
         />
       </label>
       <label title="Оберіть відділення, якщо не доступно оберіть спочатку місто">
-        Відділення
+        Відділення <span className="text-red-600">*</span>
         <Select
           options={warehouses.map((warehouse) => ({
             label: warehouse.Description,

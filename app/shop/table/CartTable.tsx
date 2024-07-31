@@ -19,11 +19,9 @@ import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
 const CartTable = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
-  const [cityNameOptions, setCityNameOptions] = useState([]);
 
   const selectedCart: CartData = useAppSelector(
     (state) => state.persistedAuthReducer.user.cart,
@@ -196,10 +194,6 @@ const CartTable = () => {
     [],
   );
 
-  function closeModal() {
-    setIsOpen(false);
-  }
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -231,8 +225,7 @@ const CartTable = () => {
 
     dispatch(createOrderThunk(order))
       .unwrap()
-      .then((data) => {
-        closeModal();
+      .then(() => {
         toast.success('Замовлення успішно оформлено');
       });
   };
