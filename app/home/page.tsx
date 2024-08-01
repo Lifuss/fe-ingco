@@ -6,7 +6,6 @@ import Header from '../ui/home/Header';
 import Hero from '../ui/home/Hero';
 
 export default function Page() {
-
   return (
     <>
       <Header />

@@ -45,11 +45,9 @@ div.slick-dots ul {
   display: flex;
   gap: 8px;
 }
-
 div.slick-dots li {
   width: fit-content;
 }
-
 li.slick-active > div {
   width: 16px;
   background-color: #f59e0b;
@@ -57,6 +55,7 @@ li.slick-active > div {
 }
 /* End Slider dots styles */
 
+/* Scrollbar styles */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -64,20 +63,30 @@ li.slick-active > div {
 body::-webkit-scrollbar {
   height: 5px;
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
   background: #a3a3a3;
   border-radius: 8px;
 }
-
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #dfa644d8;
   border-radius: 8px;
 }
-
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #da9011;
+}
+/* End Scrollbar styles */
+
+/* ANIMATION */
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: rotate 1s linear infinite;
 }
