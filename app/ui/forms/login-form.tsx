@@ -8,6 +8,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import withAuth from '../../service/PrivateRouting';
 import { toast } from 'react-toastify';
+import Loader from '../Loader';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
@@ -79,7 +80,7 @@ function LoginForm() {
         >
           Забули пароль?
         </Link>
-        {!isLoading ? <LoginButton /> : <h2> Завантаження</h2>}
+        {!isLoading ? <LoginButton /> : <Loader />}
         <p className="mt-8 text-center">
           Немає облікового запису?{' '}
           <Link

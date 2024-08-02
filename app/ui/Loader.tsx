@@ -5,8 +5,8 @@ const Loader = ({
   size = 16,
   className,
 }: {
-  size: number;
-  className: string;
+  size?: number;
+  className?: string;
 }) => {
   return <LoaderCircle size={size} className={`animate-spin ${className}`} />;
 };
