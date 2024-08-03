@@ -41,7 +41,7 @@ const initialState = {
   isB2b: false,
   isLoading: false,
 };
-
+// TODO: add loaders when fetching data
 const authStateSlice = createSlice({
   name: 'authSlice',
   initialState,
