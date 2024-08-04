@@ -41,7 +41,6 @@ const initialState = {
   isB2b: false,
   isLoading: false,
 };
-// TODO: add loaders when fetching data
 const authStateSlice = createSlice({
   name: 'authSlice',
   initialState,
@@ -100,11 +99,28 @@ const authStateSlice = createSlice({
       })
       .addCase(createOrderThunk.fulfilled, (state, _) => {
         state.user.cart = [];
+        state.isLoading = false;
       })
       .addCase(createRetailOrderThunk.fulfilled, (state, _) => {
         state.user.retailCart = [];
         state.localStorageCart = [];
+        state.isLoading = false;
       })
+      .addMatcher(
+        isAnyOf(
+          getUserCartThunk.pending,
+          addProductToCartThunk.pending,
+          deleteProductFromCartThunk.pending,
+          registerThunk.pending,
+          logoutThunk.pending,
+          loginThunk.pending,
+          createOrderThunk.pending,
+          createRetailOrderThunk.pending,
+        ),
+        (state) => {
+          state.isLoading = true;
+        },
+      )
       .addMatcher(
         isAnyOf(
           getUserCartThunk.fulfilled,
@@ -113,6 +129,7 @@ const authStateSlice = createSlice({
         ),
         (state, { payload }) => {
           state.user.cart = payload;
+          state.isLoading = false;
         },
       )
       .addMatcher(
