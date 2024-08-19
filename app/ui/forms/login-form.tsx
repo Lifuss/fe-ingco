@@ -76,11 +76,15 @@ function LoginForm() {
         </div>
         <Link
           className="ml-auto mt-5 block w-fit text-base underline transition-all duration-200 ease-out hover:text-orangeLight"
-          href={'/forgot'}
+          href={'/auth/forgot'}
         >
           Забули пароль?
         </Link>
-        {!isLoading ? <LoginButton /> : <Loader />}
+        {!isLoading ? (
+          <LoginButton />
+        ) : (
+          <Loader className="mx-auto mt-2" size={32} />
+        )}
         <p className="mt-8 text-center">
           Немає облікового запису?{' '}
           <Link
