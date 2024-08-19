@@ -27,26 +27,18 @@ const Sidebar = () => {
     const params = new URLSearchParams(searchParams);
     let pagePathname = pathname;
     switch (pathname) {
-      case '/shop/cart':
-        pagePathname = '/shop';
-        break;
-      case '/retail/cart':
-        pagePathname = '/retail';
-        break;
       case '/shop/favorites':
         pagePathname = 'favorites';
         break;
       case '/retail/favorites':
         pagePathname = 'favorites';
         break;
-      case '/shop/history':
-        pagePathname = '/shop';
-        break;
-      case '/retail/history':
-        pagePathname = '/retail';
-        break;
       default:
-        pagePathname;
+        if (pathname.includes('retail')) {
+          pagePathname = '/retail';
+        } else {
+          pagePathname = '/shop';
+        }
     }
     if (categoryId === '') {
       params.delete('category');
