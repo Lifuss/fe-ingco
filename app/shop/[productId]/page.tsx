@@ -120,11 +120,7 @@ const Page = ({ params }: PageProps) => {
             грн
           </p>
           <p className="mb-5 text-lg">
-            Маржинальний прибуток{' '}
-            <span className="align-top text-xs text-gray-500">
-              (без витрат на перевезення та інше)
-            </span>
-            :{' '}
+            Маржинальний прибуток :{' '}
             {Math.ceil(
               ((product.priceRetailRecommendation - product.price * USD) /
                 product.priceRetailRecommendation) *
@@ -133,6 +129,9 @@ const Page = ({ params }: PageProps) => {
             % |{' '}
             {product.priceRetailRecommendation - Math.ceil(product.price * USD)}{' '}
             грн
+            <span className="ml-1 align-top text-xs text-gray-500">
+              (без витрат на перевезення та інше)
+            </span>
           </p>
           <div className="it ems-center mb-16 flex w-1/2 gap-5 rounded-lg">
             <p className="text-center text-xl">Перевізник:</p>
