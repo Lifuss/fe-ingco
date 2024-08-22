@@ -5,6 +5,8 @@ import { clearAuthState } from '@/lib/appState/user/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import Footer from '../ui/Footer';
+import Header from '../ui/home/Header';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAppSelector(
@@ -31,7 +33,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
       }
     }
   }, [dispatch, isAuthenticated]);
-  return children;
+  return (
+    <>
+      <Header />
+      <main className="min-h-[70%]">{children}</main>
+      <Footer />
+    </>
+  );
 };
 
 export default Layout;

@@ -33,15 +33,18 @@ const Footer = () => {
       <ul className="mx-auto grid grid-cols-2 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 xl:gap-32 xl:pr-[115px] ">
         <li className="flex flex-col lg:order-none">
           <p className="font-medium">Клієнтам</p>
-          <Link
-            className="transition-colors hover:text-white"
-            href="/home/#about"
+          <Link className="transition-colors hover:text-white" href="/retail">
+            Каталог(Роздріб)
+          </Link>
+          <Link className="transition-colors hover:text-white" href="/shop">
+            Партнерській кабінет
+          </Link>
+          <div
+            className="cursor-not-allowed text-gray-400 transition-colors"
+            title="Тривають технічні зміни"
           >
-            Про нас
-          </Link>
-          <Link className="transition-colors hover:text-white" href="#">
             Підтримка
-          </Link>
+          </div>
         </li>
         <li className="order-last col-span-2 justify-self-center lg:order-none lg:col-span-1">
           <p className="mb-1 font-medium ">Соціальні мережі</p>
@@ -61,26 +64,20 @@ const Footer = () => {
           </div>
         </li>
         <li className="lg:order-none">
-          <p className="font-medium">Контакти</p>
+          <p className="font-medium">Інформація</p>
           <div className="flex flex-col">
-            <a
-              className="text-blue-600 hover:text-white"
-              href="tel:+380988392107"
+            <Link
+              className="transition-colors hover:text-white"
+              href="/home/#about"
             >
-              +380 98-83-92-107
-            </a>
-            <a
-              className="text-blue-600 hover:text-white"
-              href="tel:+380964123628"
+              Про нас
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/home/contacts"
             >
-              +380 96-41-23-628
-            </a>
-            <a
-              href="mailto:ingco-service@ukr.net"
-              className="text-blue-600 hover:text-white"
-            >
-              ingco-service@ukr.net
-            </a>
+              Контакти
+            </Link>
           </div>
         </li>
       </ul>
