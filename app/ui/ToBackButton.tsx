@@ -7,7 +7,9 @@ const ToBackButton = () => {
   const router = useRouter();
   return (
     <div className="absolute left-10 top-10">
-      <Button onClick={() => router.back()}>Назад</Button>
+      <Button className="text-white" onClick={() => router.back()}>
+        Назад
+      </Button>
     </div>
   );
 };

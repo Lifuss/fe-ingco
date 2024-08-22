@@ -13,11 +13,17 @@ import {
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
 import ModalProduct from '@/app/ui/modals/ProductModal';
-import { Product } from '@/lib/types';
+import { Product, CustomRow } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
-import { BetweenVerticalStart, Heart, Table2 } from 'lucide-react';
+import {
+  BetweenVerticalStart,
+  Heart,
+  MousePointerClick,
+  SquareMousePointer,
+  Table2,
+} from 'lucide-react';
 import { setShopView } from '@/lib/appState/main/slice';
 import ShopList from './ShopList';
 
@@ -31,7 +37,6 @@ export type rawData = {
   countInStock: number;
   _id: string;
 };
-
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -164,9 +169,13 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessor: 'codeCol', // accessor is the "key" in the data
       },
       {
-        Header: 'Назва',
+        Header: (
+          <p className="inline-flex items-center gap-2">
+            Назва <MousePointerClick className="text-gray-400" />
+          </p>
+        ),
         accessor: 'nameCol',
-        Cell: ({ row }: { row: any }) => (
+        Cell: ({ row }: { row: CustomRow }) => (
           <button
             className="min-w-[250px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
@@ -179,9 +188,13 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
       {
-        Header: 'Фото',
+        Header: (
+          <p className="inline-flex items-center gap-1 ">
+            Фото <SquareMousePointer className="text-gray-400" size={14} />
+          </p>
+        ),
         accessor: 'photoCol',
-        Cell: ({ row }) => {
+        Cell: ({ row }: { row: CustomRow }) => {
           return (
             <Image
               src={`${process.env.NEXT_PUBLIC_API}${row.values.photoCol}`}
@@ -209,7 +222,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {
         Header: 'Улюблене',
         accessor: 'favoriteCol',
-        Cell: ({ row }) => (
+        Cell: ({ row }: { row: CustomRow }) => (
           <button
             onClick={handleFavoriteClick.bind(
               null,
@@ -242,7 +255,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {
         Header: 'К-сть',
         accessor: 'quantityCol',
-        Cell: ({ row }) => (
+        Cell: ({ row }: { row: CustomRow }) => (
           <input
             name={(row.original as { _id: string })._id}
             type="number"
@@ -271,7 +284,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {
         Header: 'Кошик',
         accessor: 'cartCol',
-        Cell: ({ row }: { row: any }) => (
+        Cell: ({ row }: { row: CustomRow }) => (
           <button
             className="px-2 py-1 text-white transition-transform duration-200 hover:scale-110"
             onClick={() =>
@@ -340,6 +353,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
               className={`${state.persistedMainReducer.shopView === 'table' && 'max-h-[75vh] overflow-auto'}`}
             >
               {state.persistedMainReducer.shopView === 'table' ? (
+                // Hard to refactor types in react-table types, added ts-ignore after add in column header html like code, it works but type it to much sweats
+                // @ts-ignore
                 <Table columns={columns} data={data} />
               ) : (
                 <ShopList
