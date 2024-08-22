@@ -10,7 +10,7 @@ import CurrencyRate from '../CurrencyRate';
 import AuthButtons from './AuthButtons';
 import { usePathname } from 'next/navigation';
 import Search from '../search';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/hooks';
 import UserModal from '../modals/UserModal';
 import Icon from '../assets/Icon';
 
@@ -19,7 +19,6 @@ const Header = () => {
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const { isAuthenticated, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );

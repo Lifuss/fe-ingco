@@ -19,7 +19,7 @@ const Page = () => {
             className="cursor-help rounded-xl bg-gray-400 p-2 text-center text-white xl:p-4"
             title="В майбутніх планах"
           >
-            Створити опт ексель
+            Створити опт таблицю
           </button>
         </div>
       </div>

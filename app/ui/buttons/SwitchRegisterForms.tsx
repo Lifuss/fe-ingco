@@ -1,14 +1,22 @@
 'use client';
 import B2BRegisterForm from '../forms/RegisterPartner-form';
 import B2CRegisterForm from '../forms/RegisterClient-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
+import { useSearchParams } from 'next/navigation';
 
 const SwitchRegisterForms = () => {
-  const [isB2B, setIsB2B] = useState(false); // Initialize state with true
+  const [isB2B, setIsB2B] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('isB2B')) {
+      setIsB2B(true);
+    }
+  }, [searchParams]);
 
   const toggleForm = () => {
-    setIsB2B(!isB2B); // Toggle the state
+    setIsB2B(!isB2B);
   };
 
   return (
