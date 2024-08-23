@@ -36,7 +36,8 @@ const Slice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsersThunk.fulfilled, (state, { payload }) => {
-        state.users = payload;
+        state.users = payload.users;
+        state.totalPages = payload.totalPages;
       })
       .addCase(fetchOrdersThunk.fulfilled, (state, { payload }) => {
         state.orders = payload.orders;

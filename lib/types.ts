@@ -1,4 +1,4 @@
-import { Row } from "react-table";
+import { Row } from 'react-table';
 
 export interface Category {
   _id: string;
@@ -21,6 +21,7 @@ export interface Product {
   countInStock: number;
   image: string;
   warranty: number;
+  sort: number;
   seoKeywords: string;
   category: Category | null;
   createdAt: string;

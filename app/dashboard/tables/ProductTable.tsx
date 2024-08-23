@@ -59,6 +59,10 @@ const ProductTable = () => {
         accessor: 'availabilityCol',
       },
       {
+        Header: 'Сортування',
+        accessor: 'sortCol',
+      },
+      {
         Header: 'Ред|Вид',
         accessor: 'editCol',
         Cell: ({ row }: { row: Row }) => (
@@ -102,6 +106,7 @@ const ProductTable = () => {
         : product.priceRetailRecommendation,
       availabilityCol: product.countInStock,
       editCol: product._id,
+      sortCol: product.sort,
     }));
   }, [products]);
 

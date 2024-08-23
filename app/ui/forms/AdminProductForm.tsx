@@ -304,6 +304,17 @@ const AdminProductForm = ({
                 required
               />
             </label>
+            <label>
+              Сортування
+              <input
+                type="number"
+                step={1}
+                name="sort"
+                defaultValue={product?.sort}
+                className="block rounded-lg focus:bg-blue-100"
+                required
+              />
+            </label>
             <div className="mt-10 flex flex-col gap-2">
               <button
                 type="submit"

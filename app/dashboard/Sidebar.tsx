@@ -2,7 +2,15 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Boxes, Inbox, PackageOpen, ShoppingBasket, Users } from 'lucide-react';
+import {
+  Boxes,
+  Inbox,
+  Mails,
+  PackageOpen,
+  PieChart,
+  ShoppingBasket,
+  Users,
+} from 'lucide-react';
 
 const listData = [
   {
@@ -21,14 +29,24 @@ const listData = [
     svg: <Users size={20} />,
   },
   {
-    title: 'Замовлення b2b',
+    title: 'B2B',
     link: '/dashboard/orders',
     svg: <PackageOpen size={20} />,
   },
   {
-    title: 'Замовлення роз.',
+    title: 'Роздріб',
     link: '/dashboard/retailorders',
     svg: <Inbox size={20} />,
+  },
+  {
+    title: 'Підтримка',
+    link: '/dashboard/support',
+    svg: <Mails />,
+  },
+  {
+    title: 'Статистика',
+    link: '/dashboard/statistics',
+    svg: <PieChart />,
   },
 ];
 const Sidebar = () => {

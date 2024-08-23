@@ -48,17 +48,21 @@ export const fetchUsersThunk = createAsyncThunk(
       role = 'user',
       isB2B,
       isUserVerified,
+      page = 1,
+      limit = 25,
     }: {
       query: string;
       role: 'user' | 'admin';
       isB2B?: boolean;
       isUserVerified?: boolean;
+      page: number;
+      limit: number;
     },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.get('/users', {
-        params: { q, role, isB2B, isUserVerified },
+        params: { q, role, isB2B, isUserVerified, page, limit },
       });
       return data;
     } catch (error) {

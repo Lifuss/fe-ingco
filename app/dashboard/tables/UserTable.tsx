@@ -1,5 +1,6 @@
 'use client';
 
+import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import AdminUserModal from '@/app/ui/modals/AdminUserModal';
 import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
@@ -18,7 +19,7 @@ const UserTable = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const users = useAppSelector((state) => state.dashboardSlice.users);
+  const { users, totalPages } = useAppSelector((state) => state.dashboardSlice);
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -29,8 +30,10 @@ const UserTable = () => {
   let role: 'admin' | 'user' = isAdministrator ? 'admin' : 'user';
 
   useEffect(() => {
-    dispatch(fetchUsersThunk({ query, role, isB2B, isUserVerified }));
-  }, [dispatch, query, role, isB2B, isUserVerified]);
+    dispatch(
+      fetchUsersThunk({ query, role, isB2B, isUserVerified, page, limit: 50 }),
+    );
+  }, [dispatch, query, role, isB2B, isUserVerified, page]);
 
   const columns = useMemo(
     () => [
@@ -157,9 +160,9 @@ const UserTable = () => {
         closeModal={closeModal}
         user={selectedUser}
       />
-      {/* <div className="mx-auto mt-5 w-fit">
+      <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
-      </div> */}
+      </div>
     </div>
   );
 };

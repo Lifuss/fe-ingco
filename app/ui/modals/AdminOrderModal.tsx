@@ -10,7 +10,7 @@ import {
   updateRetailOrderThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
-import { X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -246,7 +246,7 @@ const AdminOrderModal = ({
                     : product.totalPriceByOneProduct + ' грн'}
                 </div>
                 <button
-                  className="text-red absolute bottom-0 right-0"
+                  className="text-red absolute bottom-2 right-0"
                   onClick={() => {
                     const updatedProducts = selectedOrder.products.filter(
                       (item) => item._id !== product._id,
@@ -266,7 +266,7 @@ const AdminOrderModal = ({
                     });
                   }}
                 >
-                  Вид
+                  <Trash2 className="text-gray-200 transition-colors hover:text-red-500" />
                 </button>
               </div>
             ))}
