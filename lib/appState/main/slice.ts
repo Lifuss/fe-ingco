@@ -12,13 +12,11 @@ import {
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
-import { get } from 'http';
-// Define the type for your payload
+
 interface PayloadCurrencyRates {
   lastUpdate: string;
   USD: number;
   EUR: number;
-  // ... your payload properties here
 }
 type initialStateType = {
   categories: Category[];
@@ -61,6 +59,7 @@ const initialState: initialStateType = {
     warranty: 0,
     seoKeywords: '',
     category: null,
+    sort: 0,
     createdAt: '',
     updatedAt: '',
   },
