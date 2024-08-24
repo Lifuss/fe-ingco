@@ -371,3 +371,14 @@ export const createRetailOrderThunk = createAsyncThunk(
     }
   },
 );
+
+export const forgotPasswordThunk = createAsyncThunk(
+  'forgot',
+  async ({ resetData }: { resetData: string }, { rejectWithValue }) => {
+    try {
+      await apiIngco.post('users/forgot', { resetData });
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);

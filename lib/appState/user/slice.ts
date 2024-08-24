@@ -8,6 +8,7 @@ import {
   deleteFavoriteProductThunk,
   deleteProductFromCartThunk,
   deleteProductFromRetailCartThunk,
+  forgotPasswordThunk,
   getUserCartThunk,
   getUserRetailCartThunk,
   loginThunk,
@@ -16,6 +17,7 @@ import {
   registerThunk,
 } from './operation';
 import { Product } from '@/lib/types';
+import { toast } from 'react-toastify';
 
 const initialState = {
   user: {
@@ -105,6 +107,9 @@ const authStateSlice = createSlice({
         state.user.retailCart = [];
         state.localStorageCart = [];
         state.isLoading = false;
+      })
+      .addCase(forgotPasswordThunk.fulfilled, () => {
+        toast.success(`Інструкція зміни паролю відправлено на пошту`);
       })
       .addMatcher(
         isAnyOf(

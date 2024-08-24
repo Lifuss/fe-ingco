@@ -2,10 +2,22 @@
 import { Button } from '@/app/ui/buttons/button';
 import { forgotPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
+import { redirect } from 'next/navigation';
 import React from 'react';
+import { toast } from 'react-toastify';
 
-const Page = () => {
-  const dispatch = useAppDispatch();
+type PageProps = {
+  params: {
+    resetToken: string;
+  };
+};
+
+const Page = ({ params }: PageProps) => {
+  if (!params.resetToken) {
+    toast.warning('Не можливо змінити пароль по цьому посиланню');
+    redirect('/auth/login');
+  }
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);

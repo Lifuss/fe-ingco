@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
-import { orderStatusEnum } from '@/app/dashboard/tables/OrderTable';
 
 // products thunks
 export const createProductThunk = createAsyncThunk(
