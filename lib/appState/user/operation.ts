@@ -373,12 +373,26 @@ export const createRetailOrderThunk = createAsyncThunk(
 );
 
 export const forgotPasswordThunk = createAsyncThunk(
-  'forgot',
+  'user/forgot',
   async ({ resetData }: { resetData: string }, { rejectWithValue }) => {
     try {
       await apiIngco.post('users/forgot', { resetData });
     } catch (error) {
       rejectWithValue(error);
+    }
+  },
+);
+
+export const resetPasswordThunk = createAsyncThunk(
+  'user/resetPassword',
+  async (
+    { resetToken, newPassword }: { resetToken: string; newPassword: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      await apiIngco.post('users/resetPassword', { resetToken, newPassword });
+    } catch (error) {
+      return rejectWithValue(error);
     }
   },
 );

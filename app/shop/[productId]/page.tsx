@@ -7,12 +7,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
-import {
-  addProductToCartThunk,
-  addProductToRetailCartThunk,
-} from '@/lib/appState/user/operation';
+import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
-import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
 
@@ -24,10 +20,13 @@ type PageProps = {
 
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
+
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+
   const { USD } = useAppSelector(
     (state) => state.persistedMainReducer.currencyRates,
   );
+
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
 

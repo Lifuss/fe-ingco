@@ -10,7 +10,7 @@ import { registerClientThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { CircleHelp } from 'lucide-react';
 
-const inputStyle =
+export const inputStyle =
   'block w-full rounded-2xl border border-[#1d1c1c] py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500';
 
 export default function RegisterClientForm() {
@@ -48,7 +48,6 @@ export default function RegisterClientForm() {
         router.push('/auth/login');
       })
       .catch((error) => {
-        console.error('Error in login:', error);
         toast.error('Помилка авторизації');
       });
   };
