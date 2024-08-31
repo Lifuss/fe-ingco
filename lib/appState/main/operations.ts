@@ -183,3 +183,28 @@ export const fetchExcelFileThunk = createAsyncThunk(
     }
   },
 );
+
+export const supportTicketThunk = createAsyncThunk(
+  'users/support',
+  async (
+    {
+      name,
+      email,
+      message,
+    }: {
+      name: string;
+      email: string;
+      message: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      await apiIngco.post('/users/support', { name, email, message });
+      toast.success(
+        'Повідомлення створено, очікуйте відповіді на електронні пошті',
+      );
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);

@@ -125,7 +125,7 @@ const Header = () => {
             <>
               <div className="flex gap-10">
                 <CurrencyRate />
-                {pathname !== '/home' && (
+                {/* {pathname !== '/home' && (
                   <div className="flex items-center transition-colors ease-out hover:text-white">
                     <button
                       onClick={openModal}
@@ -172,7 +172,7 @@ const Header = () => {
                       </div>
                     </Modal>
                   </div>
-                )}
+                )} */}
               </div>
               <div className="flex items-center justify-center gap-2">
                 <UserModal />

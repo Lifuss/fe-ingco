@@ -68,7 +68,7 @@ const User = () => {
           icon="user"
           className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"
         />
-        <div className="absolute bottom-0 h-[2px]  w-full bg-black max-sm:left-0 lg:right-[-3px] lg:top-0 lg:h-7 lg:w-[2px] lg:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
+        <div className="absolute bottom-0 h-[2px] w-full bg-black max-sm:left-0 md:right-[-3px] md:top-0 md:h-7 md:w-[2px] md:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
       </button>
       <Modal
         isOpen={isOpen}

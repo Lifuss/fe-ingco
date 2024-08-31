@@ -45,6 +45,12 @@ const Footer = () => {
           >
             Підтримка
           </div>
+          <Link
+            className="transition-colors hover:text-white"
+            href="/home/support"
+          >
+            Підтримка
+          </Link>
         </li>
         <li className="order-last col-span-2 justify-self-center lg:order-none lg:col-span-1">
           <p className="mb-1 font-medium ">Соціальні мережі</p>
