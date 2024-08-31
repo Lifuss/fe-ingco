@@ -36,25 +36,29 @@ const Header = () => {
     <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link
         href={isShop ? '/shop' : '/retail'}
-        className="flex h-[31px] items-center justify-center md:block lg:h-[52px]"
+        className={clsx(
+          'flex h-full items-center justify-center md:block',
+          !isAuthenticated &&
+            'w-[110px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]',
+        )}
       >
         <Image
           src={'/logo.png'}
-          width={isDesktop ? 198 : 125}
-          height={isDesktop ? 52 : 31}
+          width={198}
+          height={52}
           alt="Лого компанії INGCO"
-          className="mb-4 inline-flex lg:mb-0"
         />
       </Link>
-      {pathname === '/home' ? (
-        <ul className="text-lg md:flex md:gap-6 lg:text-[20px] xl:gap-10 2xl:text-2xl">
+      {pathname.includes('home') ? (
+        <ul className="text-lg md:flex md:items-center md:gap-2 md:text-base lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutUs">Про нас</Link>
           </li>
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutBrand">Бренд</Link>
           </li>
-          <li className="transition-colors ease-out hover:text-white">
+          {/* Перейшли з модально вікна до сторінки */}
+          {/* <li className="transition-colors ease-out hover:text-white">
             <button
               onClick={openModal}
               className={clsx(
@@ -81,7 +85,7 @@ const Header = () => {
                 },
               }}
               className={
-                'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3 shadow-lg md:left-[51%] md:top-[55px] xl:left-[46%] xl:top-[70px] 2xl:left-[47%] 2xl:top-[60px]'
+                'absolute left-[48%] top-[90px] h-fit w-fit rounded-lg bg-white p-3 shadow-lg md:left-[38%] md:top-[55px] lg:left-[35%] xl:left-[36%] xl:top-[47px] 2xl:left-[41%] 2xl:top-[60px]'
               }
             >
               <div className="flex flex-col gap-2 text-blue-500 2xl:text-xl">
@@ -93,6 +97,9 @@ const Header = () => {
                 </Link>
               </div>
             </Modal>
+          </li> */}
+          <li className="flex">
+            <Link href="/home/contacts">Контакти</Link>
           </li>
           <li className="flex">
             <Link
