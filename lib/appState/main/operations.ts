@@ -191,18 +191,18 @@ export const supportTicketThunk = createAsyncThunk(
       name,
       email,
       message,
+      phone,
     }: {
       name: string;
       email: string;
       message: string;
+      phone: string;
     },
     { rejectWithValue },
   ) => {
     try {
-      await apiIngco.post('/users/support', { name, email, message });
-      toast.success(
-        'Повідомлення створено, очікуйте відповіді на електронні пошті',
-      );
+      await apiIngco.post('/users/support', { name, email, message, phone });
+      return;
     } catch (error) {
       return rejectWithValue(error);
     }

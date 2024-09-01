@@ -39,12 +39,6 @@ const Footer = () => {
           <Link className="transition-colors hover:text-white" href="/shop">
             Партнерській кабінет
           </Link>
-          <div
-            className="cursor-not-allowed text-gray-400 transition-colors"
-            title="Тривають технічні зміни"
-          >
-            Підтримка
-          </div>
           <Link
             className="transition-colors hover:text-white"
             href="/home/support"

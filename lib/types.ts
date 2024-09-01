@@ -126,3 +126,15 @@ export interface CustomRow extends Row {
     product: Product;
   };
 }
+
+export interface SupportTicket {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  isAnswered: boolean;
+  updatedAt: Date;
+  createdAt: Date;
+  ticketNumber: number;
+}

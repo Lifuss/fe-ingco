@@ -1,19 +1,22 @@
-import { Order, User } from '@/lib/types';
+import { Order, SupportTicket, User } from '@/lib/types';
 import { createSlice } from '@reduxjs/toolkit';
 import {
   createUserThunk,
   deleteUserThunk,
+  fetchSupportTicketsThunk,
   fetchOrdersThunk,
   fetchUsersStatsThunk,
   fetchUsersThunk,
   updateOrderThunk,
   updateUserThunk,
+  updateSupportTicketThunk,
 } from './operations';
 import { toast } from 'react-toastify';
 
 const initialState: {
   users: User[];
   orders: Order[];
+  supportTickets: SupportTicket[];
   totalPages: number;
   page: number;
   usersStats: {
@@ -22,6 +25,7 @@ const initialState: {
 } = {
   users: [],
   orders: [],
+  supportTickets: [],
   totalPages: 0,
   page: 1,
   usersStats: {
@@ -41,6 +45,10 @@ const Slice = createSlice({
       })
       .addCase(fetchOrdersThunk.fulfilled, (state, { payload }) => {
         state.orders = payload.orders;
+        state.totalPages = payload.totalPages;
+      })
+      .addCase(fetchSupportTicketsThunk.fulfilled, (state, { payload }) => {
+        state.supportTickets = payload.tickets;
         state.totalPages = payload.totalPages;
       })
       .addCase(createUserThunk.fulfilled, (state, { payload }) => {
@@ -64,6 +72,13 @@ const Slice = createSlice({
       })
       .addCase(fetchUsersStatsThunk.fulfilled, (state, { payload }) => {
         state.usersStats = payload;
+      })
+      .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
+        console.log(payload, state.supportTickets);
+
+        state.supportTickets.filter(
+          (ticket) => ticket.ticketNumber !== payload,
+        );
       });
   },
 });

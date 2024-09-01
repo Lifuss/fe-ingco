@@ -212,13 +212,70 @@ export const updateRetailOrderThunk = createAsyncThunk(
 );
 
 export const fetchUsersStatsThunk = createAsyncThunk(
-  'fetchUsersStats',
+  'fetch/UsersStats',
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.get('/users/stats');
       return data;
     } catch (error) {
       rejectWithValue(error);
+    }
+  },
+);
+
+export const fetchSupportTicketsThunk = createAsyncThunk(
+  'fetch/SupportTickets',
+  async (
+    {
+      query: q = '',
+      page = 1,
+      limit = 25,
+      isAnswered = false,
+    }: {
+      isAnswered: boolean;
+      query: string;
+      page: number;
+      limit: number;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.get('/users/support', {
+        params: {
+          q,
+          page,
+          limit,
+          isAnswered,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+
+export const updateSupportTicketThunk = createAsyncThunk(
+  'update/SupportTickets',
+  async (
+    {
+      ticketId,
+      isAnswered = true,
+      ticketNumber,
+    }: {
+      ticketId: string;
+      isAnswered: boolean;
+      ticketNumber: number
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      await apiIngco.patch(`/users/support/${ticketId}`, {
+        isAnswered,
+      });
+      return ticketNumber;
+    } catch (error) {
+      return rejectWithValue(error);
     }
   },
 );
