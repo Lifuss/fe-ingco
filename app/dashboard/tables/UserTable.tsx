@@ -65,7 +65,7 @@ const UserTable = () => {
       users?.map((user) => ({
         emailCol: user.email,
         loginCol: user.login,
-        activeDateCol: new Date(user.updatedAt).toLocaleDateString(),
+        activeDateCol: new Date(user.updatedAt).toLocaleDateString('uk-UA'),
         verificationStatusCol: user.isVerified,
       })),
     [users],

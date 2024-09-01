@@ -29,7 +29,8 @@ const OrderModal = ({
           </p>
           <p>Статус: {order.status}</p>
           <p>
-            Дата створення: {new Date(order.createdAt).toLocaleDateString()}
+            Дата створення:{' '}
+            {new Date(order.createdAt).toLocaleDateString('uk-UA')}
           </p>
           <p>
             Номер накладної поштової служби:{' '}

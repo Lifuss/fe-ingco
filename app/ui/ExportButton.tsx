@@ -20,7 +20,7 @@ const ExportButton = ({ sheetType, title }: ExportButtonProps) => {
         const a = document.createElement('a');
         a.href = url;
         const date = new Date();
-        a.download = `ingco_${sheetType}#${date.toLocaleDateString()}.xlsx`;
+        a.download = `ingco_${sheetType}#${date.toLocaleDateString('uk-UA')}.xlsx`;
         document.body.appendChild(a);
         a.click();
         a.remove();

@@ -86,7 +86,7 @@ const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
     () =>
       history.map((item) => ({
         orderCodeCol: item.orderCode,
-        createdAtCol: new Date(item.createdAt).toLocaleDateString(),
+        createdAtCol: new Date(item.createdAt).toLocaleDateString('uk-UA'),
         totalPriceCol: !isRetail
           ? Math.ceil(item.totalPrice * usdCurrency)
           : item.totalPrice,

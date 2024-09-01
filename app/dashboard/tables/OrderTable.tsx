@@ -90,7 +90,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const data = useMemo(() => {
     return orders.map((order) => ({
       numberCol: order.orderCode,
-      dateCol: new Date(order.createdAt).toLocaleDateString(),
+      dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
       loginCol: 'login' in order.user ? order.user.login : order.user.email,
       statusCol: order.status,
       commentCol: order.comment,

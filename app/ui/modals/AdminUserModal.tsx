@@ -10,7 +10,6 @@ import {
   updateUserThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
-import Icon from '../assets/Icon';
 import { X } from 'lucide-react';
 
 type AdminUserModalProps = {
@@ -260,7 +259,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
           className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base"
         >
           <p>Дата активності</p>
-          <p>{new Date(updatedAt).toLocaleDateString()}</p>
+          <p>{new Date(updatedAt).toLocaleDateString('uk-UA')}</p>
         </div>
         <div className="mt-5 flex justify-between">
           <div className="flex gap-4">
