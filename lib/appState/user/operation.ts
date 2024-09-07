@@ -80,9 +80,9 @@ export const registerThunk = createAsyncThunk(
           code: error.code,
         };
         return rejectWithValue(errorInfo);
+      } else {
+        return rejectWithValue(error.message);
       }
-
-      return rejectWithValue(error.message);
     }
   },
 );
