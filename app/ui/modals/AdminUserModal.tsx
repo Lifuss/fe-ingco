@@ -58,16 +58,14 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       ...selectedUser,
       isVerified: form.isVerified.checked,
     };
-    const { token, createdAt, updatedAt, ...userValidate } = normalizeUser;
+    const { token, createdAt, updatedAt, resetToken, ...userValidate } =
+      normalizeUser;
 
     if (!user.isVerified && userValidate.isVerified && !userValidate.password) {
       toast.error(
         'Поле пароль обовязкове для заповнення, якщо ви хочете змінити статус верифікації',
       );
       return;
-    }
-    if (!userValidate.isVerified && userValidate.password) {
-      userValidate.password = '';
     }
 
     dispatch(updateUserThunk(userValidate))

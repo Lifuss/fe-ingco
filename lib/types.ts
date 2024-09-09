@@ -50,6 +50,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   password?: string;
+  resetToken?: string;
 }
 
 export enum OrderStatusEnum {
