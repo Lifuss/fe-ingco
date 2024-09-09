@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+const phoneSchema = z
+  .string()
+  .regex(
+    /^\+?[1-9]\d{1,14}$/,
+    'Номер телефону повинен бути валідним міжнародним номером, починатися з + та містити до 15 цифр',
+  );
+
 export const registerSchema = z.object({
   lastName: z
     .string()
@@ -19,7 +26,7 @@ export const registerSchema = z.object({
       /^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]+$/,
       'По батькові може містити тільки літери',
     ),
-  phone: z.string().regex(/^\d{10}$/, 'Номер телефону повинен містити 10 цифр'),
+  phone: phoneSchema,
   edrpou: z.string().regex(/^\d{8}$/, 'Код ЄДРПОУ повинен містити 8 цифр'),
   email: z.string().email('Некоректний формат email'),
   about: z.string().optional().default(''),

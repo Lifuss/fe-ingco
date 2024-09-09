@@ -12,7 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
 import { Button } from '../buttons/button';
-import { error } from 'console';
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -72,21 +71,6 @@ export default function RegisterPartnerForm() {
       toast.error('Щось пішло не так, спробуйте ще раз.');
     }
   };
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const form = event.currentTarget;
-  //   const credential = {
-  //     email: form.email.value.trim(),
-  //     lastName: form.lastName.value.trim(),
-  //     firstName: form.firstName.value.trim(),
-  //     surName: form.surName.value.trim(),
-  //     phone: form.phone.value.trim(),
-  //     edrpou: form.edrpou.value.trim(),
-  //     about: form.about.value.trim() || '',
-  //   };
-
-  //   const result = registerSchema.safeParse(credential);
-  // };
 
   const errorClassName = 'p-1 text-red-500 text-sm';
 
@@ -149,8 +133,9 @@ export default function RegisterPartnerForm() {
               <input
                 className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="phone"
-                type="text"
-                placeholder="38067..."
+                type="phone"
+                placeholder="+38067..."
+                defaultValue="+"
                 {...register('phone')}
               />
               {errors.phone && (
