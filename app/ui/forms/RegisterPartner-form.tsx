@@ -1,34 +1,33 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormStatus } from 'react-dom';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import { registerThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema } from '@/lib/validationSchema';
+import { registerPartnerSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
 import { Button } from '../buttons/button';
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+type RegisterFormData = z.infer<typeof registerPartnerSchema>;
 
 export default function RegisterPartnerForm() {
   const { isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerPartnerSchema),
   });
-  const dispatch = useAppDispatch();
-  const router = useRouter();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -39,7 +38,6 @@ export default function RegisterPartnerForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const registerResponse = await dispatch(registerThunk(data));
-      console.log(registerResponse);
       // @ts-ignore
       if (registerResponse.error) {
         if (registerResponse.payload.message.includes('409')) {
@@ -84,7 +82,7 @@ export default function RegisterPartnerForm() {
                 Прізвище <span className="text-red">*</span>
               </label>
               <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="lastName"
                 type="text"
                 placeholder="Прізвище"
@@ -99,7 +97,7 @@ export default function RegisterPartnerForm() {
                 Ім&apos;я <span className="text-red">*</span>
               </label>
               <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="firstName"
                 type="text"
                 placeholder="Ім'я"
@@ -115,7 +113,7 @@ export default function RegisterPartnerForm() {
               По батькові <span className="text-red">*</span>
             </label>
             <input
-              className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="surName"
               type="text"
               placeholder="По батькові"
@@ -131,7 +129,7 @@ export default function RegisterPartnerForm() {
                 Номер телефону <span className="text-red">*</span>
               </label>
               <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="phone"
                 type="phone"
                 placeholder="+38067..."
@@ -147,7 +145,7 @@ export default function RegisterPartnerForm() {
                 Код ЄДРПОУ <span className="text-red">*</span>
               </label>
               <input
-                className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="edrpou"
                 type="text"
                 placeholder="ЄДРПОУ"
@@ -163,7 +161,7 @@ export default function RegisterPartnerForm() {
               Email <span className="text-red">*</span>
             </label>
             <input
-              className="peer block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="email"
               type="email"
               placeholder="Ваш email"
@@ -178,7 +176,7 @@ export default function RegisterPartnerForm() {
               Розкажіть про себе
             </label>
             <textarea
-              className="peer block max-h-56 w-full rounded-2xl border border-[#1d1c1c] pb-[20px] pl-4 pt-[10px] text-base outline-2 placeholder:text-gray-500"
+              className="block max-h-56 w-full rounded-2xl border border-[#1d1c1c] pb-[20px] pl-4 pt-[10px] text-base outline-2 placeholder:text-gray-500"
               id="about"
               placeholder="Необов'язкове поле про свою діяльність..."
               {...register('about')}

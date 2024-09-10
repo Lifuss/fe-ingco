@@ -9,9 +9,16 @@ import { redirect, useRouter } from 'next/navigation';
 import { registerClientThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { CircleHelp } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerClientSchema } from '@/lib/validationSchema';
+import { z } from 'zod';
+
+type RegisterFormData = z.infer<typeof registerClientSchema>;
 
 export const inputStyle =
   'block w-full rounded-2xl border border-[#1d1c1c] py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500';
+const errorClassName = 'max-w-[22em] p-1 text-red-500 text-sm';
 
 export default function RegisterClientForm() {
   const { isAuthenticated } = useAppSelector(
@@ -19,6 +26,14 @@ export default function RegisterClientForm() {
   );
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerClientSchema),
+  });
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -26,34 +41,33 @@ export default function RegisterClientForm() {
     }
   }, [isAuthenticated]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.password.value !== form.checkPassword.value) {
-      toast.error('Паролі не співпадають');
-      return;
-    }
-    const credential = {
-      email: form.email.value.trim(),
-      lastName: form.lastName.value.trim(),
-      firstName: form.firstName.value.trim(),
-      surName: form.surName.value.trim(),
-      phone: form.phone.value.trim(),
-      password: form.password.value.trim(),
-    };
-    dispatch(registerClientThunk(credential))
-      .unwrap()
-      .then(() => {
-        toast.info('Ви успішно зареєструвалися');
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      const { checkPassword, ...registerData } = data;
+      const registerResponse = await dispatch(
+        registerClientThunk(registerData),
+      );
+      console.log(registerResponse);
+      // @ts-ignore
+      if (registerResponse.error) {
+        if (registerResponse.payload.message.includes('409')) {
+          toast.error('Такий email вже зайнятий');
+        } else {
+          toast.error('Помилка авторизації');
+        }
+      } else {
+        toast.success('Ви успішно зареєструвалися');
         router.push('/auth/login');
-      })
-      .catch((error) => {
-        toast.error('Помилка авторизації');
-      });
+        reset();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Щось пішло не так, спробуйте ще раз.');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
         <div className="flex w-full flex-col gap-2">
           <div>
@@ -64,11 +78,12 @@ export default function RegisterClientForm() {
               className={inputStyle}
               id="lastName"
               type="text"
-              name="lastName"
               placeholder="Прізвище"
-              required
-              pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
+              {...register('lastName')}
             />
+            {errors.lastName && (
+              <p className={errorClassName}>{errors.lastName.message}</p>
+            )}
           </div>
 
           <div>
@@ -79,11 +94,12 @@ export default function RegisterClientForm() {
               className={inputStyle}
               id="firstName"
               type="text"
-              name="firstName"
               placeholder="Ім'я"
-              required
-              pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
+              {...register('firstName')}
             />
+            {errors.firstName && (
+              <p className={errorClassName}>{errors.firstName.message}</p>
+            )}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="surName">
@@ -93,11 +109,12 @@ export default function RegisterClientForm() {
               className={inputStyle}
               id="surName"
               type="text"
-              name="surName"
               placeholder="По батькові"
-              required
-              pattern="[A-Za-zА-Яа-яЁёІіЇїЄєҐґ]{2,}"
+              {...register('surName')}
             />
+            {errors.surName && (
+              <p className={errorClassName}>{errors.surName.message}</p>
+            )}
           </div>
           <div className="flex gap-5">
             <div>
@@ -108,13 +125,14 @@ export default function RegisterClientForm() {
                 className={inputStyle}
                 id="phone"
                 type="phone"
-                name="phone"
-                placeholder="38067..."
-                required
-                pattern="\[0-9]{12}"
+                placeholder="+38067..."
+                defaultValue="+"
+                {...register('phone')}
               />
+              {errors.phone && (
+                <p className={errorClassName}>{errors.phone.message}</p>
+              )}
             </div>
-
             <div>
               <label className="mb-2 block text-base" htmlFor="email">
                 <div className="inline-flex w-full items-center justify-between">
@@ -134,10 +152,12 @@ export default function RegisterClientForm() {
                 className={inputStyle}
                 id="email"
                 type="email"
-                name="email"
                 placeholder="Ваш email"
-                required
+                {...register('email')}
               />
+              {errors.email && (
+                <p className={errorClassName}>{errors.email.message}</p>
+              )}
             </div>
           </div>
           <div>
@@ -148,11 +168,12 @@ export default function RegisterClientForm() {
               className={inputStyle}
               id="password"
               type="password"
-              name="password"
               placeholder="Пароль"
-              maxLength={20}
-              required
+              {...register('password')}
             />
+            {errors.password && (
+              <p className={errorClassName}>{errors.password.message}</p>
+            )}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="checkPassword">
@@ -162,14 +183,21 @@ export default function RegisterClientForm() {
               className={inputStyle}
               id="checkPassword"
               type="password"
-              name="checkPassword"
               placeholder="Пароль"
-              maxLength={20}
-              required
+              {...register('checkPassword')}
             />
+            {errors.checkPassword && (
+              <p className={errorClassName}>{errors.checkPassword.message}</p>
+            )}
           </div>
         </div>
-        <RegisterButton />
+        <Button
+          className="text-2x mt-4 w-full  bg-orangeLight text-2xl hover:bg-orange-400"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Відправка...' : 'Зареєструватися'}
+        </Button>
         <p className="mt-8 text-center">
           Вже зареєстровані?{' '}
           <Link
@@ -186,18 +214,5 @@ export default function RegisterClientForm() {
         ></div>
       </div>
     </form>
-  );
-}
-
-function RegisterButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button
-      className="text-2x mt-4 w-full  bg-orangeLight text-2xl hover:bg-orange-400"
-      aria-disabled={pending}
-    >
-      Зареєструватися
-    </Button>
   );
 }
