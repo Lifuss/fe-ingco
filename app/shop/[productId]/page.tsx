@@ -11,6 +11,7 @@ import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
+import { useMediaQuery } from 'react-responsive';
 
 type PageProps = {
   params: {
@@ -20,6 +21,7 @@ type PageProps = {
 
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
+  const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
 
   const product = useAppSelector((state) => state.persistedMainReducer.product);
 
@@ -55,18 +57,25 @@ const Page = ({ params }: PageProps) => {
         <meta name="description" content={product.name} />
         <meta name="keywords" content={product.seoKeywords} />
       </Head>
-      <section className="grid grid-cols-5 gap-10 pb-20">
+      <section className="flex flex-col gap-4 pb-20 md:grid md:grid-cols-5 md:gap-10">
+        {!isTablet && (
+          <div>
+            <h1 className="mb-2 text-center text-2xl">{product.name}</h1>
+          </div>
+        )}
         <div className="col-span-2">
           <Image
             src={process.env.NEXT_PUBLIC_API + product.image}
             alt={product.name}
             width={500}
             height={500}
-            className="mb-10 w-full object-contain"
+            className="mb-10 max-h-[250px] w-full object-contain"
           />
 
           <div>
-            <h2 className="mb-5 text-center text-2xl">Характеристики</h2>
+            <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
+              Характеристики
+            </h2>
             <ul className="">
               {product.characteristics.map((characteristic) => (
                 <li
@@ -90,12 +99,14 @@ const Page = ({ params }: PageProps) => {
           </div>
         </div>
         <div className="col-span-3 flex flex-col">
-          <div>
-            <h1 className="text-3xl">{product.name}</h1>
-          </div>
+          {isTablet && (
+            <div>
+              <h1 className="text-xl lg:text-3xl">{product.name}</h1>
+            </div>
+          )}
 
-          <div className="mb-5 mt-10 flex gap-5">
-            <p className="flex flex-col text-2xl">
+          <div className="mb-5 mt-2 grid grid-cols-2 gap-5 md:mt-10 md:flex">
+            <p className="flex flex-col text-xl md:text-2xl">
               <span>{product.price} $</span>
               <span>{Math.ceil(product.price * USD)} грн</span>
             </p>
@@ -103,12 +114,12 @@ const Page = ({ params }: PageProps) => {
             <input
               type="number"
               value={quantity}
-              className="w-20 rounded-lg border border-gray-300"
+              className="ml-auto w-20 rounded-lg border border-gray-300 text-center text-lg"
               onChange={(e) => setQuantity(e.currentTarget.valueAsNumber)}
             />
 
             <Button
-              className="bg-orange-400 hover:bg-orange-500"
+              className="col-span-2 bg-orange-400 hover:bg-orange-500"
               onClick={() => handleCartClick(product._id, product.name)}
             >
               В кошик
@@ -142,9 +153,11 @@ const Page = ({ params }: PageProps) => {
               objectFit="contain"
             />
           </div>
-          <h2 className="mb-4 text-2xl">Опис</h2>
+          <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
+            Опис
+          </h2>
           {product.description.split('\n').map((paragraph) => (
-            <p key={paragraph} className="text-xl">
+            <p key={paragraph} className="text-base md:text-xl">
               {paragraph}
             </p>
           ))}
