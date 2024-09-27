@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
+import { useMediaQuery } from 'react-responsive';
 
 type PageProps = {
   params: {
@@ -26,6 +27,7 @@ const Page = ({ params }: PageProps) => {
     (state) => state.persistedAuthReducer.isAuthenticated,
   );
   const router = useRouter();
+  const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
 
   useEffect(() => {
     dispatch(getProductByIdThunk(params.productId));
@@ -64,19 +66,26 @@ const Page = ({ params }: PageProps) => {
         <meta name="description" content={product.name} />
         <meta name="keywords" content={product.seoKeywords} />
       </Head>
-      <section className="grid grid-cols-5 gap-10 pb-20">
+      <section className="flex flex-col gap-4 pb-20 md:grid md:grid-cols-5 md:gap-10">
+        {!isTablet && (
+          <div>
+            <h1 className="mb-2 text-center text-2xl">{product.name}</h1>
+          </div>
+        )}
         <div className="col-span-2">
           <Image
             src={process.env.NEXT_PUBLIC_API + product.image}
             alt={product.name}
             width={500}
             height={500}
-            className="mb-10 w-full object-contain"
+            className="mb-10 max-h-[250px] w-full object-contain"
           />
 
           <div>
-            <h2 className="mb-5 text-center text-2xl">Характеристики</h2>
-            <ul className="">
+            <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
+              Характеристики
+            </h2>
+            <ul className="text-sm lg:text-base">
               {product.characteristics.map((characteristic) => (
                 <li
                   className="flex justify-between gap-2"
@@ -99,11 +108,13 @@ const Page = ({ params }: PageProps) => {
           </div>
         </div>
         <div className="col-span-3 flex flex-col">
-          <div>
-            <h1 className="text-3xl">{product.name}</h1>
-          </div>
+          {isTablet && (
+            <div>
+              <h1 className="text-xl lg:text-3xl">{product.name}</h1>
+            </div>
+          )}
 
-          <div className="mb-5 mt-10 flex gap-5">
+          <div className="mb-5 mt-2 grid grid-cols-2 gap-5 md:mt-10 md:flex">
             {product.rrcSale ? (
               <div className="flex flex-col items-end">
                 <span className="text-lg line-through">
@@ -122,7 +133,7 @@ const Page = ({ params }: PageProps) => {
               В кошик
             </Button>
           </div>
-          <div className="it ems-center mb-20 flex w-1/2 gap-5 rounded-lg">
+          <div className="it ems-center mb-5 flex w-1/2 gap-5 rounded-lg md:mb-20">
             <p className="text-center text-xl">Перевізник:</p>
             <Image
               src={novaPoshtaSVG}
@@ -132,9 +143,11 @@ const Page = ({ params }: PageProps) => {
               objectFit="contain"
             />
           </div>
-
+          <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
+            Опис
+          </h2>
           {product.description.split('\n').map((paragraph) => (
-            <p key={paragraph} className="text-xl">
+            <p key={paragraph} className="text-base md:text-xl">
               {paragraph}
             </p>
           ))}

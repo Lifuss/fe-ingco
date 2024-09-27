@@ -76,7 +76,7 @@ const Page = ({ params }: PageProps) => {
             <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
               Характеристики
             </h2>
-            <ul className="">
+            <ul className="text-sm lg:text-base">
               {product.characteristics.map((characteristic) => (
                 <li
                   className="flex justify-between gap-2"
