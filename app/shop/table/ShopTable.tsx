@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
@@ -44,6 +44,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantities, setQuantities] = useState({});
+  const { logProductClick } = useProductStats();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -180,6 +181,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
             className="min-w-[250px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
               setSelectedProduct(row.original.product);
+              logProductClick(row.original.product._id);
               openModal();
             }}
           >
@@ -300,7 +302,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       },
     ],
 
-    [favoritesList, handleCartClick, handleFavoriteClick],
+    [favoritesList, handleCartClick, handleFavoriteClick, logProductClick],
   );
 
   const totalPage = isFavoritePage

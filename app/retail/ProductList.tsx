@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
@@ -37,6 +37,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
+  const { logProductClick } = useProductStats();
   const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
   const { products, totalPages } = state.persistedMainReducer;
@@ -175,6 +176,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                     <div
                       className="grow"
                       onClick={() => {
+                        logProductClick(_id);
                         router.push(`/retail/${_id}`);
                       }}
                     >
@@ -249,6 +251,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                         <p
                           className="border-r border-black pr-1 text-base font-medium"
                           onClick={() => {
+                            logProductClick(_id);
                             router.push(`/retail/${_id}`);
                           }}
                         >

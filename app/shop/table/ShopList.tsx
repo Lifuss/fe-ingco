@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   addFavoriteProductThunk,
@@ -43,7 +43,8 @@ const ShopList = ({
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state);
-  const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
+  const { logProductClick } = useProductStats();
+
   const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
   const isAuth = state.persistedAuthReducer.isAuthenticated;
@@ -96,7 +97,8 @@ const ShopList = ({
       });
   };
 
-  const handlePushProductPage = (id: string) => {
+  const handleDirectToProduct = (id: string) => {
+    logProductClick(id);
     router.push(`/shop/${id}`);
   };
 
@@ -160,7 +162,7 @@ const ShopList = ({
                     <div
                       className="grow"
                       onClick={() => {
-                        handlePushProductPage(_id);
+                        handleDirectToProduct(_id);
                       }}
                     >
                       <div className="relative h-[150px] w-full shrink-0">
@@ -235,7 +237,7 @@ const ShopList = ({
                         <p
                           className="flex flex-col border-r border-black pr-1 text-sm font-medium"
                           onClick={() => {
-                            handlePushProductPage(_id);
+                            handleDirectToProduct(_id);
                           }}
                         >
                           <span>{price} $</span>

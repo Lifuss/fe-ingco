@@ -208,3 +208,11 @@ export const supportTicketThunk = createAsyncThunk(
     }
   },
 );
+
+export const trackProductClickThunk = createAsyncThunk(
+  'product/trackProductClick',
+  async (productId: string) => {
+    await apiIngco.get(`/stats/products/${productId}`);
+    return productId;
+  },
+);
