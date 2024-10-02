@@ -12,6 +12,7 @@ import {
   updateSupportTicketThunk,
 } from './operations';
 import { toast } from 'react-toastify';
+import { getProductClicksThunk } from './statsOperations';
 
 const initialState: {
   users: User[];
@@ -22,6 +23,7 @@ const initialState: {
   usersStats: {
     notVerified: number;
   };
+  stats: { productClicks: {}[] };
 } = {
   users: [],
   orders: [],
@@ -30,6 +32,9 @@ const initialState: {
   page: 1,
   usersStats: {
     notVerified: 0,
+  },
+  stats: {
+    productClicks: [],
   },
 };
 
@@ -74,12 +79,14 @@ const Slice = createSlice({
         state.usersStats = payload;
       })
       .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
-        console.log(payload, state.supportTickets);
-
         state.supportTickets.filter(
           (ticket) => ticket.ticketNumber !== payload,
         );
       });
+    builder.addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {
+      console.log(payload);
+      state.stats.productClicks = payload.productClicks;
+    });
   },
 });
 

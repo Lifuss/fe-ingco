@@ -8,7 +8,7 @@ import {
   Mails,
   PackageOpen,
   PieChart,
-  ShoppingBasket,
+  ScanBarcode,
   Users,
 } from 'lucide-react';
 
@@ -16,7 +16,7 @@ const listData = [
   {
     title: 'Продукт',
     link: '/dashboard',
-    svg: <ShoppingBasket size={24} />,
+    svg: <ScanBarcode size={24} />,
   },
   {
     title: 'Категорії',
