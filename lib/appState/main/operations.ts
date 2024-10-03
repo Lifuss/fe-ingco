@@ -169,6 +169,7 @@ export const deleteCategoryThunk = createAsyncThunk(
   },
 );
 
+// TODO: Обробити логіку pending промісу
 export const fetchExcelFileThunk = createAsyncThunk(
   'excel/fetch',
   async (sheetType: string, { rejectWithValue }) => {
