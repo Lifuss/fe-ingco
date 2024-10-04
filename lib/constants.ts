@@ -16,3 +16,18 @@ export const featuresContentArray = [
     img: '/features/featuresIcon_4.png',
   },
 ];
+
+export const COLORS = [
+  '#0088FE',
+  '#00C49F',
+  '#FFBB28',
+  '#FF8042',
+  '#FF4560',
+  '#6A4FC5',
+  '#F935A9',
+  '#85D92B',
+  '#FF5733',
+  '#33FFCE',
+  '#FFD700',
+  '#00FF7F',
+];

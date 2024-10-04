@@ -22,3 +22,35 @@ export const getProductClicksThunk = createAsyncThunk(
     }
   },
 );
+
+export const getUserActivityThunk = createAsyncThunk(
+  'stats/userActivity',
+  async (
+    {
+      page = 1,
+      limit = 100,
+      startDate,
+      endDate,
+    }: {
+      page: number;
+      limit: number;
+      startDate?: Date;
+      endDate?: Date;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.get('/stats/users/activity', {
+        params: {
+          page,
+          limit,
+          startDate,
+          endDate,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);

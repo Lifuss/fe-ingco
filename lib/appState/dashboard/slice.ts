@@ -12,7 +12,7 @@ import {
   updateSupportTicketThunk,
 } from './operations';
 import { toast } from 'react-toastify';
-import { getProductClicksThunk } from './statsOperations';
+import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
 
 const initialState: {
   users: User[];
@@ -23,7 +23,7 @@ const initialState: {
   usersStats: {
     notVerified: number;
   };
-  stats: { productClicks: {}[] };
+  stats: { productClicks: {}[]; activityUsers: User[] };
 } = {
   users: [],
   orders: [],
@@ -35,6 +35,7 @@ const initialState: {
   },
   stats: {
     productClicks: [],
+    activityUsers: [],
   },
 };
 
@@ -83,10 +84,15 @@ const Slice = createSlice({
           (ticket) => ticket.ticketNumber !== payload,
         );
       });
-    builder.addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {
-      console.log(payload);
-      state.stats.productClicks = payload.productClicks;
-    });
+    builder
+      .addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {
+        state.stats.productClicks = payload.productClicks;
+      })
+      .addCase(getUserActivityThunk.fulfilled, (state, { payload }) => {
+        console.log('getActiv users', payload);
+
+        state.stats.activityUsers = payload.users;
+      });
   },
 });
 

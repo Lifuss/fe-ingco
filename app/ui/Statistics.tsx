@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import CategoryPieChart from './diagrams/PieChart';
+import ProductClicksPieChart from './diagrams/PieChart';
 import { Button } from './buttons/button';
+import UserActivityChart from './diagrams/UserActivityChart';
 
 const getLastWeekDate = () => {
   const date = new Date();
@@ -12,37 +13,54 @@ const getLastWeekDate = () => {
 };
 
 const Statistics = () => {
-  const [dateRange, setDateRange] = useState<
-    [Date | undefined, Date | undefined]
-  >([getLastWeekDate(), new Date()]);
+  const [dateRange, setDateRange] = useState<[Date, Date]>([
+    getLastWeekDate(),
+    new Date(),
+  ]);
   const [startDate, endDate] = dateRange;
 
+  const [tempDateRange, setTempDateRange] = useState<
+    [Date | undefined, Date | undefined]
+  >([getLastWeekDate(), new Date()]);
+  const [tempStartDate, tempEndDate] = tempDateRange;
+
+  // Підтвердження діапазону дат при натисканні кнопки
   const handleSubmit = () => {
-    if (startDate && endDate) {
+    if (tempStartDate && tempEndDate) {
+      setDateRange([tempStartDate, tempEndDate]);
       console.log(
-        `Період вибору: з ${startDate.toLocaleDateString('uk-UA')} по ${endDate.toLocaleDateString('uk-UA')}`,
+        `Період вибору: з ${tempStartDate.toLocaleDateString('uk-UA')} по ${tempEndDate.toLocaleDateString('uk-UA')}`,
       );
     }
   };
 
   return (
-    <div className="grid grid-cols-3">
-      <div className="col-span-3 flex justify-end gap-3">
-        <DatePicker
-          selectsRange
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(update) => setDateRange(update as [Date, Date])}
-          dateFormat="dd.MM.yyyy"
-          placeholderText="Виберіть діапазон дат"
-          className="w-[250px] text-lg"
-        />
+    <div className="flex flex-col flex-wrap gap-2">
+      <div className="flex justify-end gap-3">
+        <label className="flex items-center gap-2 text-xl">
+          Період
+          <DatePicker
+            selectsRange
+            startDate={tempStartDate}
+            endDate={tempEndDate}
+            onChange={(update) =>
+              setTempDateRange(update as [Date | undefined, Date | undefined])
+            }
+            dateFormat="dd.MM.yyyy"
+            placeholderText="Виберіть діапазон дат"
+            className="w-[240px] text-center text-lg"
+          />
+        </label>
         <Button className="text-white" onClick={handleSubmit}>
           Показати статистику
         </Button>
       </div>
+      <div className="border border-gray-200"></div>
       <section>
-        <CategoryPieChart dateRange={dateRange} />
+        <ProductClicksPieChart startDate={startDate} endDate={endDate} />
+      </section>
+      <section>
+        <UserActivityChart endDate={endDate} startDate={startDate} />
       </section>
     </div>
   );

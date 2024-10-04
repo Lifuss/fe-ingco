@@ -1,65 +1,89 @@
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import { getProductClicksThunk } from '@/lib/appState/dashboard/statsOperations';
+import { COLORS } from '@/lib/constants';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, LabelList } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  LabelList,
+  ResponsiveContainer,
+} from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-const CategoryPieChart = ({
-  dateRange,
+type ClickProductData = [
+  {
+    clickInRange: number;
+    productDetails: {
+      name: string;
+    };
+    productId: string;
+    _id: string;
+  },
+];
+const ProductClicksPieChart = ({
+  startDate,
+  endDate,
 }: {
-  dateRange: [Date | undefined, Date | undefined];
+  startDate: Date | undefined;
+  endDate: Date | undefined;
 }) => {
   const dispatch = useAppDispatch();
   const clicksData = useAppSelector(
     (state) => state.dashboardSlice.stats.productClicks,
-  );
+  ) as ClickProductData;
+
   useEffect(() => {
     dispatch(
       getProductClicksThunk({
         page: 1,
-        limit: 10,
-        startDate: dateRange[0],
-        endDate: dateRange[1],
+        limit: 20,
+        startDate,
+        endDate,
       }),
     );
-  }, [dispatch, dateRange]);
+  }, [dispatch, endDate, startDate]);
 
   return (
-    <div className="w-[400px] rounded-lg border border-gray-200 p-1">
-      <h2 className="text-center text-xl font-medium">
-        Динаміка клілків на товар
-      </h2>
+    <div className="rounded-lg border border-gray-200 p-1">
+      <h2 className="text-center text-xl font-medium">К-сть кліків на товар</h2>
       {clicksData.length ? (
-        <PieChart width={400} height={400} className="mx-auto">
-          <Pie
-            data={clicksData}
-            dataKey="clicks"
-            nameKey="productId.name"
-            cx="50%"
-            cy="50%"
-            outerRadius={150}
-          >
-            <LabelList
-              dataKey="clicks"
-              className="text-lg font-normal"
-              position="inside"
-            />
-            {clicksData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
+        <ResponsiveContainer width="100%" height={400}>
+          <PieChart className="mx-auto">
+            <Pie
+              data={clicksData}
+              dataKey="clicksInRange"
+              nameKey="productDetails.name"
+              cx="50%"
+              cy="50%"
+              outerRadius={150}
+              label={({ clicksInRange }) => `${clicksInRange}`}
+              labelLine={false}
+            >
+              <LabelList
+                dataKey="clicks"
+                className="text-lg font-normal"
+                position="inside"
               />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
+              {clicksData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
       ) : (
-        <TextPlaceholder text="Немає данних" title="Помилка" />
+        <TextPlaceholder
+          text="(Відсутність даних або некоректна введена дата)"
+          title="Немає даних"
+        />
       )}
     </div>
   );
 };
 
-export default CategoryPieChart;
+export default ProductClicksPieChart;

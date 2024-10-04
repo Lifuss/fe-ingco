@@ -16,7 +16,12 @@ const TextPlaceholder = ({
       <h2 className={clsx(`text-2xl`, titleSize && `text-${titleSize}`)}>
         {title}
       </h2>
-      <p className={clsx(`text-base`, titleSize && `text-${textSize}`)}>
+      <p
+        className={clsx(
+          `text-center text-base`,
+          titleSize && `text-${textSize}`,
+        )}
+      >
         {text}
       </p>
     </div>
