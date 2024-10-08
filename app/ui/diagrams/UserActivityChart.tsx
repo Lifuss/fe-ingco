@@ -55,7 +55,7 @@ const UserActivityChart: React.FC<UserActivityChartProps> = ({
   return (
     <div className="rounded-lg border border-gray-200 p-1">
       <h2 className="text-center text-xl font-medium">
-        Активність користувачів (логін в акаунт)
+        Активність користувачів
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart
