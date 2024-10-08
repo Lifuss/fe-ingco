@@ -31,6 +31,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uk">
+      <head>
+        <meta
+          property="og:site_name"
+          content="Імпортер професійних інструментів ingco-service"
+        ></meta>
+        <meta
+          property="og:description"
+          content="INGCO бренд професійних та напівпрофесійних інструментів."
+        />
+      </head>
+      <meta property="twitter:card" content="./SiteCard.webp"></meta>
       <body className={`flex min-h-screen flex-col antialiased`}>
         <StoreProvider>
           <ToastContainer
