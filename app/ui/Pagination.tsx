@@ -45,6 +45,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
                 page={page}
                 position={position}
                 isActive={currentPage === page}
+                isDashboard={pathname.includes('dashboard')}
               />
             );
           })}
@@ -65,18 +66,21 @@ function PaginationNumber({
   href,
   isActive,
   position,
+  isDashboard,
 }: {
   page: number | string;
   href: string;
   position?: 'first' | 'last' | 'middle' | 'single';
   isActive: boolean;
+  isDashboard: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center text-sm border',
+    'flex h-7 w-7 md:h-10 md:w-10 items-center justify-center text-sm border',
     {
       'rounded-l-md': position === 'first' || position === 'single',
       'rounded-r-md': position === 'last' || position === 'single',
-      ' bg-blue-600 border-blue-600 text-white': isActive,
+      ' bg-blue-600 border-blue-600 text-white': isActive && isDashboard,
+      ' bg-orangeLight border-orangeLight text-white': isActive && !isDashboard,
       'hover:bg-gray-100': !isActive && position !== 'middle',
       'text-gray-300': position === 'middle',
     },
@@ -101,7 +105,7 @@ function PaginationArrow({
   isDisabled?: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center rounded-md border',
+    'flex h-7 w-7 md:h-10 md:w-10 items-center justify-center rounded-md border',
     {
       'pointer-events-none text-gray-300': isDisabled,
       'hover:bg-gray-100': !isDisabled,

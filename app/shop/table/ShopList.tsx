@@ -124,48 +124,35 @@ const ShopList = ({
       ) : (
         <>
           <div>
-            <ul className="flex flex-wrap justify-center gap-8 gap-y-6 xl:gap-2 2xl:justify-normal 2xl:gap-10">
+            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {productsData?.map((product) => {
                 const {
                   article,
                   image,
-                  priceRetailRecommendation,
                   name,
                   description,
                   characteristics,
                   _id,
-                  rrcSale,
                   countInStock,
                   price,
-                  seoKeywords,
                 } = product;
                 let splitDesc = description.split('\n');
                 if (splitDesc.length > 3) {
                   splitDesc = splitDesc.slice(0, 3);
                 }
-                splitDesc = splitDesc
-                  .filter((item) => item !== '')
-                  .map((item) => {
-                    if (item && item.length > 25) {
-                      return item.slice(0, 25) + '...';
-                    }
-                    return item;
-                  });
                 return (
                   <li
                     key={article}
                     className={clsx(
-                      'relative flex h-[340px] w-[225px] cursor-pointer flex-col justify-between rounded-2xl border-2 border-transparent px-4 pb-2  shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
+                      'relative flex flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
                       countInStock <= 0 && 'pointer-events-none opacity-40',
                     )}
                   >
                     <div
-                      className="grow"
-                      onClick={() => {
-                        handleDirectToProduct(_id);
-                      }}
+                      className="grow cursor-pointer"
+                      onClick={() => handleDirectToProduct(_id)}
                     >
-                      <div className="relative h-[150px] w-full shrink-0">
+                      <div className="relative h-[150px] w-full">
                         <Image
                           src={NEXT_PUBLIC_API + image}
                           alt={name}
@@ -184,35 +171,42 @@ const ShopList = ({
                           </p>
                         )}
                       </h3>
-                      <h2
+                      <h4
                         className={clsx(
                           'font-medium',
                           name.length > 50 ? 'text-xs' : 'text-sm',
                         )}
                       >
                         {name}
-                      </h2>
+                      </h4>
                       <ul className="h-[50px] text-xs text-[#9CA3AF]">
                         {characteristics.length ? (
                           characteristics.slice(0, 3).map((item) => {
-                            let name = item.name.trim();
-                            let value = item.value.trim();
-
-                            name.length > 15 &&
-                              (name = name.slice(0, 15) + '...');
-                            value.length > 15 &&
-                              (value = value.slice(0, 15) + '...');
+                            const name = item.name.trim();
+                            const value = item.value.trim();
 
                             return item.value !== '-' ? (
-                              <li key={item._id}>
-                                {name}: {value}
+                              <li
+                                key={item._id}
+                                className="inline-flex w-full gap-1"
+                              >
+                                <span className="truncate">{name}:</span>
+                                <span className="truncate">{value}</span>
                               </li>
                             ) : (
-                              <li key={item._id}>{name}</li>
+                              <li key={item._id} className="inline-flex gap-1">
+                                <span className="truncate">{name}</span>
+                              </li>
                             );
                           })
                         ) : (
-                          <li>{splitDesc}</li>
+                          <li className="inline-flex gap-1">
+                            {splitDesc.map((desc, index) => (
+                              <span key={index} className="truncate">
+                                {desc}
+                              </span>
+                            ))}
+                          </li>
                         )}
                       </ul>
                     </div>
@@ -223,7 +217,7 @@ const ShopList = ({
                         className={clsx(
                           'stroke-black text-white',
                           favoritesList.includes(_id)
-                            ? ' fill-orange-500'
+                            ? 'fill-orange-500'
                             : 'fill-white ',
                         )}
                       >

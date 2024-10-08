@@ -367,7 +367,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
                 />
               )}
             </div>
-            <div className="absolute bottom-14 right-2">
+            <div className="absolute bottom-14 right-2 hidden md:block">
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
             </div>
             <div className="mx-auto mt-5 w-fit pb-10">
