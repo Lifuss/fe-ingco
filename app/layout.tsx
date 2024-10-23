@@ -15,13 +15,41 @@ export const metadata: Metadata = {
     'INGCO',
     'магазин',
     'оптова торгівля',
+    'гуртова торгівля',
+    'дропшипінг',
     'роздрібна торгівля',
     'гуртом',
     'hardware tools',
+    'професійні інструменти',
+    'ремонтні інструменти',
+    'будівельне обладнання',
     'інструменти для будівництва',
     'інструменти для ремонту',
-    'електроінтрументи',
+    'електроінструменти',
   ],
+  openGraph: {
+    siteName: 'Імпортер професійних інструментів ingco-service',
+    title: 'INGCO - Професійні інструменти',
+    description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+    url: 'https://ingco-service.win/home',
+    images: [
+      {
+        url: '/site-card.webp',
+        alt: 'Site Card',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'INGCO - Професійні інструменти',
+    description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+    images: [
+      {
+        url: '/site-card.webp',
+        alt: 'Site Card',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -33,16 +61,11 @@ export default function RootLayout({
     <html lang="uk">
       <head>
         <meta
-          property="og:site_name"
-          content="Імпортер професійних інструментів ingco-service"
-        ></meta>
-        <meta
-          property="og:description"
-          content="INGCO бренд професійних та напівпрофесійних інструментів."
+          name="google-site-verification"
+          content="yd6FgNFGbN9s2OJB1udZrzSxHIqSYY8f5JZ_r0-qLLI"
         />
       </head>
-      <meta property="twitter:card" content="./SiteCard.webp"></meta>
-      <body className={`flex min-h-screen flex-col antialiased`}>
+      <body className="flex min-h-screen flex-col antialiased">
         <StoreProvider>
           <ToastContainer
             position="bottom-right"
