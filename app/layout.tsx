@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | INGCO',
     default: 'INGCO',
   },
-  description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+  description: 'INGCO бренд професійних інструментів.',
   keywords: [
     'INGCO',
     'магазин',
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     siteName: 'Імпортер професійних інструментів ingco-service',
-    title: 'INGCO - Професійні інструменти',
-    description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+    title: 'INGCO - Інструмент для всього світу',
+    description: 'INGCO бренд професійних інструментів.',
     url: 'https://ingco-service.win/home',
     images: [
       {
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'INGCO - Професійні інструменти',
-    description: 'INGCO бренд професійних та напівпрофесійних інструментів.',
+    title: 'INGCO - Інструмент для всього світу',
+    description: 'INGCO бренд професійних інструментів.',
     images: [
       {
         url: '/site-card.webp',
