@@ -50,6 +50,9 @@ export const metadata: Metadata = {
       },
     ],
   },
+  alternates: {
+    canonical: '/home',
+  },
 };
 
 export default function RootLayout({
