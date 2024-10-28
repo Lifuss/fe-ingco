@@ -4,7 +4,7 @@ import { Button } from '@/app/ui/buttons/button';
 import { getProductByIdThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
 import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
@@ -13,6 +13,7 @@ import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
+import JsBarcode from 'jsbarcode';
 
 type PageProps = {
   params: {
@@ -23,6 +24,7 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+  const barcodeRef = useRef<SVGSVGElement | null>(null);
   const isAuth = useAppSelector(
     (state) => state.persistedAuthReducer.isAuthenticated,
   );
@@ -32,6 +34,18 @@ const Page = ({ params }: PageProps) => {
   useEffect(() => {
     dispatch(getProductByIdThunk(params.productId));
   }, [dispatch, params.productId]);
+
+  useEffect(() => {
+    if (product?.barcode && barcodeRef.current) {
+      JsBarcode(barcodeRef.current, product.barcode, {
+        format: 'CODE128',
+        width: 2,
+        height: 30,
+        margin: 0,
+        fontSize: 11,
+      });
+    }
+  }, [product]);
 
   const handleCartClick = () => {
     if (isAuth) {
@@ -80,7 +94,11 @@ const Page = ({ params }: PageProps) => {
             height={500}
             className="mb-10 max-h-[250px] w-full object-contain"
           />
-
+          {product.barcode && (
+            <div className="mb-4 mt-2 flex justify-center">
+              <svg ref={barcodeRef}></svg>
+            </div>
+          )}
           <div>
             <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
               Характеристики

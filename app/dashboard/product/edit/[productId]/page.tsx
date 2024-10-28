@@ -53,8 +53,7 @@ const Page = ({ params }: PageProps) => {
     if (!product) {
       router.back();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [dispatch, router, product, categories]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

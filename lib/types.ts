@@ -23,6 +23,7 @@ export interface Product {
   warranty: number;
   sort: number;
   seoKeywords: string;
+  barcode?: string;
   category: Category | null;
   createdAt: string;
   updatedAt: string;

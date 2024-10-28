@@ -109,7 +109,6 @@ const AdminProductForm = ({
             <label>
               <div className="flex justify-between">
                 <div>
-                  <span className="text-red-600">*</span>
                   <h3 className="inline">
                     Ключові слова через кому+пробіл (SEO)
                   </h3>
@@ -132,7 +131,6 @@ const AdminProductForm = ({
             <label>
               <div className="flex justify-between">
                 <div>
-                  <span className="text-red-600">*</span>
                   <h3 className="inline">Характеристики</h3>
                 </div>
                 <span
@@ -313,6 +311,15 @@ const AdminProductForm = ({
                 defaultValue={product?.sort}
                 className="block rounded-lg focus:bg-blue-100"
                 required
+              />
+            </label>
+            <label>
+              Штрихкод
+              <input
+                type="text"
+                name="barcode"
+                defaultValue={product?.barcode}
+                className="block rounded-lg focus:bg-blue-100"
               />
             </label>
             <div className="mt-10 flex flex-col gap-2">

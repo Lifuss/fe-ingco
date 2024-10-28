@@ -4,7 +4,7 @@ import { Button } from '@/app/ui/buttons/button';
 import { getProductByIdThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
 import { addProductToCartThunk } from '@/lib/appState/user/operation';
@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
+import JsBarcode from 'jsbarcode';
 
 type PageProps = {
   params: {
@@ -22,6 +23,7 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
+  const barcodeRef = useRef<SVGSVGElement | null>(null);
 
   const product = useAppSelector((state) => state.persistedMainReducer.product);
 
@@ -35,6 +37,17 @@ const Page = ({ params }: PageProps) => {
   useEffect(() => {
     dispatch(getProductByIdThunk(params.productId));
   }, [dispatch, params.productId]);
+  useEffect(() => {
+    if (product?.barcode && barcodeRef.current) {
+      JsBarcode(barcodeRef.current, product.barcode, {
+        format: 'CODE128',
+        width: 2,
+        height: 30,
+        margin: 0,
+        fontSize: 11,
+      });
+    }
+  }, [product]);
 
   const handleCartClick = (id: string, productName: string) => {
     dispatch(
@@ -49,6 +62,8 @@ const Page = ({ params }: PageProps) => {
         setQuantity(1);
       });
   };
+
+  if (!product) return <div>Loading...</div>;
 
   return product ? (
     <>
@@ -69,9 +84,13 @@ const Page = ({ params }: PageProps) => {
             alt={product.name}
             width={500}
             height={500}
-            className="mb-10 max-h-[250px] w-full object-contain"
+            className="mb-6 max-h-[250px] w-full object-contain"
           />
-
+          {product.barcode && (
+            <div className="mb-4 mt-2 flex justify-center">
+              <svg ref={barcodeRef}></svg>
+            </div>
+          )}
           <div>
             <h2 className=" mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
               Характеристики
@@ -104,7 +123,6 @@ const Page = ({ params }: PageProps) => {
               <h1 className="text-xl lg:text-3xl">{product.name}</h1>
             </div>
           )}
-
           <div className="mb-5 mt-2 grid grid-cols-2 gap-5 md:mt-10 md:flex">
             <p className="flex flex-col text-xl md:text-2xl">
               <span>{product.price} $</span>
@@ -125,6 +143,7 @@ const Page = ({ params }: PageProps) => {
               В кошик
             </Button>
           </div>
+
           <p className="text-lg">
             Рекомендована роздрібна ціна: {product.priceRetailRecommendation}{' '}
             грн

@@ -12,8 +12,6 @@ export const useProductStats = () => {
 
   const logProductClick = useCallback(
     (productId: string) => {
-      console.log(productId, ' was clicked');
-
       dispatch(trackProductClickThunk(productId));
     },
     [dispatch],
