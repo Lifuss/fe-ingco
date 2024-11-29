@@ -35,9 +35,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }, [dispatch, isAuthenticated]);
   return (
     <>
-      <Header />
       <main className="min-h-[70%]">{children}</main>
-      <Footer />
     </>
   );
 };
