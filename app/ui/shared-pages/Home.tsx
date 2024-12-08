@@ -7,8 +7,8 @@ import AboutUs from '../home/AboutUs';
 import Footer from '../Footer';
 import Header from '../home/Header';
 
-const Home = () => {
-  return (
+const Home = ({ isMainPage = true }: { isMainPage: boolean }) => {
+  return isMainPage ? (
     <>
       <Header />
       <Hero />
@@ -17,6 +17,14 @@ const Home = () => {
       <AboutBrand />
       <AboutUs />
       <Footer />
+    </>
+  ) : (
+    <>
+      <Hero />
+      <Features />
+      <PartnerGuide />
+      <AboutBrand />
+      <AboutUs />
     </>
   );
 };

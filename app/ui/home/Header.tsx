@@ -38,7 +38,7 @@ const Header = () => {
           alt="Лого компанії INGCO"
         />
       </Link>
-      {pathname.includes('home') ? (
+      {pathname === '/' || pathname.includes('home') ? (
         <ul className="text-lg md:flex md:items-center md:gap-2 md:text-base lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutUs">Про нас</Link>

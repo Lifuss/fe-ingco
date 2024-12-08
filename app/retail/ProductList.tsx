@@ -247,7 +247,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                         onClick={handleFavoriteClick.bind(null, _id)}
                         data-favorite={_id}
                         className={clsx(
-                          'stroke-black text-white',
+                          'stroke-black text-white transition-all hover:scale-125 focus:scale-125',
                           favoritesList.includes(_id)
                             ? ' fill-orange-500'
                             : 'fill-white ',
@@ -281,7 +281,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                           )}
                         </div>
                         <button
-                          className="fill-black pl-1 hover:fill-orange-500"
+                          className="fill-black pl-1 transition-all hover:scale-125 hover:fill-orange-500 focus:scale-125"
                           onClick={() => handleCartClick(_id, name)}
                         >
                           <Icon

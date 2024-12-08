@@ -26,6 +26,6 @@ export default function Page() {
       Перевірка вашого статусу автентифікації...
     </h2>
   ) : (
-    <Home />
+    <Home isMainPage={true} />
   );
 }
