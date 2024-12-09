@@ -12,6 +12,9 @@ const config: Config = {
         '13': 'repeat(13, minmax(0, 1fr))',
       },
       colors: {
+        primary: '#f59e0b',
+        secondary: '#9ca3af',
+        nonActive: '#667085',
         blue: {
           400: '#2589FE',
           500: '#0070F3',

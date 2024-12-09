@@ -1,6 +1,6 @@
 'use client';
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Home from './ui/shared-pages/Home';
