@@ -179,7 +179,7 @@ const ShopList = ({
                       >
                         {name}
                       </h4>
-                      <ul className="h-[50px] text-xs text-[#9CA3AF]">
+                      <ul className="text-secondary h-[50px] text-xs">
                         {characteristics.length ? (
                           characteristics.slice(0, 3).map((item) => {
                             const name = item.name.trim();

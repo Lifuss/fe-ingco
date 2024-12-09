@@ -30,20 +30,24 @@ export type rawData = {
   _id: string;
 };
 
-// This is a table wrapper component that fetches data from the server and displays it in a table.
 const ProductList = ({ isFavoritePage = false }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state);
+  const persistedMainReducer = useAppSelector(
+    (state) => state.persistedMainReducer,
+  );
+  const persistedAuthReducer = useAppSelector(
+    (state) => state.persistedAuthReducer,
+  );
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const isWideDesktop = useMediaQuery({ query: '(min-width: 1536px)' });
   const { logProductClick } = useProductStats();
   const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
-  const { products, totalPages } = state.persistedMainReducer;
-  let favorites: Product[] = state.persistedAuthReducer.user.favorites;
-  const isAuth = state.persistedAuthReducer.isAuthenticated;
+  const { products, totalPages } = persistedMainReducer;
+  let favorites: Product[] = persistedAuthReducer.user.favorites;
+  const isAuth = persistedAuthReducer.isAuthenticated;
   const favoritesList = favorites.map((product) => product._id);
 
   let page = searchParams.get('page')
@@ -174,11 +178,18 @@ const ProductList = ({ isFavoritePage = false }) => {
                       }}
                     >
                       <div className="relative h-[150px] w-full">
+                        {rrcSale ? (
+                          <div className="absolute -top-2 left-0 z-10 w-[3rem] rounded-md bg-red-500">
+                            <p className="text-center text-sm text-white">
+                              Акція
+                            </p>
+                          </div>
+                        ) : null}
                         <Image
                           src={NEXT_PUBLIC_API + image}
                           alt={name}
-                          layout="fill"
-                          objectFit="contain"
+                          className="mx-auto h-full w-auto object-contain"
+                          fill={true}
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                           loading="lazy"
                         />
@@ -200,7 +211,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                       >
                         {name}
                       </h4>
-                      <ul className="h-[50px] text-xs text-[#9CA3AF]">
+                      <ul className="h-[50px] text-xs text-secondary">
                         {characteristics.length ? (
                           characteristics.slice(0, 3).map((item) => {
                             const name = item.name.trim();
@@ -234,9 +245,10 @@ const ProductList = ({ isFavoritePage = false }) => {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={handleFavoriteClick.bind(null, _id)}
+                        aria-label={`Додати ${name} до обраних`}
                         data-favorite={_id}
                         className={clsx(
-                          'stroke-black text-white',
+                          'stroke-black text-white transition-all hover:scale-125 focus:scale-125',
                           favoritesList.includes(_id)
                             ? ' fill-orange-500'
                             : 'fill-white ',
@@ -249,7 +261,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                       </button>
 
                       <div className="flex items-center justify-end">
-                        <p
+                        <div
                           className="border-r border-black pr-1 text-base font-medium"
                           onClick={() => {
                             logProductClick(_id);
@@ -268,10 +280,11 @@ const ProductList = ({ isFavoritePage = false }) => {
                           ) : (
                             priceRetailRecommendation + ' грн'
                           )}
-                        </p>
+                        </div>
                         <button
-                          className="fill-black pl-1 hover:fill-orange-500"
+                          className="fill-black pl-1 transition-all hover:scale-125 hover:fill-orange-500 focus:scale-125"
                           onClick={() => handleCartClick(_id, name)}
+                          aria-label={`Додати ${name} в кошик`}
                         >
                           <Icon
                             icon="cart"

@@ -197,7 +197,7 @@ const AdminProductForm = ({
                     >
                       <Icon
                         icon="delete"
-                        className="h-5 w-5 cursor-pointer fill-[#667085] transition-colors hover:fill-red-700"
+                        className="fill-nonActive h-5 w-5 cursor-pointer transition-colors hover:fill-red-700"
                       />
                     </button>
                   </div>

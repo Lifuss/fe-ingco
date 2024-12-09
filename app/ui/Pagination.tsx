@@ -89,7 +89,11 @@ function PaginationNumber({
   return isActive || position === 'middle' ? (
     <div className={className}>{page}</div>
   ) : (
-    <Link href={href} className={className}>
+    <Link
+      href={href}
+      className={className}
+      aria-label={`Перейти на сторінку ${page}`}
+    >
       {page}
     </Link>
   );
@@ -120,7 +124,15 @@ function PaginationArrow({
   return isDisabled ? (
     <div className={className}>{icon}</div>
   ) : (
-    <Link className={className} href={href}>
+    <Link
+      className={className}
+      href={href}
+      aria-label={
+        direction === 'left'
+          ? 'Перейти на одну сторінку назад'
+          : 'Перейти на одну сторінку вперед'
+      }
+    >
       {icon}
     </Link>
   );

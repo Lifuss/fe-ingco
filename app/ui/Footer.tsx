@@ -3,22 +3,26 @@ import Link from 'next/link';
 import Icon from './assets/Icon';
 
 const Footer = () => {
-  const socialArray = [
+  const socialArray: { name: string; url: string; label: string }[] = [
     {
       name: 'telegram',
       url: 'https://t.me/+IePpWvT99J02NTJi',
+      label: 'Перехід на telegram групу ingco',
     },
     {
       name: 'tiktok',
       url: 'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
+      label: 'Перехід до сторінки ingco в tiktok',
     },
     {
       name: 'facebook',
       url: 'https://www.facebook.com/people/INGCO/61556075234289/',
+      label: 'Перехід до сторінки ingco в facebook',
     },
     {
       name: 'viber',
       url: 'https://invite.viber.com/?g=KiAyrPV8FlMrhU2pjsAWT-r7V3jGwmv6',
+      label: 'Перехід до контакту ingco у viber',
     },
   ];
   return (
@@ -55,6 +59,7 @@ const Footer = () => {
                 href={social.url}
                 key={social.name}
                 target="_blank noopener noreferrer"
+                aria-label={social.label}
               >
                 <Icon
                   icon={social.name}

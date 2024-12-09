@@ -31,7 +31,7 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
         Пошук
       </label>
       <input
-        className="block w-full rounded-2xl border border-black bg-transparent py-[4px] pl-10 text-base outline-2 transition-colors placeholder:text-[#717171] focus:border-gray-300 focus:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 lg:py-[13px]"
+        className="block w-full rounded-2xl border border-black bg-transparent py-[4px] pl-10 text-base outline-2 transition-colors placeholder:text-[#717171] focus:border-gray-200 focus:bg-gray-100 focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 lg:py-[13px]"
         placeholder={placeholder}
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchQuery}
