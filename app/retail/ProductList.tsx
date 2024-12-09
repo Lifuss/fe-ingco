@@ -211,7 +211,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                       >
                         {name}
                       </h4>
-                      <ul className="text-secondary h-[50px] text-xs">
+                      <ul className="h-[50px] text-xs text-secondary">
                         {characteristics.length ? (
                           characteristics.slice(0, 3).map((item) => {
                             const name = item.name.trim();
@@ -245,6 +245,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={handleFavoriteClick.bind(null, _id)}
+                        aria-label={`Додати ${name} до обраних`}
                         data-favorite={_id}
                         className={clsx(
                           'stroke-black text-white transition-all hover:scale-125 focus:scale-125',
@@ -283,6 +284,7 @@ const ProductList = ({ isFavoritePage = false }) => {
                         <button
                           className="fill-black pl-1 transition-all hover:scale-125 hover:fill-orange-500 focus:scale-125"
                           onClick={() => handleCartClick(_id, name)}
+                          aria-label={`Додати ${name} в кошик`}
                         >
                           <Icon
                             icon="cart"
