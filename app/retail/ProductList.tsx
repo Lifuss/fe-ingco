@@ -1,9 +1,8 @@
 'use client';
 import { useEffect } from 'react';
-import Image from 'next/image';
-import { useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
@@ -12,43 +11,23 @@ import {
 } from '@/lib/appState/user/operation';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
-import clsx from 'clsx';
 import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../ui/TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
-import Icon from '../ui/assets/Icon';
-import { Heart } from 'lucide-react';
-
-export type rawData = {
-  article: string;
-  name: string;
-  category: string;
-  image: string;
-  price: string;
-  priceRetailRecommendation: string;
-  countInStock: number;
-  _id: string;
-};
+import ProductBlockList from '../ui/product/ProductBlockList';
 
 const ProductList = ({ isFavoritePage = false }) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const persistedMainReducer = useAppSelector(
-    (state) => state.persistedMainReducer,
-  );
-  const persistedAuthReducer = useAppSelector(
-    (state) => state.persistedAuthReducer,
-  );
+  const mainState = useAppSelector((state) => state.persistedMainReducer);
+  const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const isWideDesktop = useMediaQuery({ query: '(min-width: 1536px)' });
-  const { logProductClick } = useProductStats();
-  const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
-  const { products, totalPages } = persistedMainReducer;
-  let favorites: Product[] = persistedAuthReducer.user.favorites;
-  const isAuth = persistedAuthReducer.isAuthenticated;
-  const favoritesList = favorites.map((product) => product._id);
+  const { products = [], totalPages = 1 } = mainState;
+  let favorites: Product[] = [...authState.user.favorites];
+  const isAuth = authState.isAuthenticated || false;
+  const favoritesIdList = favorites.map((product) => product._id);
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -85,7 +64,7 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   function handleFavoriteClick(id: string) {
     if (isAuth) {
-      if (favoritesList.includes(id)) {
+      if (favoritesIdList.includes(id)) {
         dispatch(deleteFavoriteProductThunk(id));
       } else {
         dispatch(addFavoriteProductThunk(id));
@@ -108,12 +87,17 @@ const ProductList = ({ isFavoritePage = false }) => {
           toast.success(`${productName} додано в кошик`);
         });
     } else {
-      const { price, priceBulk, ...product } = productsData.find(
-        (product) => product._id === id,
-      ) as Product;
+      const product = productsData.find((product) => product._id === id);
+      if (!product) {
+        toast.error(
+          'Виникла помилка з додаванням товару в кошик, спробуйте ще раз через',
+        );
+        return;
+      }
+      const { price, priceBulk, ...restProduct } = product;
       dispatch(
         addProductToLocalStorageCart({
-          productId: product,
+          productId: restProduct,
           quantity: 1,
           _id: id,
         }),
@@ -144,160 +128,14 @@ const ProductList = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
-          <div>
-            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3  2xl:grid-cols-5">
-              {productsData?.map((product) => {
-                const {
-                  article,
-                  image,
-                  priceRetailRecommendation,
-                  name,
-                  description,
-                  characteristics,
-                  _id,
-                  rrcSale,
-                  countInStock,
-                } = product;
-                let splitDesc = description.split('\n');
-                if (splitDesc.length > 3) {
-                  splitDesc = splitDesc.slice(0, 3);
-                }
-                return (
-                  <li
-                    key={article}
-                    className={clsx(
-                      'relative flex flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
-                      countInStock <= 0 && 'pointer-events-none opacity-40',
-                    )}
-                  >
-                    <div
-                      className="grow cursor-pointer"
-                      onClick={() => {
-                        logProductClick(_id);
-                        router.push(`/retail/${_id}`);
-                      }}
-                    >
-                      <div className="relative h-[150px] w-full">
-                        {rrcSale ? (
-                          <div className="absolute -top-2 left-0 z-10 w-[3rem] rounded-md bg-red-500">
-                            <p className="text-center text-sm text-white">
-                              Акція
-                            </p>
-                          </div>
-                        ) : null}
-                        <Image
-                          src={NEXT_PUBLIC_API + image}
-                          alt={name}
-                          className="mx-auto h-full w-auto object-contain"
-                          fill={true}
-                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                          loading="lazy"
-                        />
-                      </div>
+          <ProductBlockList
+            favoritesIdList={favoritesIdList}
+            listType="retail"
+            productsData={productsData}
+            handleCartClick={handleCartClick}
+            handleFavoriteClick={handleFavoriteClick}
+          />
 
-                      <h3 className="flex justify-between text-xs font-medium text-[#FACC15]">
-                        {article}
-                        {countInStock <= 0 && (
-                          <p className="text-xs font-semibold text-black">
-                            Немає в наявності
-                          </p>
-                        )}
-                      </h3>
-                      <h4
-                        className={clsx(
-                          ' font-medium',
-                          name.length > 50 ? 'text-xs' : 'text-sm',
-                        )}
-                      >
-                        {name}
-                      </h4>
-                      <ul className="h-[50px] text-xs text-secondary">
-                        {characteristics.length ? (
-                          characteristics.slice(0, 3).map((item) => {
-                            const name = item.name.trim();
-                            const value = item.value.trim();
-
-                            return item.value !== '-' ? (
-                              <li
-                                key={item._id}
-                                className="inline-flex w-full gap-1"
-                              >
-                                <span className="truncate">{name}:</span>
-                                <span className="truncate">{value}</span>
-                              </li>
-                            ) : (
-                              <li key={item._id} className="inline-flex gap-1">
-                                <span className="truncate">{name}</span>
-                              </li>
-                            );
-                          })
-                        ) : (
-                          <li className="inline-flex gap-1">
-                            {splitDesc.map((desc, index) => (
-                              <span key={index} className="truncate">
-                                {desc}
-                              </span>
-                            ))}
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={handleFavoriteClick.bind(null, _id)}
-                        aria-label={`Додати ${name} до обраних`}
-                        data-favorite={_id}
-                        className={clsx(
-                          'stroke-black text-white transition-all hover:scale-125 focus:scale-125',
-                          favoritesList.includes(_id)
-                            ? ' fill-orange-500'
-                            : 'fill-white ',
-                        )}
-                      >
-                        <Heart
-                          size={24}
-                          className="fill-inherit stroke-inherit stroke-1"
-                        />
-                      </button>
-
-                      <div className="flex items-center justify-end">
-                        <div
-                          className="border-r border-black pr-1 text-base font-medium"
-                          onClick={() => {
-                            logProductClick(_id);
-                            router.push(`/retail/${_id}`);
-                          }}
-                        >
-                          {rrcSale ? (
-                            <div className="flex flex-col items-end">
-                              <span className="text-xs line-through">
-                                {priceRetailRecommendation} грн
-                              </span>
-                              <span className="pl-1 text-orangeLight">
-                                {rrcSale} грн
-                              </span>
-                            </div>
-                          ) : (
-                            priceRetailRecommendation + ' грн'
-                          )}
-                        </div>
-                        <button
-                          className="fill-black pl-1 transition-all hover:scale-125 hover:fill-orange-500 focus:scale-125"
-                          onClick={() => handleCartClick(_id, name)}
-                          aria-label={`Додати ${name} в кошик`}
-                        >
-                          <Icon
-                            icon="cart"
-                            className="h-6 w-6 fill-black hover:fill-orange-500"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
           <div className="relative w-full 2xl:w-4/5">
             <div className="mx-auto mt-5 w-fit pb-10">
               <Pagination totalPages={totalPage} />
