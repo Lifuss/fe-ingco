@@ -89,8 +89,6 @@ const Slice = createSlice({
         state.stats.productClicks = payload.productClicks;
       })
       .addCase(getUserActivityThunk.fulfilled, (state, { payload }) => {
-        console.log('getActiv users', payload);
-
         state.stats.activityUsers = payload.users;
       });
   },

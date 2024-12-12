@@ -38,12 +38,18 @@ const SupportTicketModal = ({
   }, [ticket]);
   if (!selectedTicket) return null;
 
-  const { name, email, updatedAt, message, isAnswered, ticketNumber, _id, phone } =
-    selectedTicket;
+  const {
+    name,
+    email,
+    updatedAt,
+    message,
+    isAnswered,
+    ticketNumber,
+    _id,
+    phone,
+  } = selectedTicket;
 
   const handleButton = () => {
-    console.log('check');
-
     dispatch(
       updateSupportTicketThunk({
         ticketId: _id,

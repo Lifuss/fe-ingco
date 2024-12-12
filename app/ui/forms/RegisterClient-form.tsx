@@ -47,7 +47,6 @@ export default function RegisterClientForm() {
       const registerResponse = await dispatch(
         registerClientThunk(registerData),
       );
-      console.log(registerResponse);
       // @ts-ignore
       if (registerResponse.error) {
         if (registerResponse.payload.message.includes('409')) {

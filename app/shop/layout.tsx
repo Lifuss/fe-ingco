@@ -29,7 +29,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
       title = 'Каталог';
       const categoryId: string | null = params.get('category');
       if (categoryId) {
-        console.log(categoryId);
         title = productsCategories.find((val) => val._id === categoryId)
           ?.name as string;
       }

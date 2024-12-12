@@ -27,16 +27,6 @@ import {
 import { setShopView } from '@/lib/appState/main/slice';
 import ShopList from './ShopList';
 
-export type rawData = {
-  article: string;
-  name: string;
-  category: string;
-  image: string;
-  price: string;
-  priceRetailRecommendation: string;
-  countInStock: number;
-  _id: string;
-};
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
