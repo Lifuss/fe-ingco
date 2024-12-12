@@ -29,17 +29,16 @@ const Hero = () => {
       </div>
     ),
     customPaging: () => (
-      <div className="bg-secondary h-2 w-2 rounded-full"></div>
+      <div className="h-2 w-2 rounded-full bg-secondary"></div>
     ),
   };
 
   return (
     <section className="mb-10 flex flex-col-reverse gap-10 px-5 pt-3 md:mb-16 md:items-center md:pt-8 lg:mb-24 lg:flex-row lg:px-[60px]">
       <div className="h-full w-full md:flex md:flex-col md:items-center md:justify-evenly lg:items-start 2xl:justify-normal 2xl:gap-9">
-        <h1 className="2xl:track mb-4 mr-auto text-2xl tracking-normal md:mx-auto md:mb-2 md:text-center md:text-3xl lg:mx-0 lg:text-left xl:text-4xl 2xl:w-[81%] 2xl:text-[4rem]">
+        <h1 className="mb-4 mr-auto text-2xl tracking-normal md:mx-auto md:mb-2 md:text-center md:text-3xl lg:mx-0 lg:text-left xl:text-4xl 2xl:w-[81%] 2xl:text-[4rem] 2xl:leading-none">
           Оптові Постачання для Бізнесу
           <span className="block lg:mt-2">
-            {' '}
             Будівельні та домашні інструменти
           </span>
         </h1>
@@ -91,7 +90,7 @@ function HeroButton({ href, icon, label, ariaLabel }: ButtonProps) {
   return (
     <Link
       href={href}
-      className="bg-primary flex w-fit items-center justify-center gap-3 rounded-lg px-2 py-2 text-white shadow-md transition-transform ease-out hover:scale-105 hover:bg-orange-400 hover:shadow-lg md:px-5 md:py-4 md:text-lg lg:px-10 lg:py-3 xl:py-4 xl:text-xl"
+      className="flex w-fit items-center justify-center gap-3 rounded-lg bg-orangeLight px-2 py-2 font-medium text-[#2E2E2E] shadow-md transition-all ease-out hover:scale-105 hover:bg-orange-500 hover:text-gray-200 hover:shadow-lg focus:bg-orange-500 focus:text-gray-200 md:px-5 md:py-4 md:text-lg lg:px-10 lg:py-3 xl:py-4 xl:text-xl"
       aria-label={ariaLabel}
     >
       {icon}
