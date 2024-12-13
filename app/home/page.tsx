@@ -1,4 +1,4 @@
-import Home from '../ui/shared-pages/Home';
+import Home from '../ui/pages/Home';
 
 export default function Page() {
   return <Home isMainPage={false} />;

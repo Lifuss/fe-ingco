@@ -15,6 +15,7 @@ import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../ui/TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import ProductBlockList from '../ui/product/ProductBlockList';
+import FiltersBlock from '../ui/FiltersBlock';
 
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -128,6 +129,7 @@ const ProductList = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
+          <FiltersBlock listType="retail" />
           <ProductBlockList
             favoritesIdList={favoritesIdList}
             listType="retail"
@@ -136,7 +138,7 @@ const ProductList = ({ isFavoritePage = false }) => {
             handleFavoriteClick={handleFavoriteClick}
           />
 
-          <div className="relative w-full 2xl:w-4/5">
+          <div className="relative">
             <div className="mx-auto mt-5 w-fit pb-10">
               <Pagination totalPages={totalPage} />
             </div>

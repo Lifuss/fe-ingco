@@ -3,7 +3,7 @@ import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Home from './ui/shared-pages/Home';
+import Home from './ui/pages/Home';
 
 export default function Page() {
   const [loading, setLoading] = useState(true);

@@ -17,15 +17,9 @@ import { Product, CustomRow } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
-import {
-  BetweenVerticalStart,
-  Heart,
-  MousePointerClick,
-  SquareMousePointer,
-  Table2,
-} from 'lucide-react';
-import { setShopView } from '@/lib/appState/main/slice';
+import { Heart, MousePointerClick, SquareMousePointer } from 'lucide-react';
 import ShopList from './ShopList';
+import FiltersBlock from '@/app/ui/FiltersBlock';
 
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -316,31 +310,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
-          <div className="relative w-full 2xl:w-4/5">
-            <div className="mb-2 flex justify-end">
-              <button
-                onClick={() => dispatch(setShopView('table'))}
-                className={clsx(
-                  'rounded-s-xl border border-gray-500 stroke-black px-2',
-                  state.persistedMainReducer.shopView === 'table'
-                    ? 'bg-orange-300 stroke-white'
-                    : '',
-                )}
-              >
-                <Table2 className="stroke-inherit" />
-              </button>
-              <button
-                onClick={() => dispatch(setShopView('list'))}
-                className={clsx(
-                  'rounded-e-xl border border-gray-500 stroke-black px-2',
-                  state.persistedMainReducer.shopView === 'list'
-                    ? 'bg-orange-300 stroke-white'
-                    : '',
-                )}
-              >
-                <BetweenVerticalStart className="stroke-inherit" />
-              </button>
-            </div>
+          <div className="relative">
+            <FiltersBlock listType="partner" />
             <div
               className={`${state.persistedMainReducer.shopView === 'table' && 'max-h-[75vh] overflow-auto'}`}
             >
