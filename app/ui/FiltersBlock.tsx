@@ -4,10 +4,26 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import clsx from 'clsx';
 import { BetweenVerticalStart, Table2 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';
 }
+
+type sortValueType =
+  | 'default'
+  | 'popular'
+  | 'cheep'
+  | 'expensive'
+  | 'popular'
+  | 'name';
+
+const liButtonsContent: { label: string; sortValue: sortValueType }[] = [
+  { label: 'за популярністю', sortValue: 'popular' },
+  { label: 'від дешевших', sortValue: 'cheep' },
+  { label: 'від дорожчих', sortValue: 'expensive' },
+  { label: 'за назвою', sortValue: 'name' },
+];
 
 const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const { shopView } = useAppSelector((state) => state.persistedMainReducer);
@@ -17,6 +33,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const productsCategories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
+  const [sort, setSort] = useState<sortValueType>('default');
 
   const pathType = listType === 'retail' ? '/retail' : '/shop';
   let title = '';
@@ -42,53 +59,67 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       pathname;
   }
 
-  const liItemClassName =
-    'h-fit  border border-gray-500 stroke-black text-xs md:px-2 md:py-1';
+  const handleClickSortButtons = (sortValue: sortValueType) => {
+    console.log(sort);
+    setSort(sortValue);
+  };
+
   return (
-    <div className="mb-2 flex flex-col items-center justify-end gap-4">
-      <h1 className="col-span-3 mb-2 text-center text-3xl md:mr-auto">
-        {title}
-      </h1>
-      <div className="flex flex-col items-baseline justify-center">
-        <h3 className="mr-2">Сортування:</h3>
-        <ul className="flex">
-          <li className="h-fit rounded-s-xl border border-gray-500 stroke-black text-xs md:px-2 md:py-1">
-            <button type="button">за популярністю</button>
-          </li>
-          <li className={liItemClassName}>
-            <button type="button">від дешевших</button>
-          </li>
-          <li className="h-fit  border border-gray-500 stroke-black text-xs md:px-2 md:py-1">
-            <button type="button">від дорожчих</button>
-          </li>
-          <li className="h-fit rounded-e-xl border border-gray-500 stroke-black text-xs md:px-2 md:py-1">
-            <button type="button">за назвою</button>
-          </li>
-        </ul>
-      </div>
-      {listType === 'partner' ? (
-        <div className="flex items-center justify-center">
-          <h3 className="mr-2">Відображення:</h3>
-          <button
-            onClick={() => dispatch(setShopView('table'))}
-            className={clsx(
-              'rounded-s-xl border border-gray-500 stroke-black px-2 py-1',
-              shopView === 'table' ? 'bg-orange-300 stroke-white' : '',
-            )}
-          >
-            <Table2 className="stroke-inherit" />
-          </button>
-          <button
-            onClick={() => dispatch(setShopView('list'))}
-            className={clsx(
-              'rounded-e-xl border border-gray-500 stroke-black px-2 py-1',
-              shopView === 'list' ? 'bg-orange-300 stroke-white' : '',
-            )}
-          >
-            <BetweenVerticalStart className="stroke-inherit" />
-          </button>
+    <div className="mb-2 flex flex-col flex-wrap justify-end gap-4 md:flex-row md:items-center">
+      <h1 className="col-span-3 mb-2 w-full text-center text-3xl">{title}</h1>
+      <div className="flex w-full items-start justify-between lg:justify-end lg:gap-4">
+        <div className="flex flex-col items-baseline justify-center lg:flex-row">
+          <h3 className="mr-2">Сортування:</h3>
+          <ul className="flex flex-col md:flex-row">
+            {liButtonsContent.map((item, i) => (
+              <li
+                key={item.sortValue}
+                className={clsx(
+                  'h-fit border border-gray-500 stroke-black px-2 py-2 text-center text-xs transition-all hover:scale-105 hover:font-semibold focus:scale-105',
+                  i === 0 && 'max-[767px]:rounded-t-xl md:rounded-s-xl',
+                  i === liButtonsContent.length - 1 &&
+                    'max-[767px]:rounded-b-xl md:rounded-e-xl',
+                  sort === item.sortValue && 'bg-orange-300',
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleClickSortButtons(item.sortValue)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
-      ) : null}
+        {listType === 'partner' ? (
+          <div className="flex flex-col items-center md:flex-row md:flex-wrap md:justify-end ">
+            <h3 className="mr-2 md:mr-0 md:w-full md:text-right lg:mr-2 lg:w-fit">
+              Відображення:
+            </h3>
+            <button
+              onClick={() => dispatch(setShopView('table'))}
+              className={clsx(
+                'border border-gray-500 stroke-black px-2 py-1 transition-transform hover:scale-105 focus:scale-105 max-[767px]:rounded-t-xl md:rounded-s-xl',
+                shopView === 'table' && 'bg-orange-300',
+              )}
+              aria-label="Перемкнути вигляд каталогу на таблицю"
+            >
+              <Table2 className="stroke-inherit" />
+            </button>
+            <button
+              onClick={() => dispatch(setShopView('list'))}
+              className={clsx(
+                'border border-gray-500 stroke-black px-2 py-1 transition-transform hover:scale-105 focus:scale-105 max-[767px]:rounded-b-xl md:rounded-e-xl',
+                shopView === 'list' && 'bg-orange-300',
+              )}
+              aria-label="Перемкнути вигляд каталогу на список"
+            >
+              <BetweenVerticalStart className="stroke-inherit" />
+            </button>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

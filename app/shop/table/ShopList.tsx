@@ -21,11 +21,8 @@ interface ShopListProps {
 const ShopList = ({
   isFavoritePage = false,
   products,
-  totalPages,
   favorites,
 }: ShopListProps) => {
-  console.log('products => ', products);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
