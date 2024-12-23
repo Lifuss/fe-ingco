@@ -21,18 +21,13 @@ interface ShopListProps {
 const ShopList = ({
   isFavoritePage = false,
   products,
-  totalPages,
   favorites,
 }: ShopListProps) => {
-  console.log('products => ', products);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const mainState = useAppSelector((state) => state.persistedMainReducer);
   const { logProductClick } = useProductStats();
-
-  const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
 
   const favoritesList = favorites.map((product) => product._id);
 

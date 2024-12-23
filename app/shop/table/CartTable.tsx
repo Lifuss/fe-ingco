@@ -14,7 +14,7 @@ import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
-import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
+import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 

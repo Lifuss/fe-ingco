@@ -19,7 +19,7 @@ import {
   removeProductFromLocalStorageCart,
 } from '@/lib/appState/user/slice';
 import Icon from '@/app/ui/assets/Icon';
-import NovaPoshtaComponent from '@/app/ui/NovaPoshta';
+import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 

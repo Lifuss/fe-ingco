@@ -15,6 +15,7 @@ import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../ui/TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import ProductBlockList from '../ui/product/ProductBlockList';
+import FiltersBlock, { sortValueType } from '../ui/FiltersBlock';
 
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -36,6 +37,8 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   let query = searchParams.get('query') || '';
   let category = searchParams.get('category') || '';
+  let sortValue: sortValueType =
+    (searchParams.get('sortValue') as sortValueType) || 'default';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -58,9 +61,18 @@ const ProductList = ({ isFavoritePage = false }) => {
   let limit = isWideDesktop ? 30 : isDesktop ? 20 : 18;
   useEffect(() => {
     if (!isFavoritePage) {
-      dispatch(fetchMainTableDataThunk({ page, query, category, limit }));
+      dispatch(
+        fetchMainTableDataThunk({
+          page,
+          query,
+          category,
+          limit,
+          sortValue,
+          isRetail: true,
+        }),
+      );
     }
-  }, [dispatch, page, query, category, isFavoritePage, limit]);
+  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue]);
 
   function handleFavoriteClick(id: string) {
     if (isAuth) {
@@ -128,6 +140,7 @@ const ProductList = ({ isFavoritePage = false }) => {
         </div>
       ) : (
         <>
+          <FiltersBlock listType="retail" />
           <ProductBlockList
             favoritesIdList={favoritesIdList}
             listType="retail"
@@ -136,7 +149,7 @@ const ProductList = ({ isFavoritePage = false }) => {
             handleFavoriteClick={handleFavoriteClick}
           />
 
-          <div className="relative w-full 2xl:w-4/5">
+          <div className="relative">
             <div className="mx-auto mt-5 w-fit pb-10">
               <Pagination totalPages={totalPage} />
             </div>

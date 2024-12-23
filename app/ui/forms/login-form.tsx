@@ -8,7 +8,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import withAuth from '../../service/PrivateRouting';
 import { toast } from 'react-toastify';
-import Loader from '../Loader';
+import Loader from '../utils/Loader';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
