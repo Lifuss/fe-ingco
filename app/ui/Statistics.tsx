@@ -28,9 +28,6 @@ const Statistics = () => {
   const handleSubmit = () => {
     if (tempStartDate && tempEndDate) {
       setDateRange([tempStartDate, tempEndDate]);
-      console.log(
-        `Період вибору: з ${tempStartDate.toLocaleDateString('uk-UA')} по ${tempEndDate.toLocaleDateString('uk-UA')}`,
-      );
     }
   };
 

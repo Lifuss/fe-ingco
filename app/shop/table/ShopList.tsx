@@ -29,8 +29,6 @@ const ShopList = ({
   const mainState = useAppSelector((state) => state.persistedMainReducer);
   const { logProductClick } = useProductStats();
 
-  const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API;
-
   const favoritesList = favorites.map((product) => product._id);
 
   let page = searchParams.get('page')

@@ -3,14 +3,14 @@ import { setShopView } from '@/lib/appState/main/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import clsx from 'clsx';
 import { BetweenVerticalStart, Table2 } from 'lucide-react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';
 }
 
-type sortValueType =
+export type sortValueType =
   | 'default'
   | 'popular'
   | 'cheep'
@@ -29,11 +29,19 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const { shopView } = useAppSelector((state) => state.persistedMainReducer);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
-  const params = useSearchParams();
+  const searchParams = useSearchParams();
+  const { replace } = useRouter();
   const productsCategories = useAppSelector(
     (state) => state.persistedMainReducer.categories,
   );
   const [sort, setSort] = useState<sortValueType>('default');
+
+  const params = new URLSearchParams(searchParams.toString());
+  const getSortValue = params.get('sortValue') as sortValueType;
+
+  useEffect(() => {
+    if (getSortValue) setSort(getSortValue);
+  }, []);
 
   const pathType = listType === 'retail' ? '/retail' : '/shop';
   let title = '';
@@ -49,7 +57,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       break;
     case pathType:
       title = 'Каталог';
-      const categoryId: string | null = params.get('category');
+      const categoryId: string | null = searchParams.get('category');
       if (categoryId) {
         title = productsCategories.find((val) => val._id === categoryId)
           ?.name as string;
@@ -60,8 +68,14 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   }
 
   const handleClickSortButtons = (sortValue: sortValueType) => {
-    console.log(sort);
-    setSort(sortValue);
+    if (sort === sortValue) {
+      setSort('default');
+      params.set('sortValue', 'default');
+    } else {
+      setSort(sortValue);
+      params.set('sortValue', sortValue);
+    }
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (

@@ -19,7 +19,7 @@ import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
 import { Heart, MousePointerClick, SquareMousePointer } from 'lucide-react';
 import ShopList from './ShopList';
-import FiltersBlock from '@/app/ui/FiltersBlock';
+import FiltersBlock, { sortValueType } from '@/app/ui/FiltersBlock';
 
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -53,6 +53,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
   let query = searchParams.get('query') || '';
   let category = searchParams.get('category') || '';
+  let sortValue: sortValueType =
+    (searchParams.get('sortValue') as sortValueType) || 'default';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -75,9 +77,17 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
   useEffect(() => {
     if (!isFavoritePage) {
-      dispatch(fetchMainTableDataThunk({ page, query, category }));
+      dispatch(
+        fetchMainTableDataThunk({
+          page,
+          query,
+          category,
+          isRetail: false,
+          sortValue,
+        }),
+      );
     }
-  }, [dispatch, page, query, category, isFavoritePage]);
+  }, [dispatch, page, query, category, isFavoritePage, sortValue]);
 
   const handleFavoriteClick = useCallback(
     (id: string) => {

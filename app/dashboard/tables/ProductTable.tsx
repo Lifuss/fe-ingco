@@ -1,6 +1,7 @@
 'use client';
 
 import Icon from '@/app/ui/assets/Icon';
+import { sortValueType } from '@/app/ui/FiltersBlock';
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import {
@@ -27,10 +28,22 @@ const ProductTable = () => {
 
   let query = searchParams.get('query') || '';
   let category = searchParams.get('category') || '';
+  let sortValue: sortValueType =
+    (searchParams.get('sortValue') as sortValueType) || 'default';
+  // TODO: ADD filters block for dashboard
 
   useEffect(() => {
-    dispatch(fetchMainTableDataThunk({ page, query, category, limit: 20 }));
-  }, [dispatch, page, query, category]);
+    dispatch(
+      fetchMainTableDataThunk({
+        page,
+        query,
+        category,
+        limit: 20,
+        isRetail: false,
+        sortValue,
+      }),
+    );
+  }, [dispatch, page, query, category, sortValue]);
 
   const columns = useMemo(
     () => [
@@ -73,7 +86,7 @@ const ProductTable = () => {
             >
               <Icon
                 icon="edit"
-                className="fill-nonActive h-[25px] w-[25px] cursor-pointer transition-colors hover:fill-black"
+                className="h-[25px] w-[25px] cursor-pointer fill-nonActive transition-colors hover:fill-black"
               />
             </Link>
             <button
@@ -83,7 +96,7 @@ const ProductTable = () => {
             >
               <Icon
                 icon="delete"
-                className="fill-nonActive h-[28px] w-[27px] cursor-pointer transition-colors
+                className="h-[28px] w-[27px] cursor-pointer fill-nonActive transition-colors
             hover:fill-black"
               />
             </button>

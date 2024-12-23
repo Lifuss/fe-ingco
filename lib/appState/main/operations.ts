@@ -3,6 +3,7 @@ import axios from 'axios';
 import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
+import { sortValueType } from '@/app/ui/FiltersBlock';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -47,12 +48,21 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       query,
       category,
       limit = 30,
-    }: { query: string; page: number; category?: string; limit?: number },
+      sortValue,
+      isRetail = true,
+    }: {
+      query: string;
+      page: number;
+      category?: string;
+      limit?: number;
+      sortValue: sortValueType;
+      isRetail: boolean;
+    },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.get('/products', {
-        params: { page, q: query, limit, category },
+        params: { page, q: query, limit, category, sortValue, isRetail },
       });
       return data;
     } catch (error) {
