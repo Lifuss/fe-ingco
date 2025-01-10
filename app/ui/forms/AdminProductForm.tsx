@@ -197,7 +197,7 @@ const AdminProductForm = ({
                     >
                       <Icon
                         icon="delete"
-                        className="fill-nonActive h-5 w-5 cursor-pointer transition-colors hover:fill-red-700"
+                        className="h-5 w-5 cursor-pointer fill-nonActive transition-colors hover:fill-red-700"
                       />
                     </button>
                   </div>
@@ -257,7 +257,7 @@ const AdminProductForm = ({
             </label>
 
             <label>
-              <span className="text-red-600">*</span>РРЦ
+              <span className="text-red-600">*</span>РРЦ ₴
               <input
                 type="number"
                 defaultValue={product?.priceRetailRecommendation}
@@ -269,7 +269,7 @@ const AdminProductForm = ({
               />
             </label>
             <label>
-              РРЦ зі знижкою
+              РРЦ зі знижкою ₴
               <input
                 type="number"
                 name="rrcSale"
