@@ -83,6 +83,17 @@ export const getProductByIdThunk = createAsyncThunk(
   },
 );
 
+export const getProductBySlugThunk = createAsyncThunk(
+  'product/fetch',
+  async (productSlug: string, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get(`/products/${productSlug}`);
+      return data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  },
+);
 export const fetchCategoriesThunk = createAsyncThunk(
   'categories/fetch',
   async (query: string, { rejectWithValue }) => {

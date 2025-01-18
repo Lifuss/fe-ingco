@@ -8,6 +8,7 @@ import {
   fetchHistoryThunk,
   fetchMainTableDataThunk,
   getProductByIdThunk,
+  getProductBySlugThunk,
   updateCategoryThunk,
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
@@ -49,6 +50,7 @@ const initialState: initialStateType = {
   product: {
     _id: '',
     name: '',
+    slug: '',
     article: '',
     description: '',
     price: 0,
@@ -75,7 +77,7 @@ const appStateSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getProductByIdThunk.fulfilled, (state, { payload }) => {
+      .addCase(getProductBySlugThunk.fulfilled, (state, { payload }) => {
         state.product = payload;
       })
       .addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {

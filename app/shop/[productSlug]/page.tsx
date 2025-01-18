@@ -1,15 +1,14 @@
 'use client';
 
 import { Button } from '@/app/ui/buttons/button';
-import { getProductByIdThunk } from '@/lib/appState/main/operations';
+import { getProductBySlugThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import Head from 'next/head';
-import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
+import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
-import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
@@ -17,24 +16,27 @@ import JsBarcode from 'jsbarcode';
 
 type PageProps = {
   params: {
-    productId: string;
+    productSlug: string;
   };
 };
 
 const Page = ({ params }: PageProps) => {
   const dispatch = useAppDispatch();
-  const product = useAppSelector((state) => state.persistedMainReducer.product);
-  const barcodeRef = useRef<SVGSVGElement | null>(null);
-  const isAuth = useAppSelector(
-    (state) => state.persistedAuthReducer.isAuthenticated,
-  );
-  const router = useRouter();
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
+  const barcodeRef = useRef<SVGSVGElement | null>(null);
+
+  const product = useAppSelector((state) => state.persistedMainReducer.product);
+
+  const { USD } = useAppSelector(
+    (state) => state.persistedMainReducer.currencyRates,
+  );
+
+  const router = useRouter();
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    dispatch(getProductByIdThunk(params.productId));
-  }, [dispatch, params.productId]);
-
+    dispatch(getProductBySlugThunk(params.productSlug));
+  }, [dispatch, params.productSlug]);
   useEffect(() => {
     if (product?.barcode && barcodeRef.current) {
       JsBarcode(barcodeRef.current, product.barcode, {
@@ -47,31 +49,21 @@ const Page = ({ params }: PageProps) => {
     }
   }, [product]);
 
-  const handleCartClick = () => {
-    if (isAuth) {
-      dispatch(
-        addProductToRetailCartThunk({
-          productId: product._id,
-          quantity: 1,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${product.name} додано в кошик`);
-        });
-    } else {
-      const { price, priceBulk, ...normalizeProduct } = product;
-      dispatch(
-        addProductToLocalStorageCart({
-          productId: normalizeProduct,
-          quantity: 1,
-          _id: product._id,
-        }),
-      );
-
-      toast.success(`${product.name} додано в кошик`);
-    }
+  const handleCartClick = (id: string, productName: string) => {
+    dispatch(
+      addProductToCartThunk({
+        productId: id,
+        quantity,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        toast.success(`${quantity} шт. - ${productName} додано в кошик`);
+        setQuantity(1);
+      });
   };
+
+  if (!product) return <div>Loading...</div>;
 
   return product ? (
     <>
@@ -92,7 +84,7 @@ const Page = ({ params }: PageProps) => {
             alt={product.name}
             width={500}
             height={500}
-            className="mb-10 max-h-[250px] w-full object-contain"
+            className="mb-6 max-h-[250px] w-full object-contain"
           />
           {product.barcode && (
             <div className="mb-4 mt-2 flex justify-center">
@@ -131,27 +123,46 @@ const Page = ({ params }: PageProps) => {
               <h1 className="text-xl lg:text-3xl">{product.name}</h1>
             </div>
           )}
-
           <div className="mb-5 mt-2 grid grid-cols-2 gap-5 md:mt-10 md:flex">
-            {product.rrcSale ? (
-              <div className="flex flex-col items-end">
-                <span className="text-lg line-through">
-                  {product.priceRetailRecommendation} грн
-                </span>
-                <span className="pl-1 text-2xl text-orangeLight">
-                  {product.rrcSale} грн
-                </span>
-              </div>
-            ) : (
-              <p className="text-2xl">
-                {product.priceRetailRecommendation} грн
-              </p>
-            )}
-            <Button className="bg-orange-400" onClick={() => handleCartClick()}>
+            <p className="flex flex-col text-xl md:text-2xl">
+              <span>{product.price} $</span>
+              <span>{Math.ceil(product.price * USD)} грн</span>
+            </p>
+
+            <input
+              type="number"
+              value={quantity}
+              className="ml-auto w-20 rounded-lg border border-gray-300 text-center text-lg"
+              onChange={(e) => setQuantity(e.currentTarget.valueAsNumber)}
+            />
+
+            <Button
+              className="col-span-2 bg-orange-400 hover:bg-orange-500"
+              onClick={() => handleCartClick(product._id, product.name)}
+            >
               В кошик
             </Button>
           </div>
-          <div className="it ems-center mb-5 flex w-1/2 gap-5 rounded-lg md:mb-20">
+
+          <p className="text-lg">
+            Рекомендована роздрібна ціна: {product.priceRetailRecommendation}{' '}
+            грн
+          </p>
+          <p className="mb-5 text-lg">
+            Маржинальний прибуток :{' '}
+            {Math.ceil(
+              ((product.priceRetailRecommendation - product.price * USD) /
+                product.priceRetailRecommendation) *
+                100,
+            )}
+            % |{' '}
+            {product.priceRetailRecommendation - Math.ceil(product.price * USD)}{' '}
+            грн
+            <span className="ml-1 align-top text-xs text-gray-500">
+              (без витрат на перевезення та інше)
+            </span>
+          </p>
+          <div className="it ems-center mb-16 flex w-1/2 gap-5 rounded-lg">
             <p className="text-center text-xl">Перевізник:</p>
             <Image
               src={novaPoshtaSVG}

@@ -9,7 +9,7 @@ interface ProductCardProps {
   product: Product;
   listType: 'partner' | 'retail';
   favoritesIdList: string[];
-  handleDirectToProduct: (id: string) => void;
+  handleDirectToProduct: (id: string, slug: string) => void;
   handleCartClick: (id: string, productName: string) => void;
   handleFavoriteClick: (id: string) => void;
   USDCurrency?: number;
@@ -49,6 +49,7 @@ const ProductCard = ({
     priceRetailRecommendation,
     price,
     description,
+    slug,
   } = product;
 
   let splitDesc = description.split('\n');
@@ -64,7 +65,7 @@ const ProductCard = ({
     >
       <div
         className="grow cursor-pointer"
-        onClick={() => handleDirectToProduct(_id)}
+        onClick={() => handleDirectToProduct(_id, slug)}
       >
         <div className="relative h-[150px] w-full">
           {rrcSale && listType === 'retail' ? (
@@ -143,7 +144,7 @@ const ProductCard = ({
           <div className="flex items-center justify-end">
             <div
               className="border-r border-black pr-1 text-base font-medium"
-              onClick={() => handleDirectToProduct(_id)}
+              onClick={() => handleDirectToProduct(_id, slug)}
             >
               {rrcSale ? (
                 <div className="flex flex-col items-end">
@@ -172,7 +173,7 @@ const ProductCard = ({
             <p
               className="flex flex-col border-r border-black pr-1 text-sm font-medium"
               onClick={() => {
-                handleDirectToProduct(_id);
+                handleDirectToProduct(_id, slug);
               }}
             >
               <span>{price} $</span>
