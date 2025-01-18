@@ -4,6 +4,7 @@ import StoreProvider from './service/StoreProvider';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: {
@@ -84,6 +85,7 @@ export default function RootLayout({
             transition={Bounce}
           />
           <SpeedInsights />
+          <Analytics />
           {children}
         </StoreProvider>
       </body>
