@@ -11,11 +11,16 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const searchQuery = searchParams?.get('query')?.toString() || '';
 
-  // "66" is unique first part of id for products, and we need go out from product page
-  const validPathname = pathname.includes('66')
-    ? pathname.slice(0, pathname.indexOf('66') - 1)
-    : pathname;
+  let validPathname = pathname;
+  const splitedPathname = validPathname.split('/');
 
+  if (
+    splitedPathname.length >= 3 &&
+    !splitedPathname.includes('favorites') &&
+    !splitedPathname.includes('dashboard')
+  ) {
+    validPathname = splitedPathname.slice(0, 2).join('/');
+  }
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
