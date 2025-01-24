@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerPartnerSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
 import { Button } from '../buttons/button';
+import Loader from '../utils/Loader';
 
 type RegisterFormData = z.infer<typeof registerPartnerSchema>;
 
@@ -191,7 +192,11 @@ export default function RegisterPartnerForm() {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Відправка...' : 'Зареєструватися'}
+          {isSubmitting ? (
+            <Loader className="mx-auto" size={32} />
+          ) : (
+            'Зареєструватися'
+          )}
         </Button>
         <p className="mt-8 text-center">
           Вже зареєстровані та верифіковані?{' '}

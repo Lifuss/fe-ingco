@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <Header />
       <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CategoriesSidebar />
-        <div className=" min-h-[550px]">{children}</div>
+        <div className=" min-h-[550px] w-full">{children}</div>
       </main>
       <Footer />
     </>

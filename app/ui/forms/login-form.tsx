@@ -83,7 +83,9 @@ function LoginForm() {
         {!isLoading ? (
           <LoginButton />
         ) : (
-          <Loader className="mx-auto mt-2" size={32} />
+          <Button className="pointer-events-none mt-4 w-full bg-orange-400 py-2 text-2xl ">
+            <Loader className="mx-auto" size={32} />
+          </Button>
         )}
         <p className="mt-8 text-center">
           Немає облікового запису?{' '}

@@ -1,9 +1,9 @@
 'use client';
-import { useProductStats } from '@/lib/hooks';
+import { useAppSelector, useProductStats } from '@/lib/hooks';
 import { Product } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import ProductCard from './ProductCard';
+import { CardSkeleton } from '../skeletons/skeletons';
 
 interface ProductBlockListProps {
   productsData: Product[];
@@ -24,6 +24,9 @@ const ProductBlockList = ({
 }: ProductBlockListProps) => {
   const { logProductClick } = useProductStats();
   const router = useRouter();
+  const isProductsLoading = useAppSelector(
+    (state) => state.persistedMainReducer.tableLoading,
+  );
 
   const handleDirectToProduct = (id: string, slug: string) => {
     logProductClick(id); // tracking product activity
@@ -36,7 +39,9 @@ const ProductBlockList = ({
     <div>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1800px]:grid-cols-6">
         {productsData?.map((product) => {
-          return (
+          return isProductsLoading ? (
+            <CardSkeleton />
+          ) : (
             <ProductCard
               key={product._id}
               product={product}

@@ -19,7 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/shop/export',
     '/shop/table',
   ];
-  console.log(productSlugs);
 
   const staticPages: MetadataRoute.Sitemap = staticPagesList.map((page) => {
     return {

@@ -81,10 +81,10 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   return (
     <div className="mb-2 flex flex-col flex-wrap justify-end gap-4 md:flex-row md:items-center">
       <h1 className="col-span-3 mb-2 w-full text-center text-3xl">{title}</h1>
-      <div className="flex w-full items-start justify-between lg:justify-end lg:gap-4">
+      <div className="flex w-full items-start justify-end lg:justify-end lg:gap-4">
         <div className="flex flex-col items-baseline justify-center lg:flex-row">
           <h3 className="mr-2">Сортування:</h3>
-          <ul className="flex flex-col md:flex-row">
+          <ul className="flex flex-col md:flex-row ">
             {liButtonsContent.map((item, i) => (
               <li
                 key={item.sortValue}

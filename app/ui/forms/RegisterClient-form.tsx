@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerClientSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
+import Loader from '../utils/Loader';
 
 type RegisterFormData = z.infer<typeof registerClientSchema>;
 
@@ -195,7 +196,11 @@ export default function RegisterClientForm() {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Відправка...' : 'Зареєструватися'}
+          {isSubmitting ? (
+            <Loader className="mx-auto" size={32} />
+          ) : (
+            'Зареєструватися'
+          )}
         </Button>
         <p className="mt-8 text-center">
           Вже зареєстровані?{' '}
