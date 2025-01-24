@@ -1,6 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import React from 'react';
-
+// TODO: add to all async operations (etc. fetch products)
 const Loader = ({
   size = 16,
   className,
