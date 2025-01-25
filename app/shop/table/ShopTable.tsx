@@ -303,6 +303,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     ? Math.ceil(favorites.length / 10)
     : totalPages;
 
+  // TODO: Add table row skeletons
   return (
     <>
       {products.length === 0 ? (
