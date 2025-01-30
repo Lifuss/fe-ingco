@@ -14,7 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
 
-const initialState: {
+type InitialStateType = {
   users: User[];
   orders: Order[];
   supportTickets: SupportTicket[];
@@ -24,7 +24,10 @@ const initialState: {
     notVerified: number;
   };
   stats: { productClicks: {}[]; activityUsers: User[] };
-} = {
+  userTableCheckboxesStatus: { isUserVerified: boolean; isB2B: boolean };
+};
+
+const initialState: InitialStateType = {
   users: [],
   orders: [],
   supportTickets: [],
@@ -37,12 +40,24 @@ const initialState: {
     productClicks: [],
     activityUsers: [],
   },
+  userTableCheckboxesStatus: {
+    isUserVerified: true,
+    isB2B: true,
+  },
 };
 
 const Slice = createSlice({
   name: 'dashboard',
   initialState,
-  reducers: {},
+  reducers: {
+    setCheckbox: (
+      state,
+      { payload }: { payload: 'isUserVerified' | 'isB2B' },
+    ) => {
+      state.userTableCheckboxesStatus[payload] =
+        !state.userTableCheckboxesStatus[payload];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsersThunk.fulfilled, (state, { payload }) => {
@@ -94,4 +109,5 @@ const Slice = createSlice({
   },
 });
 
+export const { setCheckbox } = Slice.actions;
 export const dashboardSlice = Slice.reducer;

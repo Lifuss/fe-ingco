@@ -16,11 +16,12 @@ export default function Page() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      const savedUser = JSON.parse(
-        localStorage.getItem('persist:auth') as string,
-      );
-      const token = JSON.parse(savedUser?.token);
-
+      let token: string | null = null;
+      const savedUserString = localStorage.getItem('persist:auth');
+      if (savedUserString) {
+        const savedUser = JSON.parse(savedUserString);
+        token = savedUser?.token ? JSON.parse(savedUser.token) : null;
+      }
       if (token) {
         dispatch(refreshTokenThunk())
           .unwrap()

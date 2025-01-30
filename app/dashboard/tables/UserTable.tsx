@@ -4,6 +4,7 @@ import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import AdminUserModal from '@/app/ui/modals/AdminUserModal';
 import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
+import { setCheckbox } from '@/lib/appState/dashboard/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { User } from '@/lib/types';
 import clsx from 'clsx';
@@ -13,13 +14,14 @@ import { Row } from 'react-table';
 
 const UserTable = () => {
   const [isAdministrator, setIsAdministrator] = useState(false);
-  const [isB2B, setIsB2B] = useState(true);
-  const [isUserVerified, setIsUserVerified] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | any>();
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { users, totalPages } = useAppSelector((state) => state.dashboardSlice);
+  const { users, totalPages, userTableCheckboxesStatus } = useAppSelector(
+    (state) => state.dashboardSlice,
+  );
+  const { isB2B, isUserVerified } = userTableCheckboxesStatus;
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -83,20 +85,12 @@ const UserTable = () => {
     openModal(data.loginCol);
   };
 
-  const handleCheckboxChange = (action: string) => {
-    switch (action) {
-      case 'admin':
-        setIsAdministrator((prev) => !prev);
-        break;
-      case 'isB2B':
-        setIsB2B((prev) => !prev);
-        break;
-      case 'isVerified':
-        setIsUserVerified((prev) => !prev);
-        break;
-      default:
-        break;
-    }
+  const handleCheckboxChange = (
+    action: 'admin' | 'isUserVerified' | 'isB2B',
+  ) => {
+    action === 'admin'
+      ? setIsAdministrator((prev) => !prev)
+      : dispatch(setCheckbox(action));
   };
 
   return (
@@ -128,6 +122,7 @@ const UserTable = () => {
             type="checkbox"
             name="isB2B"
             disabled={isAdministrator}
+            checked={!isB2B}
             onChange={() => handleCheckboxChange('isB2B')}
           />
         </label>
@@ -142,7 +137,8 @@ const UserTable = () => {
             disabled={isAdministrator}
             type="checkbox"
             name="isVerified"
-            onChange={() => handleCheckboxChange('isVerified')}
+            checked={!isUserVerified}
+            onChange={() => handleCheckboxChange('isUserVerified')}
           />
         </label>
       </div>
