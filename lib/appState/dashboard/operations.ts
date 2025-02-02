@@ -47,6 +47,7 @@ export const fetchUsersThunk = createAsyncThunk(
       role = 'user',
       isB2B,
       isUserVerified,
+      isDeleted,
       page = 1,
       limit = 25,
     }: {
@@ -54,6 +55,7 @@ export const fetchUsersThunk = createAsyncThunk(
       role: 'user' | 'admin';
       isB2B?: boolean;
       isUserVerified?: boolean;
+      isDeleted?: boolean;
       page: number;
       limit: number;
     },
@@ -61,7 +63,7 @@ export const fetchUsersThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.get('/users', {
-        params: { q, role, isB2B, isUserVerified, page, limit },
+        params: { q, role, isB2B, isUserVerified, isDeleted, page, limit },
       });
       return data;
     } catch (error) {
@@ -107,6 +109,18 @@ export const updateUserThunk = createAsyncThunk(
       const { data } = await apiIngco.put(`/users/${user._id}`, user);
 
       return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+
+export const restoreUserThunk = createAsyncThunk(
+  'restoreUser',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      await apiIngco.post(`/users/restore/${userId}`);
+      return userId;
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -265,7 +279,7 @@ export const updateSupportTicketThunk = createAsyncThunk(
     }: {
       ticketId: string;
       isAnswered: boolean;
-      ticketNumber: number
+      ticketNumber: number;
     },
     { rejectWithValue },
   ) => {

@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../buttons/button';
 import {
   deleteUserThunk,
+  restoreUserThunk,
   updateUserThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
@@ -264,10 +265,10 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
             <Button
               type="reset"
               onClick={handleReset}
-              className="bg-red-300 hover:bg-red-400"
+              className="bg-slate-300 hover:bg-slate-400"
               title="Відновити дані до початкового стану"
             >
-              Відновити
+              Скинути
             </Button>
             <Button
               type="button"
@@ -289,7 +290,22 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
               Видалити
             </Button>
           </div>
-          <Button type="submit">Зберегти</Button>
+          <Button
+            className="bg-green-200 hover:bg-green-400 focus:bg-green-400 active:bg-green-400 "
+            onClick={() => {
+              if (confirm('Відновити користувача?'))
+                dispatch(restoreUserThunk(user._id));
+            }}
+            type="button"
+          >
+            Відновити
+          </Button>
+          <Button
+            className="bg-green-300 hover:bg-green-500 focus:bg-green-500 active:bg-green-500"
+            type="submit"
+          >
+            Зберегти
+          </Button>
         </div>
       </form>
       {orders.length > 0 ? (

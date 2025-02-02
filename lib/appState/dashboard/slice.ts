@@ -10,10 +10,16 @@ import {
   updateOrderThunk,
   updateUserThunk,
   updateSupportTicketThunk,
+  restoreUserThunk,
 } from './operations';
 import { toast } from 'react-toastify';
 import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
+import { CheckboxActionType } from '@/app/dashboard/tables/UserTable';
 
+type AllowedCheckboxActions = Exclude<
+  CheckboxActionType,
+  CheckboxActionType.Admin
+>;
 type InitialStateType = {
   users: User[];
   orders: Order[];
@@ -24,7 +30,7 @@ type InitialStateType = {
     notVerified: number;
   };
   stats: { productClicks: {}[]; activityUsers: User[] };
-  userTableCheckboxesStatus: { isUserVerified: boolean; isB2B: boolean };
+  userTableCheckboxesStatus: Record<AllowedCheckboxActions, boolean>;
 };
 
 const initialState: InitialStateType = {
@@ -41,8 +47,9 @@ const initialState: InitialStateType = {
     activityUsers: [],
   },
   userTableCheckboxesStatus: {
-    isUserVerified: true,
-    isB2B: true,
+    [CheckboxActionType.IsUserVerified]: true,
+    [CheckboxActionType.IsB2B]: true,
+    [CheckboxActionType.isDeleted]: false,
   },
 };
 
@@ -50,10 +57,7 @@ const Slice = createSlice({
   name: 'dashboard',
   initialState,
   reducers: {
-    setCheckbox: (
-      state,
-      { payload }: { payload: 'isUserVerified' | 'isB2B' },
-    ) => {
+    setCheckbox: (state, { payload }: { payload: AllowedCheckboxActions }) => {
       state.userTableCheckboxesStatus[payload] =
         !state.userTableCheckboxesStatus[payload];
     },
@@ -90,6 +94,9 @@ const Slice = createSlice({
       .addCase(deleteUserThunk.fulfilled, (state, { payload }) => {
         state.users = state.users.filter((user) => user._id !== payload);
         toast.success('Користувач успішно видалений');
+      })
+      .addCase(restoreUserThunk.fulfilled, () => {
+        toast.success('Користувач успішно відновлений');
       })
       .addCase(fetchUsersStatsThunk.fulfilled, (state, { payload }) => {
         state.usersStats = payload;

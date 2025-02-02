@@ -12,6 +12,13 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 
+export enum CheckboxActionType {
+  Admin = 'admin',
+  IsUserVerified = 'isUserVerified',
+  IsB2B = 'isB2B',
+  isDeleted = 'isDeleted',
+}
+
 const UserTable = () => {
   const [isAdministrator, setIsAdministrator] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | any>();
@@ -21,7 +28,7 @@ const UserTable = () => {
   const { users, totalPages, userTableCheckboxesStatus } = useAppSelector(
     (state) => state.dashboardSlice,
   );
-  const { isB2B, isUserVerified } = userTableCheckboxesStatus;
+  const { isB2B, isUserVerified, isDeleted } = userTableCheckboxesStatus;
 
   let page = searchParams.get('page')
     ? parseInt(searchParams.get('page') as string)
@@ -33,9 +40,17 @@ const UserTable = () => {
 
   useEffect(() => {
     dispatch(
-      fetchUsersThunk({ query, role, isB2B, isUserVerified, page, limit: 50 }),
+      fetchUsersThunk({
+        query,
+        role,
+        isB2B,
+        isUserVerified,
+        page,
+        isDeleted,
+        limit: 50,
+      }),
     );
-  }, [dispatch, query, role, isB2B, isUserVerified, page]);
+  }, [dispatch, query, role, isB2B, isUserVerified, isDeleted, page]);
 
   const columns = useMemo(
     () => [
@@ -48,11 +63,11 @@ const UserTable = () => {
         accessor: 'loginCol',
       },
       {
-        Header: 'Дата активн',
+        Header: 'Активність',
         accessor: 'activeDateCol',
       },
       {
-        Header: 'Статус верифікації',
+        Header: 'Верифікація',
         accessor: 'verificationStatusCol',
         Cell: ({ row }: { row: Row }) => (
           <div>{row.values.verificationStatusCol ? '✅' : '❌'}</div>
@@ -85,10 +100,8 @@ const UserTable = () => {
     openModal(data.loginCol);
   };
 
-  const handleCheckboxChange = (
-    action: 'admin' | 'isUserVerified' | 'isB2B',
-  ) => {
-    action === 'admin'
+  const handleCheckboxChange = (action: CheckboxActionType) => {
+    action === CheckboxActionType.Admin
       ? setIsAdministrator((prev) => !prev)
       : dispatch(setCheckbox(action));
   };
@@ -108,7 +121,7 @@ const UserTable = () => {
             disabled={!isB2B || !isUserVerified}
             type="checkbox"
             name="role"
-            onChange={() => handleCheckboxChange('admin')}
+            onChange={() => handleCheckboxChange(CheckboxActionType.Admin)}
           />
         </label>
         <label
@@ -123,7 +136,7 @@ const UserTable = () => {
             name="isB2B"
             disabled={isAdministrator}
             checked={!isB2B}
-            onChange={() => handleCheckboxChange('isB2B')}
+            onChange={() => handleCheckboxChange(CheckboxActionType.IsB2B)}
           />
         </label>
         <label
@@ -138,7 +151,18 @@ const UserTable = () => {
             type="checkbox"
             name="isVerified"
             checked={!isUserVerified}
-            onChange={() => handleCheckboxChange('isUserVerified')}
+            onChange={() =>
+              handleCheckboxChange(CheckboxActionType.IsUserVerified)
+            }
+          />
+        </label>
+        <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
+          Видалені
+          <input
+            type="checkbox"
+            name="isDeleted"
+            checked={isDeleted}
+            onChange={() => handleCheckboxChange(CheckboxActionType.isDeleted)}
           />
         </label>
       </div>
