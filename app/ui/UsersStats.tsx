@@ -5,6 +5,7 @@ import { setCheckbox } from '@/lib/appState/dashboard/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
+import { CheckboxActionType } from '../dashboard/tables/UserTable';
 
 const UsersStats = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +18,7 @@ const UsersStats = () => {
   }, [dispatch]);
 
   const handleBoxClick = () => {
-    dispatch(setCheckbox('isUserVerified'));
+    dispatch(setCheckbox(CheckboxActionType.IsUserVerified));
   };
 
   return (
