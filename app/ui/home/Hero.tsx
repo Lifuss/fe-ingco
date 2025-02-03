@@ -36,12 +36,12 @@ const Hero = () => {
   return (
     <section className="mb-10 flex flex-col-reverse gap-10 px-5 pt-3 md:mb-16 md:items-center md:pt-8 lg:mb-24 lg:flex-row lg:px-[60px]">
       <div className="h-full w-full md:flex md:flex-col md:items-center md:justify-evenly lg:items-start 2xl:justify-normal 2xl:gap-9">
-        <h1 className="mb-4 mr-auto text-2xl tracking-normal md:mx-auto md:mb-2 md:text-center md:text-3xl lg:mx-0 lg:text-left xl:text-4xl 2xl:w-[81%] 2xl:text-[4rem] 2xl:leading-none">
+        <h2 className="mb-4 mr-auto text-2xl tracking-normal md:mx-auto md:mb-2 md:text-center md:text-3xl lg:mx-0 lg:text-left xl:text-4xl 2xl:w-[81%] 2xl:text-[4rem] 2xl:leading-none">
           Оптові Постачання для Бізнесу
           <span className="block lg:mt-2">
             Будівельні та домашні інструменти
           </span>
-        </h1>
+        </h2>
         <p className="mb-6 text-lg font-medium md:w-full md:text-center md:text-lg lg:text-left xl:text-2xl 2xl:text-3xl 2xl:font-normal">
           Офіційний імпортер продукції в Україні
         </p>

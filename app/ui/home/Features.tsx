@@ -34,7 +34,7 @@ const Features = () => {
                 src={feature.img}
                 height={height}
                 width={width}
-                alt=""
+                alt={`Картинка про ${feature.text}`}
                 className="shrink-0"
                 loading="lazy"
               />
