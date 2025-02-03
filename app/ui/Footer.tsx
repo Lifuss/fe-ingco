@@ -88,7 +88,7 @@ const Footer = () => {
         </li>
       </ul>
       <p className="absolute bottom-2 left-1/2 -translate-x-1/2 transform text-xs md:text-sm">
-        © 2024 INGCO. Всі права захищені.
+        © 2025 INGCO. Всі права захищені.
       </p>
     </footer>
   );
