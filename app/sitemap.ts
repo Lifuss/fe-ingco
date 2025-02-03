@@ -13,28 +13,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/retail/favorites',
     '/retail/history',
     '/service',
-    '/shop/cart',
-    '/shop/favorites',
-    '/shop/history',
-    '/shop/export',
-    '/shop/table',
   ];
 
   const staticPages: MetadataRoute.Sitemap = staticPagesList.map((page) => {
     return {
       url: `${DOMAIN}${page}`,
-      lastModified: new Date(),
+      lastModified: new Date().toISOString(),
       changeFrequency: 'weekly',
-      priority: 1,
+      priority: page === '/' ? 0.9 : 0.8,
     };
   });
   const dynamicPages: MetadataRoute.Sitemap = productSlugs.map(
     (productSlug) => {
       return {
         url: `${DOMAIN}/retail/${productSlug}`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: 'monthly',
-        priority: 0.8,
+        priority: 0.7,
       };
     },
   );
