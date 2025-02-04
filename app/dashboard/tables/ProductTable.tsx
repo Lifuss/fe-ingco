@@ -30,7 +30,6 @@ const ProductTable = () => {
   let category = searchParams.get('category') || '';
   let sortValue: sortValueType =
     (searchParams.get('sortValue') as sortValueType) || 'default';
-  // TODO: ADD filters block for dashboard
 
   useEffect(() => {
     dispatch(
