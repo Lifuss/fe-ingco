@@ -9,8 +9,7 @@ import { Analytics } from '@vercel/analytics/react';
 export const metadata: Metadata = {
   title: {
     template: '%s | INGCO',
-    default:
-      'INGCO - Професійні будівельні інструменти в Україні | Купити гуртом та в роздріб',
+    default: 'INGCO - Професійні інструменти в Україні гуртом та в роздріб',
   },
 
   description:

@@ -58,6 +58,7 @@ const Footer = () => {
               <Link
                 href={social.url}
                 key={social.name}
+                rel="nofollow"
                 target="_blank noopener noreferrer"
                 aria-label={social.label}
               >
