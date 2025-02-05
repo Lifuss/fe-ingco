@@ -29,7 +29,7 @@ const ProductBlockList = ({
   );
 
   const handleDirectToProduct = (id: string, slug: string) => {
-    logProductClick(id); // tracking product activity
+    logProductClick(id);
 
     const link = listType === 'retail' ? `/retail/${slug}` : `/shop/${slug}`;
     router.push(link);

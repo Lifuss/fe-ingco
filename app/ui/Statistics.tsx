@@ -17,11 +17,11 @@ const Statistics = () => {
     getLastWeekDate(),
     new Date(),
   ]);
-  const [startDate, endDate] = dateRange;
-
   const [tempDateRange, setTempDateRange] = useState<
     [Date | undefined, Date | undefined]
   >([getLastWeekDate(), new Date()]);
+
+  const [startDate, endDate] = dateRange;
   const [tempStartDate, tempEndDate] = tempDateRange;
 
   // Підтвердження діапазону дат при натисканні кнопки

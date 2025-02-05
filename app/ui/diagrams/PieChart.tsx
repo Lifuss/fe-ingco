@@ -38,7 +38,7 @@ const ProductClicksPieChart = ({
     dispatch(
       getProductClicksThunk({
         page: 1,
-        limit: 20,
+        limit: 40,
         startDate,
         endDate,
       }),
