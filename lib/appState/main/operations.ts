@@ -4,6 +4,7 @@ import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/FiltersBlock';
+import { stat } from 'fs';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -194,11 +195,18 @@ export const fetchExcelFileThunk = createAsyncThunk(
   'excel/fetch',
   async (sheetType: string, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.get('/products/sheets', {
+      const { status, data } = await apiIngco.get('/products/sheets', {
         params: { sheetType },
         responseType: 'blob',
       });
-      return data;
+      if (status === 202) {
+        return {
+          message: 'Файл формується, спробуйте через декілька секунд',
+          type: 'info',
+          status: status,
+        };
+      }
+      return { blob: data, type: 'success', status: status };
     } catch (error) {
       rejectWithValue(error);
     }

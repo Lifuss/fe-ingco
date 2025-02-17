@@ -4,6 +4,7 @@ import { fetchExcelFileThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch } from '@/lib/hooks';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 
 type ExportButtonProps = {
   sheetType: string;
@@ -18,15 +19,25 @@ const ExportButton = ({ sheetType, title }: ExportButtonProps) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      const blob = await dispatch(fetchExcelFileThunk(sheetType)).unwrap();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const date = new Date();
-      a.download = `ingco_${sheetType}#${date.toLocaleDateString('uk-UA')}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      const res = await dispatch(fetchExcelFileThunk(sheetType)).unwrap();
+      if (!res) {
+        toast.error('Помилка при формуванні файлу');
+        return;
+      }
+      if (res.status === 202) {
+        toast.info(res.message);
+        return;
+      }
+      if (res.status === 200 && res.blob) {
+        const url = window.URL.createObjectURL(res.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const date = new Date();
+        a.download = `ingco_${sheetType}#${date.toLocaleDateString('uk-UA')}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
     } catch (error) {
       console.error('Error:', error);
     } finally {
