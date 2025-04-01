@@ -12,6 +12,7 @@ import {
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import { X } from 'lucide-react';
+import { generatePassword } from '@/lib/utils';
 
 type AdminUserModalProps = {
   isOpen: boolean;
@@ -85,16 +86,6 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
 
   const handleReset = () => {
     setSelectedUser(user);
-  };
-  const generatePassword = () => {
-    const length = 8;
-    const charset =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let retVal = '';
-    for (let i = 0, n = charset.length; i < length; ++i) {
-      retVal += charset[Math.floor(Math.random() * n)];
-    }
-    return retVal;
   };
 
   const dataToRender = [

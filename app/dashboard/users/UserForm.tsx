@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/app/ui/buttons/button';
-import { useState } from 'react';
+import { generatePassword } from '@/lib/utils';
+import { useRef, useState } from 'react';
 
 const inputStyle =
   'peer block w-full rounded-md border border-gray-200 py-[9px] pl-2 text-base outline-2 placeholder:text-gray-500';
@@ -29,6 +30,7 @@ const UserForm: React.FC<UserFormProps> = ({
   isEditing = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const {
     firstName,
@@ -46,6 +48,12 @@ const UserForm: React.FC<UserFormProps> = ({
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+  const handleGeneratePassword = () => {
+    const newPassword = generatePassword();
+    if (passwordRef.current) {
+      passwordRef.current.value = newPassword;
+    }
   };
 
   return (
@@ -106,25 +114,35 @@ const UserForm: React.FC<UserFormProps> = ({
             defaultValue={isEditing ? login : ''}
           />
         </label>
+      </div>
+      <div className="flex flex-col gap-2">
         <label className="relative">
           Пароль
-          <button
-            type="button"
-            onClick={toggleShowPassword}
-            className=" absolute right-0 top-0 text-blue-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-opacity-50"
-          >
-            {showPassword ? 'Сховати' : 'Показати'}
-          </button>
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
+            ref={passwordRef}
             required
             className={inputStyle}
             defaultValue={isEditing ? password : ''}
           />
+          <div className="flex justify-between ">
+            <button
+              type="button"
+              onClick={toggleShowPassword}
+              className="text-sm text-blue-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-opacity-50"
+            >
+              {showPassword ? 'Сховати' : 'Показати'}
+            </button>
+            <button
+              type="button"
+              onClick={handleGeneratePassword}
+              className="text-sm text-blue-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-opacity-50"
+            >
+              Згенерувати
+            </button>
+          </div>
         </label>
-      </div>
-      <div className="flex gap-2">
         <label>
           Роль
           <select
@@ -178,7 +196,7 @@ const UserForm: React.FC<UserFormProps> = ({
         </label>
       </div>
       <div className="flex flex-col gap-4">
-        <Button className="px-4 text-lg" type="submit">
+        <Button className="px-4 text-lg text-white" type="submit">
           {isEditing ? 'Зберегти' : 'Створити'}
         </Button>
         {isEditing && (
