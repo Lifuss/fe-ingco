@@ -53,6 +53,7 @@ export interface User {
   updatedAt: string;
   password?: string;
   resetToken?: string;
+  isB2B: boolean;
 }
 
 export enum OrderStatusEnum {

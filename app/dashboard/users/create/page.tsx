@@ -14,6 +14,7 @@ const Page = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
+    formData.append('isB2B', 'true');
     const data = Object.fromEntries(formData.entries()) as {
       firstName: string;
       lastName: string;
@@ -26,6 +27,7 @@ const Page = () => {
       edrpou?: string;
       about?: string;
       address?: string;
+      isB2B: 'true' | 'false';
     };
     dispatch(createUserThunk(data))
       .unwrap()

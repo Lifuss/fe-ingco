@@ -87,6 +87,7 @@ export const createUserThunk = createAsyncThunk(
       edrpou?: string;
       about?: string;
       address?: string;
+      isB2B: 'true' | 'false';
     },
     { rejectWithValue },
   ) => {
