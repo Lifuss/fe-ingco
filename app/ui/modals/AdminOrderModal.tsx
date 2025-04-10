@@ -4,13 +4,14 @@ import { customModalStyles } from './CategoryModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../buttons/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   updateOrderThunk,
   updateRetailOrderThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
+import { printOrderExcel } from '@/lib/utils';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -39,6 +40,7 @@ const AdminOrderModal = ({
   );
   const dispatch = useAppDispatch();
   const [selectedOrder, setSelectedOrder] = useState<Order>(order);
+  const refForm = useRef<HTMLFormElement | null>(null);
   useEffect(() => {
     setSelectedOrder(order);
   }, [order]);
@@ -48,6 +50,13 @@ const AdminOrderModal = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const confirmDialogBool = confirm(
+      'Ви впевненні що хочете змінити замовлення?',
+    );
+    if (!confirmDialogBool) {
+      return;
+    }
+
     const form = e.currentTarget;
     // @ts-ignore
     const status = OrderStatusEnum[form.status.value];
@@ -89,7 +98,18 @@ const AdminOrderModal = ({
   };
 
   const handleReset = () => {
+    const confirmReset = confirm(
+      'Ця дія скине замовлення до початкового стану, всі зміни буде втрачено, продовжити?',
+    );
+    if (!confirmReset) {
+      return;
+    }
     setSelectedOrder(order);
+    refForm.current?.reset();
+  };
+
+  const handlePrint = async () => {
+    await printOrderExcel(selectedOrder);
   };
 
   return (
@@ -102,7 +122,7 @@ const AdminOrderModal = ({
       <div onClick={closeModal} className="absolute right-2 top-2">
         <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
-      <form onSubmit={handleSubmit} className="text-lg">
+      <form onSubmit={handleSubmit} ref={refForm} className="text-lg">
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>
         <h3 className="w-full border-t border-gray-400">Клієнт:</h3>
         <div className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
@@ -147,11 +167,11 @@ const AdminOrderModal = ({
             </select>
           </div>
         </div>
-        <div className="mb-2 flex items-center gap-5 border-b border-gray-400 pb-2 text-base">
-          <div className="flex flex-col gap-2 font-medium">
+        <div className="mb-2 flex items-baseline gap-5 border-b border-gray-400 pb-2 text-base">
+          <div className="flex flex-col items-start gap-2 font-medium">
             <p>Коментар:</p>
-            <p>Номер декларації:</p>
-            <p>Відділення</p>
+            <p className="h-[34px]">№накладної:</p>
+            <p>Адреса</p>
           </div>
           <div className="flex flex-col gap-2">
             <p>{order.comment || 'Відсутній ❌'}</p>
@@ -273,16 +293,23 @@ const AdminOrderModal = ({
           </div>
         </div>
         <div className="flex justify-between">
-          <div>
-            <Button className="mb-2" type="submit">
+          <div className="flex h-fit flex-col gap-2 md:flex-row">
+            <Button className="h-10 text-white" type="submit">
               Підтвердити зміни
             </Button>
             <Button
-              className="bg-red-300 hover:bg-red-400"
-              type="reset"
+              className="h-10 bg-red-300 hover:bg-red-400 focus:bg-red-400 active:bg-red-500"
+              type="button"
               onClick={handleReset}
             >
               Відмінити зміни
+            </Button>
+            <Button
+              className="h-10 bg-green-300 hover:bg-green-500 focus:bg-green-500 active:bg-green-600"
+              type="button"
+              onClick={handlePrint}
+            >
+              Друк накладної
             </Button>
           </div>
           <p className="font-medium">

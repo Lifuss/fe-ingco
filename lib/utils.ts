@@ -1,3 +1,5 @@
+import { Order } from './types';
+
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.
@@ -40,4 +42,9 @@ export const generatePassword = () => {
     retVal += charset[Math.floor(Math.random() * n)];
   }
   return retVal;
+};
+
+// TODO: PRINT ORDER
+export const printOrderExcel = async (order: Order) => {
+  return console.info('print clicked', order.orderCode);
 };
