@@ -40,6 +40,7 @@ const AdminOrderModal = ({
   );
   const dispatch = useAppDispatch();
   const [selectedOrder, setSelectedOrder] = useState<Order>(order);
+  const [isPrinting, setIsPrinting] = useState(false);
   const refForm = useRef<HTMLFormElement | null>(null);
   useEffect(() => {
     setSelectedOrder(order);
@@ -109,7 +110,15 @@ const AdminOrderModal = ({
   };
 
   const handlePrint = async () => {
-    await printOrderExcel(selectedOrder);
+    try {
+      setIsPrinting(true);
+      await printOrderExcel(selectedOrder);
+    } catch (error) {
+      console.error('Помилка при друці накладної:', error);
+      toast.error('Не вдалося згенерувати файл. Спробуйте ще раз');
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
   return (
@@ -308,8 +317,9 @@ const AdminOrderModal = ({
               className="h-10 bg-green-300 hover:bg-green-500 focus:bg-green-500 active:bg-green-600"
               type="button"
               onClick={handlePrint}
+              disabled={isPrinting}
             >
-              Друк накладної
+              {isPrinting ? 'Готуємо накладну...' : 'Друк накладної'}
             </Button>
           </div>
           <p className="font-medium">

@@ -1,4 +1,5 @@
 import { Order } from './types';
+import { apiIngco } from './appState/user/operation';
 
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
@@ -44,7 +45,29 @@ export const generatePassword = () => {
   return retVal;
 };
 
-// TODO: PRINT ORDER
 export const printOrderExcel = async (order: Order) => {
-  return console.info('print clicked', order.orderCode);
+  const API_URL = process.env.NEXT_PUBLIC_API;
+  try {
+    const response = await apiIngco.get(
+      `${API_URL}/api/orders/sheets/${order._id}`,
+      {
+        responseType: 'blob',
+      },
+    );
+
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Order-${order.orderCode}.xlsx`; // Ім'я файлу для завантаження
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Помилка при завантаженні Excel-файлу:', error);
+  }
 };
