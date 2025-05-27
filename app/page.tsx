@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react';
 import Home from './ui/pages/Home';
 
 export default function Page() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
+    setLoading(true);
     dispatch(refreshTokenThunk())
       .unwrap()
       .then(() => {
