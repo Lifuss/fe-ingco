@@ -9,10 +9,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
-import clsx from 'clsx';
-import OrderStats from '../orders/OrderStats';
 import { fetchCurrencyRatesThunk } from '@/lib/appState/main/operations';
 import { Button } from '@/app/ui/buttons/button';
+import OrderStats from '../orders/OrderStats';
+import clsx from 'clsx';
 
 export const orderStatusEnum = [
   'всі',
@@ -90,16 +90,16 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     [],
   );
 
-  const statusEmoji = {
-    [OrderStatusEnum.OrderCompleted]: '✅',
-    [OrderStatusEnum.OrderCancelled]: '❌',
-    [OrderStatusEnum.PendingConfirmation]: '⏳',
-    [OrderStatusEnum.PendingPayment]: '💰',
-    [OrderStatusEnum.BeingCompiled]: '🔄',
-    [OrderStatusEnum.Shipped]: '🚚',
-  };
-
   const data = useMemo(() => {
+    const statusEmoji = {
+      [OrderStatusEnum.OrderCompleted]: '✅',
+      [OrderStatusEnum.OrderCancelled]: '❌',
+      [OrderStatusEnum.PendingConfirmation]: '⏳',
+      [OrderStatusEnum.PendingPayment]: '💰',
+      [OrderStatusEnum.BeingCompiled]: '🔄',
+      [OrderStatusEnum.Shipped]: '🚚',
+    };
+
     return orders.map((order) => ({
       numberCol: order.orderCode,
       dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
