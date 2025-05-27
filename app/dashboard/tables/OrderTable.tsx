@@ -8,8 +8,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Row } from 'react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
-import { Order } from '@/lib/types';
+import { Order, OrderStatusEnum } from '@/lib/types';
 import clsx from 'clsx';
+import OrderStats from '../orders/OrderStats';
+import { fetchCurrencyRatesThunk } from '@/lib/appState/main/operations';
+import { Button } from '@/app/ui/buttons/button';
 
 export const orderStatusEnum = [
   'всі',
@@ -76,7 +79,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         Header: 'Коментар',
         accessor: 'commentCol',
         Cell: ({ row }: { row: Row }) => (
-          <div>{row.values.commentCol ? '✅' : '❌'}</div>
+          <div>{row.values.commentCol ? 'так' : 'немає'}</div>
         ),
       },
       {
@@ -87,12 +90,21 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     [],
   );
 
+  const statusEmoji = {
+    [OrderStatusEnum.OrderCompleted]: '✅',
+    [OrderStatusEnum.OrderCancelled]: '❌',
+    [OrderStatusEnum.PendingConfirmation]: '⏳',
+    [OrderStatusEnum.PendingPayment]: '💰',
+    [OrderStatusEnum.BeingCompiled]: '🔄',
+    [OrderStatusEnum.Shipped]: '🚚',
+  };
+
   const data = useMemo(() => {
     return orders.map((order) => ({
       numberCol: order.orderCode,
       dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
       loginCol: 'login' in order.user ? order.user.login : order.user.email,
-      statusCol: order.status,
+      statusCol: `${order.status} ${statusEmoji[order.status]}`,
       commentCol: order.comment,
       totalPrice: !isRetail
         ? Math.ceil(order.totalPrice * usdRate)
@@ -121,10 +133,42 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     );
   };
 
+  const dataToStats = useMemo((): Record<OrderStatusEnum, number> => {
+    const stats: Record<OrderStatusEnum, number> = {
+      [OrderStatusEnum.BeingCompiled]: 0,
+      [OrderStatusEnum.PendingPayment]: 0,
+      [OrderStatusEnum.PendingConfirmation]: 0,
+      [OrderStatusEnum.Shipped]: 0,
+      [OrderStatusEnum.OrderCompleted]: 0,
+      [OrderStatusEnum.OrderCancelled]: 0,
+    };
+    orders.forEach((order) => {
+      stats[order.status] = (stats[order.status] || 0) + 1;
+    });
+    return stats;
+  }, [orders]);
+
+  if (!usdRate) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <h2 className="text-2xl">Курс валюти не знайдено</h2>
+        <Button
+          className="text-white"
+          onClick={() => {
+            dispatch(fetchCurrencyRatesThunk());
+          }}
+        >
+          Підтягнути курс вручну
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="flex gap-4">
-        <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
+      <div className="mb-4 flex flex-col gap-4">
+        <OrderStats dataToStats={dataToStats} />
+        <label className={clsx('flex w-fit items-center gap-2')}>
           <select
             className="rounded-xl bg-gray-200 p-2"
             // @ts-ignore
