@@ -62,13 +62,26 @@ const AdminOrderModal = ({
     const status = OrderStatusEnum[form.status.value];
     const declarationNumber = form.declarationNumber.value;
     const normalizeProducts =
-      selectedOrder.products?.map((product) => ({
-        _id: product?._id,
-        quantity: product?.quantity || 0,
-        totalPriceByOneProduct: product?.totalPriceByOneProduct || 0,
-        product: product?.product?._id || null,
-        price: product?.price || 0,
-      })) || [];
+      selectedOrder.products
+        ?.filter((product) => product?.product?._id)
+        ?.map((product) => ({
+          _id: product._id,
+          quantity: product.quantity || 0,
+          totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
+          product: product.product._id,
+          price: product.price || 0,
+        })) || [];
+
+    const filteredOutCount =
+      selectedOrder.products?.filter((product) => !product?.product?._id)
+        .length || 0;
+
+    if (filteredOutCount > 0) {
+      toast.warning(
+        `${filteredOutCount} товар(ів) з видаленими продуктами було виключено з оновлення`,
+      );
+    }
+
     const updatedOrder = {
       ...selectedOrder,
       products: normalizeProducts,
