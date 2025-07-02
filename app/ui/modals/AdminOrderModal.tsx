@@ -61,13 +61,14 @@ const AdminOrderModal = ({
     // @ts-ignore
     const status = OrderStatusEnum[form.status.value];
     const declarationNumber = form.declarationNumber.value;
-    const normalizeProducts = selectedOrder.products.map((product) => ({
-      _id: product._id,
-      quantity: product.quantity,
-      totalPriceByOneProduct: product.totalPriceByOneProduct,
-      product: product.product._id,
-      price: product.price,
-    }));
+    const normalizeProducts =
+      selectedOrder.products?.map((product) => ({
+        _id: product?._id,
+        quantity: product?.quantity || 0,
+        totalPriceByOneProduct: product?.totalPriceByOneProduct || 0,
+        product: product?.product?._id || null,
+        price: product?.price || 0,
+      })) || [];
     const updatedOrder = {
       ...selectedOrder,
       products: normalizeProducts,
@@ -210,94 +211,113 @@ const AdminOrderModal = ({
             <div className="font-medium ">Сума $|₴</div>
           </div>
           <div className="mb-5 max-h-[370px] overflow-auto">
-            {products.map((product) => (
-              <div
-                key={product._id}
-                className="relative grid grid-cols-4 gap-2 border-b border-gray-400 text-center"
-              >
-                <div className="text-left text-base">
-                  {product.product.name}
-                </div>
-                <div>
-                  {!isRetail
-                    ? `${product.price} | ${Math.ceil(product.price * USD)}`
-                    : product.price + ' грн'}
-                </div>
-                <input
-                  type="number"
-                  defaultValue={
-                    selectedOrder?.products.find(
-                      (item) => item._id === product._id,
-                    )?.quantity
-                  }
-                  className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
-                  onChange={(e) => {
-                    const value = e.currentTarget.value;
-                    const updatedProducts = selectedOrder?.products.map(
-                      (item) => {
-                        if (item._id === product._id) {
-                          return {
-                            ...item,
-                            quantity: Number(value),
-                            totalPriceByOneProduct: +(
-                              Number(value) * item.price
-                            ).toFixed(2),
-                          };
+            {products && Array.isArray(products) ? (
+              products.map((product, index) => {
+                // Safe fallback for product ID
+                const productKey = product?._id || `product-${index}`;
+                // Safe access to product name
+                const productName =
+                  product?.product?.name ||
+                  'Продукт застарів та видалений з бази';
+
+                return (
+                  <div
+                    key={productKey}
+                    className="relative grid grid-cols-4 gap-2 border-b border-gray-400 text-center"
+                  >
+                    <div className="text-left text-base">{productName}</div>
+                    <div>
+                      {!isRetail
+                        ? `${product?.price || 0} | ${Math.ceil((product?.price || 0) * USD)}`
+                        : (product?.price || 0) + ' грн'}
+                    </div>
+                    <input
+                      type="number"
+                      defaultValue={
+                        selectedOrder?.products.find(
+                          (item) => item._id === product._id,
+                        )?.quantity || 0
+                      }
+                      className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
+                      onChange={(e) => {
+                        if (!product?._id) return;
+
+                        const value = e.currentTarget.value;
+                        const updatedProducts = selectedOrder?.products.map(
+                          (item) => {
+                            if (item._id === product._id) {
+                              return {
+                                ...item,
+                                quantity: Number(value),
+                                totalPriceByOneProduct: +(
+                                  Number(value) * (item.price || 0)
+                                ).toFixed(2),
+                              };
+                            }
+                            return item;
+                          },
+                        );
+                        if (+value > 0) {
+                          setSelectedOrder({
+                            ...selectedOrder,
+                            products: updatedProducts,
+                            totalPrice: Number(
+                              updatedProducts
+                                ?.reduce(
+                                  (acc, item) =>
+                                    acc +
+                                    Number(item.totalPriceByOneProduct || 0),
+                                  0,
+                                )
+                                .toFixed(2) || 0,
+                            ),
+                          });
+                        } else {
+                          toast.error('Кількість товару не може бути менше 1', {
+                            autoClose: 1000,
+                          });
                         }
-                        return item;
-                      },
-                    );
-                    if (+value > 0) {
-                      setSelectedOrder({
-                        ...selectedOrder,
-                        products: updatedProducts,
-                        totalPrice: Number(
-                          updatedProducts
-                            .reduce(
-                              (acc, item) =>
-                                acc + Number(item.totalPriceByOneProduct),
-                              0,
-                            )
-                            .toFixed(2),
-                        ),
-                      });
-                    } else {
-                      toast.error('Кількість товару не може бути менше 1', {
-                        autoClose: 1000,
-                      });
-                    }
-                  }}
-                />
-                <div>
-                  {!isRetail
-                    ? `${product.totalPriceByOneProduct} | ${Math.ceil(product.totalPriceByOneProduct * USD)}`
-                    : product.totalPriceByOneProduct + ' грн'}
-                </div>
-                <button
-                  className="text-red absolute bottom-2 right-0"
-                  onClick={() => {
-                    const updatedProducts = selectedOrder.products.filter(
-                      (item) => item._id !== product._id,
-                    );
-                    setSelectedOrder({
-                      ...selectedOrder,
-                      products: updatedProducts,
-                      totalPrice: Number(
-                        updatedProducts
-                          .reduce(
-                            (acc, item) =>
-                              acc + Number(item.totalPriceByOneProduct),
-                            0,
-                          )
-                          .toFixed(2),
-                      ),
-                    });
-                  }}
-                >
-                  <Trash2 className="text-gray-200 transition-colors hover:text-red-500" />
-                </button>
+                      }}
+                    />
+                    <div>
+                      {!isRetail
+                        ? `${product?.totalPriceByOneProduct || 0} | ${Math.ceil((product?.totalPriceByOneProduct || 0) * USD)}`
+                        : (product?.totalPriceByOneProduct || 0) + ' грн'}
+                    </div>
+                    <button
+                      className="text-red absolute bottom-2 right-0"
+                      onClick={() => {
+                        if (!product?._id) return;
+
+                        const updatedProducts = selectedOrder.products.filter(
+                          (item) => item._id !== product._id,
+                        );
+                        setSelectedOrder({
+                          ...selectedOrder,
+                          products: updatedProducts,
+                          totalPrice: Number(
+                            updatedProducts
+                              .reduce(
+                                (acc, item) =>
+                                  acc +
+                                  Number(item.totalPriceByOneProduct || 0),
+                                0,
+                              )
+                              .toFixed(2),
+                          ),
+                        });
+                      }}
+                    >
+                      <Trash2 className="text-gray-200 transition-colors hover:text-red-500" />
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="p-4 text-center text-gray-500">
+                Товари відсутні
               </div>
-            ))}
+            )}
           </div>
         </div>
         <div className="flex justify-between">

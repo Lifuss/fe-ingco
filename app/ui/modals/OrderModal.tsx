@@ -39,13 +39,24 @@ const OrderModal = ({
           <p>Коментар: {order.comment || '- Відсутній'}</p>
           <p>Товари:</p>
           <ul className="max-h-[200px] overflow-auto border-2 border-orange-200 p-2">
-            {order.products.map((product) => (
-              <li key={product._id}>
-                {product.product?.name ||
-                  'Продукт застарів та видалений з бази'}
-                - {product.quantity} шт.
-              </li>
-            ))}
+            {order.products && Array.isArray(order.products) ? (
+              order.products.map((product, index) => {
+                const productKey = product?._id || `product-${index}`;
+
+                const productName =
+                  product?.product?.name ||
+                  'Продукт застарів та видалений з бази';
+                const quantity = product?.quantity || 0;
+
+                return (
+                  <li key={productKey}>
+                    {productName} - {quantity} шт.
+                  </li>
+                );
+              })
+            ) : (
+              <li>Товари відсутні</li>
+            )}
           </ul>
         </div>
       )}
