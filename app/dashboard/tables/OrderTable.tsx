@@ -10,6 +10,7 @@ import { Row } from 'react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { fetchCurrencyRatesThunk } from '@/lib/appState/main/operations';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { Button } from '@/app/ui/buttons/button';
 import OrderStats from '../orders/OrderStats';
 import clsx from 'clsx';
@@ -32,9 +33,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const { orders, totalPages } = useAppSelector(
     (state) => state.dashboardSlice,
   );
-  const usdRate = useAppSelector(
-    (state) => state.persistedMainReducer.currencyRates.USD,
-  );
+  const usdRate = useAppSelector(selectUSDRate);
 
   const openModal = (id: string) => {
     const order = orders.find((order) => order.orderCode === id);
@@ -148,17 +147,18 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     return stats;
   }, [orders]);
 
-  if (!usdRate) {
+  if (usdRate === 41.0) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <h2 className="text-2xl">Курс валюти не знайдено</h2>
+        <h2 className="text-2xl">Використовується резервний курс валюти</h2>
+        <p className="text-gray-600">USD: {usdRate} (резервний курс)</p>
         <Button
           className="text-white"
           onClick={() => {
             dispatch(fetchCurrencyRatesThunk());
           }}
         >
-          Підтягнути курс вручну
+          Спробувати оновити курс
         </Button>
       </div>
     );

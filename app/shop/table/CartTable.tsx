@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
+import { selectCurrency } from '@/lib/appState/main/selectors';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 
@@ -26,9 +27,7 @@ const CartTable = () => {
   const selectedCart: CartData = useAppSelector(
     (state) => state.persistedAuthReducer.user.cart,
   );
-  const selectedCurrency = useAppSelector(
-    (state) => state.persistedMainReducer.currencyRates,
-  );
+  const selectedCurrency = useAppSelector(selectCurrency);
 
   const handleQuantityChange = (id: string, operation: string) => {
     if (operation === 'increment') {
@@ -53,9 +52,7 @@ const CartTable = () => {
       nameCol: item.productId.name,
       photoCol: item.productId.image,
       priceCol: item.productId.price,
-      priceUahCol: Math.ceil(
-        item.productId.price * +selectedCurrency.USD.toFixed(2),
-      ),
+      priceUahCol: Math.ceil(item.productId.price * selectedCurrency.USD),
       rrcCol: item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
       totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,

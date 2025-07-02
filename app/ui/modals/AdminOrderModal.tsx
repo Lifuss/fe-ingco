@@ -12,6 +12,7 @@ import {
 import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
 import { printOrderExcel } from '@/lib/utils';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -35,9 +36,7 @@ const AdminOrderModal = ({
   order,
   isRetail,
 }: AdminOrderModalProps) => {
-  const { USD } = useAppSelector(
-    (state) => state.persistedMainReducer.currencyRates,
-  );
+  const USD = useAppSelector(selectUSDRate);
   const dispatch = useAppDispatch();
   const [selectedOrder, setSelectedOrder] = useState<Order>(order);
   const [isPrinting, setIsPrinting] = useState(false);

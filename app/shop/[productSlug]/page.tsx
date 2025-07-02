@@ -2,6 +2,7 @@
 
 import { Button } from '@/app/ui/buttons/button';
 import { getProductBySlugThunk } from '@/lib/appState/main/operations';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -26,10 +27,7 @@ const Page = ({ params }: PageProps) => {
   const barcodeRef = useRef<SVGSVGElement | null>(null);
 
   const product = useAppSelector((state) => state.persistedMainReducer.product);
-
-  const { USD } = useAppSelector(
-    (state) => state.persistedMainReducer.currencyRates,
-  );
+  const USD = useAppSelector(selectUSDRate);
 
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);

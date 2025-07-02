@@ -13,6 +13,7 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
       const { persistedMainReducer: state } = getState() as RootState;
 
       if (
+        !state.currencyRates?.lastUpdate ||
         Date.now() - new Date(state.currencyRates.lastUpdate).getTime() >
           1800000 ||
         !state.currencyRates.USD
@@ -24,18 +25,40 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         const { data } = await axios.get(
           'https://api.monobank.ua/bank/currency',
         );
+
+        if (!data || !data[0] || !data[1]) {
+          throw new Error('Invalid currency data received');
+        }
+
         newBody.USD = parseFloat(data[0].rateSell.toFixed(1));
         newBody.EUR = parseFloat(data[1].rateSell.toFixed(1));
 
-        if (!newBody.USD || !newBody.EUR) {
-          throw new Error('Currency rates not found');
+        if (
+          !newBody.USD ||
+          !newBody.EUR ||
+          isNaN(newBody.USD) ||
+          isNaN(newBody.EUR)
+        ) {
+          throw new Error('Currency rates not found or invalid');
         }
         return newBody;
       } else {
         return state.currencyRates;
       }
-    } catch (error) {
-      rejectWithValue(error);
+    } catch (error: any) {
+      console.error('Currency fetch error:', error);
+      // Return fallback values instead of crashing
+      return rejectWithValue({
+        message:
+          error.response?.status === 429
+            ? 'Занадто багато запитів до банку. Спробуйте пізніше.'
+            : 'Помилка отримання курсу валют',
+        fallback: {
+          USD: 41.0, // Fallback USD rate
+          EUR: 44.0, // Fallback EUR rate
+          lastUpdate: new Date().toISOString(),
+        },
+      });
     }
   },
 );

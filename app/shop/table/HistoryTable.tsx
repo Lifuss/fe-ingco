@@ -5,6 +5,7 @@ import Table from '@/app/ui/Table';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import OrderModal from '@/app/ui/modals/OrderModal';
 import { fetchHistoryThunk } from '@/lib/appState/main/operations';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
@@ -24,11 +25,10 @@ const HistoryTable = ({ isRetail = false }: { isRetail: boolean }) => {
     setIsModalOpen(false);
   };
   const dispatch = useAppDispatch();
-  const {
-    history,
-    currencyRates: { USD: usdCurrency },
-    totalPages,
-  } = useAppSelector((state) => state.persistedMainReducer);
+  const { history, totalPages } = useAppSelector(
+    (state) => state.persistedMainReducer,
+  );
+  const usdCurrency = useAppSelector(selectUSDRate);
   const searchParams = useSearchParams();
 
   let page = searchParams.get('page')

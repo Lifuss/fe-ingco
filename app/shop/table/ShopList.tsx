@@ -10,6 +10,7 @@ import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import ProductBlockList from '@/app/ui/product/ProductBlockList';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 interface ShopListProps {
   isFavoritePage?: boolean;
@@ -27,6 +28,7 @@ const ShopList = ({
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const mainState = useAppSelector((state) => state.persistedMainReducer);
+  const usdRate = useAppSelector(selectUSDRate);
   const { logProductClick } = useProductStats();
 
   const favoritesList = favorites.map((product) => product._id);
@@ -105,7 +107,7 @@ const ShopList = ({
           productsData={productsData}
           handleCartClick={handleCartClick}
           handleFavoriteClick={handleFavoriteClick}
-          USDCurrency={mainState.currencyRates.USD}
+          USDCurrency={usdRate}
         />
       )}
     </>
