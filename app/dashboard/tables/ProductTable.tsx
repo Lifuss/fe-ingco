@@ -90,7 +90,12 @@ const ProductTable = () => {
             </Link>
             <button
               onClick={() => {
-                dispatch(deleteProductThunk(row.values.editCol));
+                const productName = row.values.nameCol as string;
+                if (
+                  confirm(`Ви впевнені, що хочете видалити "${productName}"?`)
+                ) {
+                  dispatch(deleteProductThunk(row.values.editCol));
+                }
               }}
             >
               <Icon
