@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { SearchX } from 'lucide-react';
 import { useMediaQuery } from 'react-responsive';
 import JsBarcode from 'jsbarcode';
+import clsx from 'clsx';
 
 type PageProps = {
   params: {
@@ -141,24 +142,80 @@ const Page = ({ params }: PageProps) => {
               В кошик
             </Button>
           </div>
-
-          <p className="text-lg">
-            Рекомендована роздрібна ціна: {product.priceRetailRecommendation}{' '}
-            грн
-          </p>
-          <p className="mb-5 text-lg">
-            Маржинальний прибуток :{' '}
-            {Math.ceil(
-              ((product.priceRetailRecommendation - product.price * USD) /
-                product.priceRetailRecommendation) *
-                100,
-            )}
-            % |{' '}
-            {product.priceRetailRecommendation - Math.ceil(product.price * USD)}{' '}
-            грн
-            <span className="ml-1 align-top text-xs text-gray-500">
-              (без витрат на перевезення та інше)
+          <div className="flex flex-col text-lg">
+            <span>
+              Рекомендована роздрібна ціна
+              {!product.rrcSale
+                ? `: ${product.priceRetailRecommendation} грн`
+                : ': '}
             </span>
+            {product.rrcSale ? (
+              <div className="flex gap-2">
+                <span>
+                  Стандартний РРЦ - {product.priceRetailRecommendation} грн
+                </span>
+                <span>|</span>
+                <span>Акційна РРЦ - {product.rrcSale} грн</span>
+              </div>
+            ) : null}
+          </div>
+          <p className="mb-5 text-lg">
+            <div
+              className={clsx(
+                'mt-2 flex',
+                product.rrcSale ? 'flex-col' : 'gap-2',
+              )}
+            >
+              <div className=" flex flex-col">
+                Маржинальний прибуток:
+                <span className="-mt-2 ml-1 align-top text-xs text-gray-500">
+                  (без витрат на перевезення та інше)
+                </span>
+              </div>
+              {!product.rrcSale
+                ? `${Math.ceil(
+                    ((product.priceRetailRecommendation - product.price * USD) /
+                      product.priceRetailRecommendation) *
+                      100,
+                  )}%`
+                : ''}
+            </div>
+            {product.rrcSale ? (
+              <div className="flex gap-2">
+                <div>
+                  <span>
+                    Стандартна:{' '}
+                    {Math.ceil(
+                      ((product.priceRetailRecommendation -
+                        product.price * USD) /
+                        product.priceRetailRecommendation) *
+                        100,
+                    ) + '%'}
+                  </span>
+                  <span>
+                    {' = '}
+                    {product.priceRetailRecommendation -
+                      Math.ceil(product.price * USD)}{' '}
+                    грн
+                  </span>
+                </div>
+                <span>|</span>
+                <div>
+                  <span>
+                    Акційна:{' '}
+                    {Math.ceil(
+                      ((product.rrcSale - product.price * USD) /
+                        product.rrcSale) *
+                        100,
+                    ) + '%'}
+                  </span>
+                  <span>
+                    {' = '}
+                    {product.rrcSale - Math.ceil(product.price * USD)} грн
+                  </span>
+                </div>
+              </div>
+            ) : null}
           </p>
           <div className="it ems-center mb-16 flex w-1/2 gap-5 rounded-lg">
             <p className="text-center text-xl">Перевізник:</p>
