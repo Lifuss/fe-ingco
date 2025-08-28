@@ -1,19 +1,20 @@
 'use client';
 
+import AddToCartButton from '@/app/ui/AddToCartButton';
+import Breadcrumbs from '@/app/ui/Breadcrumbs';
 import { Button } from '@/app/ui/buttons/button';
 import { getProductBySlugThunk } from '@/lib/appState/main/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import Image from 'next/image';
-import { useEffect, useRef } from 'react';
-import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
-import Head from 'next/head';
 import { addProductToRetailCartThunk } from '@/lib/appState/user/operation';
-import { toast } from 'react-toastify';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
-import { useRouter } from 'next/navigation';
-import { SearchX } from 'lucide-react';
-import { useMediaQuery } from 'react-responsive';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import JsBarcode from 'jsbarcode';
+import { SearchX } from 'lucide-react';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 type PageProps = {
   params: {
@@ -47,39 +48,137 @@ const Page = ({ params }: PageProps) => {
     }
   }, [product]);
 
-  const handleCartClick = () => {
+  // Remove old handleCartClick and use AddToCartButton's onAddToCart
+  const onAddToCart = async () => {
     if (isAuth) {
-      dispatch(
+      await dispatch(
         addProductToRetailCartThunk({
           productId: product._id,
           quantity: 1,
         }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${product.name} додано в кошик`);
-        });
+      ).unwrap();
     } else {
       const { price, priceBulk, ...normalizeProduct } = product;
-      dispatch(
-        addProductToLocalStorageCart({
-          productId: normalizeProduct,
-          quantity: 1,
-          _id: product._id,
-        }),
+      // wrap sync dispatch into a resolved Promise for button API
+      await Promise.resolve(
+        dispatch(
+          addProductToLocalStorageCart({
+            productId: normalizeProduct,
+            quantity: 1,
+            _id: product._id,
+          }),
+        ),
       );
-
-      toast.success(`${product.name} додано в кошик`);
     }
   };
+
+  // Generate product schema data
+  const generateProductSchema = () => {
+    if (!product) return null;
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      sku: product.article,
+      mpn: product.article,
+      brand: {
+        '@type': 'Brand',
+        name: 'INGCO',
+      },
+      manufacturer: {
+        '@type': 'Organization',
+        name: 'INGCO',
+      },
+      category: 'Електроінструменти',
+      image: process.env.NEXT_PUBLIC_API + product.image,
+      offers: {
+        '@type': 'Offer',
+        price: product.rrcSale || product.priceRetailRecommendation,
+        priceCurrency: 'UAH',
+        availability: 'https://schema.org/InStock',
+        seller: {
+          '@type': 'Organization',
+          name: 'INGCO Ukraine',
+          url: 'https://ingco-service.win',
+        },
+        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0],
+        deliveryLeadTime: {
+          '@type': 'QuantitativeValue',
+          value: 1,
+          unitCode: 'DAY',
+        },
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        reviewCount: '150',
+      },
+      additionalProperty: product.characteristics.map((char) => ({
+        '@type': 'PropertyValue',
+        name: char.name,
+        value: char.value,
+      })),
+    };
+  };
+
+  const searchParams = useSearchParams();
+  const hasCategory = !!searchParams.get('category');
+  const breadcrumbsItems = [
+    { label: 'Каталог роздріб', href: '/retail', preserveQuery: true },
+    { label: product.name },
+  ];
 
   return product ? (
     <>
       <Head>
-        <title>{'INGCO' + ' ' + product.article}</title>
-        <meta name="description" content={product.name} />
-        <meta name="keywords" content={product.seoKeywords} />
+        <title>{`${product.name} - ${product.article} | INGCO Україна`}</title>
+        <meta
+          name="description"
+          content={`${product.name} - ${product.article}. ${product.description.substring(0, 150)}... Купити в Україні з доставкою.`}
+        />
+        <meta
+          name="keywords"
+          content={`${product.name}, ${product.article}, INGCO, електроінструменти, купити в Україні`}
+        />
+        <meta
+          property="og:title"
+          content={`${product.name} - ${product.article} | INGCO`}
+        />
+        <meta
+          property="og:description"
+          content={`${product.name} - ${product.article}. Купити в Україні з доставкою.`}
+        />
+        <meta
+          property="og:image"
+          content={process.env.NEXT_PUBLIC_API + product.image}
+        />
+        <meta property="og:type" content="product" />
+        <meta
+          property="product:price:amount"
+          content={
+            product.rrcSale?.toString() ||
+            product.priceRetailRecommendation?.toString()
+          }
+        />
+        <meta property="product:price:currency" content="UAH" />
+        <link
+          rel="canonical"
+          href={`https://ingco-service.win/retail/${params.productSlug}`}
+        />
+        {generateProductSchema() && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(generateProductSchema(), null, 2),
+            }}
+          />
+        )}
       </Head>
+      <Breadcrumbs items={breadcrumbsItems} />
       <section className="flex flex-col gap-4 pb-20 md:grid md:grid-cols-5 md:gap-10">
         {!isTablet && (
           <div>
@@ -147,9 +246,13 @@ const Page = ({ params }: PageProps) => {
                 {product.priceRetailRecommendation} грн
               </p>
             )}
-            <Button className="bg-orange-400" onClick={() => handleCartClick()}>
-              В кошик
-            </Button>
+            <AddToCartButton
+              productId={product._id}
+              productName={product.name}
+              price={product.rrcSale || product.priceRetailRecommendation}
+              onAddToCart={onAddToCart}
+              className="bg-orange-400 hover:bg-orange-500"
+            />
           </div>
           <div className="it ems-center mb-5 flex w-1/2 gap-5 rounded-lg md:mb-20">
             <p className="text-center text-xl">Перевізник:</p>

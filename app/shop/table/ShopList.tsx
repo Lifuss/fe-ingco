@@ -80,10 +80,7 @@ const ShopList = ({
       });
   };
 
-  const handleDirectToProduct = (id: string) => {
-    logProductClick(id);
-    router.push(`/shop/${id}`);
-  };
+  // Перехід на товар тепер обробляється всередині ProductBlockList з урахуванням query
 
   return (
     <>

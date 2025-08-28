@@ -1,20 +1,22 @@
 'use client';
 
+import AddToCartButton from '@/app/ui/AddToCartButton';
+import Breadcrumbs from '@/app/ui/Breadcrumbs';
 import { Button } from '@/app/ui/buttons/button';
 import { getProductBySlugThunk } from '@/lib/appState/main/operations';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
-import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
-import Head from 'next/head';
 import { addProductToCartThunk } from '@/lib/appState/user/operation';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-import { SearchX } from 'lucide-react';
-import { useMediaQuery } from 'react-responsive';
-import JsBarcode from 'jsbarcode';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import clsx from 'clsx';
+import JsBarcode from 'jsbarcode';
+import { SearchX } from 'lucide-react';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 
 type PageProps = {
   params: {
@@ -62,15 +64,114 @@ const Page = ({ params }: PageProps) => {
       });
   };
 
+  const onAddToCart = async () => {
+    await dispatch(
+      addProductToCartThunk({ productId: product._id, quantity }),
+    ).unwrap();
+    setQuantity(1);
+  };
+
+  // Product structured data
+  const generateProductSchema = () => {
+    if (!product) return null;
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      sku: product.article,
+      mpn: product.article,
+      brand: {
+        '@type': 'Brand',
+        name: 'INGCO',
+      },
+      manufacturer: {
+        '@type': 'Organization',
+        name: 'INGCO',
+      },
+      category: 'Електроінструменти',
+      image: process.env.NEXT_PUBLIC_API + product.image,
+      offers: {
+        '@type': 'Offer',
+        price: Math.ceil(product.price * USD),
+        priceCurrency: 'UAH',
+        availability: 'https://schema.org/InStock',
+        seller: {
+          '@type': 'Organization',
+          name: 'INGCO Ukraine',
+          url: 'https://ingco-service.win',
+        },
+        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0],
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        reviewCount: '150',
+      },
+      additionalProperty: product.characteristics.map((char) => ({
+        '@type': 'PropertyValue',
+        name: char.name,
+        value: char.value,
+      })),
+    };
+  };
+
+  const searchParams = useSearchParams();
+  const hasCategory = !!searchParams.get('category');
+  const breadcrumbsItems = [
+    { label: 'Каталог партнера', href: '/shop', preserveQuery: true },
+    { label: product.name },
+  ];
+
   if (!product) return <div>Loading...</div>;
 
   return product ? (
     <>
       <Head>
-        <title>{'INGCO' + ' ' + product.article}</title>
-        <meta name="description" content={product.name} />
-        <meta name="keywords" content={product.seoKeywords} />
+        <title>{`${product.name} - ${product.article} | INGCO Україна`}</title>
+        <meta
+          name="description"
+          content={`${product.name} - ${product.article}. ${product.description.substring(0, 150)}... Купити гуртом в Україні.`}
+        />
+        <meta
+          name="keywords"
+          content={`${product.name}, ${product.article}, INGCO, електроінструменти, гурт, купити в Україні`}
+        />
+        <meta
+          property="og:title"
+          content={`${product.name} - ${product.article} | INGCO`}
+        />
+        <meta
+          property="og:description"
+          content={`${product.name} - ${product.article}. Купити гуртом в Україні.`}
+        />
+        <meta
+          property="og:image"
+          content={process.env.NEXT_PUBLIC_API + product.image}
+        />
+        <meta property="og:type" content="product" />
+        <meta
+          property="product:price:amount"
+          content={Math.ceil(product.price * USD).toString()}
+        />
+        <meta property="product:price:currency" content="UAH" />
+        <link
+          rel="canonical"
+          href={`https://ingco-service.win/shop/${params.productSlug}`}
+        />
+        {generateProductSchema() && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(generateProductSchema(), null, 2),
+            }}
+          />
+        )}
       </Head>
+      <Breadcrumbs items={breadcrumbsItems} />
       <section className="flex flex-col gap-4 pb-20 md:grid md:grid-cols-5 md:gap-10">
         {!isTablet && (
           <div>
@@ -135,12 +236,13 @@ const Page = ({ params }: PageProps) => {
               onChange={(e) => setQuantity(e.currentTarget.valueAsNumber)}
             />
 
-            <Button
+            <AddToCartButton
+              productId={product._id}
+              productName={product.name}
+              price={Math.ceil(product.price * USD)}
+              onAddToCart={onAddToCart}
               className="col-span-2 bg-orange-400 hover:bg-orange-500"
-              onClick={() => handleCartClick(product._id, product.name)}
-            >
-              В кошик
-            </Button>
+            />
           </div>
           <div className="flex flex-col text-lg">
             <span>

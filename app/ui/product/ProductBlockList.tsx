@@ -1,7 +1,7 @@
 'use client';
 import { useAppSelector, useProductStats } from '@/lib/hooks';
 import { Product } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
 import { CardSkeleton } from '../skeletons/skeletons';
 
@@ -24,6 +24,7 @@ const ProductBlockList = ({
 }: ProductBlockListProps) => {
   const { logProductClick } = useProductStats();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isProductsLoading = useAppSelector(
     (state) => state.persistedMainReducer.tableLoading,
   );
@@ -31,7 +32,9 @@ const ProductBlockList = ({
   const handleDirectToProduct = (id: string, slug: string) => {
     logProductClick(id);
 
-    const link = listType === 'retail' ? `/retail/${slug}` : `/shop/${slug}`;
+    const base = listType === 'retail' ? `/retail/${slug}` : `/shop/${slug}`;
+    const qs = searchParams.toString();
+    const link = qs ? `${base}?${qs}` : base;
     router.push(link);
   };
 
