@@ -10,10 +10,11 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
   },
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'react-toastify'],
-  },
+  // experimental flags disabled to avoid prerender errors
+  // experimental: {
+  //   optimizeCss: true,
+  //   optimizePackageImports: ['lucide-react', 'react-toastify'],
+  // },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
