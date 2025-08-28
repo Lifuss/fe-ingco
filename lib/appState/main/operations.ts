@@ -22,16 +22,16 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
           lastUpdate: new Date().toISOString(),
         };
 
-        const { data } = await axios.get(
-          'https://api.monobank.ua/bank/currency',
-        );
+        const { data } = await axios.get('/api/currency', {
+          headers: { 'Cache-Control': 'no-cache' },
+        });
 
-        if (!data || !data[0] || !data[1]) {
+        if (!data || !data.USD || !data.EUR) {
           throw new Error('Invalid currency data received');
         }
 
-        newBody.USD = parseFloat(data[0].rateSell.toFixed(1));
-        newBody.EUR = parseFloat(data[1].rateSell.toFixed(1));
+        newBody.USD = parseFloat(Number(data.USD).toFixed(1));
+        newBody.EUR = parseFloat(Number(data.EUR).toFixed(1));
 
         if (
           !newBody.USD ||

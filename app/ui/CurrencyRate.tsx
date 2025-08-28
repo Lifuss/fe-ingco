@@ -15,7 +15,7 @@ const CurrencyRate = () => {
   return (
     <ul
       className="lg-items-center whitespace-nowrap text-sm lg:flex lg:gap-3 lg:text-lg lg:tracking-tight 2xl:gap-5 2xl:text-xl"
-      title="Курс валют (USD, EUR) згідно курсу закупівлі в Монобанку, оновлення кожні 30хв."
+      title="Курс валют (USD, EUR): внутрішній кеш 30хв, джерела: Monobank → PrivatBank → НБУ → Fixer"
     >
       <li className="relative">
         USD: {currency?.USD}
