@@ -95,7 +95,7 @@ const CategoryTable = () => {
           >
             <Icon
               icon="edit"
-              className="fill-nonActive h-[25px] w-[25px] cursor-pointer transition-colors hover:fill-black"
+              className="h-[25px] w-[25px] cursor-pointer fill-nonActive transition-colors hover:fill-black"
             />
           </button>
         ),
@@ -110,7 +110,7 @@ const CategoryTable = () => {
           >
             <Icon
               icon="delete"
-              className="fill-nonActive h-[28px] w-[27px] cursor-pointer transition-colors
+              className="h-[28px] w-[27px] cursor-pointer fill-nonActive transition-colors
             hover:fill-black"
             />
           </button>

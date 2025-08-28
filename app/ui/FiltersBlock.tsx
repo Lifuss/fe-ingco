@@ -41,7 +41,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
 
   useEffect(() => {
     if (getSortValue) setSort(getSortValue);
-  }, []);
+  }, [getSortValue]);
 
   const pathType = listType === 'retail' ? '/retail' : '/shop';
   let title = '';
