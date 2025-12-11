@@ -58,14 +58,19 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
   };
 
   return (
-    <div className="relative flex w-fit flex-shrink-0 xl:w-2/5">
-      <label htmlFor="search" className="sr-only">
+    <div className="relative flex w-full max-w-xl flex-shrink-0 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:ring-2 focus-within:ring-gray-900/12 focus-within:outline-none lg:py-3 xl:w-2/5">
+      <label htmlFor="spefix-search" className="sr-only">
         Пошук
       </label>
+      <Search
+        size={18}
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+        aria-hidden
+      />
       <input
         id="spefix-search"
         name="search"
-        className="block w-full rounded-2xl border border-black bg-transparent py-[4px] pl-10 pr-28 text-base outline-2 transition-colors placeholder:text-[#717171] focus:border-gray-200 focus:bg-gray-100 focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50 lg:py-[13px]"
+        className="block w-full appearance-none bg-transparent pl-10 pr-32 text-base text-gray-900 placeholder:text-gray-500 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent"
         placeholder={placeholder}
         onChange={handleInput}
         value={term}
@@ -74,34 +79,25 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
         autoComplete="off"
         onKeyDown={handleKeyDown}
       />
+      {term && (
+        <button
+          type="button"
+          onClick={handleReset}
+          className="absolute right-28 top-1/2 -translate-y-1/2 rounded-full p-2 text-gray-400 transition hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200"
+          aria-label="Скинути пошук"
+        >
+          <X size={16} />
+        </button>
+      )}
       <button
         type="button"
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-500 transition hover:text-gray-900"
+        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900"
         onClick={handleSubmit}
         aria-label="Пошук"
       >
-        <Search size={18} />
+        <Search size={16} />
+        <span className="hidden sm:inline">Знайти</span>
       </button>
-      {term && (
-        <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
-          
-          <button
-            type="button"
-            onClick={handleReset}
-            className="text-gray-500 hover:text-gray-900"
-            aria-label="Скинути пошук"
-          >
-            <X size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-md bg-black px-3 py-1 text-sm text-white transition hover:bg-gray-800"
-          >
-            Знайти
-          </button>
-        </div>
-      )}
     </div>
   );
 }
