@@ -93,17 +93,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       };
     },
   );
+// Because shop is B2B, we don't need to index it, it only worsen
+  // const dynamicShopPages: MetadataRoute.Sitemap = productSlugs.map(
+  //   (productSlug) => {
+  //     return {
+  //       url: `${DOMAIN}/shop/${productSlug}`,
+  //       lastModified: currentDate,
+  //       changeFrequency: 'weekly',
+  //       priority: 0.8,
+  //     };
+  //   },
+  // );
 
-  const dynamicShopPages: MetadataRoute.Sitemap = productSlugs.map(
-    (productSlug) => {
-      return {
-        url: `${DOMAIN}/shop/${productSlug}`,
-        lastModified: currentDate,
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      };
-    },
-  );
-
-  return [...staticPages, ...dynamicRetailPages, ...dynamicShopPages];
+  return [...staticPages, ...dynamicRetailPages];
 }
