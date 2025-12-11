@@ -205,6 +205,10 @@ export default function RootLayout({
           <Analytics />
           {children}
         </StoreProvider>
+        <script
+          async
+          src="https://smartsearch.spefix.com/spefix.js?token=Ub4CPjnAw7CPqquFIFOsQ82qnp8cSdoA&lang=uk"
+        />
       </body>
     </html>
   );
