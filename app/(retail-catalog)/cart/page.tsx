@@ -2,6 +2,16 @@ import RetailCartTable from '~/retail/cart/RetailCartTable';
 import CategoriesSidebar from '~/ui/CategoriesSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Кошик покупок',
+  description: 'Ваш кошик покупок інструментів INGCO',
+  path: '/cart',
+  noindex: true,
+  nofollow: true,
+});
 
 const Page = () => {
   return (

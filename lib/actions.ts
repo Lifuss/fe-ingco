@@ -3,6 +3,21 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import axios from 'axios';
+import { Product } from './types';
+
+const apiIngco = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
+});
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  try {
+    const { data } = await apiIngco.get(`/products/${slug}`);
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
 
 export type State = {
   errors?: {

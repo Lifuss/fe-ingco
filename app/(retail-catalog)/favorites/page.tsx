@@ -2,6 +2,16 @@ import ProductList from '~/retail/ProductList';
 import CategoriesSidebar from '~/ui/CategoriesSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Обрані товари',
+  description: 'Ваші обрані інструменти INGCO',
+  path: '/favorites',
+  noindex: true,
+  nofollow: true,
+});
 
 const Page = () => {
   return (

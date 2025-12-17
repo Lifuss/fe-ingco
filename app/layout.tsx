@@ -5,42 +5,75 @@ import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { SITE_URL, SITE_NAME } from '@/lib/metadata';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     template: '%s | INGCO',
     default: 'INGCO - Професійні інструменти в Україні гуртом та в роздріб',
   },
-
   description:
     'INGCO – професійні інструменти для будівництва та ремонту. Купуйте якісні електроінструменти гуртом та в роздріб в Україні. Доставка по всій країні!',
+  keywords: [
+    'INGCO',
+    'електроінструменти',
+    'інструменти для будівництва',
+    'професійні інструменти',
+    'купити інструменти Україна',
+    'INGCO Україна',
+  ],
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
+  manifest: '/manifest.json',
   openGraph: {
-    siteName: 'Імпортер професійних інструментів ingco-service',
-    title: 'INGCO - Інструмент для всього світу',
+    siteName: SITE_NAME,
+    title: 'INGCO - Професійні інструменти в Україні',
     description:
       'INGCO - топовий виробник електроінструментів для будівництва та ремонту. Доставка по Україні!',
-    url: 'https://ingco-service.win/home',
+    url: SITE_URL,
+    locale: 'uk_UA',
+    type: 'website',
     images: [
       {
-        url: '/site-card.webp',
-        alt: 'Site Card',
+        url: `${SITE_URL}/site-card.webp`,
+        width: 1200,
+        height: 630,
+        alt: 'INGCO - Професійні інструменти',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'INGCO - Інструмент для всього світу',
+    title: 'INGCO - Професійні інструменти в Україні',
     description:
       'Замовляйте інструменти INGCO гуртом і в роздріб. Офіційний імпортер в Україні!',
-    images: [
-      {
-        url: '/site-card.webp',
-        alt: 'Site Card',
-      },
-    ],
+    images: [`${SITE_URL}/site-card.webp`],
   },
   alternates: {
-    canonical: 'https://ingco-service.win',
+    canonical: SITE_URL,
+  },
+  verification: {
+    google: 'yd6FgNFGbN9s2OJB1udZrzSxHIqSYY8f5JZ_r0-qLLI',
+  },
+  other: {
+    'theme-color': '#f97316',
   },
 };
 
@@ -161,11 +194,7 @@ export default function RootLayout({
         <link
           rel="sitemap"
           type="application/xml"
-          href="https://ingco-service.win/sitemap.xml"
-        ></link>
-        <meta
-          name="google-site-verification"
-          content="yd6FgNFGbN9s2OJB1udZrzSxHIqSYY8f5JZ_r0-qLLI"
+          href={`${SITE_URL}/sitemap.xml`}
         />
         <script
           type="application/ld+json"

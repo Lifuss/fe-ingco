@@ -11,7 +11,6 @@ import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import clsx from 'clsx';
 import JsBarcode from 'jsbarcode';
 import { SearchX } from 'lucide-react';
-import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -75,6 +74,11 @@ const Page = ({ params }: PageProps) => {
   const generateProductSchema = () => {
     if (!product) return null;
 
+    const productPrice = Math.ceil(product.price * USD);
+    const imageUrl = product.image.startsWith('http')
+      ? product.image
+      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+
     return {
       '@context': 'https://schema.org',
       '@type': 'Product',
@@ -82,6 +86,7 @@ const Page = ({ params }: PageProps) => {
       description: product.description,
       sku: product.article,
       mpn: product.article,
+      gtin: product.barcode || undefined,
       brand: {
         '@type': 'Brand',
         name: 'INGCO',
@@ -90,13 +95,16 @@ const Page = ({ params }: PageProps) => {
         '@type': 'Organization',
         name: 'INGCO',
       },
-      category: 'Електроінструменти',
-      image: process.env.NEXT_PUBLIC_API + product.image,
+      category: product.category?.name || 'Електроінструменти',
+      image: imageUrl,
       offers: {
         '@type': 'Offer',
-        price: Math.ceil(product.price * USD),
+        price: productPrice,
         priceCurrency: 'UAH',
-        availability: 'https://schema.org/InStock',
+        availability:
+          product.countInStock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
           name: 'INGCO Ukraine',
@@ -105,6 +113,12 @@ const Page = ({ params }: PageProps) => {
         priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
           .toISOString()
           .split('T')[0],
+        deliveryLeadTime: {
+          '@type': 'QuantitativeValue',
+          value: 1,
+          unitCode: 'DAY',
+        },
+        itemCondition: 'https://schema.org/NewCondition',
       },
       aggregateRating: {
         '@type': 'AggregateRating',
@@ -119,6 +133,35 @@ const Page = ({ params }: PageProps) => {
     };
   };
 
+  const generateBreadcrumbSchema = () => {
+    if (!product) return null;
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Головна',
+          item: 'https://ingco-service.win',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Каталог партнера',
+          item: 'https://ingco-service.win/shop',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: product.name,
+          item: `https://ingco-service.win/shop/${params.productSlug}`,
+        },
+      ],
+    };
+  };
+
   const searchParams = useSearchParams();
   const hasCategory = !!searchParams.get('category');
   const breadcrumbsItems = [
@@ -130,47 +173,22 @@ const Page = ({ params }: PageProps) => {
 
   return product ? (
     <>
-      <Head>
-        <title>{`${product.name} - ${product.article} | INGCO Україна`}</title>
-        <meta
-          name="description"
-          content={`${product.name} - ${product.article}. ${product.description.substring(0, 150)}... Купити гуртом в Україні.`}
+      {generateProductSchema() && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateProductSchema(), null, 2),
+          }}
         />
-        <meta
-          name="keywords"
-          content={`${product.name}, ${product.article}, INGCO, електроінструменти, гурт, купити в Україні`}
+      )}
+      {generateBreadcrumbSchema() && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateBreadcrumbSchema(), null, 2),
+          }}
         />
-        <meta
-          property="og:title"
-          content={`${product.name} - ${product.article} | INGCO`}
-        />
-        <meta
-          property="og:description"
-          content={`${product.name} - ${product.article}. Купити гуртом в Україні.`}
-        />
-        <meta
-          property="og:image"
-          content={process.env.NEXT_PUBLIC_API + product.image}
-        />
-        <meta property="og:type" content="product" />
-        <meta
-          property="product:price:amount"
-          content={Math.ceil(product.price * USD).toString()}
-        />
-        <meta property="product:price:currency" content="UAH" />
-        <link
-          rel="canonical"
-          href={`https://ingco-service.win/shop/${params.productSlug}`}
-        />
-        {generateProductSchema() && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(generateProductSchema(), null, 2),
-            }}
-          />
-        )}
-      </Head>
+      )}
       <Breadcrumbs items={breadcrumbsItems} />
       <section className="flex flex-col gap-4 pb-20 md:grid md:grid-cols-5 md:gap-10">
         {!isTablet && (

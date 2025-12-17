@@ -2,6 +2,16 @@ import HistoryTable from '~/shop/table/HistoryTable';
 import CategoriesSidebar from '~/ui/CategoriesSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Історія замовлень',
+  description: 'Історія ваших замовлень інструментів INGCO',
+  path: '/history',
+  noindex: true,
+  nofollow: true,
+});
 
 const Page = () => {
   return (
