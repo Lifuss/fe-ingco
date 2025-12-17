@@ -58,7 +58,7 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
   };
 
   return (
-    <div className="relative flex w-full max-w-xl flex-shrink-0 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:ring-2 focus-within:ring-gray-900/12 focus-within:outline-none lg:py-3 xl:w-2/5">
+    <div className="focus-within:ring-gray-900/12 relative flex w-full max-w-xl flex-shrink-0 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:outline-none focus-within:ring-2 lg:py-3 xl:w-2/5">
       <label htmlFor="spefix-search" className="sr-only">
         Пошук
       </label>
@@ -70,7 +70,7 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
       <input
         id="spefix-search"
         name="search"
-        className="block w-full appearance-none bg-transparent pl-10 pr-32 text-base text-gray-900 placeholder:text-gray-500 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent"
+        className="block w-full appearance-none border-none bg-transparent pl-10 pr-32 text-base text-gray-900 placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-0 focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-0"
         placeholder={placeholder}
         onChange={handleInput}
         value={term}
@@ -91,7 +91,7 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
       )}
       <button
         type="button"
-        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900"
+        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
         onClick={handleSubmit}
         aria-label="Пошук"
       >

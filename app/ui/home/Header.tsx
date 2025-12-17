@@ -24,7 +24,7 @@ const Header = () => {
   return (
     <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link
-        href={isShop ? '/shop' : '/retail'}
+        href={isShop ? '/shop' : '/'}
         className={clsx(
           'flex h-full items-center justify-center md:block',
           !isAuthenticated &&
@@ -51,7 +51,7 @@ const Header = () => {
           </li>
           <li className="flex">
             <Link
-              href="/retail"
+              href="/"
               className="border-r border-black pr-1 transition-colors ease-out hover:text-white"
             >
               Роздріб
@@ -77,7 +77,7 @@ const Header = () => {
               <div className="flex items-center justify-center gap-2">
                 <UserModal />
                 <Link
-                  href={isShop ? '/shop/cart' : '/retail/cart'}
+                  href={isShop ? '/shop/cart' : '/cart'}
                   className="relative"
                 >
                   <Icon
@@ -100,10 +100,7 @@ const Header = () => {
             <>
               <CurrencyRate />
               <AuthButtons />
-              <Link
-                href={isShop ? '/shop/cart' : '/retail/cart'}
-                className="relative"
-              >
+              <Link href={isShop ? '/shop/cart' : '/cart'} className="relative">
                 <Icon
                   icon="cart"
                   className={clsx(

@@ -1,7 +1,5 @@
-import ProductList from '../ProductList';
+import { redirect } from 'next/navigation';
 
-const Page = () => {
-  return <ProductList isFavoritePage />;
-};
-
-export default Page;
+export default function Page() {
+  redirect('/favorites');
+}

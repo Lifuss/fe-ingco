@@ -70,7 +70,7 @@ export async function GET() {
 
         return `
     <offer id="${escapeXml(product._id)}" available="${available}">
-      <url>${DOMAIN}/retail/${escapeXml(product.slug)}</url>
+      <url>${DOMAIN}/${escapeXml(product.slug)}</url>
       <price>${product.priceRetailRecommendation}</price>
       <currencyId>UAH</currencyId>
       <categoryId>${product.category?._id || 'uncategorized'}</categoryId>
@@ -92,7 +92,7 @@ export async function GET() {
 
     const categories = Array.from(categoriesMap.entries())
       .map(([id, name]) => {
-        const categoryUrl = `${DOMAIN}/retail?category=${id}&amp;`;
+        const categoryUrl = `${DOMAIN}/?category=${id}&amp;`;
         return `    <category id="${escapeXml(id)}" url="${categoryUrl}">${escapeXml(name)}</category>`;
       })
       .join('\n');
@@ -125,4 +125,3 @@ ${categories}
     return new NextResponse('Failed to generate feed', { status: 500 });
   }
 }
-

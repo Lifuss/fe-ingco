@@ -13,9 +13,9 @@ export async function GET() {
       '/auth/register',
       '/home/contacts',
       '/home/support',
-      '/retail/cart',
-      '/retail/favorites',
-      '/retail/history',
+      '/cart',
+      '/favorites',
+      '/history',
       '/service',
       '/shop/cart',
       '/shop/favorites',
@@ -28,7 +28,7 @@ export async function GET() {
       .map((id: string) => {
         return `
           <url>
-            <loc>${DOMAIN}/retail/${id}</loc>
+            <loc>${DOMAIN}/${id}</loc>
             <changefreq>weekly</changefreq>
             <priority>0.8</priority>
           </url>

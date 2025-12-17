@@ -1,7 +1,5 @@
-import HistoryTable from '@/app/shop/table/HistoryTable';
+import { redirect } from 'next/navigation';
 
-const Page = () => {
-  return <HistoryTable isRetail />;
-};
-
-export default Page;
+export default function Page() {
+  redirect('/history');
+}

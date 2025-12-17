@@ -43,17 +43,26 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
     if (getSortValue) setSort(getSortValue);
   }, [getSortValue]);
 
-  const pathType = listType === 'retail' ? '/retail' : '/shop';
+  const pathType = listType === 'retail' ? '/' : '/shop';
   let title = '';
   switch (pathname) {
-    case `${pathType}/cart`:
-      title = 'Кошик';
+    case '/cart':
+      if (listType === 'retail') title = 'Кошик';
       break;
-    case `${pathType}/favorites`:
-      title = 'Обране';
+    case '/shop/cart':
+      if (listType === 'partner') title = 'Кошик';
       break;
-    case `${pathType}/history`:
-      title = 'Історія замовлень';
+    case '/favorites':
+      if (listType === 'retail') title = 'Обране';
+      break;
+    case '/shop/favorites':
+      if (listType === 'partner') title = 'Обране';
+      break;
+    case '/history':
+      if (listType === 'retail') title = 'Історія замовлень';
+      break;
+    case '/shop/history':
+      if (listType === 'partner') title = 'Історія замовлень';
       break;
     case pathType:
       title = 'Каталог';

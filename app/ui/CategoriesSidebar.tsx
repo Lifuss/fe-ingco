@@ -28,16 +28,16 @@ const Sidebar = () => {
     let pagePathname = pathname;
     switch (pathname) {
       case '/shop/favorites':
-        pagePathname = 'favorites';
+        pagePathname = '/shop/favorites';
         break;
-      case '/retail/favorites':
-        pagePathname = 'favorites';
+      case '/favorites':
+        pagePathname = '/favorites';
         break;
       default:
-        if (pathname.includes('retail')) {
-          pagePathname = '/retail';
-        } else {
+        if (pathname.includes('/shop')) {
           pagePathname = '/shop';
+        } else {
+          pagePathname = '/';
         }
     }
     if (categoryId === '') {
@@ -50,14 +50,14 @@ const Sidebar = () => {
       return `${pagePathname}?${params.toString()}`;
     } else {
       params.set('page', '1');
-      return `/shop?${params.toString()}`;
+      return isShop ? `/shop?${params.toString()}` : `/?${params.toString()}`;
     }
   };
 
   return (
     <aside className="min-w-[200px]">
       <Link
-        href={isShop ? '/shop' : '/retail'}
+        href={isShop ? '/shop' : '/'}
         className="relative mb-2 block py-1 shadow-md hover:bg-gray-100 hover:text-gray-800 xl:mb-4"
       >
         <h2 className="text-center text-base font-medium tracking-[0.01em]">

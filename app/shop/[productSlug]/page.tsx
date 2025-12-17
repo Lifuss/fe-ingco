@@ -347,7 +347,7 @@ const Page = ({ params }: PageProps) => {
 
       <Button
         className="bg-orangeLight hover:bg-orange-400"
-        onClick={() => router.push('/retail')}
+        onClick={() => router.push('/')}
       >
         В каталог
       </Button>

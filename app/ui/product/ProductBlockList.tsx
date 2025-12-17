@@ -32,7 +32,7 @@ const ProductBlockList = ({
   const handleDirectToProduct = (id: string, slug: string) => {
     logProductClick(id);
 
-    const base = listType === 'retail' ? `/retail/${slug}` : `/shop/${slug}`;
+    const base = listType === 'retail' ? `/${slug}` : `/shop/${slug}`;
     const qs = searchParams.toString();
     const link = qs ? `${base}?${qs}` : base;
     router.push(link);

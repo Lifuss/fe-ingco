@@ -1,15 +1,5 @@
-import RetailCartTable from './RetailCartTable';
+import { redirect } from 'next/navigation';
 
-const Page = () => {
-  return (
-    <>
-      <RetailCartTable />
-      <div
-        id="image"
-        className="absolute z-50 hidden h-[200px] w-[200px]"
-      ></div>
-    </>
-  );
-};
-
-export default Page;
+export default function Page() {
+  redirect('/cart');
+}

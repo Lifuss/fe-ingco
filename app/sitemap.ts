@@ -19,12 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
     },
     {
-      url: '/retail',
-      priority: 0.9,
-      changeFrequency: 'daily' as const,
-      lastModified: currentDate,
-    },
-    {
       url: '/shop',
       priority: 0.9,
       changeFrequency: 'daily' as const,
@@ -55,19 +49,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
     },
     {
-      url: '/retail/cart',
+      url: '/cart',
       priority: 0.2,
       changeFrequency: 'monthly' as const,
       lastModified: currentDate,
     },
     {
-      url: '/retail/favorites',
+      url: '/favorites',
       priority: 0.2,
       changeFrequency: 'monthly' as const,
       lastModified: currentDate,
     },
     {
-      url: '/retail/history',
+      url: '/history',
       priority: 0.2,
       changeFrequency: 'monthly' as const,
       lastModified: currentDate,
@@ -86,14 +80,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const dynamicRetailPages: MetadataRoute.Sitemap = productSlugs.map(
     (productSlug) => {
       return {
-        url: `${DOMAIN}/retail/${productSlug}`,
+        url: `${DOMAIN}/${productSlug}`,
         lastModified: currentDate,
         changeFrequency: 'weekly',
         priority: 0.8,
       };
     },
   );
-// Because shop is B2B, we don't need to index it, it only worsen
+  // Because shop is B2B, we don't need to index it, it only worsen
   // const dynamicShopPages: MetadataRoute.Sitemap = productSlugs.map(
   //   (productSlug) => {
   //     return {

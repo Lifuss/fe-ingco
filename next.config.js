@@ -42,7 +42,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/retail/:path*',
+        source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',

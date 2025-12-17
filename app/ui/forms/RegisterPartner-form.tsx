@@ -54,7 +54,7 @@ export default function RegisterPartnerForm() {
           },
         );
         toast.info(
-          <Link href={'/retail'}>
+          <Link href={'/'}>
             Ознайомлення з продукцією INGCO можна розпочати в роздрібному
             каталозі
           </Link>,
