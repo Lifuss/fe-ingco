@@ -58,7 +58,7 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
   };
 
   return (
-    <div className="focus-within:ring-gray-900/12 relative flex w-full max-w-xl flex-shrink-0 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:outline-none focus-within:ring-2 lg:py-3 xl:w-2/5">
+    <div className="focus-within:ring-gray-900/12 relative flex min-w-0 flex-1 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:outline-none focus-within:ring-2 md:max-w-xl lg:py-3 xl:w-2/5">
       <label htmlFor="spefix-search" className="sr-only">
         Пошук
       </label>

@@ -97,7 +97,7 @@ export function generateProductMetadata({
       url: pageUrl,
       siteName: SITE_NAME,
       locale: 'uk_UA',
-      type: 'product',
+      type: 'website',
       images: [
         {
           url: imageUrl,

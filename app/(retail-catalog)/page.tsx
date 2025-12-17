@@ -1,15 +1,15 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import ProductList from '../retail/ProductList';
+import ProductList from '~/retail/ProductList';
 import { useEffect } from 'react';
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { clearAuthState } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import CategoriesSidebar from '../ui/CategoriesSidebar';
-import Header from '../ui/home/Header';
-import Footer from '../ui/Footer';
+import CategoriesSidebar from '~/ui/CategoriesSidebar';
+import Header from '~/ui/home/Header';
+import Footer from '~/ui/Footer';
 
 export default function Page() {
   const { isAuthenticated, isB2b } = useAppSelector(
