@@ -1,0 +1,47 @@
+---
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Code Style & Conventions
+
+## TypeScript
+- Use strict mode (enabled in tsconfig.json)
+- Define types in `lib/types.ts` for shared types
+- Use interfaces for object shapes, types for unions/intersections
+- Prefer explicit return types for functions
+- Use path aliases:
+  - `@/*` maps to project root (e.g., `@/lib/...`, `@/public/...`)
+  - `~/*` maps to `app/` directory (e.g., `~/ui/...`, `~/shop/...`)
+  - Prefer `~/` when importing from `app/` in route groups like `(retail-catalog)`
+
+## File Naming
+- Components: PascalCase (e.g., `ProductCard.tsx`)
+- Utilities: camelCase (e.g., `utils.ts`, `novaPoshta.ts`)
+- Pages: Next.js conventions (e.g., `page.tsx`, `layout.tsx`)
+- Types: camelCase with `.ts` extension (e.g., `types.ts`)
+
+## Component Structure
+- Use functional components with TypeScript
+- Prefer `'use client'` directive for client components
+- Use `'use server'` for Server Actions
+- Export default for page components
+- Named exports for reusable components
+
+## Code Organization
+- Keep components small and focused
+- Extract reusable logic into custom hooks (`lib/hooks.tsx`)
+- Group related components in feature folders
+- Separate business logic from UI components
+- Use TypeScript types/interfaces for data structures
+
+## Code Comments
+- Add comments only for complex logic or non-obvious implementations
+- Add JSDoc comments for new service functions and helpers
+- Avoid obvious comments that restate the code
+
+## Formatting
+- Uses `@vercel/style-guide/prettier` as base
+- Includes `prettier-plugin-tailwindcss` for class sorting
+- Run `npm run prettier` to format code
+- Run `npm run lint` to check code

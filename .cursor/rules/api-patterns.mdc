@@ -1,0 +1,38 @@
+---
+globs: app/api/**/*,lib/appState/**/operation.ts
+alwaysApply: false
+---
+
+# API Communication Patterns
+
+## API Client
+- Base API URL: `${process.env.NEXT_PUBLIC_API}/api`
+- Use `apiIngco` axios instance (configured in `lib/appState/user/operation.ts`)
+- Token management: `setToken()` and `clearToken()` functions
+
+## Next.js API Routes
+- API routes in `app/api/` for Next.js API endpoints
+- Use Server Actions (`'use server'`) for form submissions
+- Cache API responses appropriately (see `app/api/currency/route.ts` for example)
+
+## Server Action Pattern
+
+```typescript
+'use server';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+
+export async function action(prevState: State, formData: FormData) {
+  const validated = schema.safeParse(Object.fromEntries(formData));
+  if (!validated.success) {
+    return { errors: validated.error.flatten().fieldErrors };
+  }
+  // ... perform action
+  revalidatePath('/path');
+}
+```
+
+## Error Handling
+- Use try-catch for async operations
+- Handle API errors in Redux thunks with `rejectWithValue`
+- Show user-friendly error messages via `react-toastify`

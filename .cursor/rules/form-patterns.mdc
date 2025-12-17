@@ -1,0 +1,31 @@
+---
+globs: app/ui/forms/**/*,lib/validationSchema.ts
+alwaysApply: false
+---
+
+# Form Handling Patterns
+
+## React Hook Form + Zod
+- Use React Hook Form with Zod validation
+- Validation schemas in `lib/validationSchema.ts`
+- Use `@hookform/resolvers/zod` for integration
+- Form components in `app/ui/forms/`
+
+## Form Pattern
+
+```typescript
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const schema = z.object({ /* ... */ });
+
+const { register, handleSubmit, formState: { errors } } = useForm({
+  resolver: zodResolver(schema),
+});
+```
+
+## Validation Rules
+- Use Zod schemas for all form validation
+- Define base schemas in `lib/validationSchema.ts` for reusability
+- Provide user-friendly error messages in Ukrainian
