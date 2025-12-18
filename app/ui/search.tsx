@@ -19,12 +19,21 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
   let validPathname = pathname;
   const splitedPathname = validPathname.split('/');
 
-  if (
-    splitedPathname.length >= 3 &&
-    !splitedPathname.includes('favorites') &&
-    !splitedPathname.includes('dashboard')
-  ) {
-    validPathname = splitedPathname.slice(0, 2).join('/');
+  const excludedPaths = ['favorites', 'cart', 'history', 'dashboard'];
+  const isExcludedPath = excludedPaths.some((path) =>
+    splitedPathname.includes(path),
+  );
+
+  if (!isExcludedPath) {
+    if (pathname.startsWith('/shop/') && splitedPathname.length >= 3) {
+      validPathname = '/shop';
+    } else if (
+      splitedPathname.length === 2 &&
+      pathname !== '/' &&
+      !pathname.startsWith('/shop')
+    ) {
+      validPathname = '/';
+    }
   }
 
   const handleSearch = (term: string) => {
