@@ -16,10 +16,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      const savedUser = JSON.parse(
-        localStorage.getItem('persist:auth') as string,
-      );
-      const token = JSON.parse(savedUser?.token);
+      const savedUserString = localStorage.getItem('persist:auth');
+      if (!savedUserString) return;
+      
+      const savedUser = JSON.parse(savedUserString);
+      const token = savedUser?.token ? JSON.parse(savedUser.token) : null;
 
       if (token) {
         dispatch(refreshTokenThunk())
