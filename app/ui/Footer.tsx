@@ -87,6 +87,47 @@ const Footer = () => {
             </Link>
           </div>
         </li>
+        <li className="lg:order-none">
+          <p className="font-medium">Юридичні документи</p>
+          <div className="flex flex-col">
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/offer"
+            >
+              Публічна оферта
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/privacy"
+            >
+              Політика конфіденційності
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/terms"
+            >
+              Умови використання
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/returns"
+            >
+              Повернення та обмін
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/shipping"
+            >
+              Політика доставки
+            </Link>
+            <Link
+              className="transition-colors hover:text-white"
+              href="/legal/cookies"
+            >
+              Політика cookies
+            </Link>
+          </div>
+        </li>
       </ul>
       <p className="absolute bottom-2 left-1/2 -translate-x-1/2 transform text-xs md:text-sm">
         © 2025 INGCO. Всі права захищені.

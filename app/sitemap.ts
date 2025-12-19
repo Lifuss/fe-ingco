@@ -66,6 +66,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       lastModified: currentDate,
     },
+    {
+      url: '/legal/offer',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
+    {
+      url: '/legal/privacy',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
+    {
+      url: '/legal/terms',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
+    {
+      url: '/legal/returns',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
+    {
+      url: '/legal/shipping',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
+    {
+      url: '/legal/cookies',
+      priority: 0.4,
+      changeFrequency: 'monthly' as const,
+      lastModified: currentDate,
+    },
   ];
 
   const staticPages: MetadataRoute.Sitemap = staticPagesList.map((page) => {
