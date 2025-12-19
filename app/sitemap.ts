@@ -1,9 +1,10 @@
 import type { MetadataRoute } from 'next';
-import productSlugs from '@/lib/productSlugs.json';
+import { Product } from '@/lib/types';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const DOMAIN = 'https://ingco-service.win';
   const currentDate = new Date().toISOString();
+  const BACKEND_API = `${process.env.NEXT_PUBLIC_API}/api/products`;
 
   const staticPagesList = [
     {
@@ -113,27 +114,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  const dynamicRetailPages: MetadataRoute.Sitemap = productSlugs.map(
-    (productSlug) => {
-      return {
-        url: `${DOMAIN}/${productSlug}`,
-        lastModified: currentDate,
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      };
-    },
-  );
-  // Because shop is B2B, we don't need to index it, it only worsen
-  // const dynamicShopPages: MetadataRoute.Sitemap = productSlugs.map(
-  //   (productSlug) => {
-  //     return {
-  //       url: `${DOMAIN}/shop/${productSlug}`,
-  //       lastModified: currentDate,
-  //       changeFrequency: 'weekly',
-  //       priority: 0.8,
-  //     };
-  //   },
-  // );
+  let dynamicRetailPages: MetadataRoute.Sitemap = [];
+
+  try {
+    const response = await fetch(`${BACKEND_API}?limit=10000&isRetail=true`, {
+      next: { revalidate: 86400 },
+    });
+
+    if (response.ok) {
+      const { products } = (await response.json()) as { products: Product[] };
+      
+      dynamicRetailPages = products
+        .filter((product) => product.slug)
+        .map((product) => {
+          return {
+            url: `${DOMAIN}/${product.slug}`,
+            lastModified: product.updatedAt || currentDate,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+          };
+        });
+    }
+  } catch (error) {
+    console.error('Failed to fetch products for sitemap:', error);
+  }
 
   return [...staticPages, ...dynamicRetailPages];
 }
