@@ -163,6 +163,22 @@ export default function RootLayout({
         '@type': 'Product',
         name: 'Професійні інструменти INGCO',
         category: 'Електроінструменти',
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'UAH',
+          availability: 'https://schema.org/InStock',
+          seller: {
+            '@type': 'Organization',
+            name: 'INGCO Ukraine',
+            url: 'https://ingco-service.win',
+          },
+          itemCondition: 'https://schema.org/NewCondition',
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          reviewCount: '150',
+        },
       },
     },
   };
