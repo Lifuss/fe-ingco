@@ -25,8 +25,7 @@ export default function ReturnsPage() {
           <a href={SITE_URL} className="text-orange-600 hover:underline">
             {SITE_URL}
           </a>{' '}
-          (далі – «Інтернет-магазин»), який належить ТОВ «INGCO Ukraine» (далі –
-          «Продавець»).
+          (далі – «Інтернет-магазин»), який належить Продавцю.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
           Політика розроблена відповідно до Закону України «Про захист прав

@@ -18,8 +18,8 @@ export default function TermsPage() {
       <section className="mb-8">
         <h2 className="mb-4 text-2xl font-semibold">1. Загальні положення</h2>
         <p className="mb-4 text-lg leading-relaxed">
-          Ці Умови використання (далі – «Умови») регулюють відносини між ТОВ
-          «INGCO Ukraine» (далі – «Адміністрація») та користувачами інтернет-магазину{' '}
+          Ці Умови використання (далі – «Умови») регулюють відносини між
+          Адміністрацією та користувачами інтернет-магазину{' '}
           <a href={SITE_URL} className="text-orange-600 hover:underline">
             {SITE_URL}
           </a>{' '}

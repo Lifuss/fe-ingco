@@ -39,7 +39,7 @@ export default function CookiesPage() {
           2. Як ми використовуємо cookies та схожі технології
         </h2>
         <p className="mb-4 text-lg leading-relaxed">
-          ТОВ «INGCO Ukraine» (далі – «Ми», «Нас») використовує cookies та
+          Ми використовуємо cookies та
           схожі технології (localStorage, sessionStorage) для:
         </p>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">

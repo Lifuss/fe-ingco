@@ -23,8 +23,7 @@ export default function ShippingPage() {
           <a href={SITE_URL} className="text-orange-600 hover:underline">
             {SITE_URL}
           </a>{' '}
-          (далі – «Інтернет-магазин»), який належить ТОВ «INGCO Ukraine» (далі –
-          «Продавець»).
+          (далі – «Інтернет-магазин»), який належить Продавцю.
         </p>
       </section>
 

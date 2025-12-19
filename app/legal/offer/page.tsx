@@ -23,8 +23,7 @@ export default function OfferPage() {
           <a href={SITE_URL} className="text-orange-600 hover:underline">
             {SITE_URL}
           </a>{' '}
-          (далі – «Інтернет-магазин»), яку надає ТОВ «INGCO Ukraine» (далі –
-          «Продавець»).
+          (далі – «Інтернет-магазин»), яку надає Продавець.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
           Згідно зі статтею 633 Цивільного кодексу України, якщо умови, викладені
@@ -39,8 +38,8 @@ export default function OfferPage() {
         <h2 className="mb-4 text-2xl font-semibold">2. Визначення термінів</h2>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
           <li>
-            <strong>Продавець</strong> – ТОВ «INGCO Ukraine», юридична особа,
-            зареєстрована відповідно до законодавства України.
+            <strong>Продавець</strong> – фізична особа-підприємець, зареєстрована
+            відповідно до законодавства України.
           </li>
           <li>
             <strong>Покупець</strong> – будь-яка фізична або юридична особа,

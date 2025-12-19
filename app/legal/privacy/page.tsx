@@ -23,8 +23,7 @@ export default function PrivacyPage() {
           <a href={SITE_URL} className="text-orange-600 hover:underline">
             {SITE_URL}
           </a>{' '}
-          (далі – «Сайт»), який належить ТОВ «INGCO Ukraine» (далі –
-          «Адміністрація»).
+          (далі – «Сайт»), який належить Адміністрації.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
           Використовуючи Сайт, Ви погоджуєтеся з умовами цієї Політики. Якщо Ви
