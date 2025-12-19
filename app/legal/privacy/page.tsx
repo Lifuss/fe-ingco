@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           Адміністрація може збирати та обробляти наступні персональні дані:
         </p>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
-          <li>Ім'я та прізвище</li>
+          <li>Ім&apos;я та прізвище</li>
           <li>Номер телефону</li>
           <li>Електронна адреса</li>
           <li>Адреса доставки</li>
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         </p>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
           <li>Обробка та виконання замовлень</li>
-          <li>Зв'язок з користувачами щодо замовлень</li>
+          <li>Зв&apos;язок з користувачами щодо замовлень</li>
           <li>Доставка товарів</li>
           <li>Надання технічної підтримки</li>
           <li>Покращення якості обслуговування</li>
@@ -76,8 +76,8 @@ export default function PrivacyPage() {
           Обробка персональних даних здійснюється на підставі:
         </p>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
-          <li>Згоди суб'єкта персональних даних</li>
-          <li>Виконання договору, стороною якого є суб'єкт персональних даних</li>
+          <li>Згоди суб&apos;єкта персональних даних</li>
+          <li>Виконання договору, стороною якого є суб&apos;єкт персональних даних</li>
           <li>Вимог законодавства України</li>
           <li>Законних інтересів Адміністрації</li>
         </ul>
@@ -139,7 +139,7 @@ export default function PrivacyPage() {
 
       <section className="mb-8">
         <h2 className="mb-4 text-2xl font-semibold">
-          8. Права суб'єкта персональних даних
+          8. Права суб&apos;єкта персональних даних
         </h2>
         <p className="mb-4 text-lg leading-relaxed">
           Згідно з Законом України «Про захист персональних даних», Ви маєте

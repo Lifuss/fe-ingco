@@ -101,7 +101,7 @@ export default function ReturnsPage() {
         </p>
         <ol className="mb-4 list-decimal space-y-2 pl-6 text-lg leading-relaxed">
           <li>
-            Зв'язатися з Продавцем за телефоном або електронною поштою не
+            Зв&apos;язатися з Продавцем за телефоном або електронною поштою не
             пізніше 14 днів з моменту отримання товару
           </li>
           <li>

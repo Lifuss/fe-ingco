@@ -26,7 +26,7 @@ export default function TermsPage() {
           (далі – «Сайт»).
         </p>
         <p className="mb-4 text-lg leading-relaxed">
-          Використовуючи Сайт, Ви приймаєте ці Умови та зобов'язуєтеся їх
+          Використовуючи Сайт, Ви приймаєте ці Умови та зобов&apos;язуєтеся їх
           дотримуватися. Якщо Ви не згодні з цими Умовами, будь ласка, не
           використовуйте Сайт.
         </p>
@@ -70,7 +70,7 @@ export default function TermsPage() {
           користувач може створити обліковий запис.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
-          Користувач зобов'язується:
+          Користувач зобов&apos;язується:
         </p>
         <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
           <li>Надавати точну та актуальну інформацію</li>

@@ -39,7 +39,7 @@ export default function ShippingPage() {
             2.1. Доставка службою «Нова Пошта»
           </h3>
           <p className="mb-4 text-lg leading-relaxed">
-            Доставка здійснюється до відділень або кур'єром служби «Нова Пошта»
+            Доставка здійснюється до відділень або кур&apos;єром служби «Нова Пошта»
             по всій території України.
           </p>
           <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
@@ -52,7 +52,7 @@ export default function ShippingPage() {
               населеного пункту)
             </li>
             <li>
-              Отримання товару здійснюється за пред'явленням документа, що
+              Отримання товару здійснюється за пред&apos;явленням документа, що
               посвідчує особу
             </li>
             <li>
@@ -85,10 +85,10 @@ export default function ShippingPage() {
 
         <div className="mb-6">
           <h3 className="mb-3 text-xl font-semibold">
-            2.3. Кур'єрська доставка
+            2.3. Кур&apos;єрська доставка
           </h3>
           <p className="mb-4 text-lg leading-relaxed">
-            Доставка кур'єром можлива в межах міст Вижниця та Герца та
+            Доставка кур&apos;єром можлива в межах міст Вижниця та Герца та
             прилеглих населених пунктів.
           </p>
           <ul className="mb-4 list-disc space-y-2 pl-6 text-lg leading-relaxed">
@@ -114,7 +114,7 @@ export default function ShippingPage() {
             віддаленості)
           </li>
           <li>
-            <strong>Кур'єрська доставка:</strong> узгоджується індивідуально
+            <strong>Кур&apos;єрська доставка:</strong> узгоджується індивідуально
           </li>
         </ul>
         <p className="mb-4 text-lg leading-relaxed">
@@ -157,7 +157,7 @@ export default function ShippingPage() {
           <li>Вибрати товари та додати їх до кошика</li>
           <li>Обрати спосіб доставки</li>
           <li>Вказати адресу доставки або відділення «Нова Пошта»</li>
-          <li>Вказати контактні дані (ім'я, телефон, email)</li>
+          <li>Вказати контактні дані (ім&apos;я, телефон, email)</li>
           <li>Обрати спосіб оплати</li>
           <li>Підтвердити замовлення</li>
         </ol>
