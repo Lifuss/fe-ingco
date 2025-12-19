@@ -43,17 +43,26 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
     if (getSortValue) setSort(getSortValue);
   }, [getSortValue]);
 
-  const pathType = listType === 'retail' ? '/retail' : '/shop';
+  const pathType = listType === 'retail' ? '/' : '/shop';
   let title = '';
   switch (pathname) {
-    case `${pathType}/cart`:
-      title = 'Кошик';
+    case '/cart':
+      if (listType === 'retail') title = 'Кошик';
       break;
-    case `${pathType}/favorites`:
-      title = 'Обране';
+    case '/shop/cart':
+      if (listType === 'partner') title = 'Кошик';
       break;
-    case `${pathType}/history`:
-      title = 'Історія замовлень';
+    case '/favorites':
+      if (listType === 'retail') title = 'Обране';
+      break;
+    case '/shop/favorites':
+      if (listType === 'partner') title = 'Обране';
+      break;
+    case '/history':
+      if (listType === 'retail') title = 'Історія замовлень';
+      break;
+    case '/shop/history':
+      if (listType === 'partner') title = 'Історія замовлень';
       break;
     case pathType:
       title = 'Каталог';
@@ -84,15 +93,14 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       <div className="flex w-full items-start justify-end lg:justify-end lg:gap-4">
         <div className="flex flex-col items-baseline justify-center lg:flex-row">
           <h3 className="mr-2">Сортування:</h3>
-          <ul className="flex flex-col md:flex-row ">
+          <ul className="flex flex-row ">
             {liButtonsContent.map((item, i) => (
               <li
                 key={item.sortValue}
                 className={clsx(
-                  'h-fit border border-gray-500 stroke-black px-2 py-2 text-center text-xs transition-all hover:scale-105 hover:font-semibold focus:scale-105',
-                  i === 0 && 'max-[767px]:rounded-t-xl md:rounded-s-xl',
-                  i === liButtonsContent.length - 1 &&
-                    'max-[767px]:rounded-b-xl md:rounded-e-xl',
+                  'h-fit border border-gray-500 stroke-black px-1 py-1 text-center text-xs transition-all hover:scale-105 hover:font-semibold focus:scale-105 md:px-2 md:py-2',
+                  i === 0 && 'rounded-s-xl',
+                  i === liButtonsContent.length - 1 && 'rounded-e-xl',
                   sort === item.sortValue && 'bg-orange-300',
                 )}
               >

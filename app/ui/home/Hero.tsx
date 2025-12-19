@@ -47,7 +47,7 @@ const Hero = () => {
         </p>
         <div className="flex items-baseline gap-4 lg:flex-col">
           <HeroButton
-            href="/retail"
+            href="/"
             icon={<ShoppingBasket size={20} className="shrink-0" />}
             label="Оглянути роздріб"
             ariaLabel="Перейти до роздрібного каталогу продуктів"

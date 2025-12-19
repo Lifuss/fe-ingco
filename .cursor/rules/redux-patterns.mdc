@@ -1,0 +1,41 @@
+---
+globs: lib/appState/**/*
+alwaysApply: false
+---
+
+# Redux Patterns
+
+## Store Structure
+- Store location: `lib/appState/store.ts`
+- Slices: `lib/appState/{feature}/slice.ts`
+- Async operations: `lib/appState/{feature}/operations.ts`
+
+## Redux Toolkit Patterns
+- Use `createAsyncThunk` for async actions
+- Use `createSlice` with Redux Toolkit
+- Handle API errors in Redux thunks with `rejectWithValue`
+
+## Redux Persist
+- Main slice persists: `currencyRates`, `shopView`
+- Auth slice persists: `token`, `localStorageCart`
+
+## Redux Async Action Pattern
+
+```typescript
+export const fetchDataThunk = createAsyncThunk(
+  'feature/fetchData',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await apiIngco.get('/endpoint', { params });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Error');
+    }
+  }
+);
+```
+
+## API Client
+- Use `apiIngco` axios instance from `lib/appState/user/operation.ts`
+- Base URL: `${process.env.NEXT_PUBLIC_API}/api`
+- Token management: `setToken()` and `clearToken()` functions

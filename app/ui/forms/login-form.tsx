@@ -21,7 +21,7 @@ function LoginForm() {
     if (isAuthenticated && isB2b) {
       redirect('/shop');
     } else if (isAuthenticated && !isB2b) {
-      redirect('/retail');
+      redirect('/');
     }
   }, [isAuthenticated, isB2b]);
 
@@ -33,8 +33,8 @@ function LoginForm() {
     dispatch(loginThunk({ login, password }))
       .unwrap()
       .then(({ isB2B }) => {
-        isB2B ? router.push('/shop') : router.push('/retail');
-        toast.success('💸Вітаємо в найкращому магазині ingco!💸');
+        isB2B ? router.push('/shop') : router.push('/');
+        toast.success('💸Вітаємо в INGCO!💸');
       })
       .catch((error) => {
         console.error('Error in login:', error);

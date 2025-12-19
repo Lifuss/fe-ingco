@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+
+# Tech Stack
+
+## Core
+- **Next.js 14** (App Router) - React framework
+- **TypeScript 5.2** - Type safety
+- **React 18.2** - UI library
+- **Node.js >=18.17.0** - Runtime
+
+## State Management
+- **Redux Toolkit 2.2** - State management
+- **Redux Persist 6.0** - State persistence (main: currencyRates, shopView; auth: token, localStorageCart)
+- **Redux Thunk 3.1** - Async actions
+
+## Forms & Validation
+- **React Hook Form 7.53** - Form handling
+- **Zod 3.23** - Schema validation
+- **@hookform/resolvers 3.9** - Zod integration
+
+## Styling
+- **Tailwind CSS 3.3** - Utility-first CSS
+- **@tailwindcss/forms 0.5** - Form styling
+- **Lucide React 0.400** - Icon library
+- **clsx 2.0** - Conditional classnames
+
+## UI Components
+- **React Table 7.8** - Table component
+- **React Select 5.8** - Select dropdowns
+- **React Modal 3.16** - Modal dialogs
+- **React Datepicker 7.4** - Date selection
+- **React Slick 0.30** - Carousel/slider
+- **React Toastify 10.0** - Toast notifications
+- **Recharts 2.12** - Charts/graphs
+
+## Utilities
+- **Axios 1.6** - HTTP client (configured with baseURL: `${process.env.NEXT_PUBLIC_API}/api`)
+- **Lodash 4.17** - Utility functions
+- **use-debounce 10.0** - Debounce hooks
+- **jsbarcode 3.11** - Barcode generation
+- **react-responsive 10.0** - Responsive utilities
+
+## Analytics & Monitoring
+- **@vercel/analytics 1.4** - Analytics
+- **@vercel/speed-insights 1.0** - Performance monitoring
+
+## Database
+- **@vercel/postgres 0.5** - PostgreSQL client
+
+## Environment Variables
+- `NEXT_PUBLIC_API` - Backend API base URL
+- `NP_API_KEY` - Nova Poshta API key
+- `CURRENCY_CACHE_TTL_MS` - Currency cache TTL (default: 30 minutes)

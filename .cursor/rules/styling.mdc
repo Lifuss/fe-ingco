@@ -1,0 +1,24 @@
+---
+globs: **/*.tsx,**/*.css
+alwaysApply: false
+---
+
+# Styling Guidelines
+
+## Tailwind CSS
+- Use Tailwind CSS utility classes
+- Prefer Tailwind over inline styles
+- Use `@tailwindcss/forms` for form styling
+
+## Custom Colors
+- `primary`: #f59e0b
+- `secondary`: #9ca3af
+- `nonActive`: #667085
+- Custom blue shades: `blue-400` (#2589FE), `blue-500` (#0070F3), `blue-600` (#2F6FEB)
+- `orangeLight`: #fbbf24
+
+## Conditional Classes
+- Use `clsx` for conditional classes
+
+## Icons
+- Use Lucide React icons (`lucide-react`)

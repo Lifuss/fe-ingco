@@ -22,13 +22,12 @@ const Header = () => {
   const isShop = pathname.includes('shop');
 
   return (
-    <header className="flex items-center justify-between gap-2 bg-orangeLight px-5 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
+    <header className="flex min-w-0 items-center justify-between gap-2 overflow-hidden bg-orangeLight px-3 py-2 font-medium md:px-[60px] md:py-4 lg:tracking-tight">
       <Link
-        href={isShop ? '/shop' : '/retail'}
+        href={isShop ? '/shop' : '/'}
         className={clsx(
-          'flex h-full items-center justify-center md:block',
-          !isAuthenticated &&
-            'w-[110px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]',
+          'flex h-full flex-shrink-0 items-center justify-center md:block',
+          !isAuthenticated && 'w-[90px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]',
         )}
       >
         <Image
@@ -36,10 +35,11 @@ const Header = () => {
           width={198}
           height={52}
           alt="Лого компанії INGCO"
+          className="h-auto w-[90px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]"
         />
       </Link>
-      {pathname === '/' || pathname.includes('home') ? (
-        <ul className="text-lg md:flex md:items-center md:gap-2 md:text-base lg:text-[20px] xl:gap-10 2xl:text-2xl">
+      {pathname.includes('/home') ? (
+        <ul className="min-w-0 flex-1 text-lg md:flex md:items-center md:gap-2 md:text-base lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
             <Link href="/home#aboutUs">Про нас</Link>
           </li>
@@ -51,7 +51,7 @@ const Header = () => {
           </li>
           <li className="flex">
             <Link
-              href="/retail"
+              href="/"
               className="border-r border-black pr-1 transition-colors ease-out hover:text-white"
             >
               Роздріб
@@ -65,7 +65,9 @@ const Header = () => {
           </li>
         </ul>
       ) : (
-        <Search placeholder="Пошук" />
+        <div className="min-w-0 flex-1">
+          <Search placeholder="Пошук" />
+        </div>
       )}
       {isTablet ? (
         <div className="flex items-center justify-between gap-5 lg:gap-10 xl:gap-20">
@@ -77,14 +79,15 @@ const Header = () => {
               <div className="flex items-center justify-center gap-2">
                 <UserModal />
                 <Link
-                  href={isShop ? '/shop/cart' : '/retail/cart'}
+                  href={isShop ? '/shop/cart' : '/cart'}
                   className="relative"
                 >
                   <Icon
                     icon="cart"
                     className={clsx(
                       'h-7 w-7 fill-current transition-colors ease-out hover:text-white',
-                      pathname === '/shop/cart' && 'text-white ',
+                      (pathname === '/shop/cart' || pathname === '/cart') &&
+                        'text-white ',
                     )}
                   />
                   {(isShop && user.cart.length) ||
@@ -100,15 +103,13 @@ const Header = () => {
             <>
               <CurrencyRate />
               <AuthButtons />
-              <Link
-                href={isShop ? '/shop/cart' : '/retail/cart'}
-                className="relative"
-              >
+              <Link href={isShop ? '/shop/cart' : '/cart'} className="relative">
                 <Icon
                   icon="cart"
                   className={clsx(
                     'h-7 w-7 fill-current transition-colors ease-out hover:text-white',
-                    pathname === '/shop/cart' && 'text-white ',
+                    (pathname === '/shop/cart' || pathname === '/cart') &&
+                      'text-white ',
                   )}
                 />
                 {(isShop && user.cart.length) ||
@@ -127,7 +128,7 @@ const Header = () => {
           )}
         </div>
       ) : (
-        <Link href="/auth/login">
+        <Link href="/auth/login" className="flex-shrink-0">
           <Icon
             icon="user"
             className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"

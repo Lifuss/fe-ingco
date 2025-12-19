@@ -1,0 +1,36 @@
+---
+description: "Best practices for performance, security, accessibility, and code quality"
+---
+
+# Best Practices
+
+## Performance
+- Use Next.js Image component for images
+- Implement lazy loading with `LazyImage` component
+- Use `next/dynamic` for code splitting when needed
+- Cache API responses appropriately
+- Remove console.logs in production (configured in `next.config.js`)
+
+## Security
+- Never expose API keys in client components
+- Use Server Actions for sensitive operations
+- Validate all user input with Zod schemas
+- Use environment variables for secrets
+- Security headers configured in `next.config.js`
+
+## Error Handling
+- Use try-catch for async operations
+- Handle API errors in Redux thunks with `rejectWithValue`
+- Show user-friendly error messages via `react-toastify`
+- Use Next.js error boundaries (`error.tsx`)
+
+## Accessibility
+- Use semantic HTML elements
+- Provide alt text for images
+- Ensure keyboard navigation
+- Use ARIA labels where appropriate
+
+## Testing Considerations
+- Write testable, pure functions
+- Keep components decoupled
+- Use dependency injection where appropriate

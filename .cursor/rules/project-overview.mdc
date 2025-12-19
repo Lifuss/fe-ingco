@@ -1,0 +1,78 @@
+---
+alwaysApply: true
+---
+
+# INGCO Frontend Project Overview
+
+This is a Next.js 14 e-commerce application for INGCO tools (B2B and B2C) built with TypeScript, Redux Toolkit, React Hook Form, and Tailwind CSS.
+
+## Project Structure
+
+```
+app/                          # Next.js App Router
+  (retail-catalog)/           # Retail catalog (B2C) - root level
+    [productSlug]/            # Product detail pages
+    cart/                     # Shopping cart
+    favorites/                 # Favorite products
+    history/                  # Order history
+    page.tsx                  # Main catalog page (root /)
+  api/                        # API routes (Server Actions)
+  auth/                       # Authentication pages
+  dashboard/                  # Admin dashboard
+  home/                       # Public home pages
+  retail/                     # Legacy retail routes (redirects to root)
+    [productSlug]/            # Redirects to /[productSlug]
+    cart/                     # Redirects to /cart
+    favorites/                # Redirects to /favorites
+    history/                  # Redirects to /history
+    ProductList.tsx           # Shared ProductList component
+  shop/                       # B2B shop (partners)
+  ui/                         # Shared UI components
+  service/                    # Service providers (StoreProvider, PrivateRouting)
+  page.tsx                    # Root page - retail catalog
+lib/                          # Shared utilities and logic
+  appState/                   # Redux store, slices, operations
+  fonts/                      # Custom fonts
+  types.ts                    # TypeScript type definitions
+  definitions.ts              # Type definitions
+  validationSchema.ts         # Zod schemas
+  constants.ts                # App constants
+  utils.ts                    # Utility functions
+  novaPoshta.ts               # Nova Poshta API integration
+```
+
+## Routing Structure
+
+- **Root (`/`)**: Retail catalog (B2C) - main product listing
+- **Product pages (`/[productSlug]`)**: Individual product details
+- **Cart (`/cart`)**: Shopping cart for retail customers
+- **Favorites (`/favorites`)**: Favorite products list
+- **History (`/history`)**: Order history for retail customers
+- **Shop (`/shop`)**: B2B partner catalog and dashboard
+- **Home (`/home`)**: Public marketing pages
+- **Auth (`/auth/*`)**: Authentication pages
+- **Dashboard (`/dashboard/*`)**: Admin dashboard
+
+## Path Aliases
+
+- `@/*` - Maps to project root (e.g., `@/lib/...`, `@/public/...`)
+- `~/*` - Maps to `app/` directory (e.g., `~/ui/...`, `~/shop/...`)
+
+## Important Project Notes
+
+- **Language**: UI text is in Ukrainian
+- **Currency**: UAH (Ukrainian Hryvnia)
+- **Currency Rates**: Fetched from Monobank/PrivatBank APIs, cached for 30 minutes
+- **Shipping**: Nova Poshta integration available
+- **User Roles**: B2B (partners) and B2C (clients)
+- **Image Domains**: Configured in `next.config.js` (localhost, be-ingco.store, api-ingco-service.win)
+- **Image Formats**: WebP and AVIF preferred
+- **Persistence**: Redux state persisted for currency rates, shop view, auth token, and cart
+
+## Retail Catalog Structure
+
+The retail catalog is organized in `app/(retail-catalog)/` using Next.js route groups:
+- Route groups `(retail-catalog)` don't affect URL structure but help organize code
+- All retail catalog routes are at root level (`/`, `/[productSlug]`, `/cart`, etc.)
+- Legacy `/retail/*` routes redirect to new root-level routes for backward compatibility
+- Use `~/` alias for imports from `app/` directory when working in route groups

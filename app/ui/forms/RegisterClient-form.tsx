@@ -38,7 +38,7 @@ export default function RegisterClientForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect('/retail');
+      redirect('/');
     }
   }, [isAuthenticated]);
 
