@@ -35,6 +35,8 @@ html {
 
 body {
   font-family: 'TT Firs Neue', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
 }
 body > main {
   flex-grow: 1;

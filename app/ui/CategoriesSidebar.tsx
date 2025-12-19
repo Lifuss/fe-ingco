@@ -71,14 +71,19 @@ const Sidebar = () => {
       <ul className="mb-4 flex flex-wrap justify-between gap-2 text-sm shadow-md xl:flex-col xl:text-base">
         {productsCategories?.map((category) => (
           <li
+            key={category._id}
             className={clsx(
-              'cursor-pointer border-b-2 border-gray-200 px-2 py-1  tracking-[0.01em] transition-colors  hover:bg-gray-100 hover:text-gray-800',
+              'cursor-pointer border-b-2 border-gray-200 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-100 hover:shadow-sm hover:text-gray-800',
               searchParams.get('category') === category._id &&
                 'bg-orange-200 text-gray-800',
             )}
-            key={category._id}
           >
-            <Link href={createPageURL(category._id)}>{category.name}</Link>
+            <Link
+              href={createPageURL(category._id)}
+              className="block w-full px-2 py-1 tracking-[0.01em]"
+            >
+              {category.name}
+            </Link>
           </li>
         ))}
       </ul>
