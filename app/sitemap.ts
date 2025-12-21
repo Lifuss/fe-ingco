@@ -110,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${DOMAIN}${page.url}`,
       lastModified: page.lastModified,
       changeFrequency: page.changeFrequency,
-      priority: page.priority,
+      priority: Math.max(0.0, Math.min(1.0, page.priority)),
     };
   });
 
@@ -131,7 +131,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${DOMAIN}/${product.slug}`,
             lastModified: product.updatedAt || currentDate,
             changeFrequency: 'weekly' as const,
-            priority: 0.8,
+            priority: Math.max(0.0, Math.min(1.0, 0.8)),
           };
         });
     }
