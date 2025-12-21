@@ -37,3 +37,7 @@ next-env.d.ts
 
 # vscode
 .vscode
+
+# next-sitemap (generated on postbuild)
+/public/sitemap*.xml
+/public/robots.txt
