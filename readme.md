@@ -14,7 +14,7 @@ The application has routing for 3 different branches of application with strict 
 
 ## For local testing
 
-#### (not for commercial, Copyright © 2025 [INGCO](https://www.ingco.com/) Inc. All rights reserved )
+#### (not for commercial, Copyright © 2026 [INGCO](https://www.ingco.com/) Inc. All rights reserved )
 
 ### Setup project
 
