@@ -4,7 +4,14 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
   autoLastmod: true,
-  exclude: ['/dashboard*', '/api*', '/_next*', '/admin*', '/private*', '/service*'],
+  exclude: [
+    '/dashboard*',
+    '/api*',
+    '/_next*',
+    '/admin*',
+    '/private*',
+    '/service*',
+  ],
   robotsTxtOptions: {
     policies: [
       {
@@ -37,12 +44,15 @@ module.exports = {
     if (!apiBase) return [];
 
     try {
-      const res = await fetch(`${apiBase}/api/products?limit=10000&isRetail=true`);
+      const res = await fetch(
+        `${apiBase}/api/products?limit=10000&isRetail=true`,
+      );
       if (!res.ok) return [];
 
-      const data = /** @type {{ products?: Array<{ slug?: string, updatedAt?: string }> }} */ (
-        await res.json()
-      );
+      const data =
+        /** @type {{ products?: Array<{ slug?: string, updatedAt?: string }> }} */ (
+          await res.json()
+        );
 
       const products = Array.isArray(data.products) ? data.products : [];
 
@@ -54,10 +64,8 @@ module.exports = {
           changefreq: 'weekly',
           priority: 0.8,
         }));
-    } catch {
+    } catch (_error) {
       return [];
     }
   },
 };
-
-
