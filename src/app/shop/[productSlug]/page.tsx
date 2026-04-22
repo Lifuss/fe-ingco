@@ -7,7 +7,6 @@ import { getProductBySlugThunk } from '@/lib/appState/main/operations';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import novaPoshtaSVG from '@/public/icons/Nova_Poshta_2019_ua.svg';
 import clsx from 'clsx';
 import JsBarcode from 'jsbarcode';
 import { SearchX } from 'lucide-react';
@@ -326,11 +325,11 @@ const Page = ({ params }: PageProps) => {
           <div className="it ems-center mb-16 flex w-1/2 gap-5 rounded-lg">
             <p className="text-center text-xl">Перевізник:</p>
             <Image
-              src={novaPoshtaSVG}
+              src="/icons/Nova_Poshta_2019_ua.svg"
               alt="Nova Poshta"
               width={100}
               height={50}
-              objectFit="contain"
+              className="object-contain"
             />
           </div>
           <h2 className="mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">

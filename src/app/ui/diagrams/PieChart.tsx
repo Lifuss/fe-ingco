@@ -23,9 +23,7 @@ const ProductClicksPieChart = ({
   endDate: Date | undefined;
 }) => {
   const dispatch = useAppDispatch();
-  const clicksData = useAppSelector(
-    (state) => state.dashboardSlice.stats.productClicks,
-  ) as ClickProductData;
+  const clicksData = useAppSelector((state) => state.dashboardSlice.stats.productClicks);
 
   useEffect(() => {
     dispatch(
@@ -51,11 +49,11 @@ const ProductClicksPieChart = ({
               cx="50%"
               cy="50%"
               outerRadius={150}
-              label={({ clicksInRange }) => `${clicksInRange}`}
               labelLine={false}
+              label
             >
               <LabelList dataKey="clicks" className="text-lg font-normal" position="inside" />
-              {clicksData.map((entry, index) => (
+              {clicksData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
