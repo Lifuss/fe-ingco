@@ -57,7 +57,7 @@ export default function Page({ params }: PageProps) {
         }),
       ).unwrap();
     } else {
-      const { price, priceBulk, ...normalizeProduct } = product;
+      const { price: _price, priceBulk: _priceBulk, ...normalizeProduct } = product;
       await Promise.resolve(
         dispatch(
           addProductToLocalStorageCart({
@@ -107,7 +107,7 @@ export default function Page({ params }: PageProps) {
           name: 'INGCO Ukraine',
           url: 'https://ingco-service.win',
         },
-        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        priceValidUntil: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)
           .toISOString()
           .split('T')[0],
         deliveryLeadTime: {

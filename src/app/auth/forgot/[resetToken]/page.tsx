@@ -6,7 +6,7 @@ import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import { resetPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, use } from 'react';
+import { useState, use } from 'react';
 import { toast } from 'react-toastify';
 
 type PageProps = {
@@ -17,15 +17,9 @@ type PageProps = {
 
 const Page = ({ params }: PageProps) => {
   const { resetToken } = use(params);
-  const [isAllow, setIsAllow] = useState<boolean>(true);
+  const [isAllow, setIsAllow] = useState<boolean>(Boolean(resetToken));
   const dispatch = useAppDispatch();
   const router = useRouter();
-
-  useEffect(() => {
-    if (!resetToken) {
-      setIsAllow(false);
-    }
-  }, [resetToken]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

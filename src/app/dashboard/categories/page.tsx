@@ -1,5 +1,4 @@
 import Search from '@/app/ui/search';
-import Link from 'next/link';
 import CategoryTable from '../tables/CategoryTable';
 import { CategoryModalCreate } from '@/app/ui/modals/CategoryModal';
 

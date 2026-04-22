@@ -11,8 +11,10 @@ const Page = () => {
     const form = new FormData(e.currentTarget);
     const resetData = form.get('resetPassword') as string;
     dispatch(forgotPasswordThunk({ resetData }));
-    // @ts-ignore
-    e.currentTarget.elements.resetPassword.value = '';
+    const resetPasswordInput = e.currentTarget.elements.namedItem('resetPassword');
+    if (resetPasswordInput instanceof HTMLInputElement) {
+      resetPasswordInput.value = '';
+    }
   };
 
   return (

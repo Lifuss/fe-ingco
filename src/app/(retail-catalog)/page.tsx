@@ -38,7 +38,7 @@ export default function Page() {
               router.push('/shop');
             }
           })
-          .catch((err) => {
+          .catch(() => {
             dispatch(clearAuthState());
             toast.info('Сесія закінчилася. Для взаємодії з акаунтом будь ласка, увійдіть знову.');
           });

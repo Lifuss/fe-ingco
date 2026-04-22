@@ -29,12 +29,8 @@ async function fetchFromMonobank(): Promise<CurrencyResult | null> {
       rateBuy?: number;
       rateCross?: number;
     }>;
-    const usd = data.find(
-      (d) => d.currencyCodeA === 840 && d.currencyCodeB === 980,
-    );
-    const eur = data.find(
-      (d) => d.currencyCodeA === 978 && d.currencyCodeB === 980,
-    );
+    const usd = data.find((d) => d.currencyCodeA === 840 && d.currencyCodeB === 980);
+    const eur = data.find((d) => d.currencyCodeA === 978 && d.currencyCodeB === 980);
     if (!usd || !eur) return null;
     const usdRate = usd.rateSell ?? usd.rateBuy ?? usd.rateCross;
     const eurRate = eur.rateSell ?? eur.rateBuy ?? eur.rateCross;
@@ -52,13 +48,10 @@ async function fetchFromMonobank(): Promise<CurrencyResult | null> {
 
 async function fetchFromPrivat(): Promise<CurrencyResult | null> {
   try {
-    const res = await fetch(
-      'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5',
-      {
-        headers: { 'User-Agent': 'ingco-fe/1.0' },
-        cache: 'no-store',
-      },
-    );
+    const res = await fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5', {
+      headers: { 'User-Agent': 'ingco-fe/1.0' },
+      cache: 'no-store',
+    });
     if (!res.ok) return null;
     const data = (await res.json()) as Array<{
       ccy: string;
@@ -71,8 +64,7 @@ async function fetchFromPrivat(): Promise<CurrencyResult | null> {
     if (!usd || !eur) return null;
     const usdRate = Number(usd.sale || usd.buy);
     const eurRate = Number(eur.sale || eur.buy);
-    if (!usdRate || !eurRate || Number.isNaN(usdRate) || Number.isNaN(eurRate))
-      return null;
+    if (!usdRate || !eurRate || Number.isNaN(usdRate) || Number.isNaN(eurRate)) return null;
     return {
       USD: parseFloat(usdRate.toFixed(2)),
       EUR: parseFloat(eurRate.toFixed(2)),
@@ -86,13 +78,10 @@ async function fetchFromPrivat(): Promise<CurrencyResult | null> {
 
 async function fetchFromNBU(): Promise<CurrencyResult | null> {
   try {
-    const res = await fetch(
-      'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json',
-      {
-        headers: { 'User-Agent': 'ingco-fe/1.0' },
-        cache: 'no-store',
-      },
-    );
+    const res = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json', {
+      headers: { 'User-Agent': 'ingco-fe/1.0' },
+      cache: 'no-store',
+    });
     if (!res.ok) return null;
     const data = (await res.json()) as Array<{
       cc: string;
@@ -190,7 +179,7 @@ export async function GET() {
         'Cache-Control': `public, max-age=60, s-maxage=${Math.floor(TTL_MS / 1000)}`,
       },
     });
-  } catch (e) {
+  } catch (_error) {
     const fallback: CurrencyResult = {
       USD: 41.0,
       EUR: 44.0,

@@ -18,9 +18,14 @@ const Page = ({ params }: PageProps) => {
   const { productId } = use(params);
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [imageUrl, setImageUrl] = useState('');
+  const product: Product | undefined = useAppSelector((state) =>
+    state.persistedMainReducer.products.find((product) => product._id === productId),
+  );
+  const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const [characteristics, setCharacteristics] = useState<{ name: string; value: string }[]>([]);
+  const [characteristics, setCharacteristics] = useState<{ name: string; value: string }[]>(
+    () => product?.characteristics || [],
+  );
   const [characteristic, setCharacteristic] = useState<{
     name: string;
     value: string;
@@ -28,18 +33,7 @@ const Page = ({ params }: PageProps) => {
     name: '',
     value: '',
   });
-  const product: Product | undefined = useAppSelector((state) =>
-    state.persistedMainReducer.products.find((product) => product._id === productId),
-  );
-
-  useEffect(() => {
-    if (product && product.image) {
-      setImageUrl(`${process.env.NEXT_PUBLIC_API}${product.image}`);
-    }
-    if (product && product.characteristics) {
-      setCharacteristics(product.characteristics);
-    }
-  }, [product]);
+  const imageUrl = uploadedImageUrl || (product?.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '');
 
   useEffect(() => {
     if (!categories.length) {
@@ -76,7 +70,7 @@ const Page = ({ params }: PageProps) => {
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      setImageUrl(reader.result as string);
+      setUploadedImageUrl(reader.result as string);
     };
 
     if (file) {
