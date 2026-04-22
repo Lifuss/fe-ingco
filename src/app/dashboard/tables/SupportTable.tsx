@@ -9,7 +9,7 @@ import { SupportTicket } from '@/lib/types';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 type SupportTableRow = {
   numberCol: number;
@@ -60,23 +60,23 @@ const SupportTable = () => {
     [supportTickets],
   );
 
-  const columns = useMemo<Column<SupportTableRow>[]>(
+  const columns = useMemo<ColumnDef<SupportTableRow>[]>(
     () => [
       {
-        Header: 'Номер',
-        accessor: 'numberCol',
+        header: 'Номер',
+        accessorKey: 'numberCol',
       },
       {
-        Header: 'E-mail',
-        accessor: 'emailCol',
+        header: 'E-mail',
+        accessorKey: 'emailCol',
       },
       {
-        Header: 'Ім`я',
-        accessor: 'nameCol',
+        header: "Ім'я",
+        accessorKey: 'nameCol',
       },
       {
-        Header: 'Дата',
-        accessor: 'activeDateCol',
+        header: 'Дата',
+        accessorKey: 'activeDateCol',
       },
     ],
     [],

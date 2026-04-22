@@ -16,7 +16,7 @@ import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import { selectCurrency } from '@/lib/appState/main/selectors';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 type CartTableRow = {
@@ -74,16 +74,16 @@ const CartTable = () => {
     }));
   }, [selectedCart, selectedCurrency.USD]);
 
-  const columns = useMemo<Column<CartTableRow>[]>(
+  const columns = useMemo<ColumnDef<CartTableRow>[]>(
     () => [
       {
-        Header: 'Артикль',
-        accessor: 'codeCol',
+        header: 'Артикль',
+        accessorKey: 'codeCol',
       },
       {
-        Header: 'Назва',
-        accessor: 'nameCol',
-        Cell: ({ row }) => {
+        header: 'Назва',
+        accessorKey: 'nameCol',
+        cell: ({ row }) => {
           return (
             <button
               className="min-w-[150px] text-left transition-colors hover:text-blue-500"
@@ -91,25 +91,25 @@ const CartTable = () => {
                 openProductModal(row.original.product);
               }}
             >
-              {row.values.nameCol}
+              {row.original.nameCol}
             </button>
           );
         },
       },
       {
-        Header: 'Фото',
-        accessor: 'photoCol',
-        Cell: ({ row }) => {
+        header: 'Фото',
+        accessorKey: 'photoCol',
+        cell: ({ row }) => {
           return (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API}${row.values.photoCol}`}
-              alt={row.values.nameCol}
+              src={`${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`}
+              alt={row.original.nameCol}
               width={40}
               height={40}
               className="mx-auto h-11 w-11"
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.values.photoCol}" alt="${row.values.nameCol}" />`;
+                img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.original.photoCol}" alt="${row.original.nameCol}" />`;
                 img.style.top = `${e.clientY + 20}px`;
                 img.style.left = `${e.clientX + 20}px`;
                 img.classList.remove('hidden');
@@ -124,26 +124,26 @@ const CartTable = () => {
         },
       },
       {
-        Header: 'Ціна($)',
-        accessor: 'priceCol',
+        header: 'Ціна($)',
+        accessorKey: 'priceCol',
       },
       {
-        Header: 'Ціна(грн)',
-        accessor: 'priceUahCol',
+        header: 'Ціна(грн)',
+        accessorKey: 'priceUahCol',
       },
       {
-        Header: 'РРЦ(грн)',
-        accessor: 'rrcCol',
-        Cell: ({ row }) => {
+        header: 'РРЦ(грн)',
+        accessorKey: 'rrcCol',
+        cell: ({ row }) => {
           return (
-            <div title="Рекомендована роздрібна ціна">{row.values.rrcCol}</div>
+            <div title="Рекомендована роздрібна ціна">{row.original.rrcCol}</div>
           );
         },
       },
       {
-        Header: 'Кількість',
-        accessor: 'quantityCol',
-        Cell: ({ row }) => {
+        header: 'Кількість',
+        accessorKey: 'quantityCol',
+        cell: ({ row }) => {
           return (
             <div>
               <button
@@ -157,7 +157,7 @@ const CartTable = () => {
               <input
                 className="w-5 border-none p-0 text-center outline-none"
                 type="number"
-                value={row.values.quantityCol}
+                value={row.original.quantityCol}
                 readOnly
               />
               <button
@@ -173,22 +173,22 @@ const CartTable = () => {
         },
       },
       {
-        Header: 'Сума($|грн)',
-        accessor: 'totalCol',
-        Cell: ({ row }) => {
+        header: 'Сума($|грн)',
+        accessorKey: 'totalCol',
+        cell: ({ row }) => {
           return (
             <div
               className="relative"
               title="Сума = кількість * ціна | кількість * ціна * курс долара монобанку"
             >
-              {row.values.totalCol}
+              {row.original.totalCol}
               <button
                 className="absolute top-0 -right-7 fill-gray-400 hover:fill-red-500"
                 onClick={() => {
                   dispatch(
                     deleteProductFromCartThunk({
                       productId: row.original._id,
-                      quantity: row.values.quantityCol,
+                      quantity: row.original.quantityCol,
                     }),
                   );
                 }}

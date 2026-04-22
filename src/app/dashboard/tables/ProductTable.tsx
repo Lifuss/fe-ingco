@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 type ProductTableRow = {
   articleCol: string;
@@ -70,43 +70,43 @@ const ProductTable = () => {
     }));
   }, [products]);
 
-  const columns = useMemo<Column<ProductTableRow>[]>(
+  const columns = useMemo<ColumnDef<ProductTableRow>[]>(
     () => [
       {
-        Header: 'Артикль',
-        accessor: 'articleCol',
+        header: 'Артикль',
+        accessorKey: 'articleCol',
       },
       {
-        Header: 'Найменування',
-        accessor: 'nameCol',
+        header: 'Найменування',
+        accessorKey: 'nameCol',
       },
       {
-        Header: 'Категорія',
-        accessor: 'categoryCol',
+        header: 'Категорія',
+        accessorKey: 'categoryCol',
       },
       {
-        Header: 'Ціна',
-        accessor: 'priceCol',
+        header: 'Ціна',
+        accessorKey: 'priceCol',
       },
       {
-        Header: 'РРЦ',
-        accessor: 'rrcCol',
+        header: 'РРЦ',
+        accessorKey: 'rrcCol',
       },
       {
-        Header: 'Наявність',
-        accessor: 'availabilityCol',
+        header: 'Наявність',
+        accessorKey: 'availabilityCol',
       },
       {
-        Header: 'Сортування',
-        accessor: 'sortCol',
+        header: 'Сортування',
+        accessorKey: 'sortCol',
       },
       {
-        Header: 'Ред|Вид',
-        accessor: 'editCol',
-        Cell: ({ row }) => (
+        header: 'Ред|Вид',
+        accessorKey: 'editCol',
+        cell: ({ row }) => (
           <div className="flex justify-center gap-4">
             <Link
-              href={`/dashboard/product/edit/${row.values.editCol}`}
+              href={`/dashboard/product/edit/${row.original.editCol}`}
               className="flex justify-center"
             >
               <Icon
@@ -116,11 +116,11 @@ const ProductTable = () => {
             </Link>
             <button
               onClick={() => {
-                const productName = row.values.nameCol as string;
+                const productName = row.original.nameCol as string;
                 if (
                   confirm(`Ви впевнені, що хочете видалити "${productName}"?`)
                 ) {
-                  dispatch(deleteProductThunk(row.values.editCol));
+                  dispatch(deleteProductThunk(row.original.editCol));
                 }
               }}
             >

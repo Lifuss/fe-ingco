@@ -1,4 +1,3 @@
-import { Row } from 'react-table';
 
 export interface Category {
   _id: string;
@@ -112,21 +111,6 @@ export interface CurrencyRates {
   lastUpdate: string;
   USD: number;
   EUR: number;
-}
-
-export interface CustomRow extends Row {
-  original: { _id: string; product: Product };
-  values: {
-    nameCol: string;
-    photoCol: string;
-    favoriteCol: boolean;
-    priceCol: number;
-    rrcCol: number;
-    availableCol: boolean;
-    _id: string;
-    priceUahCol: number;
-    product: Product;
-  };
 }
 
 export interface SupportTicket {

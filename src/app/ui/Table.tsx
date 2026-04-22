@@ -1,7 +1,6 @@
-// make reusable table component from react-table
 import clsx from 'clsx';
-import React, { useEffect, useRef } from 'react';
-import { Column, useTable } from 'react-table';
+import { useEffect, useRef } from 'react';
+import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 type TableWithClickableRow<T extends object> = {
   rowClickable: true;
@@ -14,7 +13,7 @@ type TableWithoutClickableRow = {
 };
 
 export type TableProps<T extends object> = {
-  columns: Column<T>[];
+  columns: ColumnDef<T>[];
   data: T[];
   headerColor?: string;
   borderColor?: string;
@@ -28,11 +27,13 @@ export default function Table<T extends object>({
   rowClickable,
   rowFunction,
 }: TableProps<T>) {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable<T>({
-      columns,
-      data,
-    });
+  'use no memo';
+
+  const table = useReactTable<T>({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -43,64 +44,45 @@ export default function Table<T extends object>({
   }, [data]);
 
   return (
-    <table
-      {...getTableProps()}
-      className="w-full text-sm lg:text-base"
-      ref={tableRef}
-    >
+    <table className="w-full text-sm lg:text-base" ref={tableRef}>
       <thead>
-        {headerGroups.map((headerGroup, headerGroupIndex) => (
-          <tr
-            {...headerGroup.getHeaderGroupProps()}
-            key={`thead-${headerGroupIndex}`}
-            className="sticky -top-1"
-          >
-            {headerGroup.headers.map((column, columnIndex) => (
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id} className="sticky -top-1">
+            {headerGroup.headers.map((header) => (
               <th
-                {...column.getHeaderProps()}
-                key={`th-${columnIndex}`}
+                key={header.id}
+                colSpan={header.colSpan}
                 className={`border-px px-1 py-1 font-medium lg:px-3 lg:py-2 ${headerColor} ${borderColor}`}
               >
-                {column.render('Header')}
+                {flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, rowIndex) => {
-          prepareRow(row);
-          return (
-            <tr
-              {...row.getRowProps({
-                onClick: () => rowClickable && rowFunction(row.original),
-              } as React.HTMLAttributes<HTMLTableRowElement>)}
-              key={`tr-${rowIndex}`}
-              title={
-                (row.original as { availableCol?: boolean }).availableCol
-                  ? 'Немає на складі в Україні'
-                  : undefined
-              }
-              className={clsx(
-                rowClickable && 'cursor-pointer',
-                (row.original as { availableCol?: boolean }).availableCol &&
-                  'pointer-events-none cursor-context-menu opacity-40',
-              )}
-            >
-              {row.cells.map((cell, cellIndex) => {
-                return (
-                  <td
-                    {...cell.getCellProps()}
-                    key={`td-${cellIndex}`}
-                    className={`border-px ${borderColor} px-[2px] text-center lg:px-1`}
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
+      <tbody>
+        {table.getRowModel().rows.map((row) => (
+          <tr
+            key={row.id}
+            onClick={rowClickable ? () => rowFunction(row.original) : undefined}
+            title={
+              (row.original as { availableCol?: boolean }).availableCol
+                ? 'Немає на складі в Україні'
+                : undefined
+            }
+            className={clsx(
+              rowClickable && 'cursor-pointer',
+              (row.original as { availableCol?: boolean }).availableCol &&
+                'pointer-events-none cursor-context-menu opacity-40',
+            )}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id} className={`border-px ${borderColor} px-[2px] text-center lg:px-1`}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

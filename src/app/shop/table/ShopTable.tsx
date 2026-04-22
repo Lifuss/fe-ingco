@@ -20,7 +20,7 @@ import Icon from '@/app/ui/assets/Icon';
 import { Heart, MousePointerClick, SquareMousePointer } from 'lucide-react';
 import ShopList from './ShopList';
 import FiltersBlock, { sortValueType } from '@/app/ui/FiltersBlock';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 type ShopTableRow = {
   codeCol: string;
@@ -166,20 +166,20 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }));
   }, [productsData, USD]);
 
-  const columns = useMemo<Column<ShopTableRow>[]>(
+  const columns = useMemo<ColumnDef<ShopTableRow>[]>(
     () => [
       {
-        Header: 'Артикль',
-        accessor: 'codeCol', // accessor is the "key" in the data
+        header: 'Артикль',
+        accessorKey: 'codeCol', // accessor is the "key" in the data
       },
       {
-        Header: (
+        header: () => (
           <p className="inline-flex items-center gap-2">
             Назва <MousePointerClick className="text-gray-400" />
           </p>
         ),
-        accessor: 'nameCol',
-        Cell: ({ row }) => (
+        accessorKey: 'nameCol',
+        cell: ({ row }) => (
           <button
             className="min-w-[250px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
@@ -193,13 +193,13 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
       {
-        Header: (
+        header: () => (
           <p className="inline-flex items-center gap-1">
             Фото <SquareMousePointer className="text-gray-400" size={14} />
           </p>
         ),
-        accessor: 'photoCol',
-        Cell: ({ row }) => {
+        accessorKey: 'photoCol',
+        cell: ({ row }) => {
           return (
             <Image
               src={`${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`}
@@ -225,9 +225,9 @@ const ShopTable = ({ isFavoritePage = false }) => {
         },
       },
       {
-        Header: 'Улюблене',
-        accessor: 'favoriteCol',
-        Cell: ({ row }) => (
+        header: 'Улюблене',
+        accessorKey: 'favoriteCol',
+        cell: ({ row }) => (
           <button
             onClick={() => handleFavoriteClick(row.original._id)}
             data-favorite={row.original._id}
@@ -243,21 +243,21 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
       {
-        Header: 'Ціна($)',
-        accessor: 'priceCol',
+        header: 'Ціна($)',
+        accessorKey: 'priceCol',
       },
       {
-        Header: 'Ціна(грн)',
-        accessor: 'priceUahCol',
+        header: 'Ціна(грн)',
+        accessorKey: 'priceUahCol',
       },
       {
-        Header: 'РРЦ(грн)',
-        accessor: 'rrcCol',
+        header: 'РРЦ(грн)',
+        accessorKey: 'rrcCol',
       },
       {
-        Header: 'К-сть',
+        header: 'К-сть',
         id: 'quantityCol',
-        Cell: ({ row }) => (
+        cell: ({ row }) => (
           <input
             name={row.original._id}
             type="number"
@@ -278,9 +278,9 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
       },
       {
-        Header: 'Кошик',
+        header: 'Кошик',
         id: 'cartCol',
-        Cell: ({ row }) => (
+        cell: ({ row }) => (
           <button
             className="px-2 py-1 text-white transition-transform duration-200 hover:scale-110"
             onClick={() =>

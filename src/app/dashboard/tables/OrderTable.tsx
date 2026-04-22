@@ -6,7 +6,7 @@ import { fetchOrdersThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { fetchCurrencyRatesThunk } from '@/lib/appState/main/operations';
@@ -87,36 +87,33 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     }));
   }, [orders, usdRate, isRetail]);
 
-  const columns = useMemo<Column<OrderTableRow>[]>(
-    () => [
-      {
-        Header: 'Номер',
-        accessor: 'numberCol',
-      },
-      {
-        Header: 'Дата',
-        accessor: 'dateCol',
-      },
-      {
-        Header: 'Логін',
-        accessor: 'loginCol',
-      },
-      {
-        Header: 'Статус',
-        accessor: 'statusCol',
-      },
-      {
-        Header: 'Коментар',
-        accessor: 'commentCol',
-        Cell: ({ row }) => <div>{row.values.commentCol ? 'так' : 'немає'}</div>,
-      },
-      {
-        Header: 'Сума зам. грн',
-        accessor: 'totalPrice',
-      },
-    ],
-    [],
-  );
+  const columns = useMemo<ColumnDef<OrderTableRow>[]>(() => [
+    {
+      header: 'Номер',
+      accessorKey: 'numberCol',
+    },
+    {
+      header: 'Дата',
+      accessorKey: 'dateCol',
+    },
+    {
+      header: 'Логін',
+      accessorKey: 'loginCol',
+    },
+    {
+      header: 'Статус',
+      accessorKey: 'statusCol',
+    },
+    {
+      header: 'Коментар',
+      accessorKey: 'commentCol',
+      cell: ({ row }) => <div>{row.original.commentCol ? 'так' : 'немає'}</div>,
+    },
+    {
+      header: 'Сума зам. грн',
+      accessorKey: 'totalPrice',
+    },
+  ], []);
 
   const handleCheckboxChange = (
     status:

@@ -10,7 +10,7 @@ import { User } from '@/lib/types';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 export enum CheckboxActionType {
   Admin = 'admin',
@@ -70,25 +70,25 @@ const UserTable = () => {
     [users],
   );
 
-  const columns = useMemo<Column<UserTableRow>[]>(
+  const columns = useMemo<ColumnDef<UserTableRow>[]>(
     () => [
       {
-        Header: 'E-mail',
-        accessor: 'emailCol',
+        header: 'E-mail',
+        accessorKey: 'emailCol',
       },
       {
-        Header: 'Логін',
-        accessor: 'loginCol',
+        header: 'Логін',
+        accessorKey: 'loginCol',
       },
       {
-        Header: 'Активність',
-        accessor: 'activeDateCol',
+        header: 'Активність',
+        accessorKey: 'activeDateCol',
       },
       {
-        Header: 'Верифікація',
-        accessor: 'verificationStatusCol',
-        Cell: ({ row }) => (
-          <div>{row.values.verificationStatusCol ? '✅' : '❌'}</div>
+        header: 'Верифікація',
+        accessorKey: 'verificationStatusCol',
+        cell: ({ row }) => (
+          <div>{row.original.verificationStatusCol ? '✅' : '❌'}</div>
         ),
       },
     ],

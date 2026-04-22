@@ -9,7 +9,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 import Modal from 'react-modal';
 import { customModalStyles } from '../../ui/modals/CategoryModal';
 import CategoryForm from '../../ui/forms/CategoryForm';
@@ -33,9 +33,7 @@ const CategoryTable = () => {
   }>({ name: '', renderSort: 0 });
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const productsCategories = useAppSelector(
-    (state) => state.persistedMainReducer.categories,
-  );
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
 
   const openModal = (name: string, id: string, renderSort: number) => {
     setSelectedId(id);
@@ -54,9 +52,7 @@ const CategoryTable = () => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
-    const renderSortInput = form.elements.namedItem(
-      'renderSort',
-    ) as HTMLInputElement;
+    const renderSortInput = form.elements.namedItem('renderSort') as HTMLInputElement;
 
     if (nameInput && renderSortInput) {
       const name = nameInput.value.trim();
@@ -66,9 +62,7 @@ const CategoryTable = () => {
         .unwrap()
         .then(() => closeModal())
         .catch(
-          (err) =>
-            err.response.status === 409 &&
-            toast.error('Категорія з такою назвою вже існує'),
+          (err) => err.response.status === 409 && toast.error('Категорія з такою назвою вже існує'),
         );
     }
   };
@@ -85,31 +79,31 @@ const CategoryTable = () => {
     [productsCategories],
   );
 
-  const columns = useMemo<Column<CategoryTableRow>[]>(
+  const columns = useMemo<ColumnDef<CategoryTableRow>[]>(
     () => [
       {
-        Header: 'Найменування',
-        accessor: 'nameCol',
+        header: 'Найменування',
+        accessorKey: 'nameCol',
       },
       {
-        Header: 'Кількість товарів',
-        accessor: 'productsCountCol',
+        header: 'Кількість товарів',
+        accessorKey: 'productsCountCol',
       },
       {
-        Header: 'Сортування',
-        accessor: 'renderSortCol',
+        header: 'Сортування',
+        accessorKey: 'renderSortCol',
       },
       {
-        Header: 'Редагувати',
-        accessor: 'editCol',
-        Cell: ({ row }) => (
+        header: 'Редагувати',
+        accessorKey: 'editCol',
+        cell: ({ row }) => (
           <button
             className="flex w-full justify-center"
             onClick={() =>
               openModal(
-                row.values.nameCol,
-                row.values.editCol,
-                row.values.renderSortCol,
+                row.original.nameCol,
+                row.original.editCol,
+                row.original.renderSortCol,
               )
             }
           >
@@ -121,12 +115,12 @@ const CategoryTable = () => {
         ),
       },
       {
-        Header: 'Видалити',
-        accessor: 'deleteCol',
-        Cell: ({ row }) => (
+        header: 'Видалити',
+        accessorKey: 'deleteCol',
+        cell: ({ row }) => (
           <button
             className="flex w-full justify-center"
-            onClick={() => dispatch(deleteCategoryThunk(row.values.deleteCol))}
+            onClick={() => dispatch(deleteCategoryThunk(row.original.deleteCol))}
           >
             <Icon
               icon="delete"
@@ -153,10 +147,7 @@ const CategoryTable = () => {
         style={customModalStyles}
         ariaHideApp={false}
       >
-        <CategoryForm
-          handleSubmit={handleSubmit}
-          defaultValue={selectedCategory}
-        />
+        <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedCategory} />
       </Modal>
       {/* <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />

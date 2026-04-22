@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Column } from 'react-table';
+import { type ColumnDef } from '@tanstack/react-table';
 
 type HistoryTableProps = {
   isRetail?: boolean;
@@ -56,38 +56,38 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
     dispatch(fetchHistoryThunk({ page, q: query, isRetail }));
   }, [dispatch, page, query, isRetail]);
 
-  const columns = useMemo<Column<HistoryTableRow>[]>(
+  const columns = useMemo<ColumnDef<HistoryTableRow>[]>(
     () => [
       {
-        Header: 'Номер замовлення',
-        accessor: 'orderCodeCol',
-        Cell: ({ row }) => (
+        header: 'Номер замовлення',
+        accessorKey: 'orderCodeCol',
+        cell: ({ row }) => (
           <button
             onClick={() => openModal(row.original.order)}
             className="w-full transition-colors hover:text-blue-500"
           >
-            {row.values.orderCodeCol}
+            {row.original.orderCodeCol}
           </button>
         ),
       },
       {
-        Header: 'Дата',
-        accessor: 'createdAtCol',
+        header: 'Дата',
+        accessorKey: 'createdAtCol',
       },
       {
-        Header: 'Сума грн',
-        accessor: 'totalPriceCol',
+        header: 'Сума грн',
+        accessorKey: 'totalPriceCol',
       },
       {
-        Header: 'Статус',
-        accessor: 'statusCol',
+        header: 'Статус',
+        accessorKey: 'statusCol',
       },
       {
-        Header: 'Номер декларації НП',
-        accessor: 'declarationNumberCol',
-        Cell: ({ row }) => {
-          return row.values.declarationNumberCol
-            ? row.values.declarationNumberCol
+        header: 'Номер декларації НП',
+        accessorKey: 'declarationNumberCol',
+        cell: ({ row }) => {
+          return row.original.declarationNumberCol
+            ? row.original.declarationNumberCol
             : '—';
         },
       },
