@@ -258,7 +258,7 @@ export default function Page({ params }: PageProps) {
               <div className="it ems-center mb-5 flex w-1/2 gap-5 rounded-lg md:mb-20">
                 <p className="text-center text-xl">Перевізник:</p>
                 <Image
-                  src="/public/icons/Nova_Poshta_2019_ua.svg"
+                  src="/icons/Nova_Poshta_2019_ua.svg"
                   alt="Nova Poshta"
                   width={100}
                   height={50}
