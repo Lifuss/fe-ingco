@@ -46,7 +46,7 @@ const SupportTable = () => {
         limit: 30,
       }),
     );
-  }, [dispatch, page, isAnswered, query, supportTickets]);
+  }, [dispatch, page, isAnswered, query]);
 
   const data = useMemo<SupportTableRow[]>(
     () =>
