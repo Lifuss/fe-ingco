@@ -112,13 +112,13 @@ const npApiEnvelopeSchema = z
   .object({
     success: z.boolean(),
     data: z.array(z.unknown()),
-    errors: z.array(z.unknown()).optional(),
-    warnings: z.array(z.unknown()).optional(),
-    info: z.array(z.unknown()).optional(),
-    messageCodes: z.array(z.unknown()).optional(),
-    errorCodes: z.array(z.unknown()).optional(),
-    warningCodes: z.array(z.unknown()).optional(),
-    infoCodes: z.array(z.unknown()).optional(),
+    errors: z.unknown().optional(),
+    warnings: z.unknown().optional(),
+    info: z.unknown().optional(),
+    messageCodes: z.unknown().optional(),
+    errorCodes: z.unknown().optional(),
+    warningCodes: z.unknown().optional(),
+    infoCodes: z.unknown().optional(),
   })
   .passthrough();
 
