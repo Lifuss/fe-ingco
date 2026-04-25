@@ -149,28 +149,45 @@ const Page = ({ params }: PageProps) => {
     };
   };
 
+  if (!product) {
+    return (
+      <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
+        <SearchX size={52} />
+        <h2 className="text-2xl">Продукт не знайдено</h2>
+
+        <Button
+          className="bg-orange-light hover:bg-orange-400"
+          onClick={() => router.push('/')}
+        >
+          В каталог
+        </Button>
+      </div>
+    );
+  }
+
+  const productSchema = generateProductSchema();
+  const breadcrumbSchema = generateBreadcrumbSchema();
+
   const breadcrumbsItems = [
     { label: 'Каталог партнера', href: '/shop', preserveQuery: true },
     { label: product.name },
   ];
 
-  if (!product) return <div>Loading...</div>;
-
-  return product ? (
+  return (
     <>
-      {generateProductSchema() && (
+      {productSchema && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateProductSchema(), null, 2),
+            __html: JSON.stringify(productSchema, null, 2),
           }}
         />
       )}
-      {generateBreadcrumbSchema() && (
+      {breadcrumbSchema && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateBreadcrumbSchema(), null, 2),
+            __html: JSON.stringify(breadcrumbSchema, null, 2),
           }}
         />
       )}
@@ -343,18 +360,6 @@ const Page = ({ params }: PageProps) => {
         </div>
       </section>
     </>
-  ) : (
-    <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
-      <SearchX size={52} />
-      <h2 className="text-2xl">Продукт не знайдено</h2>
-
-      <Button
-        className="bg-orange-light hover:bg-orange-400"
-        onClick={() => router.push('/')}
-      >
-        В каталог
-      </Button>
-    </div>
   );
 };
 
