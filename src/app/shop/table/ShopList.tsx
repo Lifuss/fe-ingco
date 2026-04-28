@@ -19,20 +19,14 @@ interface ShopListProps {
   favorites: Product[];
 }
 
-const ShopList = ({
-  isFavoritePage = false,
-  products,
-  favorites,
-}: ShopListProps) => {
+const ShopList = ({ isFavoritePage = false, products, favorites }: ShopListProps) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const usdRate = useAppSelector(selectUSDRate);
 
   const favoritesList = favorites.map((product) => product._id);
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';

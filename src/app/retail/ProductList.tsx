@@ -30,15 +30,12 @@ const ProductList = ({ isFavoritePage = false }) => {
   const isAuth = authState.isAuthenticated || false;
   const favoritesIdList = favorites.map((product) => product._id);
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
-  const sortValue: sortValueType =
-    (searchParams.get('sortValue') as sortValueType) || 'default';
+  const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -101,9 +98,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     } else {
       const product = productsData.find((product) => product._id === id);
       if (!product) {
-        toast.error(
-          'Виникла помилка з додаванням товару в кошик, спробуйте ще раз через',
-        );
+        toast.error('Виникла помилка з додаванням товару в кошик, спробуйте ще раз через');
         return;
       }
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
@@ -119,9 +114,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
   };
 
-  const totalPage = isFavoritePage
-    ? Math.ceil(favorites.length / 10)
-    : totalPages;
+  const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
 
   return (
     <>

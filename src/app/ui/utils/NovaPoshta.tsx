@@ -33,9 +33,7 @@ const NovaPoshtaComponent = () => {
   const loadOptions = debounce(
     (
       inputValue: string,
-      callback: (
-        options: OptionsOrGroups<CityOption, GroupBase<CityOption>>,
-      ) => void,
+      callback: (options: OptionsOrGroups<CityOption, GroupBase<CityOption>>) => void,
     ) => {
       novaPoshta.fetchCities(inputValue).then((data) => {
         if (!data) {
@@ -64,11 +62,9 @@ const NovaPoshtaComponent = () => {
     }
 
     setIsLoading(true);
-    await novaPoshta
-      .fetchWarehouses(city.value.MainDescription, '150')
-      .then((data) => {
-        setWarehouses(data);
-      });
+    await novaPoshta.fetchWarehouses(city.value.MainDescription, '150').then((data) => {
+      setWarehouses(data);
+    });
     setIsLoading(false);
   };
 

@@ -7,21 +7,15 @@ import { redirect, usePathname, useRouter } from 'next/navigation';
 import { ComponentType, FC, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-export default function withAuth<T extends object>(
-  Component: ComponentType<T>,
-) {
+export default function withAuth<T extends object>(Component: ComponentType<T>) {
   const AuthComponent: FC<T> = (props) => {
     const dispatch = useAppDispatch();
     const pathname = usePathname();
     const router = useRouter();
-    const { isAuthenticated, user } = useAppSelector(
-      (state) => state.persistedAuthReducer,
-    );
+    const { isAuthenticated, user } = useAppSelector((state) => state.persistedAuthReducer);
     useEffect(() => {
       if (!isAuthenticated) {
-        const savedUser = JSON.parse(
-          localStorage.getItem('persist:auth') as string,
-        );
+        const savedUser = JSON.parse(localStorage.getItem('persist:auth') as string);
         const token = JSON.parse(savedUser?.token);
 
         if (token) {
@@ -32,28 +26,17 @@ export default function withAuth<T extends object>(
               toast.error('Сесія закінчилася. Будь ласка, увійдіть знову.');
               router.push('/auth/login');
             });
-        } else if (
-          pathname !== '/auth/login' &&
-          pathname !== '/auth/register'
-        ) {
+        } else if (pathname !== '/auth/login' && pathname !== '/auth/register') {
           redirect('/auth/login');
         }
       }
     }, [dispatch, pathname, router, isAuthenticated]);
 
-    if (
-      !isAuthenticated &&
-      pathname !== '/auth/login' &&
-      pathname !== '/auth/register'
-    ) {
+    if (!isAuthenticated && pathname !== '/auth/login' && pathname !== '/auth/register') {
       return null;
     }
 
-    if (
-      user.isVerified === false &&
-      pathname !== '/auth/login' &&
-      pathname !== '/auth/register'
-    ) {
+    if (user.isVerified === false && pathname !== '/auth/login' && pathname !== '/auth/register') {
       toast.info('Ваш статус верифікації, не підтверджений');
       redirect('/home');
     }

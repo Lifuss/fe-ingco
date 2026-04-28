@@ -37,9 +37,7 @@ const UserTable = () => {
   );
   const { isB2B, isUserVerified, isDeleted } = userTableCheckboxesStatus;
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
@@ -87,9 +85,7 @@ const UserTable = () => {
       {
         header: 'Верифікація',
         accessorKey: 'verificationStatusCol',
-        cell: ({ row }) => (
-          <div>{row.original.verificationStatusCol ? '✅' : '❌'}</div>
-        ),
+        cell: ({ row }) => <div>{row.original.verificationStatusCol ? '✅' : '❌'}</div>,
       },
     ],
     [],
@@ -160,9 +156,7 @@ const UserTable = () => {
             type="checkbox"
             name="isVerified"
             checked={!isUserVerified}
-            onChange={() =>
-              handleCheckboxChange(CheckboxActionType.IsUserVerified)
-            }
+            onChange={() => handleCheckboxChange(CheckboxActionType.IsUserVerified)}
           />
         </label>
         <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
@@ -184,11 +178,7 @@ const UserTable = () => {
         rowClickable={true}
         rowFunction={handleRowClick}
       />
-      <AdminUserModal
-        isOpen={isOpen}
-        closeModal={closeModal}
-        user={selectedUser}
-      />
+      <AdminUserModal isOpen={isOpen} closeModal={closeModal} user={selectedUser} />
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
       </div>

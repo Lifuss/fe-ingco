@@ -4,10 +4,7 @@ import Icon from '@/app/ui/assets/Icon';
 import { sortValueType } from '@/app/ui/FiltersBlock';
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
-import {
-  deleteProductThunk,
-  fetchMainTableDataThunk,
-} from '@/lib/appState/main/operations';
+import { deleteProductThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -28,19 +25,14 @@ type ProductTableRow = {
 const ProductTable = () => {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { products, totalPages } = useAppSelector(
-    (state) => state.persistedMainReducer,
-  );
+  const { products, totalPages } = useAppSelector((state) => state.persistedMainReducer);
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
-  const sortValue: sortValueType =
-    (searchParams.get('sortValue') as sortValueType) || 'default';
+  const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
 
   useEffect(() => {
     dispatch(
@@ -117,9 +109,7 @@ const ProductTable = () => {
             <button
               onClick={() => {
                 const productName = row.original.nameCol as string;
-                if (
-                  confirm(`Ви впевнені, що хочете видалити "${productName}"?`)
-                ) {
+                if (confirm(`Ви впевнені, що хочете видалити "${productName}"?`)) {
                   dispatch(deleteProductThunk(row.original.editCol));
                 }
               }}

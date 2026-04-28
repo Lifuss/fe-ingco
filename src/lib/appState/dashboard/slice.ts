@@ -16,10 +16,7 @@ import { toast } from 'react-toastify';
 import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
 import { CheckboxActionType } from '@/app/dashboard/tables/UserTable';
 
-type AllowedCheckboxActions = Exclude<
-  CheckboxActionType,
-  CheckboxActionType.Admin
->;
+type AllowedCheckboxActions = Exclude<CheckboxActionType, CheckboxActionType.Admin>;
 type InitialStateType = {
   users: User[];
   orders: Order[];
@@ -58,8 +55,7 @@ const Slice = createSlice({
   initialState,
   reducers: {
     setCheckbox: (state, { payload }: { payload: AllowedCheckboxActions }) => {
-      state.userTableCheckboxesStatus[payload] =
-        !state.userTableCheckboxesStatus[payload];
+      state.userTableCheckboxesStatus[payload] = !state.userTableCheckboxesStatus[payload];
     },
   },
   extraReducers: (builder) => {
@@ -80,9 +76,7 @@ const Slice = createSlice({
         state.users.push(payload);
       })
       .addCase(updateOrderThunk.fulfilled, (state, { payload }) => {
-        const index = state.orders.findIndex(
-          (order) => order.orderCode === payload.orderCode,
-        );
+        const index = state.orders.findIndex((order) => order.orderCode === payload.orderCode);
         state.orders[index] = payload;
         toast.success('Замовлення успішно змінено');
       })
@@ -102,9 +96,7 @@ const Slice = createSlice({
         state.usersStats = payload;
       })
       .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
-        state.supportTickets.filter(
-          (ticket) => ticket.ticketNumber !== payload,
-        );
+        state.supportTickets.filter((ticket) => ticket.ticketNumber !== payload);
       });
     builder
       .addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {

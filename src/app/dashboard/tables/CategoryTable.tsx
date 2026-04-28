@@ -100,11 +100,7 @@ const CategoryTable = () => {
           <button
             className="flex w-full justify-center"
             onClick={() =>
-              openModal(
-                row.original.nameCol,
-                row.original.editCol,
-                row.original.renderSortCol,
-              )
+              openModal(row.original.nameCol, row.original.editCol, row.original.renderSortCol)
             }
           >
             <Icon

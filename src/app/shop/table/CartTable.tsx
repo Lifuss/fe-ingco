@@ -37,9 +37,7 @@ const CartTable = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
-  const selectedCart: CartData = useAppSelector(
-    (state) => state.persistedAuthReducer.user.cart,
-  );
+  const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user.cart);
   const selectedCurrency = useAppSelector(selectCurrency);
 
   const handleQuantityChange = (id: string, operation: string) => {
@@ -135,9 +133,7 @@ const CartTable = () => {
         header: 'РРЦ(грн)',
         accessorKey: 'rrcCol',
         cell: ({ row }) => {
-          return (
-            <div title="Рекомендована роздрібна ціна">{row.original.rrcCol}</div>
-          );
+          return <div title="Рекомендована роздрібна ціна">{row.original.rrcCol}</div>;
         },
       },
       {
@@ -148,9 +144,7 @@ const CartTable = () => {
             <div>
               <button
                 className="mr-2"
-                onClick={() =>
-                  handleQuantityChange(row.original._id, 'decrement')
-                }
+                onClick={() => handleQuantityChange(row.original._id, 'decrement')}
               >
                 -
               </button>
@@ -162,9 +156,7 @@ const CartTable = () => {
               />
               <button
                 className="ml-2"
-                onClick={() =>
-                  handleQuantityChange(row.original._id, 'increment')
-                }
+                onClick={() => handleQuantityChange(row.original._id, 'increment')}
               >
                 +
               </button>
@@ -207,8 +199,7 @@ const CartTable = () => {
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const comment = (form.elements.namedItem('comment') as HTMLInputElement)
-      ?.value;
+    const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
     const address =
       (form.elements.namedItem('city') as HTMLInputElement)?.value +
       ', ' +
@@ -218,9 +209,7 @@ const CartTable = () => {
         productId: item.productId._id,
         quantity: item.quantity,
         price: Number(item.productId.price.toFixed(2)),
-        totalPriceByOneProduct: Number(
-          (item.productId.price * item.quantity).toFixed(2),
-        ),
+        totalPriceByOneProduct: Number((item.productId.price * item.quantity).toFixed(2)),
       })),
       shippingAddress: address,
       totalPrice: Number(
@@ -256,10 +245,7 @@ const CartTable = () => {
         </p>
       </div>
       <div className="flex justify-between gap-20">
-        <form
-          className="flex w-full justify-between px-5"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex w-full justify-between px-5" onSubmit={handleSubmit}>
           <div className="w-full">
             <h4 className="mb-2 w-fit rounded-full border border-gray-500 p-2">
               <Image
@@ -275,14 +261,12 @@ const CartTable = () => {
           <div className="flex w-[500px] flex-col">
             <ul className="mt-4 mb-4 flex flex-col gap-1 rounded-xl border border-gray-200 p-2 text-lg">
               <li>
-                <p>
-                  Після оформлення з вами зв&apos;яжеться менеджер для уточнення
-                </p>
+                <p>Після оформлення з вами зв&apos;яжеться менеджер для уточнення</p>
               </li>
               <li>
                 <p>
-                  В коментарі можете вказати бажаний тип зв&apos;язку, а також
-                  неявні деталі по типу розділеного замовлення тощо.
+                  В коментарі можете вказати бажаний тип зв&apos;язку, а також неявні деталі по типу
+                  розділеного замовлення тощо.
                 </p>
               </li>
             </ul>
@@ -304,11 +288,7 @@ const CartTable = () => {
           </div>
         </form>
       </div>
-      <ModalProduct
-        product={selectedProduct}
-        closeModal={closeProductModal}
-        isOpen={isModalOpen}
-      />
+      <ModalProduct product={selectedProduct} closeModal={closeProductModal} isOpen={isModalOpen} />
     </div>
   ) : (
     <div className="pt-10">

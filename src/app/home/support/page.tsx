@@ -18,12 +18,9 @@ const Page = () => {
     dispatch(supportTicketThunk({ name, email, message, phone }))
       .unwrap()
       .then(() => {
-        toast.success(
-          'Повідомлення створено, очікуйте відповіді на електронні пошті',
-          {
-            autoClose: 5000,
-          },
-        );
+        toast.success('Повідомлення створено, очікуйте відповіді на електронні пошті', {
+          autoClose: 5000,
+        });
         router.push('/home');
       })
       .catch(() => {
@@ -34,9 +31,7 @@ const Page = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid place-content-center gap-4 py-20">
-        <h1 className="mb-2 block text-center text-2xl font-medium">
-          Підтримка
-        </h1>
+        <h1 className="mb-2 block text-center text-2xl font-medium">Підтримка</h1>
         <input
           className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
           id="name"

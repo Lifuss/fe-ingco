@@ -39,15 +39,11 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
     setIsModalOpen(false);
   }, []);
   const dispatch = useAppDispatch();
-  const { history, totalPages } = useAppSelector(
-    (state) => state.persistedMainReducer,
-  );
+  const { history, totalPages } = useAppSelector((state) => state.persistedMainReducer);
   const usdCurrency = useAppSelector(selectUSDRate);
   const searchParams = useSearchParams();
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
@@ -86,9 +82,7 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
         header: 'Номер декларації НП',
         accessorKey: 'declarationNumberCol',
         cell: ({ row }) => {
-          return row.original.declarationNumberCol
-            ? row.original.declarationNumberCol
-            : '—';
+          return row.original.declarationNumberCol ? row.original.declarationNumberCol : '—';
         },
       },
     ],
@@ -99,9 +93,7 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
     return history.map((item) => ({
       orderCodeCol: item.orderCode,
       createdAtCol: new Date(item.createdAt).toLocaleDateString('uk-UA'),
-      totalPriceCol: !isRetail
-        ? Math.ceil(item.totalPrice * usdCurrency)
-        : item.totalPrice,
+      totalPriceCol: !isRetail ? Math.ceil(item.totalPrice * usdCurrency) : item.totalPrice,
       statusCol: item.status,
       declarationNumberCol: item.declarationNumber,
       order: item,

@@ -60,15 +60,12 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const favorites: Product[] = state.persistedAuthReducer.user.favorites;
   const favoritesList = favorites.map((product) => product._id);
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
-  const sortValue: sortValueType =
-    (searchParams.get('sortValue') as sortValueType) || 'default';
+  const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -81,9 +78,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       );
     }
     if (category) {
-      productsData = productsData.filter(
-        (product) => product.category?.name === category,
-      );
+      productsData = productsData.filter((product) => product.category?.name === category);
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
@@ -129,9 +124,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         )
           .unwrap()
           .then(() => {
-            toast.success(
-              `${quantities[id]} шт. - ${productName} додано в кошик`,
-            );
+            toast.success(`${quantities[id]} шт. - ${productName} додано в кошик`);
           });
         setQuantities((prev) => ({ ...prev, [id]: 0 }));
       } else {
@@ -283,31 +276,18 @@ const ShopTable = ({ isFavoritePage = false }) => {
         cell: ({ row }) => (
           <button
             className="px-2 py-1 text-white transition-transform duration-200 hover:scale-110"
-            onClick={() =>
-              handleCartClick(row.original._id, row.original.nameCol)
-            }
+            onClick={() => handleCartClick(row.original._id, row.original.nameCol)}
           >
-            <Icon
-              icon="cart"
-              className="h-9 w-9 fill-black hover:fill-orange-500"
-            />
+            <Icon icon="cart" className="h-9 w-9 fill-black hover:fill-orange-500" />
           </button>
         ),
       },
     ],
 
-    [
-      favoritesList,
-      handleCartClick,
-      handleFavoriteClick,
-      logProductClick,
-      quantities,
-    ],
+    [favoritesList, handleCartClick, handleFavoriteClick, logProductClick, quantities],
   );
 
-  const totalPage = isFavoritePage
-    ? Math.ceil(favorites.length / 10)
-    : totalPages;
+  const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
 
   return (
     <>
@@ -350,11 +330,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
             </div>
           </div>
 
-          <ModalProduct
-            product={selectedProduct}
-            closeModal={closeModal}
-            isOpen={isModalOpen}
-          />
+          <ModalProduct product={selectedProduct} closeModal={closeModal} isOpen={isModalOpen} />
         </>
       )}
     </>

@@ -24,11 +24,7 @@ interface UserFormProps {
   isEditing?: boolean;
 }
 
-const UserForm: React.FC<UserFormProps> = ({
-  defaultValues,
-  handleSubmit,
-  isEditing = false,
-}) => {
+const UserForm: React.FC<UserFormProps> = ({ defaultValues, handleSubmit, isEditing = false }) => {
   const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -145,11 +141,7 @@ const UserForm: React.FC<UserFormProps> = ({
         </label>
         <label>
           Роль
-          <select
-            name="role"
-            className={inputStyle}
-            defaultValue={isEditing ? role : 'user'}
-          >
+          <select name="role" className={inputStyle} defaultValue={isEditing ? role : 'user'}>
             <option value="user">Клієнт</option>
             <option value="admin">Адміністратор</option>
           </select>

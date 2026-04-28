@@ -25,15 +25,9 @@ const modifiedStyles = {
   },
 };
 
-const SupportTicketModal = ({
-  isOpen,
-  closeModal,
-  ticket,
-}: SupportTicketModalProps) => {
+const SupportTicketModal = ({ isOpen, closeModal, ticket }: SupportTicketModalProps) => {
   const dispatch = useAppDispatch();
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
-    ticket,
-  );
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(ticket);
 
   useEffect(() => {
     setSelectedTicket(ticket);
@@ -41,16 +35,7 @@ const SupportTicketModal = ({
 
   if (selectedTicket === null) return null;
 
-  const {
-    name,
-    email,
-    updatedAt,
-    message,
-    isAnswered,
-    ticketNumber,
-    _id,
-    phone,
-  } = selectedTicket;
+  const { name, email, updatedAt, message, isAnswered, ticketNumber, _id, phone } = selectedTicket;
 
   const handleButton = () => {
     dispatch(
@@ -62,11 +47,7 @@ const SupportTicketModal = ({
     )
       .unwrap()
       .then(() => {
-        toast.success(
-          isAnswered
-            ? 'Звернення витягнуто з архіву'
-            : 'Звернення успішно виконано',
-        );
+        toast.success(isAnswered ? 'Звернення витягнуто з архіву' : 'Звернення успішно виконано');
         closeModal();
       })
       .catch(() => {
@@ -75,12 +56,7 @@ const SupportTicketModal = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={closeModal}
-      style={modifiedStyles}
-      ariaHideApp={false}
-    >
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
       <div onClick={closeModal} className="absolute top-2 right-2">
         <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>

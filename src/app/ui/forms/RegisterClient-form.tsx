@@ -21,9 +21,7 @@ export const inputStyle =
 const errorClassName = 'max-w-[22em] p-1 text-red-500 text-sm';
 
 export default function RegisterClientForm() {
-  const { isAuthenticated } = useAppSelector(
-    (state) => state.persistedAuthReducer,
-  );
+  const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const {
@@ -44,9 +42,7 @@ export default function RegisterClientForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const { checkPassword: _checkPassword, ...registerData } = data;
-      const registerResponse = await dispatch(
-        registerClientThunk(registerData),
-      );
+      const registerResponse = await dispatch(registerClientThunk(registerData));
 
       if (registerResponse.meta.requestStatus === 'rejected') {
         if (registerResponse.payload.message.includes('409')) {
@@ -80,9 +76,7 @@ export default function RegisterClientForm() {
               placeholder="Прізвище"
               {...register('lastName')}
             />
-            {errors.lastName && (
-              <p className={errorClassName}>{errors.lastName.message}</p>
-            )}
+            {errors.lastName && <p className={errorClassName}>{errors.lastName.message}</p>}
           </div>
 
           <div>
@@ -96,9 +90,7 @@ export default function RegisterClientForm() {
               placeholder="Ім'я"
               {...register('firstName')}
             />
-            {errors.firstName && (
-              <p className={errorClassName}>{errors.firstName.message}</p>
-            )}
+            {errors.firstName && <p className={errorClassName}>{errors.firstName.message}</p>}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="surName">
@@ -111,9 +103,7 @@ export default function RegisterClientForm() {
               placeholder="По батькові"
               {...register('surName')}
             />
-            {errors.surName && (
-              <p className={errorClassName}>{errors.surName.message}</p>
-            )}
+            {errors.surName && <p className={errorClassName}>{errors.surName.message}</p>}
           </div>
           <div className="flex gap-5">
             <div>
@@ -128,9 +118,7 @@ export default function RegisterClientForm() {
                 defaultValue="+"
                 {...register('phone')}
               />
-              {errors.phone && (
-                <p className={errorClassName}>{errors.phone.message}</p>
-              )}
+              {errors.phone && <p className={errorClassName}>{errors.phone.message}</p>}
             </div>
             <div>
               <label className="mb-2 block text-base" htmlFor="email">
@@ -154,9 +142,7 @@ export default function RegisterClientForm() {
                 placeholder="Ваш email"
                 {...register('email')}
               />
-              {errors.email && (
-                <p className={errorClassName}>{errors.email.message}</p>
-              )}
+              {errors.email && <p className={errorClassName}>{errors.email.message}</p>}
             </div>
           </div>
           <div>
@@ -170,9 +156,7 @@ export default function RegisterClientForm() {
               placeholder="Пароль"
               {...register('password')}
             />
-            {errors.password && (
-              <p className={errorClassName}>{errors.password.message}</p>
-            )}
+            {errors.password && <p className={errorClassName}>{errors.password.message}</p>}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="checkPassword">
@@ -195,11 +179,7 @@ export default function RegisterClientForm() {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <Loader className="mx-auto" size={32} />
-          ) : (
-            'Зареєструватися'
-          )}
+          {isSubmitting ? <Loader className="mx-auto" size={32} /> : 'Зареєструватися'}
         </Button>
         <p className="mt-8 text-center">
           Вже зареєстровані?{' '}
@@ -210,11 +190,7 @@ export default function RegisterClientForm() {
             Ввійти в акаунт
           </Link>
         </p>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
+        <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true"></div>
       </div>
     </form>
   );

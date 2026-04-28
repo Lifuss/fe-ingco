@@ -1,10 +1,7 @@
 'use client';
 import Modal from 'react-modal';
 import { useAppDispatch } from '@/lib/hooks';
-import {
-  addProductToCartThunk,
-  addProductToRetailCartThunk,
-} from '@/lib/appState/user/operation';
+import { addProductToCartThunk, addProductToRetailCartThunk } from '@/lib/appState/user/operation';
 import { useState } from 'react';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
@@ -49,9 +46,7 @@ const ModalProduct = ({
           <button className="absolute top-0 right-0" onClick={closeModal}>
             <X size={24} absoluteStrokeWidth className="cursor-pointer" />
           </button>
-          <h2 className="mx-auto mb-5 px-6 text-center text-2xl font-medium">
-            {product.name}
-          </h2>
+          <h2 className="mx-auto mb-5 px-6 text-center text-2xl font-medium">{product.name}</h2>
           <div className="grid grid-cols-3">
             <div className="col-span-1 border-r-2 border-black pr-10">
               <div className="relative mb-10 h-[150px]">
@@ -66,9 +61,7 @@ const ModalProduct = ({
               <div className="flex items-center justify-between">
                 {!isRetail ? (
                   <div>
-                    <p title="Ціна в дол. амер. за 1 одиницю">
-                      Ціна $: {product.price}
-                    </p>
+                    <p title="Ціна в дол. амер. за 1 одиницю">Ціна $: {product.price}</p>
                     <p title="Рекомендована роздрібна ціна в грн">
                       РРЦ: {product.priceRetailRecommendation} грн
                     </p>
@@ -79,10 +72,7 @@ const ModalProduct = ({
                       {product.priceRetailRecommendation} грн
                     </span>
                     <span>
-                      Ціна:{' '}
-                      <span className="text-orange-light pl-1">
-                        {product.rrcSale} грн
-                      </span>
+                      Ціна: <span className="text-orange-light pl-1">{product.rrcSale} грн</span>
                     </span>
                   </div>
                 ) : (
@@ -91,17 +81,9 @@ const ModalProduct = ({
                 <div className="flex items-center gap-3">
                   {!isRetail && (
                     <div className="flex gap-1 text-2xl">
-                      <button
-                        onClick={() => setProductQuantity(productQuantity - 1)}
-                      >
-                        -
-                      </button>
+                      <button onClick={() => setProductQuantity(productQuantity - 1)}>-</button>
                       <p>{productQuantity}</p>
-                      <button
-                        onClick={() => setProductQuantity(productQuantity + 1)}
-                      >
-                        +
-                      </button>
+                      <button onClick={() => setProductQuantity(productQuantity + 1)}>+</button>
                     </div>
                   )}
                   <button
@@ -135,10 +117,7 @@ const ModalProduct = ({
                       }
                     }}
                   >
-                    <Icon
-                      icon="cart"
-                      className="h-8 w-8 fill-black hover:fill-orange-500"
-                    />
+                    <Icon icon="cart" className="h-8 w-8 fill-black hover:fill-orange-500" />
                   </button>
                 </div>
               </div>
@@ -146,12 +125,10 @@ const ModalProduct = ({
             <div className="col-span-2 min-w-[200px] pl-4 text-base">
               <div className="mb-2 flex flex-wrap justify-between">
                 <p>
-                  <span className="font-medium">Артикул:</span>{' '}
-                  {product.article}
+                  <span className="font-medium">Артикул:</span> {product.article}
                 </p>
                 <p>
-                  <span className="font-medium">Категорія:</span>{' '}
-                  {product.category?.name}
+                  <span className="font-medium">Категорія:</span> {product.category?.name}
                 </p>
               </div>
               <div className="">
@@ -170,8 +147,7 @@ const ModalProduct = ({
                   item.value !== '-' ? (
                     <div key={item._id}>
                       <p>
-                        <span className="font-medium">{item.name}:</span>{' '}
-                        {item.value}
+                        <span className="font-medium">{item.name}:</span> {item.value}
                       </p>
                     </div>
                   ) : (
@@ -184,8 +160,7 @@ const ModalProduct = ({
                 )}
                 {product.warranty ? (
                   <p className="">
-                    <span className="font-medium">Гарантія:</span>{' '}
-                    {product.warranty} міс.
+                    <span className="font-medium">Гарантія:</span> {product.warranty} міс.
                   </p>
                 ) : null}
               </div>

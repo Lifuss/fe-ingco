@@ -25,15 +25,9 @@ const baseNameSchema = z
 
 // -----SCHEMAS------
 export const registerPartnerSchema = z.object({
-  lastName: baseNameSchema.regex(
-    nameRegex,
-    'Прізвище може містити тільки літери',
-  ),
+  lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
   firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
-  surName: baseNameSchema.regex(
-    nameRegex,
-    'По батькові може містити тільки літери',
-  ),
+  surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
   phone: basePhoneSchema,
   edrpou: z.string().regex(/^\d{8}$/, 'Код ЄДРПОУ повинен містити 8 цифр'),
   email: baseEmailSchema,
@@ -42,18 +36,9 @@ export const registerPartnerSchema = z.object({
 
 export const registerClientSchema = z
   .object({
-    lastName: baseNameSchema.regex(
-      nameRegex,
-      'Прізвище може містити тільки літери',
-    ),
-    firstName: baseNameSchema.regex(
-      nameRegex,
-      'Ім’я може містити тільки літери',
-    ),
-    surName: baseNameSchema.regex(
-      nameRegex,
-      'По батькові може містити тільки літери',
-    ),
+    lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
+    firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
+    surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
     phone: basePhoneSchema,
     email: baseEmailSchema,
     password: basePasswordSchema,

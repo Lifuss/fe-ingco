@@ -11,9 +11,7 @@ const SwitchRegisterForms = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [isB2B, setIsB2B] = useState(
-    () => searchParams?.get(QUERY_KEY) === 'true',
-  );
+  const [isB2B, setIsB2B] = useState(() => searchParams?.get(QUERY_KEY) === 'true');
 
   const select = (next: boolean) => {
     if (next === isB2B) return;
@@ -41,7 +39,7 @@ const SwitchRegisterForms = () => {
       <div
         role="tablist"
         aria-label="Тип реєстрації"
-        className="mx-auto mb-5 flex text-base justify-center"
+        className="mx-auto mb-5 flex justify-center text-base"
       >
         <button
           type="button"

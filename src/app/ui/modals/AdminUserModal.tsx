@@ -69,11 +69,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       ...userValidate
     } = normalizeUser;
 
-    if (
-      !selectedUser.isVerified &&
-      userValidate.isVerified &&
-      !userValidate.password
-    ) {
+    if (!selectedUser.isVerified && userValidate.isVerified && !userValidate.password) {
       toast.error(
         'Поле пароль обовязкове для заповнення, якщо ви хочете змінити статус верифікації',
       );
@@ -178,65 +174,55 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
   ];
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={closeModal}
-      style={modifiedStyles}
-      ariaHideApp={false}
-    >
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
       <div onClick={closeModal} className="absolute top-2 right-2">
         <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
       <h2 className="font-lg mb-4 font-medium">Редагування користувача</h2>
       <form onSubmit={handleSubmit} className="mb-2 text-lg">
-        {dataToRender.map(
-          ({ label, value, name, type, renderExtras, required }) => (
-            <div
-              key={label}
-              className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base"
-            >
-              {name === 'isVerified' ? (
-                <div className="flex items-center gap-2">
-                  <label htmlFor={name}>{label}</label>
-                  <input
-                    id={name}
-                    type={type}
-                    name={name}
-                    defaultChecked={!!value}
-                    onChange={(e) => {
-                      setSelectedUser({
-                        ...selectedUser,
-                        [name]: e.target.checked,
-                      });
-                    }}
-                  />
-                  <span>{!!value ? '✅' : '❌'}</span>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <label className="block w-[100px]" htmlFor={name}>
-                    {label}
-                  </label>
-                  <input
-                    required={required}
-                    id={name}
-                    type={type}
-                    name={name}
-                    defaultValue={value}
-                    className="min-w-[250px] rounded-md border-gray-200"
-                    onChange={(e) => {
-                      setSelectedUser({
-                        ...selectedUser,
-                        [name]: e.target.value,
-                      });
-                    }}
-                  />
-                  {renderExtras && renderExtras()}
-                </div>
-              )}
-            </div>
-          ),
-        )}
+        {dataToRender.map(({ label, value, name, type, renderExtras, required }) => (
+          <div key={label} className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
+            {name === 'isVerified' ? (
+              <div className="flex items-center gap-2">
+                <label htmlFor={name}>{label}</label>
+                <input
+                  id={name}
+                  type={type}
+                  name={name}
+                  defaultChecked={!!value}
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      [name]: e.target.checked,
+                    });
+                  }}
+                />
+                <span>{!!value ? '✅' : '❌'}</span>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <label className="block w-[100px]" htmlFor={name}>
+                  {label}
+                </label>
+                <input
+                  required={required}
+                  id={name}
+                  type={type}
+                  name={name}
+                  defaultValue={value}
+                  className="min-w-[250px] rounded-md border-gray-200"
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      [name]: e.target.value,
+                    });
+                  }}
+                />
+                {renderExtras && renderExtras()}
+              </div>
+            )}
+          </div>
+        ))}
         <div className="mb-2 flex">
           <label className="block w-[100px]" htmlFor={address}>
             Адреса
@@ -254,10 +240,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
             }}
           />
         </div>
-        <div
-          key={updatedAt}
-          className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base"
-        >
+        <div key={updatedAt} className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
           <p>Дата активності</p>
           <p>{new Date(updatedAt).toLocaleDateString('uk-UA')}</p>
         </div>
@@ -294,8 +277,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
           <Button
             className="bg-green-200 hover:bg-green-400 focus:bg-green-400 active:bg-green-400"
             onClick={() => {
-              if (confirm('Відновити користувача?'))
-                dispatch(restoreUserThunk(selectedUser._id));
+              if (confirm('Відновити користувача?')) dispatch(restoreUserThunk(selectedUser._id));
             }}
             type="button"
           >
@@ -321,10 +303,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
               <p className="font-medium">Сума $</p>
             </li>
             {orders.map((order) => (
-              <li
-                key={order._id}
-                className="grid grid-cols-3 border-b border-gray-200"
-              >
+              <li key={order._id} className="grid grid-cols-3 border-b border-gray-200">
                 <p>{order.orderCode}</p>
                 <p>{order.status}</p>
                 <p>{order.totalPrice.toFixed(2)}</p>
@@ -333,9 +312,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
           </ul>
         </div>
       ) : (
-        <h3 className="w-full text-lg font-medium">
-          Клієнт ще не здійснив жодного замовлення
-        </h3>
+        <h3 className="w-full text-lg font-medium">Клієнт ще не здійснив жодного замовлення</h3>
       )}
     </Modal>
   );

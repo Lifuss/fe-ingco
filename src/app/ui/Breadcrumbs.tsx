@@ -85,18 +85,13 @@ const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
           {itemsWithHref.map((item, index) => (
             <li key={index} className="flex items-center">
               {item.href ? (
-                <Link
-                  href={item.href}
-                  className="transition-colors hover:text-orange-500"
-                >
+                <Link href={item.href} className="transition-colors hover:text-orange-500">
                   {item.label}
                 </Link>
               ) : (
                 <span className="font-medium text-gray-900">{item.label}</span>
               )}
-              {index !== itemsWithHref.length - 1 && (
-                <ChevronRight size={16} className="mx-1" />
-              )}
+              {index !== itemsWithHref.length - 1 && <ChevronRight size={16} className="mx-1" />}
             </li>
           ))}
         </ol>

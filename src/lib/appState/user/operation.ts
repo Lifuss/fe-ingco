@@ -92,10 +92,7 @@ export const registerClientThunk = createAsyncThunk(
   'auth/registerClient',
   async (credentials: RegisterB2CCredentials, { rejectWithValue }) => {
     try {
-      const response = await apiIngco.post(
-        '/users/register/client',
-        credentials,
-      );
+      const response = await apiIngco.post('/users/register/client', credentials);
       if (response.status < 200 || response.status >= 300) {
         throw new Error(`HTTP error: ${response.status}`);
       }
@@ -117,33 +114,30 @@ export const registerClientThunk = createAsyncThunk(
   },
 );
 
-export const logoutThunk = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await apiIngco.delete('/users/logout');
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
-      clearToken();
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorInfo = {
-          message: error.message,
-          name: error.name,
-          code: error.code,
-        };
-        return rejectWithValue(errorInfo);
-      } else if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      } else {
-        return rejectWithValue(error);
-      }
+export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+  try {
+    const response = await apiIngco.delete('/users/logout');
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP error: ${response.status}`);
     }
-  },
-);
+
+    clearToken();
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errorInfo = {
+        message: error.message,
+        name: error.name,
+        code: error.code,
+      };
+      return rejectWithValue(errorInfo);
+    } else if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    } else {
+      return rejectWithValue(error);
+    }
+  }
+});
 
 export const refreshTokenThunk = createAsyncThunk(
   'auth/refreshToken',
@@ -228,17 +222,14 @@ export const deleteFavoriteProductThunk = createAsyncThunk(
   },
 );
 
-export const getUserCartThunk = createAsyncThunk(
-  'cart/get',
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await apiIngco.get('users/cart');
-      return data.cart;
-    } catch (error) {
-      rejectWithValue(error);
-    }
-  },
-);
+export const getUserCartThunk = createAsyncThunk('cart/get', async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await apiIngco.get('users/cart');
+    return data.cart;
+  } catch (error) {
+    rejectWithValue(error);
+  }
+});
 
 export const getUserRetailCartThunk = createAsyncThunk(
   'cart/getRetail',
@@ -254,10 +245,7 @@ export const getUserRetailCartThunk = createAsyncThunk(
 
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
-  async (
-    { productId, quantity }: { productId: string; quantity: number },
-    { rejectWithValue },
-  ) => {
+  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.post('users/cart', {
         productId,
@@ -272,10 +260,7 @@ export const addProductToCartThunk = createAsyncThunk(
 
 export const addProductToRetailCartThunk = createAsyncThunk(
   'cart/addRetail',
-  async (
-    { productId, quantity }: { productId: string; quantity: number },
-    { rejectWithValue },
-  ) => {
+  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.post('users/cart/retail', {
         productId,

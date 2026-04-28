@@ -39,9 +39,7 @@ const RetailCartTable = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
-  const isAuth = useAppSelector(
-    (state) => state.persistedAuthReducer.isAuthenticated,
-  );
+  const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const {
     retailCart,
     firstName,
@@ -57,9 +55,7 @@ const RetailCartTable = () => {
     phone: string;
     email: string;
   } = useAppSelector((state) => state.persistedAuthReducer.user);
-  const localStorageCart = useAppSelector(
-    (state) => state.persistedAuthReducer.localStorageCart,
-  );
+  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart);
 
   const selectedCart = isAuth ? retailCart : localStorageCart;
 
@@ -68,9 +64,7 @@ const RetailCartTable = () => {
       if (operation === 'increment') {
         dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
       } else {
-        dispatch(
-          deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }),
-        );
+        dispatch(deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }));
       }
     } else {
       if (operation === 'increment') {
@@ -166,9 +160,7 @@ const RetailCartTable = () => {
             <div>
               <button
                 className="mr-2"
-                onClick={() =>
-                  handleQuantityChange(row.original._id, 'decrement')
-                }
+                onClick={() => handleQuantityChange(row.original._id, 'decrement')}
               >
                 -
               </button>
@@ -180,9 +172,7 @@ const RetailCartTable = () => {
               />
               <button
                 className="ml-2"
-                onClick={() =>
-                  handleQuantityChange(row.original._id, 'increment')
-                }
+                onClick={() => handleQuantityChange(row.original._id, 'increment')}
               >
                 +
               </button>
@@ -211,9 +201,7 @@ const RetailCartTable = () => {
                       }),
                     );
                   } else {
-                    dispatch(
-                      removeProductFromLocalStorageCart(row.original._id),
-                    );
+                    dispatch(removeProductFromLocalStorageCart(row.original._id));
                   }
                 }}
               >
@@ -242,19 +230,14 @@ const RetailCartTable = () => {
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const comment = (form.elements.namedItem('comment') as HTMLInputElement)
-      ?.value;
-    const firstName = (form.elements.namedItem('firstName') as HTMLInputElement)
-      ?.value;
-    const lastName = (form.elements.namedItem('lastName') as HTMLInputElement)
-      ?.value;
-    const surName = (form.elements.namedItem('surName') as HTMLInputElement)
-      ?.value;
+    const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
+    const firstName = (form.elements.namedItem('firstName') as HTMLInputElement)?.value;
+    const lastName = (form.elements.namedItem('lastName') as HTMLInputElement)?.value;
+    const surName = (form.elements.namedItem('surName') as HTMLInputElement)?.value;
     const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
     const city = (form.elements.namedItem('city') as HTMLInputElement)?.value;
-    const warehouse = (form.elements.namedItem('warehouse') as HTMLInputElement)
-      ?.value;
+    const warehouse = (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
 
     const shippingAddress = `${city}, ${warehouse}`;
 
@@ -298,10 +281,7 @@ const RetailCartTable = () => {
         <p>Загальна сума</p>
         <p>{sum} грн</p>
       </div>
-      <form
-        className="mb-20 flex justify-between gap-2"
-        onSubmit={handleSubmit}
-      >
+      <form className="mb-20 flex justify-between gap-2" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col">
             <h3 className="mb-2 text-base font-medium">Дані для доставки</h3>
