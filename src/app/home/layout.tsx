@@ -9,9 +9,7 @@ import Footer from '../ui/Footer';
 import Header from '../ui/home/Header';
 
 const Layout = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAppSelector(
-    (state) => state.persistedAuthReducer,
-  );
+  const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -27,9 +25,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           .unwrap()
           .catch(() => {
             dispatch(clearAuthState());
-            toast.info(
-              'Сесія закінчилася. Для взаємодії з акаунтом будь ласка, увійдіть знову.',
-            );
+            toast.info('Сесія закінчилася. Для взаємодії з акаунтом будь ласка, увійдіть знову.');
           });
       }
     }

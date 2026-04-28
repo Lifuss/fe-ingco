@@ -14,8 +14,7 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
 
       if (
         !state.currencyRates?.lastUpdate ||
-        Date.now() - new Date(state.currencyRates.lastUpdate).getTime() >
-          1800000 ||
+        Date.now() - new Date(state.currencyRates.lastUpdate).getTime() > 1800000 ||
         !state.currencyRates.USD
       ) {
         newBody = {
@@ -33,12 +32,7 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         newBody.USD = parseFloat(Number(data.USD).toFixed(1));
         newBody.EUR = parseFloat(Number(data.EUR).toFixed(1));
 
-        if (
-          !newBody.USD ||
-          !newBody.EUR ||
-          isNaN(newBody.USD) ||
-          isNaN(newBody.EUR)
-        ) {
+        if (!newBody.USD || !newBody.EUR || isNaN(newBody.USD) || isNaN(newBody.EUR)) {
           throw new Error('Currency rates not found or invalid');
         }
         return newBody;
@@ -167,10 +161,7 @@ export const deleteProductThunk = createAsyncThunk(
 
 export const createCategoryThunk = createAsyncThunk(
   'category/create',
-  async (
-    { name, renderSort }: { name: string; renderSort: number },
-    { rejectWithValue },
-  ) => {
+  async ({ name, renderSort }: { name: string; renderSort: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.post('/categories', { name, renderSort });
       return data;
@@ -205,9 +196,7 @@ export const deleteCategoryThunk = createAsyncThunk(
       await apiIngco.delete(`/categories/${categoryId}`);
       return categoryId;
     } catch (error) {
-      toast.error(
-        "В категорії існують прив'язані товари, видаліть їх, або змініть категорію",
-      );
+      toast.error("В категорії існують прив'язані товари, видаліть їх, або змініть категорію");
       rejectWithValue(error);
     }
   },

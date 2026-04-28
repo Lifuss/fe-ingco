@@ -126,9 +126,7 @@ const User = () => {
           onRequestClose={closeQuestionModal}
           style={customModalQuestionStyles}
         >
-          <p className="mb-4 w-fit text-xl">
-            Ви точно бажаєте вийти зі свого профілю?
-          </p>
+          <p className="mb-4 w-fit text-xl">Ви точно бажаєте вийти зі свого профілю?</p>
           <div className="mx-auto flex w-fit gap-4">
             <button
               onClick={handleLogout}

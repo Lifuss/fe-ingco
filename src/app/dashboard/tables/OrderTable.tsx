@@ -39,9 +39,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { orders, totalPages } = useAppSelector(
-    (state) => state.dashboardSlice,
-  );
+  const { orders, totalPages } = useAppSelector((state) => state.dashboardSlice);
   const usdRate = useAppSelector(selectUSDRate);
 
   const openModal = (id: string) => {
@@ -51,9 +49,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   };
   const closeModal = () => setIsOpen(false);
 
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
   const query = searchParams.get('query') || '';
 
@@ -81,39 +77,40 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
       loginCol: 'login' in order.user ? order.user.login : order.user.email,
       statusCol: `${order.status} ${statusEmoji[order.status]}`,
       commentCol: order.comment,
-      totalPrice: !isRetail
-        ? Math.ceil(order.totalPrice * usdRate)
-        : order.totalPrice,
+      totalPrice: !isRetail ? Math.ceil(order.totalPrice * usdRate) : order.totalPrice,
     }));
   }, [orders, usdRate, isRetail]);
 
-  const columns = useMemo<ColumnDef<OrderTableRow>[]>(() => [
-    {
-      header: 'Номер',
-      accessorKey: 'numberCol',
-    },
-    {
-      header: 'Дата',
-      accessorKey: 'dateCol',
-    },
-    {
-      header: 'Логін',
-      accessorKey: 'loginCol',
-    },
-    {
-      header: 'Статус',
-      accessorKey: 'statusCol',
-    },
-    {
-      header: 'Коментар',
-      accessorKey: 'commentCol',
-      cell: ({ row }) => <div>{row.original.commentCol ? 'так' : 'немає'}</div>,
-    },
-    {
-      header: 'Сума зам. грн',
-      accessorKey: 'totalPrice',
-    },
-  ], []);
+  const columns = useMemo<ColumnDef<OrderTableRow>[]>(
+    () => [
+      {
+        header: 'Номер',
+        accessorKey: 'numberCol',
+      },
+      {
+        header: 'Дата',
+        accessorKey: 'dateCol',
+      },
+      {
+        header: 'Логін',
+        accessorKey: 'loginCol',
+      },
+      {
+        header: 'Статус',
+        accessorKey: 'statusCol',
+      },
+      {
+        header: 'Коментар',
+        accessorKey: 'commentCol',
+        cell: ({ row }) => <div>{row.original.commentCol ? 'так' : 'немає'}</div>,
+      },
+      {
+        header: 'Сума зам. грн',
+        accessorKey: 'totalPrice',
+      },
+    ],
+    [],
+  );
 
   const handleCheckboxChange = (
     status:
@@ -175,9 +172,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         <label className={clsx('flex w-fit items-center gap-2')}>
           <select
             className="rounded-xl bg-gray-200 p-2"
-            onChange={(e) =>
-              handleCheckboxChange(e.currentTarget.value as OrderStatusEnum)
-            }
+            onChange={(e) => handleCheckboxChange(e.currentTarget.value as OrderStatusEnum)}
           >
             {orderStatusEnum.map((status) => (
               <option key={status} value={status}>

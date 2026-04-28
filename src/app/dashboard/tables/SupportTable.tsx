@@ -20,19 +20,13 @@ type SupportTableRow = {
 };
 
 const SupportTable = () => {
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(
-    null,
-  );
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { supportTickets, totalPages } = useAppSelector(
-    (state) => state.dashboardSlice,
-  );
-  let page = searchParams.get('page')
-    ? parseInt(searchParams.get('page') as string)
-    : 1;
+  const { supportTickets, totalPages } = useAppSelector((state) => state.dashboardSlice);
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
@@ -83,8 +77,7 @@ const SupportTable = () => {
   );
 
   const openModal = (ticketId: string) => {
-    const ticket =
-      supportTickets.find((ticket) => ticket._id === ticketId) ?? null;
+    const ticket = supportTickets.find((ticket) => ticket._id === ticketId) ?? null;
     setSelectedTicket(ticket);
     setIsOpen(true);
   };
@@ -104,11 +97,7 @@ const SupportTable = () => {
       <div className="flex gap-4">
         <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
           Архівовані
-          <input
-            type="checkbox"
-            name="role"
-            onChange={() => handleCheckboxChange()}
-          />
+          <input type="checkbox" name="role" onChange={() => handleCheckboxChange()} />
         </label>
       </div>
 
@@ -120,11 +109,7 @@ const SupportTable = () => {
         rowClickable={true}
         rowFunction={handleRowClick}
       />
-      <SupportTicketModal
-        isOpen={isOpen}
-        closeModal={closeModal}
-        ticket={selectedTicket}
-      />
+      <SupportTicketModal isOpen={isOpen} closeModal={closeModal} ticket={selectedTicket} />
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
       </div>

@@ -16,9 +16,7 @@ import Loader from '../utils/Loader';
 type RegisterFormData = z.infer<typeof registerPartnerSchema>;
 
 export default function RegisterPartnerForm() {
-  const { isAuthenticated } = useAppSelector(
-    (state) => state.persistedAuthReducer,
-  );
+  const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const {
@@ -55,8 +53,7 @@ export default function RegisterPartnerForm() {
         );
         toast.info(
           <Link href={'/'}>
-            Ознайомлення з продукцією INGCO можна розпочати в роздрібному
-            каталозі
+            Ознайомлення з продукцією INGCO можна розпочати в роздрібному каталозі
           </Link>,
           {
             autoClose: 15000,
@@ -89,9 +86,7 @@ export default function RegisterPartnerForm() {
                 placeholder="Прізвище"
                 {...register('lastName')}
               />
-              {errors.lastName && (
-                <p className={errorClassName}>{errors.lastName.message}</p>
-              )}
+              {errors.lastName && <p className={errorClassName}>{errors.lastName.message}</p>}
             </div>
             <div>
               <label className="mb-2 block text-base" htmlFor="firstName">
@@ -104,9 +99,7 @@ export default function RegisterPartnerForm() {
                 placeholder="Ім'я"
                 {...register('firstName')}
               />
-              {errors.firstName && (
-                <p className={errorClassName}>{errors.firstName.message}</p>
-              )}
+              {errors.firstName && <p className={errorClassName}>{errors.firstName.message}</p>}
             </div>
           </div>
           <div>
@@ -120,9 +113,7 @@ export default function RegisterPartnerForm() {
               placeholder="По батькові"
               {...register('surName')}
             />
-            {errors.surName && (
-              <p className={errorClassName}>{errors.surName.message}</p>
-            )}
+            {errors.surName && <p className={errorClassName}>{errors.surName.message}</p>}
           </div>
           <div className="flex gap-5">
             <div>
@@ -137,9 +128,7 @@ export default function RegisterPartnerForm() {
                 defaultValue="+"
                 {...register('phone')}
               />
-              {errors.phone && (
-                <p className={errorClassName}>{errors.phone.message}</p>
-              )}
+              {errors.phone && <p className={errorClassName}>{errors.phone.message}</p>}
             </div>
             <div>
               <label className="mb-2 block text-base" htmlFor="edrpou">
@@ -152,9 +141,7 @@ export default function RegisterPartnerForm() {
                 placeholder="ЄДРПОУ"
                 {...register('edrpou')}
               />
-              {errors.edrpou && (
-                <p className={errorClassName}>{errors.edrpou.message}</p>
-              )}
+              {errors.edrpou && <p className={errorClassName}>{errors.edrpou.message}</p>}
             </div>
           </div>
           <div>
@@ -168,9 +155,7 @@ export default function RegisterPartnerForm() {
               placeholder="Ваш email"
               {...register('email')}
             />
-            {errors.email && (
-              <p className={errorClassName}>{errors.email.message}</p>
-            )}
+            {errors.email && <p className={errorClassName}>{errors.email.message}</p>}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="about">
@@ -182,9 +167,7 @@ export default function RegisterPartnerForm() {
               placeholder="Необов'язкове поле про свою діяльність..."
               {...register('about')}
             />
-            {errors.about && (
-              <p className={errorClassName}>{errors.about.message}</p>
-            )}
+            {errors.about && <p className={errorClassName}>{errors.about.message}</p>}
           </div>
         </div>
         <Button
@@ -192,11 +175,7 @@ export default function RegisterPartnerForm() {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <Loader className="mx-auto" size={32} />
-          ) : (
-            'Зареєструватися'
-          )}
+          {isSubmitting ? <Loader className="mx-auto" size={32} /> : 'Зареєструватися'}
         </Button>
         <p className="mt-8 text-center">
           Вже зареєстровані та верифіковані?{' '}
@@ -207,11 +186,7 @@ export default function RegisterPartnerForm() {
             Ввійти в акаунт
           </Link>
         </p>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
+        <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true"></div>
       </div>
     </form>
   );

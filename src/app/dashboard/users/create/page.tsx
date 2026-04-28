@@ -46,9 +46,7 @@ const Page = () => {
   return (
     <>
       <ToBackButton />
-      <h1 className="mb-4 text-center text-3xl 2xl:mb-20">
-        Створення користувача
-      </h1>
+      <h1 className="mb-4 text-center text-3xl 2xl:mb-20">Створення користувача</h1>
       <UserForm handleSubmit={handleSubmit} />
     </>
   );

@@ -98,9 +98,7 @@ const appStateSlice = createSlice({
             EUR: 44.0,
             lastUpdate: new Date().toISOString(),
           };
-          toast.error(
-            'Помилка завантаження курсу валют. Використовуються резервні значення.',
-          );
+          toast.error('Помилка завантаження курсу валют. Використовуються резервні значення.');
         }
       })
       .addCase(fetchMainTableDataThunk.pending, (state) => {
@@ -123,29 +121,21 @@ const appStateSlice = createSlice({
         state.totalPages = payload.totalPages;
       })
       .addCase(updateProductThunk.fulfilled, (state, { payload }) => {
-        const index = state.products.findIndex(
-          (product) => product._id === payload._id,
-        );
+        const index = state.products.findIndex((product) => product._id === payload._id);
         state.products[index] = payload;
       })
       .addCase(createCategoryThunk.fulfilled, (state, { payload }) => {
         state.categories.push(payload);
       })
       .addCase(deleteProductThunk.fulfilled, (state, { payload }) => {
-        state.products = state.products.filter(
-          (product) => product._id !== payload,
-        );
+        state.products = state.products.filter((product) => product._id !== payload);
       })
       .addCase(updateCategoryThunk.fulfilled, (state, { payload }) => {
-        const index = state.categories.findIndex(
-          (category) => category._id === payload._id,
-        );
+        const index = state.categories.findIndex((category) => category._id === payload._id);
         state.categories[index] = { ...state.categories[index], ...payload };
       })
       .addCase(deleteCategoryThunk.fulfilled, (state, { payload }) => {
-        state.categories = state.categories.filter(
-          (category) => category._id !== payload,
-        );
+        state.categories = state.categories.filter((category) => category._id !== payload);
       });
   },
 });

@@ -33,7 +33,8 @@ const Page = ({ params }: PageProps) => {
     name: '',
     value: '',
   });
-  const imageUrl = uploadedImageUrl || (product?.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '');
+  const imageUrl =
+    uploadedImageUrl || (product?.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '');
 
   useEffect(() => {
     if (!categories.length) {

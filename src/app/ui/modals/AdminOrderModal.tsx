@@ -5,10 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../buttons/button';
 import { useEffect, useRef, useState } from 'react';
-import {
-  updateOrderThunk,
-  updateRetailOrderThunk,
-} from '@/lib/appState/dashboard/operations';
+import { updateOrderThunk, updateRetailOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
 import { printOrderExcel } from '@/lib/utils';
@@ -30,12 +27,7 @@ const modifiedStyles = {
     maxHeight: '95vh',
   },
 };
-const AdminOrderModal = ({
-  isOpen,
-  closeModal,
-  order,
-  isRetail,
-}: AdminOrderModalProps) => {
+const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModalProps) => {
   const USD = useAppSelector(selectUSDRate);
   const dispatch = useAppDispatch();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(order);
@@ -52,9 +44,7 @@ const AdminOrderModal = ({
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const confirmDialogBool = confirm(
-      'Ви впевненні що хочете змінити замовлення?',
-    );
+    const confirmDialogBool = confirm('Ви впевненні що хочете змінити замовлення?');
     if (!confirmDialogBool) {
       return;
     }
@@ -76,8 +66,7 @@ const AdminOrderModal = ({
         })) || [];
 
     const filteredOutCount =
-      selectedOrder.products?.filter((product) => !product?.product?._id)
-        .length || 0;
+      selectedOrder.products?.filter((product) => !product?.product?._id).length || 0;
 
     if (filteredOutCount > 0) {
       toast.warning(
@@ -142,12 +131,7 @@ const AdminOrderModal = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={closeModal}
-      style={modifiedStyles}
-      ariaHideApp={false}
-    >
+    <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
       <div onClick={closeModal} className="absolute top-2 right-2">
         <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
@@ -183,11 +167,7 @@ const AdminOrderModal = ({
               <p>Користувач видалений</p>
             )}
             <p>{status}</p>
-            <select
-              name="status"
-              defaultValue={status}
-              className="rounded-lg py-1 pr-4"
-            >
+            <select name="status" defaultValue={status} className="rounded-lg py-1 pr-4">
               {Object.entries(OrderStatusEnum).map(([key, value]) => (
                 <option key={key} value={key}>
                   {value}
@@ -211,24 +191,15 @@ const AdminOrderModal = ({
               defaultValue={selectedOrder.declarationNumber}
               placeholder="Номер накладної"
             />
-            <p>
-              {selectedOrder.shippingAddress ||
-                'Адреса відсутня, потрібне уточнення'}
-            </p>
+            <p>{selectedOrder.shippingAddress || 'Адреса відсутня, потрібне уточнення'}</p>
           </div>
         </div>
         <div>
           <h3 className="w-full">Товари:</h3>
           <div className="grid grid-cols-4 gap-2 text-center">
-            <div className="border-r border-gray-400 text-left font-medium">
-              Назва
-            </div>
-            <div className="border-r border-gray-400 font-medium">
-              Ціна\од $|₴
-            </div>
-            <div className="border-r border-gray-400 font-medium">
-              Кількість
-            </div>
+            <div className="border-r border-gray-400 text-left font-medium">Назва</div>
+            <div className="border-r border-gray-400 font-medium">Ціна\од $|₴</div>
+            <div className="border-r border-gray-400 font-medium">Кількість</div>
             <div className="font-medium">Сума $|₴</div>
           </div>
           <div className="mb-5 max-h-[370px] overflow-auto">
@@ -238,8 +209,7 @@ const AdminOrderModal = ({
                 const productKey = product?._id || `product-${index}`;
                 // Safe access to product name
                 const productName =
-                  product?.product?.name ||
-                  'Продукт застарів та видалений з бази';
+                  product?.product?.name || 'Продукт застарів та видалений з бази';
 
                 return (
                   <div
@@ -255,29 +225,26 @@ const AdminOrderModal = ({
                     <input
                       type="number"
                       defaultValue={
-                        selectedOrder?.products.find(
-                          (item) => item._id === product._id,
-                        )?.quantity || 0
+                        selectedOrder?.products.find((item) => item._id === product._id)
+                          ?.quantity || 0
                       }
                       className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
                       onChange={(e) => {
                         if (!product?._id) return;
 
                         const value = e.currentTarget.value;
-                        const updatedProducts = selectedOrder?.products.map(
-                          (item) => {
-                            if (item._id === product._id) {
-                              return {
-                                ...item,
-                                quantity: Number(value),
-                                totalPriceByOneProduct: +(
-                                  Number(value) * (item.price || 0)
-                                ).toFixed(2),
-                              };
-                            }
-                            return item;
-                          },
-                        );
+                        const updatedProducts = selectedOrder?.products.map((item) => {
+                          if (item._id === product._id) {
+                            return {
+                              ...item,
+                              quantity: Number(value),
+                              totalPriceByOneProduct: +(Number(value) * (item.price || 0)).toFixed(
+                                2,
+                              ),
+                            };
+                          }
+                          return item;
+                        });
                         if (+value > 0) {
                           setSelectedOrder({
                             ...selectedOrder,
@@ -285,9 +252,7 @@ const AdminOrderModal = ({
                             totalPrice: Number(
                               updatedProducts
                                 ?.reduce(
-                                  (acc, item) =>
-                                    acc +
-                                    Number(item.totalPriceByOneProduct || 0),
+                                  (acc, item) => acc + Number(item.totalPriceByOneProduct || 0),
                                   0,
                                 )
                                 .toFixed(2) || 0,
@@ -319,9 +284,7 @@ const AdminOrderModal = ({
                           totalPrice: Number(
                             updatedProducts
                               .reduce(
-                                (acc, item) =>
-                                  acc +
-                                  Number(item.totalPriceByOneProduct || 0),
+                                (acc, item) => acc + Number(item.totalPriceByOneProduct || 0),
                                 0,
                               )
                               .toFixed(2),
@@ -335,9 +298,7 @@ const AdminOrderModal = ({
                 );
               })
             ) : (
-              <div className="p-4 text-center text-gray-500">
-                Товари відсутні
-              </div>
+              <div className="p-4 text-center text-gray-500">Товари відсутні</div>
             )}
           </div>
         </div>

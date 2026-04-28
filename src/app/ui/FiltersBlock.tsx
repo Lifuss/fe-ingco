@@ -10,13 +10,7 @@ interface FilterBlockProps {
   listType: 'partner' | 'retail';
 }
 
-export type sortValueType =
-  | 'default'
-  | 'popular'
-  | 'cheep'
-  | 'expensive'
-  | 'popular'
-  | 'name';
+export type sortValueType = 'default' | 'popular' | 'cheep' | 'expensive' | 'popular' | 'name';
 
 const liButtonsContent: { label: string; sortValue: sortValueType }[] = [
   { label: 'за популярністю', sortValue: 'popular' },
@@ -31,9 +25,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const productsCategories = useAppSelector(
-    (state) => state.persistedMainReducer.categories,
-  );
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
   const [sort, setSort] = useState<sortValueType>('default');
 
   const params = new URLSearchParams(searchParams.toString());
@@ -63,8 +55,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       title = 'Каталог';
       const categoryId: string | null = searchParams.get('category');
       if (categoryId) {
-        title = productsCategories.find((val) => val._id === categoryId)
-          ?.name as string;
+        title = productsCategories.find((val) => val._id === categoryId)?.name as string;
       }
       break;
     default:
@@ -99,10 +90,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
                   sort === item.sortValue && 'bg-orange-300',
                 )}
               >
-                <button
-                  type="button"
-                  onClick={() => handleClickSortButtons(item.sortValue)}
-                >
+                <button type="button" onClick={() => handleClickSortButtons(item.sortValue)}>
                   {item.label}
                 </button>
               </li>
@@ -111,9 +99,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
         </div>
         {listType === 'partner' ? (
           <div className="flex flex-col items-center md:flex-row md:flex-wrap md:justify-end">
-            <h3 className="mr-2 md:mr-0 md:w-full md:text-right lg:mr-2 lg:w-fit">
-              Відображення:
-            </h3>
+            <h3 className="mr-2 md:mr-0 md:w-full md:text-right lg:mr-2 lg:w-fit">Відображення:</h3>
             <button
               onClick={() => dispatch(setShopView('table'))}
               className={clsx(

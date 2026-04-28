@@ -36,14 +36,9 @@ const processUserActivityData = (users: User[]) => {
   }));
 };
 
-const UserActivityChart: React.FC<UserActivityChartProps> = ({
-  endDate,
-  startDate,
-}) => {
+const UserActivityChart: React.FC<UserActivityChartProps> = ({ endDate, startDate }) => {
   const dispatch = useAppDispatch();
-  const users = useAppSelector(
-    (state) => state.dashboardSlice.stats.activityUsers,
-  );
+  const users = useAppSelector((state) => state.dashboardSlice.stats.activityUsers);
   useEffect(() => {
     dispatch(getUserActivityThunk({ page: 1, limit: 100, endDate, startDate }));
   }, [dispatch, endDate, startDate]);
@@ -54,9 +49,7 @@ const UserActivityChart: React.FC<UserActivityChartProps> = ({
   }
   return (
     <div className="rounded-lg border border-gray-200 p-1">
-      <h2 className="text-center text-xl font-medium">
-        Активність користувачів
-      </h2>
+      <h2 className="text-center text-xl font-medium">Активність користувачів</h2>
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart
           data={data}
@@ -84,12 +77,7 @@ const UserActivityChart: React.FC<UserActivityChartProps> = ({
             }}
           />
           <Tooltip />
-          <Area
-            type="monotone"
-            dataKey="users"
-            stroke="#8884d8"
-            fill="#8884d8"
-          />
+          <Area type="monotone" dataKey="users" stroke="#8884d8" fill="#8884d8" />
         </AreaChart>
       </ResponsiveContainer>
     </div>

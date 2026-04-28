@@ -49,9 +49,7 @@ const Page = ({ params }: PageProps) => {
   }, [product]);
 
   const onAddToCart = async () => {
-    await dispatch(
-      addProductToCartThunk({ productId: product._id, quantity }),
-    ).unwrap();
+    await dispatch(addProductToCartThunk({ productId: product._id, quantity })).unwrap();
     setQuantity(1);
   };
 
@@ -87,17 +85,13 @@ const Page = ({ params }: PageProps) => {
         price: productPrice,
         priceCurrency: 'UAH',
         availability:
-          product.countInStock > 0
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/OutOfStock',
+          product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
           name: 'INGCO Ukraine',
           url: 'https://ingco-service.win',
         },
-        priceValidUntil: new Date(
-          new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
-        )
+        priceValidUntil: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)
           .toISOString()
           .split('T')[0],
         deliveryLeadTime: {
@@ -155,10 +149,7 @@ const Page = ({ params }: PageProps) => {
         <SearchX size={52} />
         <h2 className="text-2xl">Продукт не знайдено</h2>
 
-        <Button
-          className="bg-orange-light hover:bg-orange-400"
-          onClick={() => router.push('/')}
-        >
+        <Button className="bg-orange-light hover:bg-orange-400" onClick={() => router.push('/')}>
           В каталог
         </Button>
       </div>
@@ -217,10 +208,7 @@ const Page = ({ params }: PageProps) => {
             </h2>
             <ul className="text-sm lg:text-base">
               {product.characteristics.map((characteristic) => (
-                <li
-                  className="flex justify-between gap-2"
-                  key={characteristic._id}
-                >
+                <li className="flex justify-between gap-2" key={characteristic._id}>
                   {characteristic.value !== '-' ? (
                     <>
                       <h3 className="font-medium">{characteristic.name}:</h3>
@@ -267,27 +255,18 @@ const Page = ({ params }: PageProps) => {
           <div className="flex flex-col text-lg">
             <span>
               Рекомендована роздрібна ціна
-              {!product.rrcSale
-                ? `: ${product.priceRetailRecommendation} грн`
-                : ': '}
+              {!product.rrcSale ? `: ${product.priceRetailRecommendation} грн` : ': '}
             </span>
             {product.rrcSale ? (
               <div className="flex gap-2">
-                <span>
-                  Стандартний РРЦ - {product.priceRetailRecommendation} грн
-                </span>
+                <span>Стандартний РРЦ - {product.priceRetailRecommendation} грн</span>
                 <span>|</span>
                 <span>Акційна РРЦ - {product.rrcSale} грн</span>
               </div>
             ) : null}
           </div>
           <p className="mb-5 text-lg">
-            <div
-              className={clsx(
-                'mt-2 flex',
-                product.rrcSale ? 'flex-col' : 'gap-2',
-              )}
-            >
+            <div className={clsx('mt-2 flex', product.rrcSale ? 'flex-col' : 'gap-2')}>
               <div className="flex flex-col">
                 Маржинальний прибуток:
                 <span className="-mt-2 ml-1 align-top text-xs text-gray-500">
@@ -308,28 +287,22 @@ const Page = ({ params }: PageProps) => {
                   <span>
                     Стандартна:{' '}
                     {Math.ceil(
-                      ((product.priceRetailRecommendation -
-                        product.price * USD) /
+                      ((product.priceRetailRecommendation - product.price * USD) /
                         product.priceRetailRecommendation) *
                         100,
                     ) + '%'}
                   </span>
                   <span>
                     {' = '}
-                    {product.priceRetailRecommendation -
-                      Math.ceil(product.price * USD)}{' '}
-                    грн
+                    {product.priceRetailRecommendation - Math.ceil(product.price * USD)} грн
                   </span>
                 </div>
                 <span>|</span>
                 <div>
                   <span>
                     Акційна:{' '}
-                    {Math.ceil(
-                      ((product.rrcSale - product.price * USD) /
-                        product.rrcSale) *
-                        100,
-                    ) + '%'}
+                    {Math.ceil(((product.rrcSale - product.price * USD) / product.rrcSale) * 100) +
+                      '%'}
                   </span>
                   <span>
                     {' = '}
@@ -349,9 +322,7 @@ const Page = ({ params }: PageProps) => {
               className="object-contain"
             />
           </div>
-          <h2 className="mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">
-            Опис
-          </h2>
+          <h2 className="mb-2 text-center text-lg font-medium md:mb-5 md:text-2xl">Опис</h2>
           {product.description.split('\n').map((paragraph) => (
             <p key={paragraph} className="text-base md:text-xl">
               {paragraph}

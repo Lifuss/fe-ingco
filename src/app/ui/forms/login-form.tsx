@@ -100,11 +100,7 @@ function LoginForm() {
             Зареєструватися
           </Link>
         </p>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
+        <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true"></div>
       </div>
     </form>
   );
@@ -112,9 +108,7 @@ function LoginForm() {
 
 function LoginButton() {
   return (
-    <Button className="bg-orange-light mt-4 w-full text-2xl hover:bg-orange-400">
-      Увійти
-    </Button>
+    <Button className="bg-orange-light mt-4 w-full text-2xl hover:bg-orange-400">Увійти</Button>
   );
 }
 

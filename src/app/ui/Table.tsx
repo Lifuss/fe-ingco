@@ -29,6 +29,8 @@ export default function Table<T extends object>({
 }: TableProps<T>) {
   'use no memo';
 
+  // The 'use no memo' directive already opts the component out of React Compiler memoization (which is correct for TanStack Table)
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable<T>({
     data,
     columns,

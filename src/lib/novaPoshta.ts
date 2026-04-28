@@ -129,9 +129,7 @@ export class NovaPoshta {
     this.apiKey = process.env.NP_API_KEY || '';
   }
 
-  async fetchCities(
-    cityName: string,
-  ): Promise<NovaPoshtaSearchSettlementResult | undefined> {
+  async fetchCities(cityName: string): Promise<NovaPoshtaSearchSettlementResult | undefined> {
     const url = 'https://api.novaposhta.ua/v2.0/json/';
     const requestBody = {
       apiKey: this.apiKey,
@@ -159,10 +157,7 @@ export class NovaPoshta {
     return novaPoshtaSearchSettlementResultSchema.parse(rawFirst);
   }
 
-  async fetchWarehouses(
-    city: string,
-    Limit: string,
-  ): Promise<NovaPoshtaWarehouse[]> {
+  async fetchWarehouses(city: string, Limit: string): Promise<NovaPoshtaWarehouse[]> {
     const url = 'https://api.novaposhta.ua/v2.0/json/';
     const requestBody = {
       apiKey: this.apiKey,

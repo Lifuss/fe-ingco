@@ -16,13 +16,9 @@ type AdminProductFormProps = {
   handleImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
   imageUrl: string;
   characteristics: { name: string; value: string }[];
-  setCharacteristics: React.Dispatch<
-    React.SetStateAction<{ name: string; value: string }[]>
-  >;
+  setCharacteristics: React.Dispatch<React.SetStateAction<{ name: string; value: string }[]>>;
   characteristic: { name: string; value: string };
-  setCharacteristic: React.Dispatch<
-    React.SetStateAction<{ name: string; value: string }>
-  >;
+  setCharacteristic: React.Dispatch<React.SetStateAction<{ name: string; value: string }>>;
   categories: { _id: string; name: string }[];
   isEdit?: boolean;
   product?: Product;
@@ -42,14 +38,9 @@ const AdminProductForm = ({
   return (
     <>
       <ToBackButton />
-      <h1 className="mb-6 text-center text-4xl 2xl:mb-20">
-        Створення продукту
-      </h1>
+      <h1 className="mb-6 text-center text-4xl 2xl:mb-20">Створення продукту</h1>
 
-      <form
-        className="flex flex-col items-center text-lg"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex flex-col items-center text-lg" onSubmit={handleSubmit}>
         <label>
           <span className="text-red-600">*</span>Найменування
           <input
@@ -108,9 +99,7 @@ const AdminProductForm = ({
             <label>
               <div className="flex justify-between">
                 <div>
-                  <h3 className="inline">
-                    Ключові слова через кому+пробіл (SEO)
-                  </h3>
+                  <h3 className="inline">Ключові слова через кому+пробіл (SEO)</h3>
                 </div>
                 <span
                   className="cursor-help"
@@ -189,9 +178,7 @@ const AdminProductForm = ({
                     <button
                       type="button"
                       onClick={() => {
-                        setCharacteristics((prev) =>
-                          prev.filter((_, index) => index !== i),
-                        );
+                        setCharacteristics((prev) => prev.filter((_, index) => index !== i));
                       }}
                     >
                       <Icon
