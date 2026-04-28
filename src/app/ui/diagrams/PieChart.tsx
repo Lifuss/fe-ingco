@@ -5,16 +5,6 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 
-type ClickProductData = [
-  {
-    clickInRange: number;
-    productDetails: {
-      name: string;
-    };
-    productId: string;
-    _id: string;
-  },
-];
 const ProductClicksPieChart = ({
   startDate,
   endDate,
