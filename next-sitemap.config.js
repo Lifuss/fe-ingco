@@ -4,7 +4,7 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
   autoLastmod: true,
-  exclude: ['/dashboard*', '/api*', '/_next*', '/admin*', '/private*', '/service*'],
+  exclude: ['/dashboard*', '/api*', '/_next*', '/admin*', '/private*', '/service*', '/shop*'],
   robotsTxtOptions: {
     policies: [
       {
@@ -18,17 +18,18 @@ module.exports = {
           '/private/',
           '*.json',
           '/service/',
+          '/shop/',
         ],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/dashboard/', '/api/', '/_next/', '/admin/', '/private/'],
+        disallow: ['/dashboard/', '/api/', '/_next/', '/admin/', '/private/', '/shop/'],
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
-        disallow: ['/dashboard/', '/api/', '/_next/', '/admin/', '/private/'],
+        disallow: ['/dashboard/', '/api/', '/_next/', '/admin/', '/private/', '/shop/'],
       },
     ],
   },
