@@ -106,6 +106,46 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/',
+        has: [{ type: 'query', key: 'page' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/',
+        has: [{ type: 'query', key: 'query' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/',
+        has: [{ type: 'query', key: 'category' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/',
+        has: [{ type: 'query', key: 'sortValue' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
         source: '/cart',
         headers: [
           {
@@ -162,7 +202,33 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [];
+    return [
+      {
+        source: '/retail',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/retail/cart',
+        destination: '/cart',
+        permanent: true,
+      },
+      {
+        source: '/retail/favorites',
+        destination: '/favorites',
+        permanent: true,
+      },
+      {
+        source: '/retail/history',
+        destination: '/history',
+        permanent: true,
+      },
+      {
+        source: '/retail/:productSlug',
+        destination: '/:productSlug',
+        permanent: true,
+      },
+    ];
   },
 };
 
