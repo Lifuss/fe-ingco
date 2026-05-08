@@ -1,12 +1,12 @@
 export interface Category {
-  _id: string;
+  id: number;
   name: string;
   renderSort: number;
   count: number;
 }
 
 export interface Product {
-  _id: string;
+  id: number;
   name: string;
   slug: string;
   article: string;
@@ -29,7 +29,7 @@ export interface Product {
 }
 
 export interface User {
-  _id: string;
+  id: number;
   email: string;
   login: string;
   name: string;
@@ -40,7 +40,7 @@ export interface User {
   surName: string;
   phone: string;
   edrpou: string;
-  orders: [{ _id: string; orderCode: string; status: string; totalPrice: number }];
+  orders: [{ id: number; orderCode: string; status: string; totalPrice: number }];
   cart: object[];
   favorites: string[];
   token: string;
@@ -72,7 +72,7 @@ export type UserWithoutAuth = {
 export type UserWithAuth = {
   login: string;
   userId: {
-    _id: string;
+    id: number;
     email: string;
     role: string;
     firstName: string;
@@ -84,18 +84,18 @@ export type UserWithAuth = {
 };
 
 export interface Order {
-  _id: string;
+  id: number;
   orderCode: string;
   user: UserWithoutAuth | UserWithAuth;
   products: {
     product: {
-      _id: string;
+      id: number;
       name: string;
     };
     quantity: number;
     price: number;
     totalPriceByOneProduct: number;
-    _id: string;
+    id: number;
   }[];
   totalPrice: number;
   status: OrderStatusEnum;
@@ -113,7 +113,7 @@ export interface CurrencyRates {
 }
 
 export interface SupportTicket {
-  _id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;

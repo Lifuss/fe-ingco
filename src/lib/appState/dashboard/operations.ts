@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
+import { normalizeProduct } from '@/lib/utils';
 
 // products thunks
 export const createProductThunk = createAsyncThunk(
@@ -31,7 +32,7 @@ export const updateProductThunk = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
-      return data;
+      return normalizeProduct(data);
     } catch (error) {
       rejectWithValue(error);
     }
@@ -104,7 +105,7 @@ export const updateUserThunk = createAsyncThunk(
   'updateUser',
   async (user: Omit<User, 'token' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.put(`/users/${user._id}`, user);
+      const { data } = await apiIngco.put(`/users/${user.id}`, user);
 
       return data;
     } catch (error) {
@@ -115,7 +116,7 @@ export const updateUserThunk = createAsyncThunk(
 
 export const restoreUserThunk = createAsyncThunk(
   'restoreUser',
-  async (userId: string, { rejectWithValue }) => {
+  async (userId: number, { rejectWithValue }) => {
     try {
       await apiIngco.post(`/users/restore/${userId}`);
       return userId;
@@ -127,7 +128,7 @@ export const restoreUserThunk = createAsyncThunk(
 
 export const deleteUserThunk = createAsyncThunk(
   'deleteUser',
-  async (userId: string, { rejectWithValue }) => {
+  async (userId: number, { rejectWithValue }) => {
     try {
       await apiIngco.delete(`/users/${userId}`);
       return userId;
@@ -138,10 +139,10 @@ export const deleteUserThunk = createAsyncThunk(
 );
 
 interface NewProduct {
-  _id: string;
+  id: number;
   quantity: number;
   totalPriceByOneProduct: number;
-  product: string;
+  product: number;
   price: number;
 }
 
@@ -192,7 +193,7 @@ export const fetchOrdersThunk = createAsyncThunk(
 export const updateOrderThunk = createAsyncThunk(
   'updateOrder',
   async (
-    { orderId, updateOrder }: { orderId: string; updateOrder: UpdateOrder },
+    { orderId, updateOrder }: { orderId: number; updateOrder: UpdateOrder },
     { rejectWithValue },
   ) => {
     try {
@@ -207,7 +208,7 @@ export const updateOrderThunk = createAsyncThunk(
 export const updateRetailOrderThunk = createAsyncThunk(
   'updateOrder',
   async (
-    { orderId, updateOrder }: { orderId: string; updateOrder: UpdateOrder },
+    { orderId, updateOrder }: { orderId: number; updateOrder: UpdateOrder },
     { rejectWithValue },
   ) => {
     try {

@@ -55,7 +55,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       title = 'Каталог';
       const categoryId: string | null = searchParams.get('category');
       if (categoryId) {
-        title = productsCategories.find((val) => val._id === categoryId)?.name as string;
+        title = productsCategories.find((val) => String(val.id) === categoryId)?.name as string;
       }
       break;
     default:

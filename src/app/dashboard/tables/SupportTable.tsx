@@ -16,7 +16,7 @@ type SupportTableRow = {
   emailCol: string;
   nameCol: string;
   activeDateCol: string;
-  ticketId: string;
+  ticketId: number;
 };
 
 const SupportTable = () => {
@@ -49,7 +49,7 @@ const SupportTable = () => {
         emailCol: ticket.email,
         nameCol: ticket.name,
         activeDateCol: new Date(ticket.updatedAt).toLocaleDateString('uk-UA'),
-        ticketId: ticket._id,
+        ticketId: ticket.id,
       })),
     [supportTickets],
   );
@@ -76,8 +76,8 @@ const SupportTable = () => {
     [],
   );
 
-  const openModal = (ticketId: string) => {
-    const ticket = supportTickets.find((ticket) => ticket._id === ticketId) ?? null;
+  const openModal = (ticketId: number) => {
+    const ticket = supportTickets.find((ticket) => ticket.id === ticketId) ?? null;
     setSelectedTicket(ticket);
     setIsOpen(true);
   };

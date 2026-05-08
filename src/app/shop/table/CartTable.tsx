@@ -18,7 +18,7 @@ import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import { selectCurrency } from '@/lib/appState/main/selectors';
 import { type ColumnDef } from '@tanstack/react-table';
 
-type CartData = { quantity: number; _id: string; productId: Product }[];
+type CartData = { quantity: number; id: number; productId: Product }[];
 type CartTableRow = {
   codeCol: string;
   nameCol: string;
@@ -28,7 +28,7 @@ type CartTableRow = {
   rrcCol: number;
   quantityCol: number;
   totalCol: string;
-  _id: string;
+  id: number;
   product: Product;
 };
 
@@ -40,7 +40,7 @@ const CartTable = () => {
   const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user.cart);
   const selectedCurrency = useAppSelector(selectCurrency);
 
-  const handleQuantityChange = (id: string, operation: string) => {
+  const handleQuantityChange = (id: number, operation: string) => {
     if (operation === 'increment') {
       dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
     } else {
@@ -67,7 +67,7 @@ const CartTable = () => {
       rrcCol: item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
       totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
-      _id: item.productId._id,
+      id: item.productId.id,
       product: item.productId,
     }));
   }, [selectedCart, selectedCurrency.USD]);
@@ -144,7 +144,7 @@ const CartTable = () => {
             <div>
               <button
                 className="mr-2"
-                onClick={() => handleQuantityChange(row.original._id, 'decrement')}
+                onClick={() => handleQuantityChange(row.original.id, 'decrement')}
               >
                 -
               </button>
@@ -156,7 +156,7 @@ const CartTable = () => {
               />
               <button
                 className="ml-2"
-                onClick={() => handleQuantityChange(row.original._id, 'increment')}
+                onClick={() => handleQuantityChange(row.original.id, 'increment')}
               >
                 +
               </button>
@@ -179,7 +179,7 @@ const CartTable = () => {
                 onClick={() => {
                   dispatch(
                     deleteProductFromCartThunk({
-                      productId: row.original._id,
+                      productId: row.original.id,
                       quantity: row.original.quantityCol,
                     }),
                   );
@@ -206,7 +206,7 @@ const CartTable = () => {
       (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
     const order = {
       products: selectedCart.map((item) => ({
-        productId: item.productId._id,
+        productId: item.productId.id,
         quantity: item.quantity,
         price: Number(item.productId.price.toFixed(2)),
         totalPriceByOneProduct: Number((item.productId.price * item.quantity).toFixed(2)),

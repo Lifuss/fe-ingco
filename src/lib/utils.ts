@@ -1,5 +1,21 @@
-import { Order } from './types';
+import { Order, Product } from './types';
 import { apiIngco } from './appState/user/operation';
+
+// Prisma serializes Decimal fields as strings. This converts them back to numbers.
+export function normalizeProduct(p: unknown): Product {
+  const raw = p as Product;
+  return {
+    ...raw,
+    price: Number(raw.price),
+    priceBulk: raw.priceBulk != null ? Number(raw.priceBulk) : undefined,
+    rrcSale: raw.rrcSale != null ? Number(raw.rrcSale) : undefined,
+    enterPrice: raw.enterPrice != null ? Number(raw.enterPrice) : undefined,
+    priceRetailRecommendation: Number(raw.priceRetailRecommendation),
+    warranty: Number(raw.warranty),
+    sort: Number(raw.sort),
+    countInStock: Number(raw.countInStock),
+  };
+}
 
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
@@ -39,7 +55,7 @@ export const generatePassword = () => {
 export const printOrderExcel = async (order: Order) => {
   const API_URL = process.env.NEXT_PUBLIC_API;
   try {
-    const response = await apiIngco.get(`${API_URL}/api/orders/sheets/${order._id}`, {
+    const response = await apiIngco.get(`${API_URL}/api/orders/sheets/${order.id}`, {
       responseType: 'blob',
     });
 

@@ -32,7 +32,7 @@ const OrderModal = ({
           <ul className="max-h-[200px] overflow-auto border-2 border-orange-200 p-2">
             {order.products && Array.isArray(order.products) ? (
               order.products.map((product, index) => {
-                const productKey = product?._id || `product-${index}`;
+                const productKey = product?.id ?? `product-${index}`;
 
                 const productName =
                   product?.product?.name || 'Продукт застарів та видалений з бази';
