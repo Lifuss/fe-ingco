@@ -19,14 +19,14 @@ import Icon from '@/app/ui/assets/Icon';
 type CategoryTableRow = {
   nameCol: string;
   productsCountCol: number;
-  editCol: string;
-  deleteCol: string;
+  editCol: number;
+  deleteCol: number;
   renderSortCol: number;
 };
 
 const CategoryTable = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState('');
+  const [selectedId, setSelectedId] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<{
     name: string;
     renderSort: number;
@@ -35,7 +35,7 @@ const CategoryTable = () => {
   const searchParams = useSearchParams();
   const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
 
-  const openModal = (name: string, id: string, renderSort: number) => {
+  const openModal = (name: string, id: number, renderSort: number) => {
     setSelectedId(id);
     setSelectedCategory({ name, renderSort });
     setIsOpen(true);
@@ -72,8 +72,8 @@ const CategoryTable = () => {
       productsCategories?.map((category) => ({
         nameCol: category.name,
         productsCountCol: category.count,
-        editCol: category._id,
-        deleteCol: category._id,
+        editCol: category.id,
+        deleteCol: category.id,
         renderSortCol: category.renderSort,
       })),
     [productsCategories],

@@ -52,7 +52,7 @@ const Page = ({ params }: PageProps) => {
 
   const onAddToCart = async () => {
     if (!product) return;
-    await dispatch(addProductToCartThunk({ productId: product._id, quantity })).unwrap();
+    await dispatch(addProductToCartThunk({ productId: product.id, quantity })).unwrap();
     setQuantity(1);
   };
 
@@ -174,7 +174,10 @@ const Page = ({ params }: PageProps) => {
             </h2>
             <ul className="text-sm lg:text-base">
               {product.characteristics.map((characteristic) => (
-                <li className="flex justify-between gap-2" key={characteristic._id}>
+                <li
+                  className="flex justify-between gap-2"
+                  key={characteristic._id ?? characteristic.name}
+                >
                   {characteristic.value !== '-' ? (
                     <>
                       <h3 className="font-medium">{characteristic.name}:</h3>
@@ -211,7 +214,7 @@ const Page = ({ params }: PageProps) => {
             />
 
             <AddToCartButton
-              productId={product._id}
+              productId={product.id}
               productName={product.name}
               price={Math.ceil(product.price * USD)}
               onAddToCart={onAddToCart}

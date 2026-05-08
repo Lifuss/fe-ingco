@@ -21,7 +21,7 @@ type AdminProductFormProps = {
   setCharacteristics: React.Dispatch<React.SetStateAction<{ name: string; value: string }[]>>;
   characteristic: { name: string; value: string };
   setCharacteristic: React.Dispatch<React.SetStateAction<{ name: string; value: string }>>;
-  categories: { _id: string; name: string }[];
+  categories: { id: number; name: string }[];
   isEdit?: boolean;
   product?: Product;
 };
@@ -110,10 +110,10 @@ const AdminProductForm = ({
                 <select
                   name="category"
                   className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
-                  defaultValue={product?.category?._id}
+                  defaultValue={product?.category?.id}
                 >
                   {categories?.map((category) => (
-                    <option key={category._id} value={category._id}>
+                    <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
                   ))}
@@ -325,6 +325,15 @@ const AdminProductForm = ({
               >
                 <Plus size={16} />
                 <span>Додати</span>
+              >
+                Підтвердити
+              </button>
+              <button
+                className="rounded-lg bg-red-200 p-2 transition-colors hover:bg-red-400"
+                type="reset"
+              >
+                Скинути
+>>>>>>> f2b0c55 (refactor: update product identifiers from _id to id across the application for consistency and improved type safety)
               </button>
             </div>
 

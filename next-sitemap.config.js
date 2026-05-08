@@ -18,6 +18,7 @@ module.exports = {
     '/history',
     '/retail*',
   ],
+
   robotsTxtOptions: {
     policies: [
       {
@@ -51,15 +52,12 @@ module.exports = {
     if (!apiBase) return [];
 
     try {
-      const res = await fetch(
-        `${apiBase}/api/products?limit=10000&isRetail=true`,
-      );
+      const res = await fetch(`${apiBase}/api/products?limit=10000&isRetail=true`);
       if (!res.ok) return [];
 
-      const data =
-        /** @type {{ products?: Array<{ slug?: string, updatedAt?: string }> }} */ (
-          await res.json()
-        );
+      const data = /** @type {{ products?: Array<{ slug?: string, updatedAt?: string }> }} */ (
+        await res.json()
+      );
 
       const products = Array.isArray(data.products) ? data.products : [];
 

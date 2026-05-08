@@ -56,17 +56,17 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
     const declarationNumber = form.declarationNumber.value;
     const normalizeProducts =
       selectedOrder.products
-        ?.filter((product) => product?.product?._id)
+        ?.filter((product) => product?.product?.id)
         ?.map((product) => ({
-          _id: product._id,
+          id: product.id,
           quantity: product.quantity || 0,
           totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
-          product: product.product._id,
+          product: product.product.id,
           price: product.price || 0,
         })) || [];
 
     const filteredOutCount =
-      selectedOrder.products?.filter((product) => !product?.product?._id).length || 0;
+      selectedOrder.products?.filter((product) => !product?.product?.id).length || 0;
 
     if (filteredOutCount > 0) {
       toast.warning(
@@ -91,14 +91,14 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
     if (isRetail) {
       dispatch(
         updateRetailOrderThunk({
-          orderId: selectedOrder._id,
+          orderId: selectedOrder.id,
           updateOrder: updatedOrderWithoutUser,
         }),
       );
     } else {
       dispatch(
         updateOrderThunk({
-          orderId: selectedOrder._id,
+          orderId: selectedOrder.id,
           updateOrder: updatedOrderWithoutUser,
         }),
       );
@@ -206,7 +206,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
             {products && Array.isArray(products) ? (
               products.map((product, index) => {
                 // Safe fallback for product ID
-                const productKey = product?._id || `product-${index}`;
+                const productKey = product?.id ?? `product-${index}`;
                 // Safe access to product name
                 const productName =
                   product?.product?.name || 'Продукт застарів та видалений з бази';
@@ -225,16 +225,16 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                     <input
                       type="number"
                       defaultValue={
-                        selectedOrder?.products.find((item) => item._id === product._id)
-                          ?.quantity || 0
+                        selectedOrder?.products.find((item) => item.id === product.id)?.quantity ||
+                        0
                       }
                       className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
                       onChange={(e) => {
-                        if (!product?._id) return;
+                        if (!product?.id) return;
 
                         const value = e.currentTarget.value;
                         const updatedProducts = selectedOrder?.products.map((item) => {
-                          if (item._id === product._id) {
+                          if (item.id === product.id) {
                             return {
                               ...item,
                               quantity: Number(value),
@@ -273,10 +273,10 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                     <button
                       className="text-red absolute right-0 bottom-2"
                       onClick={() => {
-                        if (!product?._id) return;
+                        if (!product?.id) return;
 
                         const updatedProducts = selectedOrder.products.filter(
-                          (item) => item._id !== product._id,
+                          (item) => item.id !== product.id,
                         );
                         setSelectedOrder({
                           ...selectedOrder,

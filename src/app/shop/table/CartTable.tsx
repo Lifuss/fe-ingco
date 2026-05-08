@@ -19,7 +19,7 @@ import { selectCurrency } from '@/lib/appState/main/selectors';
 import { type ColumnDef } from '@tanstack/react-table';
 import PricingTooltip from '@/app/ui/PricingTooltip';
 
-type CartData = { quantity: number; _id: string; productId: Product }[];
+type CartData = { quantity: number; id: number; productId: Product }[];
 type CartTableRow = {
   codeCol: string;
   nameCol: string;
@@ -29,7 +29,7 @@ type CartTableRow = {
   rrcCol: number;
   quantityCol: number;
   totalCol: string;
-  _id: string;
+  id: number;
   product: Product;
 };
 
@@ -41,7 +41,7 @@ const CartTable = () => {
   const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user.cart);
   const selectedCurrency = useAppSelector(selectCurrency);
 
-  const handleQuantityChange = useCallback((id: string, operation: string) => {
+  const handleQuantityChange = useCallback((id: number, operation: string) => {
     if (operation === 'increment') {
       dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
     } else {
@@ -59,24 +59,18 @@ const CartTable = () => {
   }, []);
 
   const data = useMemo<CartTableRow[]>(() => {
-    return selectedCart.map((item) => {
-      const isProductIdString = typeof item.productId === 'string';
-      const prod = (item.productId && !isProductIdString) ? item.productId : null;
-      const id = isProductIdString ? (item.productId as unknown as string) : (item.productId?._id || item._id);
-
-      return {
-        codeCol: prod?.article || '—',
-        nameCol: prod?.name || 'Невідомий товар',
-        photoCol: prod?.image || '',
-        priceCol: prod?.price || 0,
-        priceUahCol: Math.ceil((prod?.price || 0) * selectedCurrency.USD),
-        rrcCol: prod?.priceRetailRecommendation || 0,
-        quantityCol: item.quantity,
-        totalCol: `${((prod?.price || 0) * item.quantity).toFixed(2)}$ | ${Math.ceil((prod?.price || 0) * selectedCurrency.USD * item.quantity)}грн`,
-        _id: id,
-        product: prod || { _id: id, name: 'Невідомий товар' } as Product,
-      };
-    });
+    return selectedCart.map((item) => ({
+      codeCol: item.productId.article,
+      nameCol: item.productId.name,
+      photoCol: item.productId.image,
+      priceCol: item.productId.price,
+      priceUahCol: Math.ceil(item.productId.price * selectedCurrency.USD),
+      rrcCol: item.productId.priceRetailRecommendation,
+      quantityCol: item.quantity,
+      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
+      id: item.productId.id,
+      product: item.productId,
+    }));
   }, [selectedCart, selectedCurrency.USD]);
 
   const columns = useMemo<ColumnDef<CartTableRow>[]>(
@@ -157,7 +151,7 @@ const CartTable = () => {
           return (
             <div className="flex items-center justify-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 shadow-inner h-8 w-[100px] mx-auto select-none font-sans text-xs">
               <button
-                onClick={() => handleQuantityChange(row.original._id, 'decrement')}
+                onClick={() => handleQuantityChange(row.original.id, 'decrement')}
                 className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
                 type="button"
                 aria-label={`Зменшити кількість для ${row.original.nameCol}`}
@@ -168,7 +162,7 @@ const CartTable = () => {
                 {row.original.quantityCol}
               </span>
               <button
-                onClick={() => handleQuantityChange(row.original._id, 'increment')}
+                onClick={() => handleQuantityChange(row.original.id, 'increment')}
                 className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
                 type="button"
                 aria-label={`Збільшити кількість для ${row.original.nameCol}`}
@@ -197,7 +191,7 @@ const CartTable = () => {
             onClick={() => {
               dispatch(
                 deleteProductFromCartThunk({
-                  productId: row.original._id,
+                  productId: row.original.id,
                   quantity: row.original.quantityCol,
                 }),
               );
@@ -222,7 +216,7 @@ const CartTable = () => {
       (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
     const order = {
       products: selectedCart.map((item) => ({
-        productId: item.productId._id,
+        productId: item.productId.id,
         quantity: item.quantity,
         price: Number(item.productId.price.toFixed(2)),
         totalPriceByOneProduct: Number((item.productId.price * item.quantity).toFixed(2)),

@@ -258,7 +258,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
               type="button"
               onClick={() => {
                 if (confirm('Ви впевнені, що хочете видалити користувача?')) {
-                  dispatch(deleteUserThunk(selectedUser._id))
+                  dispatch(deleteUserThunk(selectedUser.id))
                     .unwrap()
                     .then(() => {
                       closeModal();
@@ -277,7 +277,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
           <Button
             className="bg-green-200 hover:bg-green-400 focus:bg-green-400 active:bg-green-400"
             onClick={() => {
-              if (confirm('Відновити користувача?')) dispatch(restoreUserThunk(selectedUser._id));
+              if (confirm('Відновити користувача?')) dispatch(restoreUserThunk(selectedUser.id));
             }}
             type="button"
           >
@@ -303,7 +303,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
               <p className="font-medium">Сума $</p>
             </li>
             {orders.map((order) => (
-              <li key={order._id} className="grid grid-cols-3 border-b border-gray-200">
+              <li key={order.id} className="grid grid-cols-3 border-b border-gray-200">
                 <p>{order.orderCode}</p>
                 <p>{order.status}</p>
                 <p>{order.totalPrice.toFixed(2)}</p>

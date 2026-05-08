@@ -19,7 +19,7 @@ const Page = ({ params }: PageProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const product: Product | undefined = useAppSelector((state) =>
-    state.persistedMainReducer.products.find((product) => product._id === productId),
+    state.persistedMainReducer.products.find((product) => String(product.id) === productId),
   );
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);

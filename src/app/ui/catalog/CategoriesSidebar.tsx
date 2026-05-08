@@ -21,7 +21,7 @@ const Sidebar = () => {
   }, [dispatch]);
 
   const isShop = pathname.includes('/shop');
-  const createPageURL = (categoryId: string) => {
+  const createPageURL = (categoryId: number | string) => {
     const params = new URLSearchParams(searchParams);
     let pagePathname = pathname;
     switch (pathname) {
@@ -64,14 +64,14 @@ const Sidebar = () => {
       <ul className="mb-4 flex flex-wrap justify-between gap-2 text-sm shadow-md xl:flex-col xl:text-base">
         {productsCategories?.map((category) => (
           <li
-            key={category._id}
+            key={category.id}
             className={clsx(
               'cursor-pointer border-b-2 border-gray-200 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-100 hover:text-gray-800 hover:shadow-sm',
-              searchParams.get('category') === category._id && 'bg-orange-200 text-gray-800',
+              searchParams.get('category') === String(category.id) && 'bg-orange-200 text-gray-800',
             )}
           >
             <Link
-              href={createPageURL(category._id)}
+              href={createPageURL(category.id)}
               className="block w-full px-2 py-1 tracking-[0.01em]"
             >
               {category.name}

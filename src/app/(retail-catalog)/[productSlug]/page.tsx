@@ -59,7 +59,8 @@ export default function Page({ params }: PageProps) {
   const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
-  const favorites = useAppSelector((state) => (state.persistedAuthReducer.user?.favorites || []) as string[]);
+  const favoritesState = useAppSelector((state) => state.persistedAuthReducer.user?.favorites || []);
+  const favoritesIdList = favoritesState.map((p: any) => typeof p === 'object' && p !== null ? p.id : Number(p));
 
   // UI state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -78,21 +79,19 @@ export default function Page({ params }: PageProps) {
 
   // Fetch related products for cross-sell recommendations
   useEffect(() => {
-    if (product?.category?._id) {
+    if (product?.category?.id) {
       dispatch(
         fetchMainTableDataThunk({
           page: 1,
           limit: 5,
           isRetail: true,
-          category: product.category._id,
+          category: String(product.category.id),
           query: '',
           sortValue: 'default',
         })
       );
     }
-  }, [dispatch, product?.category?._id]);
-
-  // Generate barcode if product has one
+  }, [dispatch, product?.category?.id]);
   useEffect(() => {
     if (product?.barcode && barcodeRef.current) {
       try {
@@ -107,7 +106,6 @@ export default function Page({ params }: PageProps) {
         console.error('Barcode generation error:', err);
       }
     }
-  }, [product]);
 
   // ScrollSpy using IntersectionObserver
   useEffect(() => {
@@ -150,9 +148,7 @@ export default function Page({ params }: PageProps) {
         <Footer />
       </>
     );
-  }
-
-  if (!product || !product._id) {
+  if (!product || !product.id) {
     return (
       <>
         <Header />
@@ -177,17 +173,17 @@ export default function Page({ params }: PageProps) {
   }
 
   // Favorite toggle
-  const isFavorite = favorites.includes(product._id);
+  const isFavorite = favoritesIdList.includes(product.id);
   const handleFavoriteClick = () => {
     if (!isAuth) {
       toast.info('Будь ласка, увійдіть, щоб додавати товари до обраного.');
       return;
     }
     if (isFavorite) {
-      dispatch(deleteFavoriteProductThunk(product._id));
+      dispatch(deleteFavoriteProductThunk(product.id));
       toast.success('Товар вилучено з обраного');
     } else {
-      dispatch(addFavoriteProductThunk(product._id));
+      dispatch(addFavoriteProductThunk(product.id));
       toast.success('Товар додано до обраного');
     }
   };
@@ -198,7 +194,7 @@ export default function Page({ params }: PageProps) {
     if (isAuth) {
       await dispatch(
         addProductToRetailCartThunk({
-          productId: product._id,
+          productId: product.id,
           quantity: qty,
         })
       ).unwrap();
@@ -209,7 +205,7 @@ export default function Page({ params }: PageProps) {
           addProductToLocalStorageCart({
             productId: normalizeProduct,
             quantity: qty,
-            _id: product._id,
+            id: product.id,
           })
         )
       );
@@ -241,16 +237,14 @@ export default function Page({ params }: PageProps) {
   ];
   const electroCategory = categories?.find(c => c.name?.toLowerCase().includes('електроінструмент'));
   if (electroCategory) {
-    breadcrumbsItems.push({ label: electroCategory.name, href: `/?category=${electroCategory._id}` });
+    breadcrumbsItems.push({ label: electroCategory.name, href: `/?category=${electroCategory.id}` });
   } else {
     breadcrumbsItems.push({ label: 'Електроінструмент', href: '/' });
   }
   if (product.category?.name && !product.category.name.toLowerCase().includes('електроінструмент')) {
-    breadcrumbsItems.push({ label: product.category.name, href: `/?category=${product.category._id}` });
+    breadcrumbsItems.push({ label: product.category.name, href: `/?category=${product.category.id}` });
   }
   breadcrumbsItems.push({ label: product.article || product.name });
-
-  // Media gallery details
   const primaryImageUrl = product.image ? process.env.NEXT_PUBLIC_API + product.image : '/placeholder.webp';
   // Mock alternative angles
   const galleryImages = [
@@ -291,7 +285,7 @@ export default function Page({ params }: PageProps) {
 
   // Battery link resolver
   const batteryCategory = categories?.find(c => c.name?.toLowerCase().includes('акумулятор') || c.name?.toLowerCase().includes('зарядн'));
-  const batteryLink = batteryCategory ? `/?category=${batteryCategory._id}` : '/?query=акумулятор';
+  const batteryLink = batteryCategory ? `/?category=${batteryCategory.id}` : '/?query=акумулятор';
 
   // Smooth scroll helper
   const scrollToSection = (id: string) => {
@@ -312,7 +306,7 @@ export default function Page({ params }: PageProps) {
 
   // Filter out the current product from recommendations
   const relatedProducts = products
-    .filter((p) => p._id !== product._id)
+    .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
   return (
@@ -779,7 +773,7 @@ export default function Page({ params }: PageProps) {
               )}
             </section>
 
-          </div>
+
         </div>
       </main>
 

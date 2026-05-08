@@ -34,7 +34,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const viewParam = searchParams.get('view') || 'grid';
 
   // Determine active category name for breadcrumbs & title
-  const activeCategory = productsCategories.find((c) => c._id === activeCategoryId);
+  const activeCategory = productsCategories.find((c) => String(c.id) === activeCategoryId);
   const categoryName = activeCategory ? activeCategory.name : 'Електроінструмент';
 
   // Breadcrumbs items

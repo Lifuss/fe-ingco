@@ -82,15 +82,14 @@ const Slice = createSlice({
         }
         toast.success('Замовлення успішно змінено');
       })
-      .addCase(updateUserThunk.fulfilled, (state, { payload }) => {
-        const index = state.users.findIndex((user) => user._id === payload._id);
+        const index = state.users.findIndex((user) => user.id === payload.id);
         if (index !== -1) {
           state.users[index] = payload;
         }
         toast.success('Користувач успішно змінений');
       })
       .addCase(deleteUserThunk.fulfilled, (state, { payload }) => {
-        state.users = state.users.filter((user) => user._id !== payload);
+        state.users = state.users.filter((user) => user.id !== payload);
         toast.success('Користувач успішно видалений');
       })
       .addCase(restoreUserThunk.fulfilled, () => {

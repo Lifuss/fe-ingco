@@ -19,10 +19,10 @@ import OutOfStockModal from '../modals/OutOfStockModal';
 interface ProductCardProps {
   product: Product;
   listType: 'partner' | 'retail';
-  favoritesIdList: string[];
-  handleDirectToProduct: (id: string, slug: string) => void;
-  handleCartClick?: (id: string, productName: string) => void; // kept for compatibility
-  handleFavoriteClick?: (id: string) => void; // kept for compatibility
+  favoritesIdList: number[];
+  handleDirectToProduct: (id: number, slug: string) => void;
+  handleCartClick?: (id: number, productName: string) => void; // kept for compatibility
+  handleFavoriteClick?: (id: number) => void; // kept for compatibility
   USDCurrency?: number;
 }
 
@@ -47,7 +47,7 @@ const ProductCard = ({
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
 
-  if (!product || !product._id) {
+  if (!product || !product.id) {
     return (
       <div className="relative flex justify-center rounded-2xl border-2 border-transparent p-4 shadow-md bg-white">
         <h3 className="text-sm font-semibold text-gray-500">Сталась помилка завантаження товару</h3>
@@ -58,7 +58,7 @@ const ProductCard = ({
   const {
     countInStock,
     rrcSale,
-    _id,
+    id,
     article,
     name,
     image,
@@ -88,10 +88,10 @@ const ProductCard = ({
       toast.error('Для додавання в обране потрібно увійти в профіль');
       return;
     }
-    if (favoritesIdList.includes(_id)) {
-      dispatch(deleteFavoriteProductThunk(_id));
+    if (favoritesIdList.includes(id)) {
+      dispatch(deleteFavoriteProductThunk(id));
     } else {
-      dispatch(addFavoriteProductThunk(_id));
+      dispatch(addFavoriteProductThunk(id));
     }
   };
 
@@ -118,11 +118,11 @@ const ProductCard = ({
     e.stopPropagation();
     if (isAuth) {
       if (isB2BUser) {
-        dispatch(addProductToCartThunk({ productId: _id, quantity }))
+        dispatch(addProductToCartThunk({ productId: id, quantity }))
           .unwrap()
           .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
       } else {
-        dispatch(addProductToRetailCartThunk({ productId: _id, quantity }))
+        dispatch(addProductToRetailCartThunk({ productId: id, quantity }))
           .unwrap()
           .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
       }
@@ -133,14 +133,14 @@ const ProductCard = ({
         addProductToLocalStorageCart({
           productId: restProduct,
           quantity,
-          _id,
+          id,
         })
       );
       toast.success(`${quantity} шт. - ${name} додано в кошик`);
     }
   };
 
-  const isFavorite = favoritesIdList.includes(_id);
+  const isFavorite = favoritesIdList.includes(id);
 
   return (
     <>
@@ -149,7 +149,7 @@ const ProductCard = ({
         {/* Hover card container expanding downwards */}
         <div className="absolute top-0 left-0 w-full bg-white rounded-2xl border border-gray-200 p-4 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary-500 hover:z-30 flex flex-col justify-between min-h-[380px] h-full hover:h-auto">
           
-          <div className="grow cursor-pointer flex flex-col" onClick={() => handleDirectToProduct(_id, slug)}>
+          <div className="grow cursor-pointer flex flex-col" onClick={() => handleDirectToProduct(id, slug)}>
             
             {/* Image container */}
             <div className="relative h-[180px] w-full mb-2 shrink-0 flex items-center justify-center bg-white">
@@ -180,7 +180,7 @@ const ProductCard = ({
               <Image
                 src={image ? NEXT_PUBLIC_API + image : '/placeholder.webp'}
                 alt={name}
-                className="object-contain p-2"
+                className="max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                 fill={true}
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 loading="lazy"
@@ -217,7 +217,6 @@ const ProductCard = ({
                 <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                   <table className="w-full text-[11px] border-collapse">
                     <tbody>
-                      {/* {TODO: After resolve it on CMS side this logic will be removed} */}
                       {characteristics.filter(c => c.value !== '-' && c.name.toLowerCase() !== 'артикул' && c.name.toLowerCase() !== 'артикль' && c.name.toLowerCase() !== 'sku' && c.name.toLowerCase() !== 'article').slice(0, 3).map((char, index) => (
                         <tr key={index} className="border-b border-gray-150 last:border-b-0">
                           <td className="py-0.5 text-gray-500 font-medium">{char.name}</td>
@@ -327,7 +326,6 @@ const ProductCard = ({
               </button>
             )}
           </div>
-
         </div>
       </li>
 

@@ -9,9 +9,9 @@ import { CardSkeleton } from '../skeletons/skeletons';
 interface ProductBlockListProps {
   productsData: Product[];
   listType: 'partner' | 'retail';
-  handleCartClick?: (id: string, productName: string) => void;
-  handleFavoriteClick?: (id: string) => void;
-  favoritesIdList: string[];
+  handleCartClick?: (id: number, productName: string) => void;
+  handleFavoriteClick?: (id: number) => void;
+  favoritesIdList: number[];
   USDCurrency?: number;
 }
 
@@ -31,7 +31,7 @@ const ProductBlockList = ({
   const viewParam = searchParams.get('view') || 'grid';
   const isListView = listType === 'partner' ? shopView === 'list' : viewParam === 'list';
 
-  const handleDirectToProduct = (id: string, slug: string) => {
+  const handleDirectToProduct = (id: number, slug: string) => {
     logProductClick(id);
 
     const base = listType === 'retail' ? `/${slug}` : `/shop/${slug}`;
@@ -51,10 +51,10 @@ const ProductBlockList = ({
       >
         {productsData?.map((product) => {
           return isProductsLoading ? (
-            <CardSkeleton key={product._id} />
+            <CardSkeleton key={product.id} />
           ) : (
             <ProductCard
-              key={product._id}
+              key={product.id}
               product={product}
               listType={listType}
               handleDirectToProduct={handleDirectToProduct}

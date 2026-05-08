@@ -100,7 +100,7 @@ const appStateSlice = createSlice({
         state.totalPages = payload.totalPages;
       })
       .addCase(updateProductThunk.fulfilled, (state, { payload }) => {
-        const index = state.products.findIndex((product) => product._id === payload._id);
+        const index = state.products.findIndex((product) => product.id === payload.id);
         if (index !== -1) {
           state.products[index] = payload;
         }
@@ -109,16 +109,16 @@ const appStateSlice = createSlice({
         state.categories.push(payload);
       })
       .addCase(deleteProductThunk.fulfilled, (state, { payload }) => {
-        state.products = state.products.filter((product) => product._id !== payload);
+        state.products = state.products.filter((product) => product.id !== payload);
       })
       .addCase(updateCategoryThunk.fulfilled, (state, { payload }) => {
-        const index = state.categories.findIndex((category) => category._id === payload._id);
+        const index = state.categories.findIndex((category) => category.id === payload.id);
         if (index !== -1) {
           state.categories[index] = { ...state.categories[index], ...payload };
         }
       })
       .addCase(deleteCategoryThunk.fulfilled, (state, { payload }) => {
-        state.categories = state.categories.filter((category) => category._id !== payload);
+        state.categories = state.categories.filter((category) => category.id !== payload);
       });
   },
 });
