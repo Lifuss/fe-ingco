@@ -18,7 +18,7 @@ type ProductTableRow = {
   priceCol: number;
   rrcCol: string;
   availabilityCol: number;
-  editCol: string;
+  editCol: number;
   sortCol: number;
 };
 
@@ -57,7 +57,7 @@ const ProductTable = () => {
         ? product.priceRetailRecommendation + '|' + product.rrcSale
         : product.priceRetailRecommendation.toString(),
       availabilityCol: product.countInStock,
-      editCol: product._id,
+      editCol: product.id,
       sortCol: product.sort,
     }));
   }, [products]);

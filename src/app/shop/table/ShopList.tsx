@@ -24,7 +24,7 @@ const ShopList = ({ isFavoritePage = false, products, favorites }: ShopListProps
   const dispatch = useAppDispatch();
   const usdRate = useAppSelector(selectUSDRate);
 
-  const favoritesList = favorites.map((product) => product._id);
+  const favoritesList = favorites.map((product) => product.id);
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
@@ -50,7 +50,7 @@ const ShopList = ({ isFavoritePage = false, products, favorites }: ShopListProps
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  function handleFavoriteClick(id: string) {
+  function handleFavoriteClick(id: number) {
     if (favoritesList.includes(id)) {
       dispatch(deleteFavoriteProductThunk(id));
     } else {
@@ -58,7 +58,7 @@ const ShopList = ({ isFavoritePage = false, products, favorites }: ShopListProps
     }
   }
 
-  const handleCartClick = (id: string, productName: string) => {
+  const handleCartClick = (id: number, productName: string) => {
     dispatch(
       addProductToCartThunk({
         productId: id,

@@ -4,6 +4,7 @@ import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/FiltersBlock';
+import { normalizeProduct } from '@/lib/utils';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -81,7 +82,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/products', {
         params: { page, q: query, limit, category, sortValue, isRetail },
       });
-      return data;
+      return { ...data, products: data.products.map(normalizeProduct) };
     } catch (error) {
       rejectWithValue(error);
     }
@@ -105,7 +106,7 @@ export const getProductBySlugThunk = createAsyncThunk(
   async (productSlug: string, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.get(`/products/${productSlug}`);
-      return data;
+      return normalizeProduct(data);
     } catch (error) {
       rejectWithValue(error);
     }
@@ -149,7 +150,7 @@ export const fetchHistoryThunk = createAsyncThunk(
 
 export const deleteProductThunk = createAsyncThunk(
   'product/delete',
-  async (productId: string, { rejectWithValue }) => {
+  async (productId: number, { rejectWithValue }) => {
     try {
       await apiIngco.delete(`/products/${productId}`);
       return productId;
@@ -174,7 +175,7 @@ export const createCategoryThunk = createAsyncThunk(
 export const updateCategoryThunk = createAsyncThunk(
   'category/update',
   async (
-    { id, name, renderSort }: { id: string; name: string; renderSort: number },
+    { id, name, renderSort }: { id: number; name: string; renderSort: number },
     { rejectWithValue },
   ) => {
     try {
@@ -191,7 +192,7 @@ export const updateCategoryThunk = createAsyncThunk(
 
 export const deleteCategoryThunk = createAsyncThunk(
   'category/delete',
-  async (categoryId: string, { rejectWithValue }) => {
+  async (categoryId: number, { rejectWithValue }) => {
     try {
       await apiIngco.delete(`/categories/${categoryId}`);
       return categoryId;
@@ -251,7 +252,7 @@ export const supportTicketThunk = createAsyncThunk(
 
 export const trackProductClickThunk = createAsyncThunk(
   'product/trackProductClick',
-  async (productId: string) => {
+  async (productId: number) => {
     await apiIngco.get(`/stats/products/${productId}`);
     return productId;
   },

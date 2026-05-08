@@ -30,7 +30,7 @@ type ShopTableRow = {
   priceCol: number;
   rrcCol: number;
   availableCol: boolean;
-  _id: string;
+  id: number;
   priceUahCol: number;
   product: Product;
 };
@@ -41,7 +41,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const state = useAppSelector((state) => state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
   const { logProductClick } = useProductStats();
 
   const openModal = () => {
@@ -58,7 +58,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     currencyRates: { USD = 0 },
   } = state.persistedMainReducer;
   const favorites: Product[] = state.persistedAuthReducer.user.favorites;
-  const favoritesList = favorites.map((product) => product._id);
+  const favoritesList = favorites.map((product) => product.id);
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
@@ -153,7 +153,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       priceCol: product.price,
       rrcCol: product.priceRetailRecommendation,
       availableCol: product.countInStock <= 0,
-      _id: product._id,
+      id: product.id,
       priceUahCol: Math.ceil(product.price * USD),
       product,
     }));
@@ -177,7 +177,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
             className="min-w-[250px] text-left transition-colors hover:text-blue-500"
             onClick={() => {
               setSelectedProduct(row.original.product);
-              logProductClick(row.original.product._id);
+              logProductClick(row.original.product.id);
               openModal();
             }}
           >
@@ -222,11 +222,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessorKey: 'favoriteCol',
         cell: ({ row }) => (
           <button
-            onClick={() => handleFavoriteClick(row.original._id)}
-            data-favorite={row.original._id}
+            onClick={() => handleFavoriteClick(row.original.id)}
+            data-favorite={row.original.id}
             className={clsx(
               'px-2 py-1 text-white',
-              favoritesList.includes(row.original._id)
+              favoritesList.includes(row.original.id)
                 ? 'fill-orange-500 stroke-black'
                 : 'fill-white stroke-black',
             )}
@@ -252,20 +252,20 @@ const ShopTable = ({ isFavoritePage = false }) => {
         id: 'quantityCol',
         cell: ({ row }) => (
           <input
-            name={row.original._id}
+            name={row.original.id}
             type="number"
             className="h-8 w-[70px] rounded-md p-1 text-center"
             onBlur={(e) => {
-              handleQuantityChange(row.original._id, parseInt(e.target.value));
+              handleQuantityChange(row.original.id, parseInt(e.target.value));
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 const input = e.currentTarget;
-                handleQuantityChange(row.original._id, parseInt(input.value));
-                handleCartClick(row.original._id, row.original.nameCol);
+                handleQuantityChange(row.original.id, parseInt(input.value));
+                handleCartClick(row.original.id, row.original.nameCol);
               }
             }}
-            defaultValue={quantities[row.original._id] || 0}
+            defaultValue={quantities[row.original.id] || 0}
             placeholder="0"
           />
         ),
@@ -276,7 +276,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         cell: ({ row }) => (
           <button
             className="px-2 py-1 text-white transition-transform duration-200 hover:scale-110"
-            onClick={() => handleCartClick(row.original._id, row.original.nameCol)}
+            onClick={() => handleCartClick(row.original.id, row.original.nameCol)}
           >
             <Icon icon="cart" className="h-9 w-9 fill-black hover:fill-orange-500" />
           </button>

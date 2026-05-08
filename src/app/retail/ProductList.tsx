@@ -28,7 +28,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const { products = [], totalPages = 1 } = mainState;
   const favorites: Product[] = [...authState.user.favorites];
   const isAuth = authState.isAuthenticated || false;
-  const favoritesIdList = favorites.map((product) => product._id);
+  const favoritesIdList = favorites.map((product) => product.id);
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
@@ -71,7 +71,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
   }, [dispatch, page, query, category, isFavoritePage, limit, sortValue]);
 
-  function handleFavoriteClick(id: string) {
+  function handleFavoriteClick(id: number) {
     if (isAuth) {
       if (favoritesIdList.includes(id)) {
         dispatch(deleteFavoriteProductThunk(id));
@@ -83,7 +83,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
   }
 
-  const handleCartClick = (id: string, productName: string) => {
+  const handleCartClick = (id: number, productName: string) => {
     if (isAuth) {
       dispatch(
         addProductToRetailCartThunk({
@@ -96,7 +96,7 @@ const ProductList = ({ isFavoritePage = false }) => {
           toast.success(`${productName} додано в кошик`);
         });
     } else {
-      const product = productsData.find((product) => product._id === id);
+      const product = productsData.find((product) => product.id === id);
       if (!product) {
         toast.error('Виникла помилка з додаванням товару в кошик, спробуйте ще раз через');
         return;
@@ -106,7 +106,7 @@ const ProductList = ({ isFavoritePage = false }) => {
         addProductToLocalStorageCart({
           productId: restProduct,
           quantity: 1,
-          _id: id,
+          id,
         }),
       );
 

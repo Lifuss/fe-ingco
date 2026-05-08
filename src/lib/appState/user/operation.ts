@@ -172,7 +172,7 @@ export const refreshTokenThunk = createAsyncThunk(
 
 export const addFavoriteProductThunk = createAsyncThunk(
   'auth/addFavoriteProduct',
-  async (productId: string, { rejectWithValue }) => {
+  async (productId: number, { rejectWithValue }) => {
     try {
       const response = await apiIngco.post(`/users/favorites/${productId}`);
       if (response.status < 200 || response.status >= 300) {
@@ -199,7 +199,7 @@ export const addFavoriteProductThunk = createAsyncThunk(
 
 export const deleteFavoriteProductThunk = createAsyncThunk(
   'auth/deleteFavoriteProduct',
-  async (productId: string, { rejectWithValue }) => {
+  async (productId: number, { rejectWithValue }) => {
     try {
       const response = await apiIngco.delete(`/users/favorites/${productId}`);
       if (response.status < 200 || response.status >= 300) {
@@ -245,7 +245,7 @@ export const getUserRetailCartThunk = createAsyncThunk(
 
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
-  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
+  async ({ productId, quantity }: { productId: number; quantity: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.post('users/cart', {
         productId,
@@ -260,7 +260,7 @@ export const addProductToCartThunk = createAsyncThunk(
 
 export const addProductToRetailCartThunk = createAsyncThunk(
   'cart/addRetail',
-  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
+  async ({ productId, quantity }: { productId: number; quantity: number }, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.post('users/cart/retail', {
         productId,
@@ -276,7 +276,7 @@ export const addProductToRetailCartThunk = createAsyncThunk(
 export const deleteProductFromCartThunk = createAsyncThunk(
   'cart/delete',
   async (
-    { productId, quantity = 1 }: { productId: string; quantity: number },
+    { productId, quantity = 1 }: { productId: number; quantity: number },
     { rejectWithValue },
   ) => {
     try {
@@ -293,7 +293,7 @@ export const deleteProductFromCartThunk = createAsyncThunk(
 export const deleteProductFromRetailCartThunk = createAsyncThunk(
   'cart/deleteRetail',
   async (
-    { productId, quantity = 1 }: { productId: string; quantity: number },
+    { productId, quantity = 1 }: { productId: number; quantity: number },
     { rejectWithValue },
   ) => {
     try {
@@ -312,7 +312,7 @@ export const createOrderThunk = createAsyncThunk(
   async (
     order: {
       products: {
-        productId: string;
+        productId: number;
         quantity: number;
         price: number;
         totalPriceByOneProduct: number;
@@ -337,7 +337,7 @@ export const createRetailOrderThunk = createAsyncThunk(
   async (
     order: {
       products: {
-        productId: string;
+        productId: number;
         quantity: number;
         price: number;
         totalPriceByOneProduct: number;

@@ -19,7 +19,7 @@ type AdminProductFormProps = {
   setCharacteristics: React.Dispatch<React.SetStateAction<{ name: string; value: string }[]>>;
   characteristic: { name: string; value: string };
   setCharacteristic: React.Dispatch<React.SetStateAction<{ name: string; value: string }>>;
-  categories: { _id: string; name: string }[];
+  categories: { id: number; name: string }[];
   isEdit?: boolean;
   product?: Product;
 };
@@ -209,10 +209,10 @@ const AdminProductForm = ({
               <select
                 name="category"
                 className="block rounded-lg"
-                defaultValue={product?.category?._id}
+                defaultValue={product?.category?.id}
               >
                 {categories?.map((category) => (
-                  <option key={category._id} value={category._id}>
+                  <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
                 ))}

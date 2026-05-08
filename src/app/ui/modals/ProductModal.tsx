@@ -92,7 +92,7 @@ const ModalProduct = ({
                         if (productQuantity > 0) {
                           dispatch(
                             addProductToCartThunk({
-                              productId: product._id,
+                              productId: product.id,
                               quantity: productQuantity,
                             }),
                           )
@@ -106,7 +106,7 @@ const ModalProduct = ({
                       } else {
                         dispatch(
                           addProductToRetailCartThunk({
-                            productId: product._id,
+                            productId: product.id,
                             quantity: 1,
                           }),
                         )
@@ -145,13 +145,13 @@ const ModalProduct = ({
               <div className="flex flex-col gap-2">
                 {product.characteristics?.map((item) =>
                   item.value !== '-' ? (
-                    <div key={item._id}>
+                    <div key={item._id ?? item.name}>
                       <p>
                         <span className="font-medium">{item.name}:</span> {item.value}
                       </p>
                     </div>
                   ) : (
-                    <div key={item._id}>
+                    <div key={item._id ?? item.name}>
                       <p>
                         <span className="font-medium">{item.name}</span>
                       </p>

@@ -36,7 +36,7 @@ const initialState = {
   localStorageCart: [] as {
     productId: Product;
     quantity: number;
-    _id: string;
+    id: number;
   }[],
   token: '',
   isAuthenticated: false,
@@ -51,7 +51,7 @@ const authStateSlice = createSlice({
       return initialState;
     },
     addProductToLocalStorageCart: (state, { payload }) => {
-      const product = state.localStorageCart.find((product) => product._id === payload._id);
+      const product = state.localStorageCart.find((product) => product.id === payload.id);
       if (product) {
         product.quantity += 1;
       } else {
@@ -59,14 +59,14 @@ const authStateSlice = createSlice({
       }
     },
     removeProductFromLocalStorageCart: (state, { payload }) => {
-      state.localStorageCart = state.localStorageCart.filter((product) => product._id !== payload);
+      state.localStorageCart = state.localStorageCart.filter((product) => product.id !== payload);
     },
     decreaseProductQuantityInLocalStorageCart: (state, { payload }) => {
       state.localStorageCart.find((product) => {
-        if (product._id === payload) {
+        if (product.id === payload) {
           if (product.quantity === 1) {
             state.localStorageCart = state.localStorageCart.filter(
-              (product) => product._id !== payload,
+              (product) => product.id !== payload,
             );
           } else {
             product.quantity -= 1;
@@ -76,7 +76,7 @@ const authStateSlice = createSlice({
     },
     increaseProductQuantityInLocalStorageCart: (state, { payload }) => {
       state.localStorageCart = state.localStorageCart.map((product) =>
-        product._id === payload ? { ...product, quantity: product.quantity + 1 } : product,
+        product.id === payload ? { ...product, quantity: product.quantity + 1 } : product,
       );
     },
   },

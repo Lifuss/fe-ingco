@@ -8,10 +8,10 @@ import Icon from '../assets/Icon';
 interface ProductCardProps {
   product: Product;
   listType: 'partner' | 'retail';
-  favoritesIdList: string[];
-  handleDirectToProduct: (id: string, slug: string) => void;
-  handleCartClick: (id: string, productName: string) => void;
-  handleFavoriteClick: (id: string) => void;
+  favoritesIdList: number[];
+  handleDirectToProduct: (id: number, slug: string) => void;
+  handleCartClick: (id: number, productName: string) => void;
+  handleFavoriteClick: (id: number) => void;
   USDCurrency?: number;
 }
 
@@ -26,7 +26,7 @@ const ProductCard = ({
   handleFavoriteClick,
   USDCurrency,
 }: ProductCardProps) => {
-  if (!product || !product._id) {
+  if (!product || !product.id) {
     return (
       <div
         className={clsx(
@@ -41,7 +41,7 @@ const ProductCard = ({
   const {
     countInStock,
     rrcSale,
-    _id,
+    id,
     article,
     name,
     image,
@@ -63,7 +63,7 @@ const ProductCard = ({
         countInStock <= 0 && 'pointer-events-none opacity-40',
       )}
     >
-      <div className="grow cursor-pointer" onClick={() => handleDirectToProduct(_id, slug)}>
+      <div className="grow cursor-pointer" onClick={() => handleDirectToProduct(id, slug)}>
         <div className="relative h-[150px] w-full">
           {rrcSale && listType === 'retail' ? (
             <div className="absolute -top-2 left-0 z-10 w-[3rem] rounded-md bg-red-500">
@@ -94,12 +94,12 @@ const ProductCard = ({
               const value = item.value.trim();
 
               return item.value !== '-' ? (
-                <li key={item._id} className="inline-flex w-full gap-1">
+                <li key={item._id ?? item.name} className="inline-flex w-full gap-1">
                   <span className="truncate">{name}:</span>
                   <span className="truncate">{value}</span>
                 </li>
               ) : (
-                <li key={item._id} className="inline-flex gap-1">
+                <li key={item._id ?? item.name} className="inline-flex gap-1">
                   <span className="truncate">{name}</span>
                 </li>
               );
@@ -117,12 +117,12 @@ const ProductCard = ({
       </div>
       <div className="flex items-center justify-between">
         <button
-          onClick={handleFavoriteClick.bind(null, _id)}
+          onClick={handleFavoriteClick.bind(null, id)}
           aria-label={`Додати ${name} до обраних`}
-          data-favorite={_id}
+          data-favorite={id}
           className={clsx(
             'stroke-black text-white transition-all hover:scale-125 focus:scale-125',
-            favoritesIdList.includes(_id) ? 'fill-orange-500' : 'fill-white',
+            favoritesIdList.includes(id) ? 'fill-orange-500' : 'fill-white',
           )}
         >
           <Heart size={24} className="fill-inherit stroke-inherit stroke-1" />
@@ -132,7 +132,7 @@ const ProductCard = ({
           <div className="flex items-center justify-end">
             <div
               className="border-r border-black pr-1 text-base font-medium"
-              onClick={() => handleDirectToProduct(_id, slug)}
+              onClick={() => handleDirectToProduct(id, slug)}
             >
               {rrcSale ? (
                 <div className="flex flex-col items-end">
@@ -145,7 +145,7 @@ const ProductCard = ({
             </div>
             <button
               className="fill-black pl-1 transition-all hover:scale-125 hover:fill-orange-500 focus:scale-125"
-              onClick={() => handleCartClick(_id, name)}
+              onClick={() => handleCartClick(id, name)}
               aria-label={`Додати ${name} в кошик`}
             >
               <Icon icon="cart" className="h-6 w-6 fill-black hover:fill-orange-500" />
@@ -156,7 +156,7 @@ const ProductCard = ({
             <p
               className="flex flex-col border-r border-black pr-1 text-sm font-medium"
               onClick={() => {
-                handleDirectToProduct(_id, slug);
+                handleDirectToProduct(id, slug);
               }}
             >
               <span>{price} $</span>
@@ -164,7 +164,7 @@ const ProductCard = ({
             </p>
             <button
               className="fill-black pl-1 hover:fill-orange-500"
-              onClick={() => handleCartClick(_id, name)}
+              onClick={() => handleCartClick(id, name)}
             >
               <Icon icon="cart" className="h-6 w-6 fill-black hover:fill-orange-500" />
             </button>

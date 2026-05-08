@@ -22,7 +22,7 @@ import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import { type ColumnDef } from '@tanstack/react-table';
 
-type CartData = { quantity: number; _id: string; productId: Product }[];
+type CartData = { quantity: number; id: number; productId: Product }[];
 type RetailCartRow = {
   codeCol: string;
   nameCol: string;
@@ -30,7 +30,7 @@ type RetailCartRow = {
   rrcCol: number;
   quantityCol: number;
   totalCol: string;
-  _id: string;
+  id: number;
   product: Product;
 };
 
@@ -59,7 +59,7 @@ const RetailCartTable = () => {
 
   const selectedCart = isAuth ? retailCart : localStorageCart;
 
-  const handleQuantityChange = (id: string, operation: string) => {
+  const handleQuantityChange = (id: number, operation: string) => {
     if (isAuth) {
       if (operation === 'increment') {
         dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
@@ -94,7 +94,7 @@ const RetailCartTable = () => {
         : item.productId.priceRetailRecommendation,
       quantityCol: item.quantity,
       totalCol: `${item.productId.rrcSale ? item.productId.rrcSale * item.quantity : item.productId.priceRetailRecommendation * item.quantity} грн`,
-      _id: item.productId._id,
+      id: item.productId.id,
       product: item.productId,
     }));
   }, [selectedCart]);
@@ -160,7 +160,7 @@ const RetailCartTable = () => {
             <div>
               <button
                 className="mr-2"
-                onClick={() => handleQuantityChange(row.original._id, 'decrement')}
+                onClick={() => handleQuantityChange(row.original.id, 'decrement')}
               >
                 -
               </button>
@@ -172,7 +172,7 @@ const RetailCartTable = () => {
               />
               <button
                 className="ml-2"
-                onClick={() => handleQuantityChange(row.original._id, 'increment')}
+                onClick={() => handleQuantityChange(row.original.id, 'increment')}
               >
                 +
               </button>
@@ -196,12 +196,12 @@ const RetailCartTable = () => {
                   if (isAuth) {
                     dispatch(
                       deleteProductFromRetailCartThunk({
-                        productId: row.original._id,
+                        productId: row.original.id,
                         quantity: row.original.quantityCol,
                       }),
                     );
                   } else {
-                    dispatch(removeProductFromLocalStorageCart(row.original._id));
+                    dispatch(removeProductFromLocalStorageCart(row.original.id));
                   }
                 }}
               >
@@ -243,7 +243,7 @@ const RetailCartTable = () => {
 
     const order = {
       products: selectedCart.map((item) => ({
-        productId: item.productId._id,
+        productId: item.productId.id,
         quantity: item.quantity,
         price: Math.ceil(
           item.productId.rrcSale

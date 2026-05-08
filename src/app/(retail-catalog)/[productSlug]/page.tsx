@@ -52,7 +52,7 @@ export default function Page({ params }: PageProps) {
     if (isAuth) {
       await dispatch(
         addProductToRetailCartThunk({
-          productId: product._id,
+          productId: product.id,
           quantity: 1,
         }),
       ).unwrap();
@@ -63,7 +63,7 @@ export default function Page({ params }: PageProps) {
           addProductToLocalStorageCart({
             productId: normalizeProduct,
             quantity: 1,
-            _id: product._id,
+            id: product.id,
           }),
         ),
       );
@@ -240,7 +240,10 @@ export default function Page({ params }: PageProps) {
                 </h2>
                 <ul className="text-sm lg:text-base">
                   {product.characteristics.map((characteristic) => (
-                    <li className="flex justify-between gap-2" key={characteristic._id}>
+                    <li
+                      className="flex justify-between gap-2"
+                      key={characteristic._id ?? characteristic.name}
+                    >
                       {characteristic.value !== '-' ? (
                         <>
                           <h3 className="font-medium">{characteristic.name}:</h3>
@@ -276,7 +279,7 @@ export default function Page({ params }: PageProps) {
                   <p className="text-2xl">{product.priceRetailRecommendation} грн</p>
                 )}
                 <AddToCartButton
-                  productId={product._id}
+                  productId={product.id}
                   productName={product.name}
                   price={product.rrcSale || product.priceRetailRecommendation}
                   onAddToCart={onAddToCart}

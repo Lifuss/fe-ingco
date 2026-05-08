@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 interface AddToCartButtonProps {
-  productId: string;
+  productId: number;
   productName: string;
   price: number;
   onAddToCart: () => Promise<void>;
