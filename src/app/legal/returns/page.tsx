@@ -128,7 +128,9 @@ export default function ReturnsPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">8. Гарантійне обслуговування</h2>
+        <h2 className="mb-4 text-2xl font-semibold" id="guarantee">
+          8. Гарантійне обслуговування
+        </h2>
         <p className="mb-4 text-lg leading-relaxed">
           Гарантійний термін на товари встановлюється виробником та зазначений у гарантійному талоні
           або технічній документації.

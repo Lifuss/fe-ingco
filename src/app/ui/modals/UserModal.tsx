@@ -67,7 +67,6 @@ const User = () => {
           icon="user"
           className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"
         />
-        <div className="absolute bottom-0 h-[2px] w-full bg-black max-sm:left-0 md:top-0 md:right-[-3px] md:h-7 md:w-[2px] md:translate-y-[10%] 2xl:right-[-2px] 2xl:translate-y-[10%]"></div>
       </button>
       <Modal
         isOpen={isOpen}
@@ -85,17 +84,6 @@ const User = () => {
       >
         <div className="flex flex-col gap-2">
           <h3 className="text-left text-lg">{user.login}</h3>
-          <Link
-            href={`/${pathVariants}/favorites`}
-            className="relative pl-5 transition-colors hover:text-blue-500"
-            onClick={closeModal}
-          >
-            <Icon
-              icon="heart"
-              className="absolute top-1 left-0 h-[18px] w-[18px] fill-inherit stroke-current stroke-2"
-            />
-            Обране
-          </Link>
           <Link
             href={`/${pathVariants}/history`}
             className="relative pl-5 transition-colors hover:text-blue-500"
