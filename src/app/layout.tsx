@@ -6,6 +6,25 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
+import localFont from 'next/font/local';
+import { cn } from '@/lib/utils';
+
+const ttFirs = localFont({
+  src: [
+    {
+      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -199,7 +218,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="uk" data-scroll-behavior="smooth">
+    <html lang="uk" data-scroll-behavior="smooth" className={cn('font-sans', ttFirs.variable)}>
       <head>
         <link rel="sitemap" type="application/xml" href={`${SITE_URL}/sitemap.xml`} />
         <script
