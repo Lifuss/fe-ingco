@@ -43,7 +43,12 @@ export const makeStore = () =>
       }),
   });
 
-export const makePersistor = () => persistStore(makeStore());
+export const makePersistor = () => {
+  const store = makeStore();
+  const persistor = persistStore(store);
+
+  return { store, persistor };
+};
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<ReturnType<typeof makeStore>['getState']>;
