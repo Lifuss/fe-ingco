@@ -19,7 +19,7 @@ const Page = () => {
     <section id="contacts" className="mx-auto w-[1280px] px-[30px] pt-20 pb-20">
       <h1 className="mb-5 text-center text-4xl">Контакти</h1>
 
-      <ul className="mx-auto mb-5 min-h-36 w-fit rounded-2xl bg-[#f6f6f663] p-4 text-xl text-blue-600 shadow">
+      <ul className="mx-auto mb-5 min-h-36 w-fit rounded-2xl bg-card-tint p-4 text-xl text-blue-600 shadow">
         <li>
           <Link className="hover:text-orange-light" href="tel:+380988392107">
             +380 98-83-92-107
@@ -98,7 +98,7 @@ const Page = () => {
     <section id="contacts" className="container mx-auto mt-5 px-5 pb-5">
       <h1 className="mb-5 text-center text-3xl">Контакти</h1>
 
-      <ul className="mx-auto mb-5 min-h-36 w-fit rounded-2xl bg-[#f6f6f663] p-4 text-xl text-blue-600 shadow">
+      <ul className="mx-auto mb-5 min-h-36 w-fit rounded-2xl bg-card-tint p-4 text-xl text-blue-600 shadow">
         <li>
           <Link className="hover:text-orange-light" href="tel:+380988392107">
             +380 98-83-92-107

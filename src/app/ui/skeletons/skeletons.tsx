@@ -4,7 +4,7 @@ const shimmer =
 export function CardSkeleton() {
   return (
     <div
-      className={`relative flex h-[316px] w-full flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg`}
+      className={`relative flex h-[316px] w-full flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-brand-accent-yellow hover:shadow-lg`}
     >
       <div className="flex p-4">
         <div className="h-5 w-5 rounded-md bg-gray-200" />

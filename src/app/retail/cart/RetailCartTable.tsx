@@ -374,7 +374,7 @@ const RetailCartTable = () => {
           </label>
           <button
             type="submit"
-            className="mt-auto ml-auto block h-fit w-fit rounded-lg bg-[#111827] px-2 py-2 text-lg text-white"
+            className="mt-auto ml-auto block h-fit w-fit rounded-lg bg-brand-dark px-2 py-2 text-lg text-white"
           >
             Підтвердити замовлення
           </button>

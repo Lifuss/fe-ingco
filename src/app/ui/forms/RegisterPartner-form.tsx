@@ -80,7 +80,7 @@ export default function RegisterPartnerForm() {
                 Прізвище <span className="text-red">*</span>
               </label>
               <input
-                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="lastName"
                 type="text"
                 placeholder="Прізвище"
@@ -93,7 +93,7 @@ export default function RegisterPartnerForm() {
                 Ім&apos;я <span className="text-red">*</span>
               </label>
               <input
-                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="firstName"
                 type="text"
                 placeholder="Ім'я"
@@ -107,7 +107,7 @@ export default function RegisterPartnerForm() {
               По батькові <span className="text-red">*</span>
             </label>
             <input
-              className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="surName"
               type="text"
               placeholder="По батькові"
@@ -121,7 +121,7 @@ export default function RegisterPartnerForm() {
                 Номер телефону <span className="text-red">*</span>
               </label>
               <input
-                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="phone"
                 type="phone"
                 placeholder="+38067..."
@@ -135,7 +135,7 @@ export default function RegisterPartnerForm() {
                 Код ЄДРПОУ <span className="text-red">*</span>
               </label>
               <input
-                className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="edrpou"
                 type="text"
                 placeholder="ЄДРПОУ"
@@ -149,7 +149,7 @@ export default function RegisterPartnerForm() {
               Email <span className="text-red">*</span>
             </label>
             <input
-              className="block w-full rounded-2xl border border-[#1d1c1c] py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="email"
               type="email"
               placeholder="Ваш email"
@@ -162,7 +162,7 @@ export default function RegisterPartnerForm() {
               Розкажіть про себе
             </label>
             <textarea
-              className="block max-h-56 w-full rounded-2xl border border-[#1d1c1c] pt-[10px] pb-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="block max-h-56 w-full rounded-2xl border border-input-border pt-[10px] pb-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="about"
               placeholder="Необов'язкове поле про свою діяльність..."
               {...register('about')}

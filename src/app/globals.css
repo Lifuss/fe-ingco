@@ -2,16 +2,28 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Brand Primary Color Palette */
+  --color-primary-50: #fffaea; /* Tinted background surfaces / soft badges */
+  --color-primary-100: #fff2c5; /* Subtle tint / focus state background */
+  --color-primary-200: #ffe385; /* Disabled button background */
+  --color-primary-300: #ffce46; /* Light hover / active indicator */
+  --color-primary-400: #ffb91b; /* Mid-scale brand accent */
+  --color-primary-500: #ff9900; /* Brand Primary (Target) */
+  --color-primary-600: #e27300; /* Button Hover State */
+  --color-primary-700: #bb4d02; /* Button Pressed / Active State */
+  --color-primary-800: #983a08; /* Dark Accent Text / Borders */
+  --color-primary-900: #7c310b; /* High Contrast Dark Brand Text */
+  --color-primary-950: #481700; /* Deep Contrast Accent */
+
   --primary: oklch(0.2 0 0);
   --secondary: oklch(0.7 0 0);
   --inactive: #667085;
   --blue-400: #2589fe;
   --blue-500: #0070f3;
   --blue-600: #2f6feb;
-  --orange-light: #fbbf24;
+  --orange-light: var(--color-primary-500);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -89,6 +101,15 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  /* Extracted custom colors from markup */
+  --color-input-border: #1d1c1c; /* Border color for standard input fields */
+  --color-sidebar-dark: #10091A; /* Dark sidebar background in dashboard */
+  --color-sidebar-hover: #323347; /* Sidebar active item and hover background */
+  --color-dashboard-bg: #FAFAFF; /* Dashboard content background */
+  --color-card-tint: #f6f6f663; /* Subtle light gray background tint */
+  --color-brand-dark: #111827; /* Deep brand dark background */
+  --color-brand-accent-yellow: #FACC15; /* Secondary brand accent yellow */
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -117,12 +138,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 @keyframes shimmer {
   100% {
@@ -187,44 +202,11 @@ body::-webkit-scrollbar {
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #dfa644d8;
+  background: var(--color-primary-400);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #da9011;
+  background: var(--color-primary-600);
 }
 /* End Scrollbar styles */
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
