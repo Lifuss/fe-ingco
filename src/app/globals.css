@@ -5,13 +5,26 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Brand Primary Color Palette */
+  --color-primary-50: #fffaea; /* Tinted background surfaces / soft badges */
+  --color-primary-100: #fff2c5; /* Subtle tint / focus state background */
+  --color-primary-200: #ffe385; /* Disabled button background */
+  --color-primary-300: #ffce46; /* Light hover / active indicator */
+  --color-primary-400: #ffb91b; /* Mid-scale brand accent */
+  --color-primary-500: #ff9900; /* Brand Primary (Target) */
+  --color-primary-600: #e27300; /* Button Hover State */
+  --color-primary-700: #bb4d02; /* Button Pressed / Active State */
+  --color-primary-800: #983a08; /* Dark Accent Text / Borders */
+  --color-primary-900: #7c310b; /* High Contrast Dark Brand Text */
+  --color-primary-950: #481700; /* Deep Contrast Accent */
+
   --primary: oklch(0.2 0 0);
   --secondary: oklch(0.7 0 0);
   --inactive: #667085;
   --blue-400: #2589fe;
   --blue-500: #0070f3;
   --blue-600: #2f6feb;
-  --orange-light: #fbbf24;
+  --orange-light: var(--color-primary-500);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -187,11 +200,11 @@ body::-webkit-scrollbar {
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #dfa644d8;
+  background: var(--color-primary-400);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #da9011;
+  background: var(--color-primary-600);
 }
 /* End Scrollbar styles */
 
