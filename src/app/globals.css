@@ -101,6 +101,15 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  /* Extracted custom colors from markup */
+  --color-input-border: #1d1c1c; /* Border color for standard input fields */
+  --color-sidebar-dark: #10091A; /* Dark sidebar background in dashboard */
+  --color-sidebar-hover: #323347; /* Sidebar active item and hover background */
+  --color-dashboard-bg: #FAFAFF; /* Dashboard content background */
+  --color-card-tint: #f6f6f663; /* Subtle light gray background tint */
+  --color-brand-dark: #111827; /* Deep brand dark background */
+  --color-brand-accent-yellow: #FACC15; /* Secondary brand accent yellow */
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);

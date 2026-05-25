@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 
 const LiClassName =
-  'flex h-[240px] w-[150px] 2xl:w-[300px] md:h-[225px] lg:h-[240px] md:w-[250px] md:p-4 flex-col gap-2 rounded-lg bg-[#f6f6f663] p-2 shadow-sm';
+  'flex h-[240px] w-[150px] 2xl:w-[300px] md:h-[225px] lg:h-[240px] md:w-[250px] md:p-4 flex-col gap-2 rounded-lg bg-card-tint p-2 shadow-sm';
 
 const guideContent = [
   {

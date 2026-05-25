@@ -17,7 +17,7 @@ import Loader from '../utils/Loader';
 type RegisterFormData = z.infer<typeof registerClientSchema>;
 
 export const inputStyle =
-  'block w-full rounded-2xl border border-[#1d1c1c] py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500';
+  'block w-full rounded-2xl border border-input-border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500';
 const errorClassName = 'max-w-[22em] p-1 text-red-500 text-sm';
 
 export default function RegisterClientForm() {
