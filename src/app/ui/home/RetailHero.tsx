@@ -1,21 +1,15 @@
-'use client';
-
-import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Play, X } from 'lucide-react';
-import ReactModal from 'react-modal';
+import { ArrowRight, Percent } from 'lucide-react';
 
 export default function RetailHero() {
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
-
   return (
     <section className="relative w-full px-5 md:px-[60px] pt-1 md:pt-2 pb-0">
-      <div className="relative w-full h-[400px] lg:h-[440px] rounded-2xl overflow-hidden shadow-2xl flex items-start pt-8 md:pt-12 lg:pt-16">
+      <div className="relative w-full h-[420px] md:h-[420px] lg:h-[474px] rounded-2xl overflow-hidden shadow-2xl flex items-start pt-6 md:pt-8 lg:pt-10">
         {/* Background Image with dark overlay */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/hero_tools_bg.png"
+            src="/hero/main-hero.png"
             alt="Широкий асортимент жовтих інструментів INGCO"
             fill
             priority
@@ -54,45 +48,17 @@ export default function RetailHero() {
               Перейти до каталогу
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </Link>
-
-            <button
-              onClick={() => setIsVideoOpen(true)}
+            <Link
+              href="/?catalog=true&promo=true"
               className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-medium border border-white/20 px-6 py-3 rounded-md transition-all duration-300 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-900 text-sm md:text-base cursor-pointer"
-              aria-label="Дивитись промо-відео"
+              aria-label="Дивитися акції"
             >
-              <Play size={18} fill="currentColor" className="text-white shrink-0" />
-              Дивитись відео
-            </button>
+              <Percent size={18} className="text-white shrink-0" />
+              Дивитися акції
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* Video Modal */}
-      <ReactModal
-        isOpen={isVideoOpen}
-        onRequestClose={() => setIsVideoOpen(false)}
-        contentLabel="Промо-відео INGCO"
-        className="relative max-w-4xl w-full mx-auto bg-neutral-950 p-1 rounded-lg overflow-hidden shadow-2xl focus:outline-none"
-        overlayClassName="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm"
-      >
-        <button
-          onClick={() => setIsVideoOpen(false)}
-          className="absolute top-4 right-4 z-55 text-white bg-black/60 hover:bg-black/80 p-2 rounded-full transition-all border border-white/10 cursor-pointer"
-          aria-label="Закрити відео"
-        >
-          <X size={20} />
-        </button>
-        <div className="aspect-video w-full">
-          <iframe
-            className="w-full h-full rounded"
-            src="https://www.youtube.com/embed/gWdZ_458-00?autoplay=1"
-            title="INGCO Tools Official Promo Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </ReactModal>
     </section>
   );
 }

@@ -18,6 +18,9 @@ import TrustRibbon from '~/ui/home/TrustRibbon';
 import SeriesComparison from '~/ui/home/SeriesComparison';
 import CategoryGrid from '~/ui/home/CategoryGrid';
 import HotOffers from '~/ui/home/HotOffers';
+import Testimonials from '~/ui/home/Testimonials';
+import FaqSection from '~/ui/home/FaqSection';
+import ConsultationCTA from '~/ui/home/ConsultationCTA';
 
 export default function Page() {
   const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
@@ -103,6 +106,9 @@ export default function Page() {
           <HotOffers products={products} />
           <CategoryGrid />
           <SeriesComparison products={products} />
+          <Testimonials />
+          <FaqSection />
+          <ConsultationCTA />
         </main>
       )}
       <Footer />
