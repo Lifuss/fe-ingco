@@ -8,7 +8,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Check, Heart, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '@/lib/types';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
 import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
@@ -46,6 +46,12 @@ interface SeriesComparisonProps {
 export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
+  
+  const standartSliderRef = React.useRef<Slider | null>(null);
+  const industrialSliderRef = React.useRef<Slider | null>(null);
+  const standartContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const industrialContainerRef = React.useRef<HTMLDivElement | null>(null);
+
   const isAuth = authState.isAuthenticated || false;
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
@@ -177,6 +183,9 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
     }
   };
 
+  useSliderMouseWheel(standartSliderRef, standartContainerRef, standartProducts.length);
+  useSliderMouseWheel(industrialSliderRef, industrialContainerRef, industrialProducts.length);
+
   return (
     <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-10">
       {/* Title Block */}
@@ -237,9 +246,9 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           </div>
 
           {/* Product Carousel (Right) */}
-          <div className="lg:col-span-8 relative px-4">
+          <div ref={standartContainerRef} className="lg:col-span-8 relative px-4">
             {standartProducts.length > 0 ? (
-              <Slider {...getSliderSettings(standartProducts.length)}>
+              <Slider ref={standartSliderRef} {...getSliderSettings(standartProducts.length)}>
                 {standartProducts.map((product) => (
                   <div key={product._id} className="px-2 py-3 h-full">
                     <ProductCarouselCard
@@ -307,9 +316,9 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           </div>
 
           {/* Product Carousel (Right) */}
-          <div className="lg:col-span-8 relative px-4">
+          <div ref={industrialContainerRef} className="lg:col-span-8 relative px-4">
             {industrialProducts.length > 0 ? (
-              <Slider {...getSliderSettings(industrialProducts.length)}>
+              <Slider ref={industrialSliderRef} {...getSliderSettings(industrialProducts.length)}>
                 {industrialProducts.map((product) => (
                   <div key={product._id} className="px-2 py-3 h-full">
                     <ProductCarouselCard
