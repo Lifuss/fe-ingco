@@ -44,7 +44,7 @@ const Footer = () => {
           <Link className="transition-colors hover:text-white" href="/shop">
             Партнер
           </Link>
-          <Link className="transition-colors hover:text-white" href="/home/support">
+          <Link className="transition-colors hover:text-white" href="/about-us/support">
             Підтримка
           </Link>
         </li>
@@ -70,10 +70,10 @@ const Footer = () => {
         <li className="lg:order-none">
           <p className="font-medium">Інформація</p>
           <div className="flex flex-col">
-            <Link className="transition-colors hover:text-white" href="/home/#about">
+            <Link className="transition-colors hover:text-white" href="/about-us#aboutUs">
               Про нас
             </Link>
-            <Link className="transition-colors hover:text-white" href="/home/contacts">
+            <Link className="transition-colors hover:text-white" href="/about-us/contacts">
               Контакти
             </Link>
           </div>

@@ -21,7 +21,7 @@ const Page = () => {
         toast.success('Повідомлення створено, очікуйте відповіді на електронні пошті', {
           autoClose: 5000,
         });
-        router.push('/home');
+        router.push('/about-us');
       })
       .catch(() => {
         toast.error('Виникла помилка зі сторони серверу, спробуйте пізніше ');

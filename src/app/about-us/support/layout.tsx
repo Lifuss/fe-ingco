@@ -5,7 +5,7 @@ export const metadata: Metadata = generatePageMetadata({
   title: 'Підтримка INGCO',
   description:
     "Зв'яжіться з підтримкою INGCO Ukraine. Задайте питання про інструменти, замовлення або отримайте допомогу.",
-  path: '/home/support',
+  path: '/about-us/support',
 });
 
 export default function SupportLayout({ children }: { children: React.ReactNode }) {

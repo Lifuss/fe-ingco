@@ -38,16 +38,16 @@ const Header = () => {
           className="h-auto w-[90px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]"
         />
       </Link>
-      {pathname.includes('/home') ? (
+      {pathname.includes('/about-us') ? (
         <ul className="min-w-0 flex-1 text-lg md:flex md:items-center md:gap-2 md:text-base lg:text-[20px] xl:gap-10 2xl:text-2xl">
           <li className="transition-colors ease-out hover:text-white">
-            <Link href="/home#aboutUs">Про нас</Link>
+            <Link href="/about-us#aboutUs">Про нас</Link>
           </li>
           <li className="transition-colors ease-out hover:text-white">
-            <Link href="/home#aboutBrand">Бренд</Link>
+            <Link href="/about-us#aboutBrand">Бренд</Link>
           </li>
           <li className="flex">
-            <Link href="/home/contacts">Контакти</Link>
+            <Link href="/about-us/contacts">Контакти</Link>
           </li>
           <li className="flex">
             <Link
