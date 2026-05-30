@@ -6,40 +6,13 @@ import Link from 'next/link';
 import Slider, { Settings } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { Heart, ShoppingCart, Percent, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
 import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
-
-interface CustomArrowProps {
-  onClick?: () => void;
-}
-
-function PrevArrow({ onClick }: CustomArrowProps) {
-  return (
-    <button
-      onClick={onClick}
-      className="absolute left-[-14px] top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-white border border-[#E5E3DD] shadow-md hover:bg-neutral-50 active:bg-neutral-100 transition-colors text-neutral-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
-      aria-label="Попередній слайд"
-    >
-      <ChevronLeft size={18} className="stroke-[2.5]" />
-    </button>
-  );
-}
-
-function NextArrow({ onClick }: CustomArrowProps) {
-  return (
-    <button
-      onClick={onClick}
-      className="absolute right-[-14px] top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-white border border-[#E5E3DD] shadow-md hover:bg-neutral-50 active:bg-neutral-100 transition-colors text-neutral-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
-      aria-label="Наступний слайд"
-    >
-      <ChevronRight size={18} className="stroke-[2.5]" />
-    </button>
-  );
-}
+import { PrevArrow, NextArrow } from './SliderArrows';
 
 interface HotOffersProps {
   products: Product[];
