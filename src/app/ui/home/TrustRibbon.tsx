@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldAlert, ShieldCheck, Truck, Store } from 'lucide-react';
+import { ShieldCheck, Truck, Store } from 'lucide-react';
 
 export default function TrustRibbon() {
   const items = [
