@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Icon from './assets/Icon';
+import { SOCIAL_LINKS, CONTACTS } from '@/lib/constants';
 
 const Footer = () => {
   const pathname = usePathname();
@@ -15,22 +16,22 @@ const Footer = () => {
   const socialArray: { name: string; url: string; label: string }[] = [
     {
       name: 'facebook',
-      url: 'https://www.facebook.com/people/INGCO/61556075234289/',
+      url: SOCIAL_LINKS.FACEBOOK,
       label: 'Перехід до сторінки ingco в facebook',
     },
     {
       name: 'viber',
-      url: 'https://invite.viber.com/?g=KiAyrPV8FlMrhU2pjsAWT-r7V3jGwmv6',
+      url: SOCIAL_LINKS.VIBER,
       label: 'Перехід до контакту ingco у viber',
     },
     {
       name: 'telegram',
-      url: 'https://t.me/+IePpWvT99J02NTJi',
+      url: SOCIAL_LINKS.TELEGRAM,
       label: 'Перехід на telegram групу ingco',
     },
     {
       name: 'tiktok',
-      url: 'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
+      url: SOCIAL_LINKS.TIKTOK,
       label: 'Перехід до сторінки ingco в tiktok',
     },
   ];
@@ -145,16 +146,16 @@ const Footer = () => {
               </Link>
             </li>
             <li className="mt-1 flex flex-col gap-1 text-primary-600 font-bold select-text">
-              <a href="tel:+380988392107" className="hover:text-primary-700 transition-colors">
-                +380 98-83-92-107
-              </a>
-              <a href="tel:+380964123628" className="hover:text-primary-700 transition-colors">
-                +380 96-41-23-628
-              </a>
+              {CONTACTS.PHONES.map((phone) => (
+                <a href={phone.href} key={phone.href} className="hover:text-primary-700 transition-colors">
+                  {phone.label}
+                </a>
+              ))}
             </li>
             <li className="mt-1 flex flex-col gap-0.5 text-[10px] text-neutral-400 font-medium">
-              <span>Пн - Пт : 09:00-18:00</span>
-              <span>Сб - Нд : 09:00-15:00</span>
+              {CONTACTS.WORKING_HOURS.map((hours) => (
+                <span key={hours}>{hours}</span>
+              ))}
             </li>
           </ul>
         </div>

@@ -13,6 +13,7 @@ import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoritePro
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
+import { CATEGORY_IDS } from '@/lib/constants';
 
 interface HotOffersProps {
   products: Product[];
@@ -36,8 +37,8 @@ export default function HotOffers({ products }: HotOffersProps) {
       const catId = p.category?._id || '';
       const name = p.name.toLowerCase();
       return (
-        catId === '68809c1077d2de27144ca874' ||
-        catId === '6659a5a64a306b72811fc174' ||
+        catId === CATEGORY_IDS.P20S_LINE ||
+        catId === CATEGORY_IDS.BATTERY_TOOL ||
         name.includes('батарея') ||
         name.includes('акумулятор') ||
         name.includes('зарядн')

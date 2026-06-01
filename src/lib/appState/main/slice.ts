@@ -13,6 +13,7 @@ import {
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
 import { toast } from 'react-toastify';
+import { CURRENCY_FALLBACKS } from '@/lib/constants';
 
 interface PayloadCurrencyRates {
   lastUpdate: string;
@@ -94,8 +95,8 @@ const appStateSlice = createSlice({
           toast.warning(payload.message as string);
         } else if (!state.currencyRates.USD) {
           state.currencyRates = {
-            USD: 41.0,
-            EUR: 44.0,
+            USD: CURRENCY_FALLBACKS.USD,
+            EUR: CURRENCY_FALLBACKS.EUR,
             lastUpdate: new Date().toISOString(),
           };
           toast.error('Помилка завантаження курсу валют. Використовуються резервні значення.');

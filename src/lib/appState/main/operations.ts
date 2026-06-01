@@ -4,6 +4,7 @@ import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/FiltersBlock';
+import { CURRENCY_FALLBACKS } from '@/lib/constants';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -57,8 +58,8 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
             ? 'Занадто багато запитів до банку. Спробуйте пізніше.'
             : 'Помилка отримання курсу валют',
         fallback: {
-          USD: 41.0, // Fallback USD rate
-          EUR: 44.0, // Fallback EUR rate
+          USD: CURRENCY_FALLBACKS.USD, // Fallback USD rate
+          EUR: CURRENCY_FALLBACKS.EUR, // Fallback EUR rate
           lastUpdate: new Date().toISOString(),
         },
       });

@@ -31,3 +31,38 @@ export const COLORS = [
   '#FFD700',
   '#00FF7F',
 ];
+
+// CMS Category IDs (Fallback Dynamic Values)
+export const CATEGORY_IDS = {
+  BATTERY_TOOL: '6659a5a64a306b72811fc174', // Акумуляторний інструмент
+  HAND_TOOL: '6673c98091de1ab45bd369dc',    // Ручний інструмент
+  POWER_TOOL: '6673c9a491de1ab45bd369e0',   // Мережевий електроінструмент
+  P20S_LINE: '68809c1077d2de27144ca874',    // Акумуляторна лінійка P20S
+};
+
+// Social Media Channels
+export const SOCIAL_LINKS = {
+  FACEBOOK: 'https://www.facebook.com/people/INGCO/61556075234289/',
+  VIBER: 'https://invite.viber.com/?g=KiAyrPV8FlMrhU2pjsAWT-r7V3jGwmv6',
+  TELEGRAM: 'https://t.me/+IePpWvT99J02NTJi',
+  TIKTOK: 'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
+};
+
+// Corporate Contacts
+export const CONTACTS = {
+  PHONES: [
+    { href: 'tel:+380988392107', label: '+380 98-83-92-107' },
+    { href: 'tel:+380964123628', label: '+380 96-41-23-628' },
+  ],
+  WORKING_HOURS: [
+    'Пн - Пт : 09:00 - 18:00',
+    'Сб - Нд : 09:00 - 15:00',
+  ],
+  EMAIL: 'sales@ingco.ua',
+};
+
+// Currency Fallback rates (used when bank api fails)
+export const CURRENCY_FALLBACKS = {
+  USD: 41.0,
+  EUR: 44.0,
+};
