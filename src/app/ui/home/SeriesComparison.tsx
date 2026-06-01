@@ -40,6 +40,9 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
     arrows: productCount > 4,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
+    swipeToSlide: true, // Allows smooth dragging and swiping directly to any slide
+    draggable: true, // Enables desktop mouse-dragging
+    touchThreshold: 10,
     responsive: [
       {
         breakpoint: 1300,
@@ -47,6 +50,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           slidesToShow: Math.min(3, productCount),
           slidesToScroll: 1,
           infinite: productCount > 3,
+          swipeToSlide: true,
           arrows: productCount > 3,
         },
       },
@@ -56,6 +60,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           slidesToShow: Math.min(3, productCount),
           slidesToScroll: 1,
           infinite: productCount > 3,
+          swipeToSlide: true,
           arrows: productCount > 3,
         },
       },
@@ -65,6 +70,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           slidesToShow: Math.min(2, productCount),
           slidesToScroll: 1,
           infinite: productCount > 2,
+          swipeToSlide: true,
           arrows: false,
         },
       },
@@ -74,6 +80,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           slidesToShow: 1,
           slidesToScroll: 1,
           infinite: productCount > 1,
+          swipeToSlide: true,
           arrows: false,
         },
       },
@@ -221,7 +228,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           </div>
 
           {/* Product Carousel (Right) */}
-          <div ref={standartContainerRef} className="lg:col-span-8 relative px-4">
+          <div ref={standartContainerRef} className="lg:col-span-8 relative px-4 cursor-grab select-none active:cursor-grabbing">
             {standartProducts.length > 0 ? (
               <Slider ref={standartSliderRef} {...getSliderSettings(standartProducts.length)}>
                 {standartProducts.map((product) => (
@@ -291,7 +298,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
           </div>
 
           {/* Product Carousel (Right) */}
-          <div ref={industrialContainerRef} className="lg:col-span-8 relative px-4">
+          <div ref={industrialContainerRef} className="lg:col-span-8 relative px-4 cursor-grab select-none active:cursor-grabbing">
             {industrialProducts.length > 0 ? (
               <Slider ref={industrialSliderRef} {...getSliderSettings(industrialProducts.length)}>
                 {industrialProducts.map((product) => (

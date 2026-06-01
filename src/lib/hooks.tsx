@@ -53,29 +53,12 @@ export const useSliderMouseWheel = (
 
       const isInfinite = productCount > slidesToShow;
       if (!isInfinite) {
-        // If all slides fit on screen, let page scroll vertically normally
+        // If all slides fit on screen, let page scroll normally
         return;
       }
 
-      // Check if vertical scroll delta is larger than horizontal or vice versa
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        const currentSlide = (slider as unknown as SliderWithState).innerSlider?.state?.currentSlide ?? 0;
-        const isAtStart = currentSlide === 0;
-        const isAtEnd = currentSlide >= productCount - slidesToShow;
-        const isScrollingLeft = e.deltaY < 0;
-        const isScrollingRight = e.deltaY > 0;
-
-        if ((isScrollingLeft && isAtStart) || (isScrollingRight && isAtEnd)) {
-          return;
-        }
-
-        e.preventDefault();
-        if (e.deltaY > 0) {
-          slider.slickNext();
-        } else {
-          slider.slickPrev();
-        }
-      } else if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      // Only intercept horizontal scrolling/swipe (deltaX) to let standard vertical scrolling move the page normally
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
         const currentSlide = (slider as unknown as SliderWithState).innerSlider?.state?.currentSlide ?? 0;
         const isAtStart = currentSlide === 0;
         const isAtEnd = currentSlide >= productCount - slidesToShow;

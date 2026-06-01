@@ -83,6 +83,9 @@ export default function HotOffers({ products }: HotOffersProps) {
     autoplay: true,
     autoplaySpeed: 4000, // 4 seconds
     pauseOnHover: true,
+    swipeToSlide: true, // Allows smooth dragging and swiping directly to any slide
+    draggable: true, // Enables desktop mouse-dragging
+    touchThreshold: 10, // Higher sensitivity for drag/swipe actions
     speed: 600, // Slower transition speed for smoother feel
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -96,6 +99,7 @@ export default function HotOffers({ products }: HotOffersProps) {
           slidesToShow: Math.min(3, productCount),
           slidesToScroll: 1,
           infinite: true,
+          swipeToSlide: true,
           arrows: productCount > 3,
         },
       },
@@ -105,6 +109,7 @@ export default function HotOffers({ products }: HotOffersProps) {
           slidesToShow: Math.min(3, productCount),
           slidesToScroll: 1,
           infinite: true,
+          swipeToSlide: true,
           arrows: productCount > 3,
         },
       },
@@ -114,6 +119,7 @@ export default function HotOffers({ products }: HotOffersProps) {
           slidesToShow: Math.min(2, productCount),
           slidesToScroll: 1,
           infinite: true,
+          swipeToSlide: true,
           arrows: false,
         },
       },
@@ -123,6 +129,7 @@ export default function HotOffers({ products }: HotOffersProps) {
           slidesToShow: 1,
           slidesToScroll: 1,
           infinite: true,
+          swipeToSlide: true,
           arrows: false,
         },
       },
@@ -217,7 +224,7 @@ export default function HotOffers({ products }: HotOffersProps) {
       </div>
 
       {/* Slider Carousel Wrapper */}
-      <div ref={sliderContainerRef} className="relative px-4">
+      <div ref={sliderContainerRef} className="relative px-4 cursor-grab select-none active:cursor-grabbing">
         {activeProducts.length > 0 ? (
           <Slider ref={sliderRef} {...getSliderSettings(activeProducts.length)}>
             {activeProducts.map((product) => {
