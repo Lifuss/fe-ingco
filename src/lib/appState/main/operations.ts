@@ -7,7 +7,7 @@ import { sortValueType } from '@/app/ui/FiltersBlock';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue, getState, signal }) => {
     try {
       let newBody: { lastUpdate?: string; USD?: number; EUR?: number } = {};
       const { persistedMainReducer: state } = getState() as RootState;
@@ -23,6 +23,8 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
 
         const { data } = await axios.get('/api/currency', {
           headers: { 'Cache-Control': 'no-cache' },
+          timeout: 8000, // 8s timeout to prevent hanging requests
+          signal,
         });
 
         if (!data || !data.USD || !data.EUR) {
@@ -40,7 +42,14 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         return state.currencyRates;
       }
     } catch (error) {
-      console.error('Currency fetch error:', error);
+      const isCanceled =
+        axios.isCancel(error) ||
+        (error instanceof Error && (error.message.includes('aborted') || error.message.includes('canceled')));
+
+      if (!isCanceled) {
+        console.error('Currency fetch error:', error);
+      }
+      
       // Return fallback values instead of crashing
       return rejectWithValue({
         message:

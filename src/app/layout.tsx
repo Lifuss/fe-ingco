@@ -218,7 +218,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="uk" data-scroll-behavior="smooth" className={cn('font-sans', ttFirs.variable)}>
+    <html lang="uk" data-scroll-behavior="smooth" className={cn('font-sans', ttFirs.variable)} suppressHydrationWarning>
       <head>
         <link rel="sitemap" type="application/xml" href={`${SITE_URL}/sitemap.xml`} />
         <script
@@ -234,7 +234,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col" suppressHydrationWarning>
         <h1 className="hidden">
           INGCO – професійні інструменти для будівництва та ремонту. Купуйте якісні
           електроінструменти гуртом та в роздріб в Україні. Доставка по всій країні!
