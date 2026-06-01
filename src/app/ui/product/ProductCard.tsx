@@ -73,7 +73,7 @@ const ProductCard = ({
           <Image
             src={NEXT_PUBLIC_API + image}
             alt={name}
-            className="mx-auto h-full w-auto object-contain"
+            className="object-contain"
             fill={true}
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
             loading="lazy"

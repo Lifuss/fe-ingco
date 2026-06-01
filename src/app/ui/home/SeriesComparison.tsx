@@ -312,7 +312,7 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
           alt={product.name}
           width={150}
           height={150}
-          className="object-contain max-h-[140px] transition-transform duration-300 group-hover:scale-105"
+          className="object-contain w-auto max-h-[140px] transition-transform duration-300 group-hover:scale-105"
         />
         {/* Sale Tag */}
         {isSale && (

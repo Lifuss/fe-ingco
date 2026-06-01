@@ -228,7 +228,7 @@ export default function HotOffers({ products }: HotOffersProps) {
                         alt={product.name}
                         width={180}
                         height={180}
-                        className="object-contain max-h-[150px] transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain w-auto max-h-[150px] transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
 

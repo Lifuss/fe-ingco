@@ -402,6 +402,7 @@ export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
                     src="/hero/tools_bg.png"
                     alt="Лінійка P20S"
                     fill
+                    sizes="180px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
