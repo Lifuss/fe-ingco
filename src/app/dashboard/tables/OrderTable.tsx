@@ -14,7 +14,6 @@ import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { Button } from '@/app/ui/buttons/button';
 import OrderStats from '../orders/OrderStats';
 import clsx from 'clsx';
-import { CURRENCY_FALLBACKS } from '@/lib/constants';
 
 type OrderTableRow = {
   numberCol: string;
@@ -149,7 +148,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     return stats;
   }, [orders]);
 
-  if (usdRate === CURRENCY_FALLBACKS.USD) {
+  if (usdRate === 41.0) {
     return (
       <div className="flex flex-col items-center gap-2">
         <h2 className="text-2xl">Використовується резервний курс валюти</h2>

@@ -67,7 +67,7 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
 
   if (variant === 'header') {
     return (
-      <div className="relative flex w-full max-w-xl items-center rounded-full bg-white border border-[#E5E3DD] px-4 py-1.5 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 transition-all font-sans text-sm">
+      <div className="relative flex w-full max-w-none items-center rounded-lg bg-white border border-primary-500/30 px-4 py-2 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 transition-all font-sans text-sm shadow-sm">
         <label htmlFor="header-search" className="sr-only">
           Пошук
         </label>
@@ -95,11 +95,11 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
         )}
         <button
           type="button"
-          className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center justify-center p-2 rounded-full text-neutral-500 hover:text-primary-500 transition cursor-pointer focus-visible:outline-none"
+          className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center justify-center p-2 rounded-full text-brand-cyan hover:text-primary-600 transition cursor-pointer focus-visible:outline-none"
           onClick={handleSubmit}
           aria-label="Пошук"
         >
-          <Search size={18} />
+          <Search size={18} className="stroke-[2.5]" />
         </button>
       </div>
     );

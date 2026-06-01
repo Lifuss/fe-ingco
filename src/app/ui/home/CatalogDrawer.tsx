@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import {
   Wrench,
   Zap,
@@ -34,12 +35,19 @@ interface SubcategoryGroup {
 }
 
 export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
   const productsCategories = React.useMemo(() => rawCategories || [], [rawCategories]);
   
   // Set the first category as active by default if loaded
   const [activeCategoryId, setActiveCategoryId] = useState<string>('');
+
+  React.useEffect(() => {
+    if (productsCategories.length === 0) {
+      dispatch(fetchCategoriesThunk(''));
+    }
+  }, [dispatch, productsCategories.length]);
 
   React.useEffect(() => {
     if (productsCategories.length > 0 && !activeCategoryId) {

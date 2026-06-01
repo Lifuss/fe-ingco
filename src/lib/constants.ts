@@ -61,8 +61,3 @@ export const CONTACTS = {
   EMAIL: 'sales@ingco.ua',
 };
 
-// Currency Fallback rates (used when bank api fails)
-export const CURRENCY_FALLBACKS = {
-  USD: 41.0,
-  EUR: 44.0,
-};

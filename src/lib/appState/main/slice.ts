@@ -13,7 +13,6 @@ import {
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
 import { toast } from 'react-toastify';
-import { CURRENCY_FALLBACKS } from '@/lib/constants';
 
 interface PayloadCurrencyRates {
   lastUpdate: string;
@@ -85,22 +84,7 @@ const appStateSlice = createSlice({
         state.currencyRates = payload as PayloadCurrencyRates;
       })
       .addCase(fetchCurrencyRatesThunk.rejected, (state, { payload }) => {
-        if (
-          payload &&
-          typeof payload === 'object' &&
-          'fallback' in payload &&
-          'message' in payload
-        ) {
-          state.currencyRates = payload.fallback as PayloadCurrencyRates;
-          toast.warning(payload.message as string);
-        } else if (!state.currencyRates.USD) {
-          state.currencyRates = {
-            USD: CURRENCY_FALLBACKS.USD,
-            EUR: CURRENCY_FALLBACKS.EUR,
-            lastUpdate: new Date().toISOString(),
-          };
-          toast.error('Помилка завантаження курсу валют. Використовуються резервні значення.');
-        }
+        toast.error(typeof payload === 'string' ? payload : 'Помилка завантаження курсу валют');
       })
       .addCase(fetchMainTableDataThunk.pending, (state) => {
         state.tableLoading = true;

@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Icon from './assets/Icon';
 import { SOCIAL_LINKS, CONTACTS } from '@/lib/constants';
+import Logo from './Logo';
 
 const Footer = () => {
   const pathname = usePathname();
@@ -44,27 +43,12 @@ const Footer = () => {
         
         {/* Column 1: Logo & Badge */}
         <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <Link href={baseUrl} className="shrink-0">
-              <Image
-                src="/logo.png"
-                width={150}
-                height={38}
-                alt="Лого компанії INGCO"
-                className="h-9 w-auto object-contain"
-              />
-            </Link>
-            {/* Ukraine Pill Badge */}
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-[10px] font-bold text-neutral-900 border border-amber-500/10 shadow-sm shrink-0">
-              <span>Україна</span>
-              <span className="text-[11px]">🇺🇦</span>
-            </div>
-          </div>
+          <Logo />
         </div>
 
         {/* Column 2: Clients links */}
         <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
-          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+          <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Клієнтам
           </h3>
           <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
@@ -93,7 +77,7 @@ const Footer = () => {
 
         {/* Column 3: Social Medias */}
         <div className="col-span-1 md:col-span-3 flex flex-col gap-4 text-left">
-          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+          <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Соціальні мережі
           </h3>
           <div className="flex items-center gap-3 mt-1">
@@ -117,7 +101,7 @@ const Footer = () => {
 
         {/* Column 4: Information */}
         <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
-          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+          <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Інформація
           </h3>
           <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
@@ -136,7 +120,7 @@ const Footer = () => {
 
         {/* Column 5: Contacts */}
         <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
-          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+          <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Контакти
           </h3>
           <ul className="flex flex-col gap-2 font-sans text-xs font-semibold text-neutral-500">
@@ -145,9 +129,9 @@ const Footer = () => {
                 Фізичні магазини
               </Link>
             </li>
-            <li className="mt-1 flex flex-col gap-1 text-primary-600 font-bold select-text">
+            <li className="mt-1 flex flex-col gap-1 text-blue-500 font-bold select-text">
               {CONTACTS.PHONES.map((phone) => (
-                <a href={phone.href} key={phone.href} className="hover:text-primary-700 transition-colors">
+                <a href={phone.href} key={phone.href} className="underline hover:text-blue-600 transition-colors">
                   {phone.label}
                 </a>
               ))}

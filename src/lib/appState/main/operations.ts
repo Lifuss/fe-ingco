@@ -4,7 +4,6 @@ import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/FiltersBlock';
-import { CURRENCY_FALLBACKS } from '@/lib/constants';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -51,18 +50,11 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
         console.error('Currency fetch error:', error);
       }
       
-      // Return fallback values instead of crashing
-      return rejectWithValue({
-        message:
-          axios.isAxiosError(error) && error.response?.status === 429
-            ? 'Занадто багато запитів до банку. Спробуйте пізніше.'
-            : 'Помилка отримання курсу валют',
-        fallback: {
-          USD: CURRENCY_FALLBACKS.USD, // Fallback USD rate
-          EUR: CURRENCY_FALLBACKS.EUR, // Fallback EUR rate
-          lastUpdate: new Date().toISOString(),
-        },
-      });
+      return rejectWithValue(
+        axios.isAxiosError(error) && error.response?.status === 429
+          ? 'Занадто багато запитів до банку. Спробуйте пізніше.'
+          : 'Помилка отримання курсу валют',
+      );
     }
   },
 );
