@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Slider, { Settings } from 'react-slick';
+import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Check, Heart, ShoppingCart } from 'lucide-react';
@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks
 import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
-import { PrevArrow, NextArrow } from './SliderArrows';
+import { getSliderSettings } from './sliderConfig';
 
 interface SeriesComparisonProps {
   products: Product[];
@@ -31,61 +31,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
 
-  const getSliderSettings = (productCount: number): Settings => ({
-    dots: true,
-    infinite: productCount > 4,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    arrows: productCount > 4,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    swipeToSlide: true, // Allows smooth dragging and swiping directly to any slide
-    draggable: true, // Enables desktop mouse-dragging
-    touchThreshold: 10,
-    responsive: [
-      {
-        breakpoint: 1300,
-        settings: {
-          slidesToShow: Math.min(3, productCount),
-          slidesToScroll: 1,
-          infinite: productCount > 3,
-          swipeToSlide: true,
-          arrows: productCount > 3,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: Math.min(3, productCount),
-          slidesToScroll: 1,
-          infinite: productCount > 3,
-          swipeToSlide: true,
-          arrows: productCount > 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: Math.min(2, productCount),
-          slidesToScroll: 1,
-          infinite: productCount > 2,
-          swipeToSlide: true,
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          infinite: productCount > 1,
-          swipeToSlide: true,
-          arrows: false,
-        },
-      },
-    ],
-  });
+
 
   // Dynamic filter for Standart products (DIY/home)
   const standartProducts = products

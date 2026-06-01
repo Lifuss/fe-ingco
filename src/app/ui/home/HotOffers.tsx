@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Slider, { Settings } from 'react-slick';
+import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks
 import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
-import { PrevArrow, NextArrow } from './SliderArrows';
+import { getSliderSettings } from './sliderConfig';
 
 interface HotOffersProps {
   products: Product[];
@@ -77,64 +77,7 @@ export default function HotOffers({ products }: HotOffersProps) {
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
 
-  const getSliderSettings = (productCount: number): Settings => ({
-    dots: true,
-    infinite: true,
-    autoplay: true,
-    autoplaySpeed: 4000, // 4 seconds
-    pauseOnHover: true,
-    swipeToSlide: true, // Allows smooth dragging and swiping directly to any slide
-    draggable: true, // Enables desktop mouse-dragging
-    touchThreshold: 10, // Higher sensitivity for drag/swipe actions
-    speed: 600, // Slower transition speed for smoother feel
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    arrows: productCount > 4,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    responsive: [
-      {
-        breakpoint: 1300,
-        settings: {
-          slidesToShow: Math.min(3, productCount),
-          slidesToScroll: 1,
-          infinite: true,
-          swipeToSlide: true,
-          arrows: productCount > 3,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: Math.min(3, productCount),
-          slidesToScroll: 1,
-          infinite: true,
-          swipeToSlide: true,
-          arrows: productCount > 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: Math.min(2, productCount),
-          slidesToScroll: 1,
-          infinite: true,
-          swipeToSlide: true,
-          arrows: false,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          infinite: true,
-          swipeToSlide: true,
-          arrows: false,
-        },
-      },
-    ],
-  });
+
 
   const handleFavoriteClick = (product: Product) => {
     if (isAuth) {
@@ -174,6 +117,13 @@ export default function HotOffers({ products }: HotOffersProps) {
       toast.success(`${product.name} додано в кошик`);
     }
   };
+
+  const sliderSettings = getSliderSettings(activeProducts.length, { 
+    autoplay: true, 
+    autoplaySpeed: 4000, 
+    speed: 600, 
+    infinite: true 
+  });
 
   return (
     <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-6">
@@ -226,7 +176,7 @@ export default function HotOffers({ products }: HotOffersProps) {
       {/* Slider Carousel Wrapper */}
       <div ref={sliderContainerRef} className="relative px-4 cursor-grab select-none active:cursor-grabbing">
         {activeProducts.length > 0 ? (
-          <Slider ref={sliderRef} {...getSliderSettings(activeProducts.length)}>
+          <Slider ref={sliderRef} {...sliderSettings}>
             {activeProducts.map((product) => {
               const apiBaseUrl = 'https://api-ingco-service.win';
               const imageUrl = product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`;
