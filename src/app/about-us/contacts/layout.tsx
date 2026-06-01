@@ -5,7 +5,7 @@ export const metadata: Metadata = generatePageMetadata({
   title: 'Контакти INGCO',
   description:
     "Контактна інформація INGCO Ukraine. Адреси відділень, телефони, email. Зв'яжіться з нами для замовлення інструментів.",
-  path: '/home/contacts',
+  path: '/about-us/contacts',
 });
 
 export default function ContactsLayout({ children }: { children: React.ReactNode }) {

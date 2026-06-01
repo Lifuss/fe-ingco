@@ -8,6 +8,7 @@ Disallow: /admin/
 Disallow: /private/
 Disallow: *.json
 Disallow: /service/
+Disallow: /shop/
 
 # Googlebot
 User-agent: Googlebot
@@ -17,6 +18,7 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 Disallow: /private/
+Disallow: /shop/
 
 # Bingbot
 User-agent: Bingbot
@@ -26,6 +28,7 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 Disallow: /private/
+Disallow: /shop/
 
 # Host
 Host: https://ingco-service.win

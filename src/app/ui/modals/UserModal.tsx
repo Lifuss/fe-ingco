@@ -118,13 +118,13 @@ const User = () => {
           <div className="mx-auto flex w-fit gap-4">
             <button
               onClick={handleLogout}
-              className="mx-auto w-20 rounded-lg bg-[#111827] px-4 py-4 text-lg text-white"
+              className="mx-auto w-20 rounded-lg bg-brand-dark px-4 py-4 text-lg text-white"
             >
               Так
             </button>
             <button
               onClick={closeQuestionModal}
-              className="mx-auto w-20 rounded-lg bg-[#111827] px-4 py-4 text-lg text-white"
+              className="mx-auto w-20 rounded-lg bg-brand-dark px-4 py-4 text-lg text-white"
             >
               Ні
             </button>

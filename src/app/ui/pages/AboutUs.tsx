@@ -1,13 +1,13 @@
 import React from 'react';
-import Hero from '../home/Hero';
-import Features from '../home/Features';
-import PartnerGuide from '../home/PartnerGuide';
-import AboutBrand from '../home/AboutBrand';
-import AboutUs from '../home/AboutUs';
+import Hero from '../about-us/Hero';
+import Features from '../about-us/Features';
+import PartnerGuide from '../about-us/PartnerGuide';
+import AboutBrand from '../about-us/AboutBrand';
+import AboutUs from '../about-us/AboutUs';
 import Footer from '../Footer';
 import Header from '../home/Header';
 
-const Home = ({ isMainPage = true }: { isMainPage: boolean }) => {
+const AboutUsPage = ({ isMainPage = true }: { isMainPage: boolean }) => {
   return isMainPage ? (
     <>
       <Header />
@@ -29,4 +29,4 @@ const Home = ({ isMainPage = true }: { isMainPage: boolean }) => {
   );
 };
 
-export default Home;
+export default AboutUsPage;

@@ -73,7 +73,6 @@ const Header = () => {
 
   const isShop = pathname.includes('shop');
   const itemsInCart = isShop ? user.cart.length : user.retailCart?.length;
-
   return (
     <header className="bg-gray-100 px-6">
       <SubHeader />

@@ -30,7 +30,7 @@ const ProductCard = ({
     return (
       <div
         className={clsx(
-          'relative flex justify-center rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
+          'relative flex justify-center rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-brand-accent-yellow hover:shadow-lg',
         )}
       >
         <h3>Сталась помилка завантаження товару</h3>
@@ -59,7 +59,7 @@ const ProductCard = ({
   return (
     <li
       className={clsx(
-        'relative flex flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-[#FACC15] hover:shadow-lg',
+        'relative flex flex-col justify-between rounded-2xl border-2 border-transparent p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-brand-accent-yellow hover:shadow-lg',
         countInStock <= 0 && 'pointer-events-none opacity-40',
       )}
     >
@@ -80,7 +80,7 @@ const ProductCard = ({
           />
         </div>
 
-        <h3 className="flex justify-between text-xs font-medium text-[#FACC15]">
+        <h3 className="flex justify-between text-xs font-medium text-brand-accent-yellow font-sans">
           {article}
           {countInStock <= 0 && (
             <p className="text-xs font-semibold text-black">Немає в наявності</p>

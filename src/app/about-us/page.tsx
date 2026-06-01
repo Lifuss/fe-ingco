@@ -1,4 +1,4 @@
-import Home from '../ui/pages/Home';
+import AboutUsPage from '../ui/pages/AboutUs';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
 
@@ -6,9 +6,9 @@ export const metadata: Metadata = generatePageMetadata({
   title: 'INGCO - Головна сторінка',
   description:
     'INGCO - офіційний імпортер професійних інструментів в Україні. Електроінструменти для будівництва та ремонту. Доставка по всій країні!',
-  path: '/home',
+  path: '/about-us',
 });
 
 export default function Page() {
-  return <Home isMainPage={false} />;
+  return <AboutUsPage isMainPage={false} />;
 }

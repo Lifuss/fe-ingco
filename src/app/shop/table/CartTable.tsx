@@ -281,7 +281,7 @@ const CartTable = () => {
 
             <button
               type="submit"
-              className="mx-auto mt-5 mb-20 w-fit rounded-lg bg-[#111827] p-2 text-2xl text-white"
+              className="mx-auto mt-5 mb-20 w-fit rounded-lg bg-brand-dark p-2 text-2xl text-white"
             >
               Оформити замовлення
             </button>
