@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,54 +9,84 @@ import { useAppSelector } from '@/lib/hooks';
 import { cn } from '@/lib/utils';
 
 import CurrencyRate from '../CurrencyRate';
-import AuthButtons from './AuthButtons';
 import Search from '../search';
 import UserModal from '../modals/UserModal';
 import Icon from '../assets/Icon';
-import { Button } from '@/components/ui/button';
+import CatalogDrawer from './CatalogDrawer';
 
-const Logo = ({ isB2b, isAuthenticated }: { isB2b: boolean; isAuthenticated: boolean }) => {
+const Logo = ({ isB2b }: { isB2b: boolean }) => {
   return (
-    <Link
-      href={isB2b ? '/shop' : '/'}
-      className={cn(
-        'flex h-full shrink-0 items-center justify-center md:block',
-        !isAuthenticated && 'w-[90px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]',
-      )}
-    >
-      <Image
-        src={'/logo.png'}
-        width={198}
-        height={52}
-        alt="Лого компанії INGCO"
-        className="h-auto w-[90px] md:w-[90px] lg:w-[120px] 2xl:w-[198px]"
-      />
-    </Link>
+    <div className="flex items-center gap-3">
+      <Link href={isB2b ? '/shop' : '/'} className="shrink-0">
+        <Image
+          src="/logo.png"
+          width={150}
+          height={38}
+          alt="Лого компанії INGCO"
+          className="h-9 w-auto object-contain"
+          priority
+        />
+      </Link>
+      {/* Ukraine Pill Badge */}
+      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-[10px] font-bold text-neutral-900 border border-amber-500/10 shadow-sm select-none shrink-0">
+        <span>Україна</span>
+        <span className="text-[11px]">🇺🇦</span>
+      </div>
+    </div>
   );
 };
 
 const SubHeader = () => {
+  const pathname = usePathname();
   const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
+  const isStoreActive = pathname === '/' || pathname === '/shop';
+  const isTermsActive = pathname.startsWith('/legal');
+  const isAboutActive = pathname.startsWith('/about-us') && !pathname.includes('contacts');
+
   return (
-    <nav className="flex items-center justify-between border-b border-orange-200 bg-gray-100 py-2">
-      <ul className="flex items-center gap-2">
-        <li className="transition-colors ease-out hover:text-orange-500">
-          <Link href={isB2b ? '/shop' : '/'}>Магазин</Link>
+    <nav className="flex items-center justify-between border-b border-[#E5E3DD] bg-[#FDFDFD] py-1 px-5 md:px-[60px] select-none">
+      <ul className="flex items-center gap-6 font-sans text-xs font-semibold text-neutral-500">
+        <li className="relative py-1">
+          <Link
+            href={isB2b ? '/shop' : '/'}
+            className={cn(
+              'transition-colors hover:text-primary-500 cursor-pointer block',
+              isStoreActive && 'text-primary-500 after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-full after:bg-primary-500'
+            )}
+          >
+            Магазин
+          </Link>
         </li>
-        <li className="transition-colors ease-out hover:text-orange-500">
-          <Link href="/home#aboutBrand">Сервіс</Link>
+        <li className="relative py-1">
+          <Link
+            href="/legal/terms"
+            className={cn(
+              'transition-colors hover:text-primary-500 cursor-pointer block',
+              isTermsActive && 'text-primary-500 after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-full after:bg-primary-500'
+            )}
+          >
+            Умови і правила
+          </Link>
         </li>
-        <li className="transition-colors ease-out hover:text-orange-500">
-          <Link href="/legal/returns#guarantee">Гарантія</Link>
-        </li>
-        <li className="transition-colors ease-out hover:text-orange-500">
-          <Link href="/home#aboutUs">Про нас</Link>
+        <li className="relative py-1">
+          <Link
+            href="/about-us"
+            className={cn(
+              'transition-colors hover:text-primary-500 cursor-pointer block',
+              isAboutActive && 'text-primary-500 after:absolute after:bottom-[-5px] after:left-0 after:h-[2px] after:w-full after:bg-primary-500'
+            )}
+          >
+            Про нас
+          </Link>
         </li>
       </ul>
 
-      <ul className="flex items-center gap-8">
-        <li className="transition-colors ease-out hover:text-orange-500">
-          <Link href="/home/contacts">Звʼязок</Link>
+      <ul className="flex items-center gap-8 font-sans text-xs font-semibold">
+        <li>
+          <Link href="/about-us/contacts" className="text-neutral-500 hover:text-primary-500 transition-colors cursor-pointer">
+            Зв&apos;язок
+          </Link>
         </li>
         <li>
           <CurrencyRate />
@@ -67,80 +98,103 @@ const SubHeader = () => {
 
 const Header = () => {
   const pathname = usePathname();
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+
   const { isAuthenticated, isB2b, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
 
   const isShop = pathname.includes('shop');
-  const itemsInCart = isShop ? user.cart.length : user.retailCart?.length;
+  
+  // Calculate items in cart based on auth status and current catalog view (B2B vs B2C)
+  const itemsInCart = isShop 
+    ? user?.cart?.length || 0 
+    : isAuthenticated 
+      ? user?.retailCart?.length || 0 
+      : localStorageCart?.length || 0;
+
   return (
-    <header className="bg-gray-100 px-6">
-      <SubHeader />
-      <div className="flex min-w-0 items-center justify-between gap-2 overflow-hidden font-medium md:px-[60px] md:py-4 lg:tracking-tight">
-        <Logo isB2b={isB2b} isAuthenticated={isAuthenticated} />
+    <>
+      <header className="w-full bg-[#FFFDFB] border-b border-[#E5E3DD] flex flex-col z-50">
+        {/* Top bar SubHeader */}
+        <SubHeader />
 
-        <div className="flex items-center gap-4">
-          <Button size={'lg'}>
-            <LayoutGrid className="size-4" data-icon="inline-start" />
-            Каталог
-          </Button>
-          <Search placeholder="Пошук" />
-        </div>
+        {/* Main Header bar */}
+        <div className="w-full flex items-center justify-between gap-6 py-4 px-5 md:px-[60px]">
+          
+          {/* Logo with badge */}
+          <Logo isB2b={isB2b} />
 
-        <div className="hidden items-center justify-between gap-5 md:flex lg:gap-10 xl:gap-20">
-          {isAuthenticated ? (
-            <div className="flex items-center justify-center gap-2">
+          {/* Catalog & Search Block */}
+          <div className="flex-1 flex items-center gap-4 max-w-2xl">
+            {/* Catalog Trigger Button */}
+            <button
+              onClick={() => setIsCatalogOpen(!isCatalogOpen)}
+              className={cn(
+                'flex items-center gap-2 px-5 py-2.5 rounded-lg font-display font-bold text-sm tracking-wide transition-all cursor-pointer select-none shadow-sm shadow-orange-500/5 border border-transparent',
+                isCatalogOpen
+                  ? 'bg-primary-600 text-white shadow-inner'
+                  : 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700'
+              )}
+            >
+              <LayoutGrid size={16} className="stroke-[2.5]" />
+              <span>Каталог</span>
+            </button>
+
+            {/* Premium Rounded Search input */}
+            <Search placeholder="Пошук інструменту за назвою або артикулом..." variant="header" />
+          </div>
+
+          {/* Right Action Icons grouped block */}
+          <div className="flex items-center gap-6 shrink-0">
+            {/* 1. Favorites Action */}
+            <Link
+              href={isShop ? '/shop/favorites' : '/favorites'}
+              className="flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold text-neutral-500 hover:text-primary-500 transition-colors cursor-pointer select-none"
+            >
+              <Heart size={22} className="stroke-current stroke-[2.3] fill-none" />
+              <span>Обране</span>
+            </Link>
+
+            {/* 2. Cart Action */}
+            <Link
+              href={isShop ? '/shop/cart' : '/cart'}
+              className="relative flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold text-neutral-500 hover:text-primary-500 transition-colors cursor-pointer select-none"
+            >
+              <div className="relative">
+                <ShoppingBasket size={22} className="stroke-current stroke-[2.3] fill-none" />
+                {itemsInCart > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-primary-700 text-white text-[9px] font-extrabold rounded-full w-4.5 h-4.5 flex items-center justify-center border border-white shadow-sm">
+                    {itemsInCart}
+                  </span>
+                )}
+              </div>
+              <span>Кошик</span>
+            </Link>
+
+            {/* 3. Profile / Auth Action */}
+            {isAuthenticated ? (
               <UserModal />
+            ) : (
               <Link
-                href={`/${isShop ? 'shop' : 'retail'}/favorites`}
-                className="transition-colors hover:text-blue-500"
+                href="/auth/login"
+                className="flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold text-neutral-500 hover:text-primary-500 transition-colors cursor-pointer select-none"
               >
-                <Heart className="size-4" />
-                Обране
-              </Link>
-              <Link href={isShop ? '/shop/cart' : '/cart'} className="relative">
-                <ShoppingBasket
-                  className="size-4 after:absolute after:-right-1 after:-bottom-1 after:z-50 after:flex after:size-4 after:items-center after:justify-center after:rounded-full after:bg-orange-500 after:text-xs after:text-white after:content-[attr(data-count)]"
-                  data-count={itemsInCart}
-                />
-                Кошик
-              </Link>
-            </div>
-          ) : (
-            <>
-              <AuthButtons />
-              <Link href={isShop ? '/shop/cart' : '/cart'} className="relative">
                 <Icon
-                  icon="cart"
-                  className={cn(
-                    'h-7 w-7 fill-current transition-colors ease-out hover:text-white',
-                    (pathname === '/shop/cart' || pathname === '/cart') && 'text-white',
-                  )}
+                  icon="user"
+                  className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3] transition-colors"
                 />
-                {(isShop && user.cart.length) ||
-                (!isShop && user.retailCart?.length) ||
-                (!isAuthenticated && localStorageCart?.length) ? (
-                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs leading-none">
-                    {isShop
-                      ? user.cart.length
-                      : isAuthenticated
-                        ? user.retailCart.length
-                        : localStorageCart.length}
-                  </div>
-                ) : null}
+                <span>Профіль</span>
               </Link>
-            </>
-          )}
-        </div>
+            )}
+          </div>
 
-        <Link href="/auth/login" className="shrink-0 md:hidden">
-          <Icon
-            icon="user"
-            className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"
-          />
-        </Link>
-      </div>
-    </header>
+        </div>
+      </header>
+
+      {/* Catalog Drawer Mega-Menu Dropdown overlay */}
+      <CatalogDrawer isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />
+    </>
   );
 };
 

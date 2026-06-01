@@ -1,19 +1,18 @@
+'use client';
+
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Icon from './assets/Icon';
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  const isShop = pathname.includes('/shop');
+  const baseUrl = isShop ? '/shop' : '/';
+
   const socialArray: { name: string; url: string; label: string }[] = [
-    {
-      name: 'telegram',
-      url: 'https://t.me/+IePpWvT99J02NTJi',
-      label: 'Перехід на telegram групу ingco',
-    },
-    {
-      name: 'tiktok',
-      url: 'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
-      label: 'Перехід до сторінки ingco в tiktok',
-    },
     {
       name: 'facebook',
       url: 'https://www.facebook.com/people/INGCO/61556075234289/',
@@ -24,87 +23,151 @@ const Footer = () => {
       url: 'https://invite.viber.com/?g=KiAyrPV8FlMrhU2pjsAWT-r7V3jGwmv6',
       label: 'Перехід до контакту ingco у viber',
     },
+    {
+      name: 'telegram',
+      url: 'https://t.me/+IePpWvT99J02NTJi',
+      label: 'Перехід на telegram групу ingco',
+    },
+    {
+      name: 'tiktok',
+      url: 'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
+      label: 'Перехід до сторінки ingco в tiktok',
+    },
   ];
+
   return (
-    <footer className="bg-orange-light relative flex flex-col items-center pt-[18px] pb-14 text-lg lg:flex-row lg:px-[60px] 2xl:text-xl">
-      <Image
-        src={'/logo.png'}
-        width={200}
-        height={50}
-        alt="Лого компанії INGCO"
-        className="mb-4 lg:mb-0"
-      />
-      <ul className="mx-auto grid grid-cols-2 gap-x-6 gap-y-2 md:gap-x-48 lg:flex lg:gap-20 xl:gap-32 xl:pr-[115px]">
-        <li className="flex flex-col lg:order-none">
-          <p className="font-medium">Клієнтам</p>
-          <Link className="transition-colors hover:text-white" href="/">
-            Каталог
-            <span className="-mt-2 block text-base">(роздріб)</span>
-          </Link>
-          <Link className="transition-colors hover:text-white" href="/shop">
-            Партнер
-          </Link>
-          <Link className="transition-colors hover:text-white" href="/about-us/support">
-            Підтримка
-          </Link>
-        </li>
-        <li className="order-last col-span-2 justify-self-center lg:order-none lg:col-span-1">
-          <p className="mb-1 font-medium">Соціальні мережі</p>
-          <div className="flex justify-center gap-2">
+    <footer className="w-full bg-[#FFFDFB] border-t border-[#E5E3DD] py-12 px-6 md:px-[60px] flex flex-col gap-10 select-none">
+      
+      {/* Footer Top Grid */}
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        {/* Column 1: Logo & Badge */}
+        <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <Link href={baseUrl} className="shrink-0">
+              <Image
+                src="/logo.png"
+                width={150}
+                height={38}
+                alt="Лого компанії INGCO"
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
+            {/* Ukraine Pill Badge */}
+            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-[10px] font-bold text-neutral-900 border border-amber-500/10 shadow-sm shrink-0">
+              <span>Україна</span>
+              <span className="text-[11px]">🇺🇦</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Column 2: Clients links */}
+        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            Клієнтам
+          </h3>
+          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
+            <li>
+              <Link href={`${baseUrl}?catalog=true`} className="hover:text-primary-500 transition-colors cursor-pointer">
+                Каталог
+              </Link>
+            </li>
+            <li>
+              <Link href={`${baseUrl}?query=акція`} className="hover:text-primary-500 transition-colors cursor-pointer">
+                Акції
+              </Link>
+            </li>
+            <li>
+              <Link href="/about-us/support" className="hover:text-primary-500 transition-colors cursor-pointer">
+                Підтримка
+              </Link>
+            </li>
+            <li>
+              <Link href="/shop" className="hover:text-primary-500 transition-colors cursor-pointer">
+                Оптовий каталог
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 3: Social Medias */}
+        <div className="col-span-1 md:col-span-3 flex flex-col gap-4 text-left">
+          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            Соціальні мережі
+          </h3>
+          <div className="flex items-center gap-3 mt-1">
             {socialArray.map((social) => (
               <Link
                 href={social.url}
                 key={social.name}
                 rel="nofollow"
-                target="_blank noopener noreferrer"
+                target="_blank"
                 aria-label={social.label}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 text-white hover:bg-primary-500 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
               >
                 <Icon
                   icon={social.name}
-                  className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
+                  className="h-5 w-5 fill-current text-white transition-transform"
                 />
               </Link>
             ))}
           </div>
-        </li>
-        <li className="lg:order-none">
-          <p className="font-medium">Інформація</p>
-          <div className="flex flex-col">
-            <Link className="transition-colors hover:text-white" href="/about-us#aboutUs">
-              Про нас
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/about-us/contacts">
-              Контакти
-            </Link>
-          </div>
-        </li>
-        <li className="lg:order-none">
-          <p className="font-medium">Юридичні документи</p>
-          <div className="flex flex-col">
-            <Link className="transition-colors hover:text-white" href="/legal/offer">
-              Публічна оферта
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/legal/privacy">
-              Політика конфіденційності
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/legal/terms">
-              Умови використання
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/legal/returns">
-              Повернення та обмін
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/legal/shipping">
-              Політика доставки
-            </Link>
-            <Link className="transition-colors hover:text-white" href="/legal/cookies">
-              Політика cookies
-            </Link>
-          </div>
-        </li>
-      </ul>
-      <p className="absolute bottom-2 left-1/2 -translate-x-1/2 transform text-xs md:text-sm">
-        © 2026 INGCO. Всі права захищені.
-      </p>
+        </div>
+
+        {/* Column 4: Information */}
+        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            Інформація
+          </h3>
+          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
+            <li>
+              <Link href="/about-us" className="hover:text-primary-500 transition-colors cursor-pointer">
+                Про нас
+              </Link>
+            </li>
+            <li>
+              <Link href="/legal/terms" className="hover:text-primary-500 transition-colors cursor-pointer">
+                Умови та правила
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 5: Contacts */}
+        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+          <h3 className="font-display font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            Контакти
+          </h3>
+          <ul className="flex flex-col gap-2 font-sans text-xs font-semibold text-neutral-500">
+            <li>
+              <Link href="/about-us/contacts" className="text-neutral-900 hover:text-primary-500 transition-colors font-bold cursor-pointer">
+                Фізичні магазини
+              </Link>
+            </li>
+            <li className="mt-1 flex flex-col gap-1 text-primary-600 font-bold select-text">
+              <a href="tel:+380988392107" className="hover:text-primary-700 transition-colors">
+                +380 98-83-92-107
+              </a>
+              <a href="tel:+380964123628" className="hover:text-primary-700 transition-colors">
+                +380 96-41-23-628
+              </a>
+            </li>
+            <li className="mt-1 flex flex-col gap-0.5 text-[10px] text-neutral-400 font-medium">
+              <span>Пн - Пт : 09:00-18:00</span>
+              <span>Сб - Нд : 09:00-15:00</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      {/* Footer Bottom copyright area */}
+      <div className="w-full max-w-7xl mx-auto border-t border-[#E5E3DD]/45 pt-6 text-center">
+        <p className="font-sans text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+          © 2026 INGCO. Всі права захищені.
+        </p>
+      </div>
+
     </footer>
   );
 };

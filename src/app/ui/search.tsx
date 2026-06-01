@@ -3,7 +3,7 @@ import { Search, X } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 
-export default function SearchFoo({ placeholder }: { placeholder: string }) {
+export default function SearchFoo({ placeholder, variant = 'default' }: { placeholder: string; variant?: 'default' | 'header' }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -64,6 +64,46 @@ export default function SearchFoo({ placeholder }: { placeholder: string }) {
       handleSubmit();
     }
   };
+
+  if (variant === 'header') {
+    return (
+      <div className="relative flex w-full max-w-xl items-center rounded-full bg-white border border-[#E5E3DD] px-4 py-1.5 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 transition-all font-sans text-sm">
+        <label htmlFor="header-search" className="sr-only">
+          Пошук
+        </label>
+        <input
+          id="header-search"
+          name="search"
+          className="block w-full appearance-none border-none bg-transparent pr-12 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus-visible:outline-none"
+          placeholder={placeholder}
+          onChange={handleInput}
+          value={term}
+          aria-label="Search"
+          ref={inputRef}
+          autoComplete="off"
+          onKeyDown={handleKeyDown}
+        />
+        {term && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="absolute top-1/2 right-10 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 transition focus-visible:outline-none"
+            aria-label="Скинути пошук"
+          >
+            <X size={14} />
+          </button>
+        )}
+        <button
+          type="button"
+          className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center justify-center p-2 rounded-full text-neutral-500 hover:text-primary-500 transition cursor-pointer focus-visible:outline-none"
+          onClick={handleSubmit}
+          aria-label="Пошук"
+        >
+          <Search size={18} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-w-0 flex-1 items-center rounded-full bg-white/95 px-4 py-[6px] shadow-md ring-1 ring-gray-100 transition focus-within:ring-2 focus-within:ring-gray-900/12 focus-within:outline-none md:mx-auto md:max-w-xl lg:py-3 xl:w-3/5">

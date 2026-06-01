@@ -58,15 +58,17 @@ const User = () => {
   return (
     <>
       <button
-        className={clsx('relative', isOpen && 'text-white')}
-        onClick={() => {
-          openModal();
-        }}
+        onClick={openModal}
+        className={clsx(
+          'flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold tracking-wide transition-colors cursor-pointer outline-none select-none',
+          isOpen ? 'text-primary-500' : 'text-neutral-500 hover:text-primary-500'
+        )}
       >
         <Icon
           icon="user"
-          className="h-9 w-9 fill-none stroke-current stroke-2 transition-colors ease-out hover:text-white"
+          className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3] transition-colors"
         />
+        <span>Профіль</span>
       </button>
       <Modal
         isOpen={isOpen}
