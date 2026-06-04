@@ -70,7 +70,10 @@ const CatalogSidebar = () => {
       }
     });
 
-    router.replace(`${pathname}?${params.toString()}`);
+    const targetPath = pathname === '/' || pathname === '/shop'
+      ? pathname
+      : (pathname.includes('/shop') ? '/shop' : '/');
+    router.replace(`${targetPath}?${params.toString()}`);
   };
 
   // Category select handler
@@ -96,7 +99,10 @@ const CatalogSidebar = () => {
     if (searchParams.get('query')) {
       params.set('query', searchParams.get('query') || '');
     }
-    router.replace(`${pathname}?${params.toString()}`);
+    const targetPath = pathname === '/' || pathname === '/shop'
+      ? pathname
+      : (pathname.includes('/shop') ? '/shop' : '/');
+    router.replace(`${targetPath}?${params.toString()}`);
   };
 
   const hasActiveFilters = activeCategoryId || urlMinPower || urlMaxPower || batteryChecked || mainsChecked;
@@ -235,7 +241,7 @@ const CatalogSidebar = () => {
         </div>
 
         <p className="text-xs text-gray-300 leading-relaxed">
-          Для оптових замовлень від <strong className="text-primary-400">50 000 грн</strong> зверніться до менеджероа за персональними умовами.
+          Для оптових замовлень від <strong className="text-primary-400">50 000 грн</strong> зверніться до менеджера за персональними умовами.
         </p>
 
         <button
