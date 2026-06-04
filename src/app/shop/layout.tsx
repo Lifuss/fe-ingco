@@ -1,5 +1,5 @@
 'use client';
-import CategoriesSidebar from '../ui/CategoriesSidebar';
+import CatalogSidebar from '../ui/CatalogSidebar';
 import withAuth from '../service/PrivateRouting';
 import Header from '../ui/home/Header';
 import Footer from '../ui/Footer';
@@ -10,7 +10,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <>
       <Header />
       <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
-        <CategoriesSidebar />
+        <CatalogSidebar />
         <div className="min-h-[550px]">{children}</div>
         <div
           id="image"

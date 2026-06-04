@@ -8,7 +8,7 @@ import { clearAuthState } from '@/lib/appState/user/slice';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { toast } from 'react-toastify';
 import { useRouter, useSearchParams } from 'next/navigation';
-import CategoriesSidebar from '~/ui/CategoriesSidebar';
+import CatalogSidebar from '~/ui/CatalogSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
 
@@ -94,7 +94,7 @@ export default function Page() {
       <Header />
       {showCatalog ? (
         <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
-          <CategoriesSidebar />
+          <CatalogSidebar />
           <div className="min-h-[550px] w-full">
             <ProductList />
           </div>

@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -26,7 +27,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const isWideDesktop = useMediaQuery({ query: '(min-width: 1536px)' });
 
   const { products = [], totalPages = 1 } = mainState;
-  const favorites: Product[] = [...authState.user.favorites];
+  const favorites: Product[] = [...(authState.user?.favorites || [])];
   const isAuth = authState.isAuthenticated || false;
   const favoritesIdList = favorites.map((product) => product._id);
 
@@ -36,6 +37,12 @@ const ProductList = ({ isFavoritePage = false }) => {
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
+
+  // Spec filters from URL
+  const minPower = searchParams.get('minPower') ? parseInt(searchParams.get('minPower') as string) : null;
+  const maxPower = searchParams.get('maxPower') ? parseInt(searchParams.get('maxPower') as string) : null;
+  const battery = searchParams.get('battery') === 'true';
+  const mains = searchParams.get('mains') === 'true';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -49,9 +56,46 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
     if (category) {
       productsData = productsData.filter((product) =>
-        product.category?.name.toLowerCase().includes(category.toLowerCase()),
+        product.category?._id === category || product.category?.name.toLowerCase().includes(category.toLowerCase()),
       );
     }
+  }
+
+  // Client-side specifications filtering
+  if (minPower !== null || maxPower !== null) {
+    productsData = productsData.filter((product) => {
+      const powerChar = product.characteristics?.find((c) => c.name.toLowerCase().includes('потужність'));
+      if (!powerChar) return false;
+      const powerVal = parseInt(powerChar.value);
+      if (isNaN(powerVal)) return false;
+      if (minPower !== null && powerVal < minPower) return false;
+      if (maxPower !== null && powerVal > maxPower) return false;
+      return true;
+    });
+  }
+
+  if (battery || mains) {
+    productsData = productsData.filter((product) => {
+      const nameLower = product.name.toLowerCase();
+      const hasBatteryIndicators = nameLower.includes('акумулятор') || 
+        product.characteristics?.some(
+          (c) => c.name.toLowerCase().includes('напруга') || 
+                 c.value.toLowerCase().includes('li-ion') || 
+                 c.value.toLowerCase().includes('акум') ||
+                 c.value.toLowerCase().includes('в ') ||
+                 c.value.endsWith('в')
+        );
+      
+      const isBatteryProduct = !!hasBatteryIndicators;
+      const isMainsProduct = !isBatteryProduct;
+
+      if (battery && isBatteryProduct) return true;
+      if (mains && isMainsProduct) return true;
+      return false;
+    });
+  }
+
+  if (isFavoritePage) {
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
@@ -98,7 +142,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     } else {
       const product = productsData.find((product) => product._id === id);
       if (!product) {
-        toast.error('Виникла помилка з додаванням товару в кошик, спробуйте ще раз через');
+        toast.error('Виникла помилка з додаванням товару в кошик, спробуйте ще раз');
         return;
       }
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
@@ -118,14 +162,14 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   return (
     <>
-      {products.length === 0 ? (
+      {productsData.length === 0 ? (
         <div className="pt-10">
           <TextPlaceholder
             title="Не знайдено 🥲"
             text={
               isFavoritePage
                 ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'
-                : 'Спробуйте змінити параметри пошуку або категорії'
+                : 'Спробуйте змінити параметри пошуку або фільтрації'
             }
             titleSize="4xl"
             textSize="xl"
@@ -143,7 +187,7 @@ const ProductList = ({ isFavoritePage = false }) => {
           />
 
           <div className="relative">
-            <div className="mx-auto mt-5 w-fit pb-10">
+            <div className="mx-auto mt-8 w-fit pb-10">
               <Pagination totalPages={totalPage} />
             </div>
           </div>
