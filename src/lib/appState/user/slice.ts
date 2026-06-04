@@ -52,10 +52,11 @@ const authStateSlice = createSlice({
     },
     addProductToLocalStorageCart: (state, { payload }) => {
       const product = state.localStorageCart.find((product) => product._id === payload._id);
+      const addedQuantity = payload.quantity || 1;
       if (product) {
-        product.quantity += 1;
+        product.quantity += addedQuantity;
       } else {
-        state.localStorageCart.push({ ...payload, quantity: 1 });
+        state.localStorageCart.push({ ...payload, quantity: addedQuantity });
       }
     },
     removeProductFromLocalStorageCart: (state, { payload }) => {
