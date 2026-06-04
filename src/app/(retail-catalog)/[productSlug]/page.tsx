@@ -35,7 +35,7 @@ import {
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
-import CategoriesSidebar from '~/ui/CategoriesSidebar';
+import CatalogSidebar from '~/ui/CatalogSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
@@ -122,7 +122,7 @@ export default function Page({ params }: PageProps) {
       <>
         <Header />
         <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
-          <CategoriesSidebar />
+          <CatalogSidebar />
           <div className="min-h-[550px] w-full">
             <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
               <SearchX size={52} className="text-neutral-400" />
@@ -308,7 +308,7 @@ export default function Page({ params }: PageProps) {
         </div>
 
         <div className="flex flex-col gap-4 xl:flex-row 2xl:gap-14 max-w-7xl w-full mx-auto py-6">
-          <CategoriesSidebar />
+          <CatalogSidebar />
           
           <div className="w-full flex flex-col gap-10">
             {/* Section 1: Hero Block (Hero & Buy Box) */}
@@ -339,7 +339,7 @@ export default function Page({ params }: PageProps) {
                     <span className="bg-neutral-900 text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded shadow-sm tracking-wide uppercase select-none">
                       PRO SERIES
                     </span>
-                    <span className="bg-[#0A5D7C] text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded shadow-sm tracking-wide uppercase select-none">
+                    <span className="bg-brand-cyan text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded shadow-sm tracking-wide uppercase select-none">
                       P20S SYSTEM
                     </span>
                   </div>
@@ -358,7 +358,7 @@ export default function Page({ params }: PageProps) {
                       onClick={() => setIsVideoModalOpen(true)}
                       className="w-full h-full flex flex-col items-center justify-center bg-neutral-100/50 rounded-xl cursor-pointer hover:bg-neutral-100 transition-colors gap-3"
                     >
-                      <div className="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20 hover:scale-105 transition-transform duration-300">
+                      <div className="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-white shadow-lg shadow-primary-500/20 hover:scale-105 transition-transform duration-300">
                         <Play size={28} fill="currentColor" className="ml-1" />
                       </div>
                       <span className="font-display font-semibold text-neutral-800 text-sm">Дивитися відеоогляд</span>
@@ -404,17 +404,17 @@ export default function Page({ params }: PageProps) {
 
                 {/* Specific layout short badges */}
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-orange-50/40 border border-orange-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
                     <Zap className="text-primary-500 stroke-[2.5]" size={20} />
                     <span className="text-[10px] text-neutral-500 uppercase font-semibold">Напруга</span>
                     <span className="text-sm font-bold text-neutral-900 font-display">{voltage}</span>
                   </div>
-                  <div className="bg-orange-50/40 border border-orange-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
                     <RotateCw className="text-primary-500 stroke-[2.5]" size={20} />
                     <span className="text-[10px] text-neutral-500 uppercase font-semibold">Обороти</span>
                     <span className="text-sm font-bold text-neutral-900 font-display">{speed}</span>
                   </div>
-                  <div className="bg-orange-50/40 border border-orange-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
                     <Sparkles className="text-primary-500 stroke-[2.5]" size={20} />
                     <span className="text-[10px] text-neutral-500 uppercase font-semibold">Сила удару</span>
                     <span className="text-sm font-bold text-neutral-900 font-display">{impactForce}</span>
@@ -454,10 +454,10 @@ export default function Page({ params }: PageProps) {
 
                   {/* Stock Availability */}
                   <div className="flex items-center gap-2 border-b border-neutral-100 pb-3">
-                    <span className="w-2.5 h-2.5 rounded-full bg-success flex items-center justify-center">
+                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 flex items-center justify-center">
                       <span className="w-1 h-1 rounded-full bg-white"></span>
                     </span>
-                    <span className="text-xs md:text-sm font-semibold text-success">
+                    <span className="text-xs md:text-sm font-semibold text-green-600">
                       В наявності ({product.countInStock > 50 ? '>50 шт.' : `${product.countInStock} шт.`})
                     </span>
                   </div>
@@ -516,7 +516,7 @@ export default function Page({ params }: PageProps) {
                   {/* Add to Cart CTA */}
                   <button
                     onClick={handleAddToCart}
-                    className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2.5 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 transition-all cursor-pointer text-base select-none"
+                    className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2.5 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all cursor-pointer text-base select-none"
                   >
                     <ShoppingCart size={20} fill="currentColor" />
                     <span>Додати до кошика</span>
@@ -540,7 +540,7 @@ export default function Page({ params }: PageProps) {
                   {/* Trust triggers */}
                   <div className="flex flex-col gap-3 border-t border-neutral-100 pt-4">
                     <div className="flex items-start gap-3">
-                      <Truck className="text-[#0E5E7A] stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <Truck className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
                       <div className="flex flex-col">
                         <span className="text-xs md:text-sm font-bold text-neutral-800">Відправка сьогодні</span>
                         <span className="text-[11px] text-neutral-500">При замовленні до 16:00</span>
@@ -548,7 +548,7 @@ export default function Page({ params }: PageProps) {
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <ShieldCheck className="text-[#0E5E7A] stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <ShieldCheck className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
                       <div className="flex flex-col">
                         <span className="text-xs md:text-sm font-bold text-neutral-800">Гарантія {product.warranty || 24} міс.</span>
                         <span className="text-[11px] text-neutral-500">Офіційний сервісний центр</span>
@@ -556,7 +556,7 @@ export default function Page({ params }: PageProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <RotateCcw className="text-[#0E5E7A] stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <RotateCcw className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
                       <div className="flex flex-col">
                         <span className="text-xs md:text-sm font-bold text-neutral-800">Повернення 14 днів</span>
                         <span className="text-[11px] text-neutral-500">Безпроблемний обмін згідно закону</span>
@@ -564,7 +564,7 @@ export default function Page({ params }: PageProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <Receipt className="text-[#0E5E7A] stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <Receipt className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
                       <div className="flex flex-col">
                         <span className="text-xs md:text-sm font-bold text-neutral-800">Безготівковий розрахунок</span>
                         <span className="text-[11px] text-neutral-500">З ПДВ для юридичних осіб</span>

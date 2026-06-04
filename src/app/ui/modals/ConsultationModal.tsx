@@ -177,7 +177,7 @@ export default function ConsultationModal({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group w-full font-display font-semibold text-sm bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white rounded-md py-2.5 mt-2 transition-all duration-300 shadow-md shadow-orange-500/10 hover:shadow-orange-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed select-none"
+            className="group w-full font-display font-semibold text-sm bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white rounded-md py-2.5 mt-2 transition-all duration-300 shadow-md shadow-primary-500/10 hover:shadow-primary-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed select-none"
           >
             {isSubmitting ? (
               <>

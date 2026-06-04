@@ -104,7 +104,7 @@ const authStateSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(forgotPasswordThunk.fulfilled, () => {
-        toast.success(`Інструкція зміни паролю відправлено на пошту`);
+        toast.success(`Інструкцію для зміни паролю відправлено на пошту`);
       })
       .addMatcher(
         isAnyOf(
