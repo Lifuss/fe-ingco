@@ -1,127 +1,141 @@
 'use client';
-import { setShopView } from '@/lib/appState/main/slice';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import clsx from 'clsx';
-import { BetweenVerticalStart, Table2 } from 'lucide-react';
+
+import React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { setShopView } from '@/lib/appState/main/slice';
+import { LayoutGrid, List, ChevronDown } from 'lucide-react';
+import Breadcrumbs from './Breadcrumbs';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';
 }
 
-export type sortValueType = 'default' | 'popular' | 'cheep' | 'expensive' | 'popular' | 'name';
+export type sortValueType = 'default' | 'popular' | 'cheep' | 'expensive' | 'name';
 
-const liButtonsContent: { label: string; sortValue: sortValueType }[] = [
-  { label: 'за популярністю', sortValue: 'popular' },
-  { label: 'від дешевших', sortValue: 'cheep' },
-  { label: 'від дорожчих', sortValue: 'expensive' },
-  { label: 'за назвою', sortValue: 'name' },
+const sortOptions: { label: string; sortValue: sortValueType }[] = [
+  { label: 'За популярністю', sortValue: 'popular' },
+  { label: 'Від дешевших', sortValue: 'cheep' },
+  { label: 'Від дорожчих', sortValue: 'expensive' },
+  { label: 'За назвою', sortValue: 'name' },
 ];
 
 const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
-  const { shopView } = useAppSelector((state) => state.persistedMainReducer);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const [sort, setSort] = useState<sortValueType>('default');
 
-  const params = new URLSearchParams(searchParams.toString());
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const { products = [], total = 0, shopView } = useAppSelector((state) => state.persistedMainReducer);
 
-  const pathType = listType === 'retail' ? '/' : '/shop';
-  let title = '';
-  switch (pathname) {
-    case '/cart':
-      if (listType === 'retail') title = 'Кошик';
-      break;
-    case '/shop/cart':
-      if (listType === 'partner') title = 'Кошик';
-      break;
-    case '/favorites':
-      if (listType === 'retail') title = 'Обране';
-      break;
-    case '/shop/favorites':
-      if (listType === 'partner') title = 'Обране';
-      break;
-    case '/history':
-      if (listType === 'retail') title = 'Історія замовлень';
-      break;
-    case '/shop/history':
-      if (listType === 'partner') title = 'Історія замовлень';
-      break;
-    case pathType:
-      title = 'Каталог';
-      const categoryId: string | null = searchParams.get('category');
-      if (categoryId) {
-        title = productsCategories.find((val) => val._id === categoryId)?.name as string;
-      }
-      break;
-    default:
-      break;
+  const activeCategoryId = searchParams.get('category') || '';
+  const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
+  const viewParam = searchParams.get('view') || 'grid';
+
+  // Determine active category name for breadcrumbs & title
+  const activeCategory = productsCategories.find((c) => c._id === activeCategoryId);
+  const categoryName = activeCategory ? activeCategory.name : 'Електроінструмент';
+
+  // Breadcrumbs items
+  const breadcrumbItems: { label: string; href?: string }[] = [
+    { label: 'Головна', href: listType === 'retail' ? '/' : '/shop' },
+    { label: 'Інструменти', href: listType === 'retail' ? '/?catalog=true' : '/shop?catalog=true' },
+  ];
+
+  if (activeCategory) {
+    breadcrumbItems.push({ label: activeCategory.name });
+  } else {
+    breadcrumbItems.push({ label: 'Каталог' });
   }
 
-  const handleClickSortButtons = (sortValue: sortValueType) => {
-    if (params.get('sortValue') === sortValue) {
-      setSort('default');
-      params.set('sortValue', 'default');
-    } else {
-      setSort(sortValue);
-      params.set('sortValue', sortValue);
-    }
+  // Handle Sort Change
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as sortValueType;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sortValue', value);
+    params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  // Handle View Change
+  const handleViewChange = (newView: 'grid' | 'list') => {
+    if (listType === 'partner') {
+      dispatch(setShopView(newView === 'grid' ? 'table' : 'list'));
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('view', newView);
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  const isListView = listType === 'partner' ? shopView === 'list' : viewParam === 'list';
+
   return (
-    <div className="mb-2 flex flex-col flex-wrap justify-end gap-4 md:flex-row md:items-center">
-      <h1 className="col-span-3 mb-2 w-full text-center text-3xl">{title}</h1>
-      <div className="flex w-full items-start justify-end lg:justify-end lg:gap-4">
-        <div className="flex flex-col items-baseline justify-center lg:flex-row">
-          <h3 className="mr-2">Сортування:</h3>
-          <ul className="flex flex-row">
-            {liButtonsContent.map((item, i) => (
-              <li
-                key={item.sortValue}
-                className={clsx(
-                  'h-fit border border-gray-500 stroke-black px-1 py-1 text-center text-xs transition-all hover:scale-105 hover:font-semibold focus:scale-105 md:px-2 md:py-2',
-                  i === 0 && 'rounded-s-xl',
-                  i === liButtonsContent.length - 1 && 'rounded-e-xl',
-                  sort === item.sortValue && 'bg-orange-300',
-                )}
-              >
-                <button type="button" onClick={() => handleClickSortButtons(item.sortValue)}>
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
+    <div className="w-full font-sans">
+      {/* Breadcrumbs */}
+      <Breadcrumbs items={breadcrumbItems} />
+
+      {/* Title & Stats */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900">
+          {categoryName}
+        </h1>
+        <p className="text-xs text-gray-500 font-medium">
+          Показано {products.length} з {total} товарів
+        </p>
+      </div>
+
+      {/* Controls Bar */}
+      <div className="flex items-center justify-between py-2 gap-4 flex-wrap">
+        
+        {/* Left space */}
+        <div className="flex items-center gap-2">
         </div>
-        {listType === 'partner' ? (
-          <div className="flex flex-col items-center md:flex-row md:flex-wrap md:justify-end">
-            <h3 className="mr-2 md:mr-0 md:w-full md:text-right lg:mr-2 lg:w-fit">Відображення:</h3>
-            <button
-              onClick={() => dispatch(setShopView('table'))}
-              className={clsx(
-                'border border-gray-500 stroke-black px-2 py-1 transition-transform hover:scale-105 focus:scale-105 max-[767px]:rounded-t-xl md:rounded-s-xl',
-                shopView === 'table' && 'bg-orange-300',
-              )}
-              aria-label="Перемкнути вигляд каталогу на таблицю"
+
+        {/* Right side controls */}
+        <div className="flex items-center gap-4 ml-auto">
+          {/* Grid / List Switcher (B2B only) */}
+          {listType === 'partner' && (
+            <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
+              <button
+                onClick={() => handleViewChange('grid')}
+                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                  !isListView ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                }`}
+                aria-label="Table view"
+              >
+                <LayoutGrid size={15} />
+              </button>
+              <button
+                onClick={() => handleViewChange('list')}
+                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                  isListView ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                }`}
+                aria-label="List view"
+              >
+                <List size={15} />
+              </button>
+            </div>
+          )}
+
+          {/* Sorting Dropdown */}
+          <div className="relative flex items-center">
+            <select
+              value={currentSort}
+              onChange={handleSortChange}
+              className="appearance-none bg-white pl-4 pr-10 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:border-primary-500 cursor-pointer shadow-sm"
             >
-              <Table2 className="stroke-inherit" />
-            </button>
-            <button
-              onClick={() => dispatch(setShopView('list'))}
-              className={clsx(
-                'border border-gray-500 stroke-black px-2 py-1 transition-transform hover:scale-105 focus:scale-105 max-[767px]:rounded-b-xl md:rounded-e-xl',
-                shopView === 'list' && 'bg-orange-300',
-              )}
-              aria-label="Перемкнути вигляд каталогу на список"
-            >
-              <BetweenVerticalStart className="stroke-inherit" />
-            </button>
+              <option value="default">Сортувати</option>
+              {sortOptions.map((opt) => (
+                <option key={opt.sortValue} value={opt.sortValue}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-3 text-gray-400 pointer-events-none" />
           </div>
-        ) : null}
+        </div>
       </div>
     </div>
   );
