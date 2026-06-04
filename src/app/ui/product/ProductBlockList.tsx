@@ -1,4 +1,5 @@
 'use client';
+
 import { useAppSelector, useProductStats } from '@/lib/hooks';
 import { Product } from '@/lib/types';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,8 +9,8 @@ import { CardSkeleton } from '../skeletons/skeletons';
 interface ProductBlockListProps {
   productsData: Product[];
   listType: 'partner' | 'retail';
-  handleCartClick: (id: string, productName: string) => void;
-  handleFavoriteClick: (id: string) => void;
+  handleCartClick?: (id: string, productName: string) => void;
+  handleFavoriteClick?: (id: string) => void;
   favoritesIdList: string[];
   USDCurrency?: number;
 }
@@ -19,13 +20,16 @@ const ProductBlockList = ({
   listType = 'retail',
   USDCurrency,
   favoritesIdList,
-  handleCartClick,
-  handleFavoriteClick,
 }: ProductBlockListProps) => {
   const { logProductClick } = useProductStats();
   const router = useRouter();
   const searchParams = useSearchParams();
+  
   const isProductsLoading = useAppSelector((state) => state.persistedMainReducer.tableLoading);
+  const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
+  
+  const viewParam = searchParams.get('view') || 'grid';
+  const isListView = listType === 'partner' ? shopView === 'list' : viewParam === 'list';
 
   const handleDirectToProduct = (id: string, slug: string) => {
     logProductClick(id);
@@ -37,8 +41,14 @@ const ProductBlockList = ({
   };
 
   return (
-    <div>
-      <ul className="grid grid-cols-1 gap-3 min-[1800px]:grid-cols-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+    <div className="w-full">
+      <ul 
+        className={
+          isListView
+            ? 'flex flex-col gap-4 w-full'
+            : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full'
+        }
+      >
         {productsData?.map((product) => {
           return isProductsLoading ? (
             <CardSkeleton key={product._id} />
@@ -48,8 +58,6 @@ const ProductBlockList = ({
               product={product}
               listType={listType}
               handleDirectToProduct={handleDirectToProduct}
-              handleCartClick={handleCartClick}
-              handleFavoriteClick={handleFavoriteClick}
               favoritesIdList={favoritesIdList}
               USDCurrency={USDCurrency}
             />
