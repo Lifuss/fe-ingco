@@ -27,6 +27,7 @@ interface ProductCardProps {
 }
 
 const NEXT_PUBLIC_API = process.env.NEXT_PUBLIC_API || '';
+const NOW = Date.now();
 
 const ProductCard = ({
   product,
@@ -41,7 +42,7 @@ const ProductCard = ({
 
   const isAuth = authState.isAuthenticated;
   const user = authState.user;
-  const isB2BUser = authState.isB2b || (user && ((user as any).isB2B === true || (user as any).isB2b === true));
+  const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true || (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
 
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
@@ -69,10 +70,10 @@ const ProductCard = ({
     slug,
     createdAt,
   } = product;
-
-  // Check if item is new (within last 60 days)
-  const isNew = createdAt ? (Date.now() - new Date(createdAt).getTime()) < 60 * 24 * 60 * 60 * 1000 : false;
   
+  // Check if item is new (within last 60 days)
+  const isNew = createdAt ? (NOW - new Date(createdAt).getTime()) < 60 * 24 * 60 * 60 * 1000 : false;
+
   // Calculate discount percent
   const discountPercent = priceRetailRecommendation > 0 && rrcSale
     ? Math.round(((priceRetailRecommendation - rrcSale) / priceRetailRecommendation) * 100)

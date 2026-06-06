@@ -35,28 +35,6 @@ const CatalogSidebar = () => {
   const [debouncedMinPower] = useDebounce(minPowerInput, 500);
   const [debouncedMaxPower] = useDebounce(maxPowerInput, 500);
 
-  // Fetch categories on mount
-  useEffect(() => {
-    dispatch(fetchCategoriesThunk(''));
-  }, [dispatch]);
-
-  // Update inputs if URL changes externally
-  useEffect(() => {
-    setMinPowerInput(urlMinPower);
-  }, [urlMinPower]);
-
-  useEffect(() => {
-    setMaxPowerInput(urlMaxPower);
-  }, [urlMaxPower]);
-
-  // Trigger search params update when debounced inputs or checkboxes change
-  useEffect(() => {
-    updateUrlParams({
-      minPower: debouncedMinPower,
-      maxPower: debouncedMaxPower,
-    });
-  }, [debouncedMinPower, debouncedMaxPower]);
-
   // Helper to update URL params
   const updateUrlParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -75,6 +53,31 @@ const CatalogSidebar = () => {
       : (pathname.includes('/shop') ? '/shop' : '/');
     router.replace(`${targetPath}?${params.toString()}`);
   };
+
+  // Fetch categories on mount
+  useEffect(() => {
+    dispatch(fetchCategoriesThunk(''));
+  }, [dispatch]);
+
+  // Update inputs if URL changes externally
+  useEffect(() => {
+    setMinPowerInput(urlMinPower);
+  }, [urlMinPower]);
+
+  useEffect(() => {
+    setMaxPowerInput(urlMaxPower);
+  }, [urlMaxPower]);
+
+  // Trigger search params update when debounced inputs or checkboxes change
+  useEffect(() => {
+    if (debouncedMinPower === urlMinPower && debouncedMaxPower === urlMaxPower) {
+      return;
+    }
+    updateUrlParams({
+      minPower: debouncedMinPower,
+      maxPower: debouncedMaxPower,
+    });
+  }, [debouncedMinPower, debouncedMaxPower, urlMinPower, urlMaxPower]);
 
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {

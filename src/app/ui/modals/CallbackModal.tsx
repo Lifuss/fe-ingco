@@ -73,14 +73,14 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
           <PhoneCall size={24} />
         </div>
 
-        <h3 className="mb-2 text-center text-xl font-bold text-gray-900">Зворотний зв'язок</h3>
+        <h3 className="mb-2 text-center text-xl font-bold text-gray-900">Зворотний зв&apos;язок</h3>
         <p className="mb-6 text-center text-sm leading-relaxed text-gray-500">
           Залиште ваші контакти, і ваш персональний менеджер передзвонить вам для узгодження оптових цін та умов.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Ваше ім'я *</label>
+            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Ваше ім&apos;я *</label>
             <input
               type="text"
               required

@@ -14,6 +14,7 @@ const customModalStyles = {
   content: {
     width: '150px',
     left: 'auto',
+    right: '20px',
     top: '70px',
     height: '170px',
     borderRadius: '8px',
@@ -31,7 +32,7 @@ const customModalQuestionStyles = {
   },
 };
 
-const User = () => {
+const User = ({ showLabel = true }: { showLabel?: boolean }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const router = useRouter();
@@ -48,7 +49,7 @@ const User = () => {
     dispatch(logoutThunk())
       .unwrap()
       .then(() => {
-        toast.success('Ви успішно вийшли з профілю 😭');
+        toast.success('Ви успішно вийшли з профілю');
         router.push('/');
       });
   };
@@ -60,15 +61,17 @@ const User = () => {
       <button
         onClick={openModal}
         className={clsx(
-          'flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold tracking-wide transition-colors cursor-pointer outline-none select-none',
-          isOpen ? 'text-primary-500' : 'text-neutral-500 hover:text-primary-500'
+          isOpen ? 'text-primary-500' : 'text-neutral-500 hover:text-primary-500',
+          showLabel
+            ? 'flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold tracking-wide cursor-pointer outline-none select-none'
+            : 'flex items-center justify-center p-2 rounded-lg transition-colors cursor-pointer hover:bg-primary-50'
         )}
       >
         <Icon
           icon="user"
           className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3] transition-colors"
         />
-        <span>Профіль</span>
+        {showLabel && <span>Профіль</span>}
       </button>
       <Modal
         isOpen={isOpen}
@@ -77,7 +80,7 @@ const User = () => {
         style={{
           content: {
             ...customModalStyles.content,
-            height: user.role === 'admin' ? '21%' : '170px',
+            height: user.role === 'admin' ? '210px' : '170px',
           },
           overlay: {
             backgroundColor: 'none',

@@ -161,8 +161,8 @@ async function getRates(): Promise<CurrencyResult> {
 
   // Hard fallback if every provider failed
   const fallback: CurrencyResult = {
-    USD: 41.0,
-    EUR: 44.0,
+    USD: 44.0,
+    EUR: 52.0,
     lastUpdate: new Date().toISOString(),
     source: 'fallback-static',
   };
@@ -181,8 +181,8 @@ export async function GET() {
     });
   } catch (_error) {
     const fallback: CurrencyResult = {
-      USD: 41.0,
-      EUR: 44.0,
+      USD: 44.0,
+      EUR: 52.0,
       lastUpdate: new Date().toISOString(),
       source: 'fallback-error',
     };

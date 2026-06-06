@@ -42,12 +42,12 @@ const Footer = () => {
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         
         {/* Column 1: Logo & Badge */}
-        <div className="col-span-1 md:col-span-3 flex flex-col gap-4">
+        <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
           <Logo />
         </div>
 
         {/* Column 2: Clients links */}
-        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+        <div className="col-span-6 md:col-span-2 lg:col-span-2 flex flex-col gap-4 text-left">
           <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Клієнтам
           </h3>
@@ -76,7 +76,7 @@ const Footer = () => {
         </div>
 
         {/* Column 3: Social Medias */}
-        <div className="col-span-1 md:col-span-3 flex flex-col gap-4 text-left">
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 flex flex-col gap-4 text-left">
           <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Соціальні мережі
           </h3>
@@ -100,7 +100,7 @@ const Footer = () => {
         </div>
 
         {/* Column 4: Information */}
-        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+        <div className="col-span-6 md:col-span-3 lg:col-span-2 flex flex-col gap-4 text-left">
           <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Інформація
           </h3>
@@ -119,7 +119,7 @@ const Footer = () => {
         </div>
 
         {/* Column 5: Contacts */}
-        <div className="col-span-1 md:col-span-2 flex flex-col gap-4 text-left">
+        <div className="col-span-12 md:col-span-3 lg:col-span-2 flex flex-col gap-4 text-left">
           <h3 className="font-display font-bold text-sm text-primary-600 tracking-wider">
             Контакти
           </h3>

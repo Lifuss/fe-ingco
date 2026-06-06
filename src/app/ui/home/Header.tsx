@@ -23,7 +23,7 @@ const SubHeader = () => {
   const isAboutActive = pathname.startsWith('/about-us') && !pathname.includes('contacts');
 
   return (
-    <nav className="flex items-center justify-between border-b border-[#E5E3DD] bg-[#FDFDFD] py-1 px-5 md:px-[60px] select-none">
+    <nav className="hidden md:flex items-center justify-between border-b border-[#E5E3DD] bg-[#FDFDFD] py-1 px-5 md:px-[60px] select-none">
       <ul className="flex items-center gap-6 font-sans text-xs font-semibold text-neutral-500">
         <li className="relative py-1">
           <Link
@@ -98,18 +98,78 @@ const Header = () => {
         <SubHeader />
 
         {/* Main Header bar */}
-        <div className="w-full flex items-center justify-between gap-6 py-4 px-5 md:px-[60px]">
+        <div className="w-full flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6 py-3 lg:py-4 px-4 md:px-8 lg:px-10 xl:px-[60px]">
           
-          {/* Logo with badge */}
-          <Logo />
+          {/* Mobile Top Row / Desktop Row Items */}
+          <div className="flex items-center justify-between w-full lg:w-auto gap-4 shrink-0">
+            <div className="flex items-center gap-3">
+              <Logo />
+
+              {/* Hamburger Button for mobile/tablet Catalog */}
+              <button
+                onClick={() => setIsCatalogOpen(!isCatalogOpen)}
+                className={cn(
+                  "lg:hidden flex items-center gap-1.5 px-2 py-1.5 min-[426px]:px-3 min-[426px]:py-2 rounded-lg min-[426px]:text-white min-[426px]:bg-primary-500 focus:outline-none transition-colors border cursor-pointer select-none font-display font-bold text-sm tracking-wide shadow-sm",
+                  isCatalogOpen
+                    ? "bg-primary-600 text-white border-transparent shadow-inner"
+                    : "bg-white text-primary-600 border-primary-100 hover:bg-primary-50"
+                )}
+                aria-label="Toggle Catalog"
+              >
+                <LayoutGrid size={26} className="stroke-[2.5] shrink-0" />
+                <span className="hidden min-[426px]:inline">Каталог</span>
+              </button>
+            </div>
+
+            {/* Mobile/Tablet Action Icons */}
+            <div className="flex lg:hidden items-center gap-2">
+              <Link
+                href={isShop ? '/shop/favorites' : '/favorites'}
+                className="flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+                aria-label="Favorites"
+              >
+                <Heart size={22} className="stroke-current stroke-[2.3] fill-none" />
+              </Link>
+              
+              <Link
+                href={isShop ? '/shop/cart' : '/cart'}
+                className="relative flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+                aria-label="Cart"
+              >
+                <div className="relative">
+                  <ShoppingBasket size={22} className="stroke-current stroke-[2.3] fill-none" />
+                  {itemsInCart > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-primary-800 text-white text-[9px] font-extrabold rounded-full w-4.5 h-4.5 flex items-center justify-center border border-white shadow-sm">
+                      {itemsInCart}
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              {isAuthenticated ? (
+                <UserModal showLabel={false} />
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+                  aria-label="Profile"
+                >
+                  <Icon
+                    icon="user"
+                    className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3]"
+                  />
+                </Link>
+              )}
+            </div>
+          </div>
 
           {/* Catalog & Search Block */}
-          <div className="flex-grow flex items-center gap-4 max-w-xs md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl w-full">
-            {/* Catalog Trigger Button */}
+          <div className="flex-grow flex items-center gap-4 w-full lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl">
+            {/* Catalog Trigger Button - Desktop only */}
             <button
               onClick={() => setIsCatalogOpen(!isCatalogOpen)}
               className={cn(
-                'flex items-center gap-2 px-5 py-2.5 rounded-lg font-display font-bold text-sm tracking-wide transition-all cursor-pointer select-none shadow-sm shadow-orange-500/5 border border-transparent shrink-0',
+                'hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-lg font-display font-bold text-sm tracking-wide transition-all cursor-pointer select-none shadow-sm shadow-orange-500/5 border border-transparent shrink-0',
                 isCatalogOpen
                   ? 'bg-primary-600 text-white shadow-inner'
                   : 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700'
@@ -123,8 +183,8 @@ const Header = () => {
             <Search placeholder="Пошук інструменту за назвою або артикулом..." variant="header" />
           </div>
 
-          {/* Right Action Icons grouped block */}
-          <div className="flex items-center gap-6 shrink-0">
+          {/* Right Action Icons grouped block - Desktop only */}
+          <div className="hidden lg:flex items-center gap-6 shrink-0">
             {/* 1. Favorites Action */}
             <Link
               href={isShop ? '/shop/favorites' : '/favorites'}
@@ -152,7 +212,7 @@ const Header = () => {
 
             {/* 3. Profile / Auth Action */}
             {isAuthenticated ? (
-              <UserModal />
+              <UserModal showLabel={true} />
             ) : (
               <Link
                 href="/auth/login"

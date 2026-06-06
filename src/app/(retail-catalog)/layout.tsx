@@ -2,9 +2,9 @@ import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = generatePageMetadata({
-  title: 'Каталог інструментів INGCO - Роздріб',
+  title: 'Каталог інструментів INGCO',
   description:
-    'Каталог професійних інструментів INGCO в роздріб. Великий вибір електроінструментів для будівництва та ремонту. Доставка по всій Україні!',
+    'Каталог професійних інструментів INGCO. Великий вибір електроінструментів для будівництва та ремонту. Доставка по всій Україні!',
   path: '/',
 });
 
