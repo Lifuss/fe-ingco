@@ -39,6 +39,7 @@ import CatalogSidebar from '~/ui/CatalogSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
+import ProductSkeleton from '~/ui/ProductSkeleton';
 
 type PageProps = {
   params: Promise<{
@@ -53,6 +54,7 @@ export default function Page({ params }: PageProps) {
 
   // Redux state
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+  const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favorites = useAppSelector((state) => (state.persistedAuthReducer.user?.favorites || []) as string[]);
@@ -117,7 +119,22 @@ export default function Page({ params }: PageProps) {
     };
   }, [product]);
 
-  if (!product) {
+  if (productLoading) {
+    return (
+      <>
+        <Header />
+        <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+          <CatalogSidebar />
+          <div className="min-h-[550px] w-full">
+            <ProductSkeleton />
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!product || !product._id) {
     return (
       <>
         <Header />
@@ -216,7 +233,7 @@ export default function Page({ params }: PageProps) {
   breadcrumbsItems.push({ label: product.article || product.name });
 
   // Media gallery details
-  const primaryImageUrl = process.env.NEXT_PUBLIC_API + product.image;
+  const primaryImageUrl = product.image ? process.env.NEXT_PUBLIC_API + product.image : '/placeholder.webp';
   // Mock alternative angles
   const galleryImages = [
     { type: 'image', url: primaryImageUrl, className: 'object-contain' },

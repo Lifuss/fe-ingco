@@ -99,17 +99,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const schemaData = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    '@id': 'https://ingco-service.win/#organization',
+    '@id': `${SITE_URL}/#organization`,
     name: 'INGCO Ukraine',
     alternateName: 'INGCO',
-    url: 'https://ingco-service.win',
+    url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: 'https://ingco-service.win/logo.png',
+      url: `${SITE_URL}/logo.png`,
       width: 200,
       height: 60,
     },
-    image: 'https://ingco-service.win/logo.png',
+    image: `${SITE_URL}/logo.png`,
     telephone: '+380988392107',
     email: 'info@ingco-service.win',
     priceRange: '$$',
@@ -184,14 +184,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           seller: {
             '@type': 'Organization',
             name: 'INGCO Ukraine',
-            url: 'https://ingco-service.win',
+            url: SITE_URL,
           },
           itemCondition: 'https://schema.org/NewCondition',
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.8',
-          reviewCount: '150',
         },
       },
     },
@@ -200,18 +195,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': 'https://ingco-service.win/#website',
-    url: 'https://ingco-service.win',
+    '@id': `${SITE_URL}/#website`,
+    url: SITE_URL,
     name: 'INGCO Ukraine',
     description: 'Офіційний сайт імпортера професійних інструментів INGCO в Україні',
     publisher: {
-      '@id': 'https://ingco-service.win/#organization',
+      '@id': `${SITE_URL}/#organization`,
     },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://ingco-service.win/?search={search_term_string}',
+        urlTemplate: `${SITE_URL}/?query={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -235,10 +230,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
-        <h1 className="hidden">
-          INGCO – професійні інструменти для будівництва та ремонту. Купуйте якісні
-          електроінструменти гуртом та в роздріб в Україні. Доставка по всій країні!
-        </h1>
         <StoreProvider>
           <ToastContainer
             position="bottom-right"

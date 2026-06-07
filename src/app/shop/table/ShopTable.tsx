@@ -195,23 +195,30 @@ const ShopTable = ({ isFavoritePage = false }) => {
         cell: ({ row }) => {
           return (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`}
-              alt={row.original.nameCol}
+              src={row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp'}
+              alt={row.original.nameCol || 'Зображення товару'}
               width={40}
               height={40}
               className="mx-auto h-11 w-11"
               loading="lazy"
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.original.photoCol}" alt="${row.original.nameCol}" />`;
-                img.style.top = `${e.clientY + 20}px`;
-                img.style.left = `${e.clientX + 20}px`;
-                img.classList.remove('hidden');
+                if (img) {
+                  const imgTag = document.createElement('img');
+                  imgTag.src = row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp';
+                  imgTag.alt = row.original.nameCol || 'Зображення товару';
+                  img.replaceChildren(imgTag);
+                  img.style.top = `${e.clientY + 20}px`;
+                  img.style.left = `${e.clientX + 20}px`;
+                  img.classList.remove('hidden');
+                }
               }}
               onMouseOut={() => {
                 const img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = '';
-                img.classList.add('hidden');
+                if (img) {
+                  img.replaceChildren();
+                  img.classList.add('hidden');
+                }
               }}
             />
           );

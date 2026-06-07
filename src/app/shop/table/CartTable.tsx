@@ -3,7 +3,7 @@
 import Table from '@/app/ui/Table';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
-import { SubmitEvent, useMemo, useState } from 'react';
+import { SubmitEvent, useCallback, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 import {
   addProductToCartThunk,
@@ -17,6 +17,7 @@ import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import { selectCurrency } from '@/lib/appState/main/selectors';
 import { type ColumnDef } from '@tanstack/react-table';
+import PricingTooltip from '@/app/ui/PricingTooltip';
 
 type CartData = { quantity: number; _id: string; productId: Product }[];
 type CartTableRow = {
@@ -40,36 +41,42 @@ const CartTable = () => {
   const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user.cart);
   const selectedCurrency = useAppSelector(selectCurrency);
 
-  const handleQuantityChange = (id: string, operation: string) => {
+  const handleQuantityChange = useCallback((id: string, operation: string) => {
     if (operation === 'increment') {
       dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
     } else {
       dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
     }
-  };
+  }, [dispatch]);
 
-  const openProductModal = (product: Product) => {
+  const openProductModal = useCallback((product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const closeProductModal = () => {
+  const closeProductModal = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
   const data = useMemo<CartTableRow[]>(() => {
-    return selectedCart.map((item) => ({
-      codeCol: item.productId.article,
-      nameCol: item.productId.name,
-      photoCol: item.productId.image,
-      priceCol: item.productId.price,
-      priceUahCol: Math.ceil(item.productId.price * selectedCurrency.USD),
-      rrcCol: item.productId.priceRetailRecommendation,
-      quantityCol: item.quantity,
-      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
-      _id: item.productId._id,
-      product: item.productId,
-    }));
+    return selectedCart.map((item) => {
+      const isProductIdString = typeof item.productId === 'string';
+      const prod = (item.productId && !isProductIdString) ? item.productId : null;
+      const id = isProductIdString ? (item.productId as unknown as string) : (item.productId?._id || item._id);
+
+      return {
+        codeCol: prod?.article || '—',
+        nameCol: prod?.name || 'Невідомий товар',
+        photoCol: prod?.image || '',
+        priceCol: prod?.price || 0,
+        priceUahCol: Math.ceil((prod?.price || 0) * selectedCurrency.USD),
+        rrcCol: prod?.priceRetailRecommendation || 0,
+        quantityCol: item.quantity,
+        totalCol: `${((prod?.price || 0) * item.quantity).toFixed(2)}$ | ${Math.ceil((prod?.price || 0) * selectedCurrency.USD * item.quantity)}грн`,
+        _id: id,
+        product: prod || { _id: id, name: 'Невідомий товар' } as Product,
+      };
+    });
   }, [selectedCart, selectedCurrency.USD]);
 
   const columns = useMemo<ColumnDef<CartTableRow>[]>(
@@ -100,22 +107,29 @@ const CartTable = () => {
         cell: ({ row }) => {
           return (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`}
-              alt={row.original.nameCol}
+              src={row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp'}
+              alt={row.original.nameCol || 'Зображення товару'}
               width={40}
               height={40}
               className="mx-auto h-11 w-11"
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.original.photoCol}" alt="${row.original.nameCol}" />`;
-                img.style.top = `${e.clientY + 20}px`;
-                img.style.left = `${e.clientX + 20}px`;
-                img.classList.remove('hidden');
+                if (img) {
+                  const imgTag = document.createElement('img');
+                  imgTag.src = row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp';
+                  imgTag.alt = row.original.nameCol || 'Зображення товару';
+                  img.replaceChildren(imgTag);
+                  img.style.top = `${e.clientY + 20}px`;
+                  img.style.left = `${e.clientX + 20}px`;
+                  img.classList.remove('hidden');
+                }
               }}
               onMouseOut={() => {
                 const img = document.getElementById('image') as HTMLDivElement;
-                img.innerHTML = '';
-                img.classList.add('hidden');
+                if (img) {
+                  img.replaceChildren();
+                  img.classList.add('hidden');
+                }
               }}
             />
           );
@@ -145,6 +159,7 @@ const CartTable = () => {
               <button
                 className="mr-2"
                 onClick={() => handleQuantityChange(row.original._id, 'decrement')}
+                aria-label={`Зменшити кількість для ${row.original.nameCol}`}
               >
                 -
               </button>
@@ -157,6 +172,7 @@ const CartTable = () => {
               <button
                 className="ml-2"
                 onClick={() => handleQuantityChange(row.original._id, 'increment')}
+                aria-label={`Збільшити кількість для ${row.original.nameCol}`}
               >
                 +
               </button>
@@ -165,13 +181,17 @@ const CartTable = () => {
         },
       },
       {
-        header: 'Сума($|грн)',
+        header: () => (
+          <div className="flex items-center justify-center gap-1">
+            <span>Сума($|грн)</span>
+            <PricingTooltip />
+          </div>
+        ),
         accessorKey: 'totalCol',
         cell: ({ row }) => {
           return (
             <div
               className="relative"
-              title="Сума = кількість * ціна | кількість * ціна * курс долара монобанку"
             >
               {row.original.totalCol}
               <button
@@ -184,6 +204,7 @@ const CartTable = () => {
                     }),
                   );
                 }}
+                aria-label={`Видалити ${row.original.nameCol} з кошика`}
               >
                 <Icon icon="delete" className="h-5 w-5 fill-inherit" />
               </button>
@@ -192,8 +213,7 @@ const CartTable = () => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [dispatch, handleQuantityChange, openProductModal],
   );
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {

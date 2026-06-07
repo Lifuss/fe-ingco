@@ -175,6 +175,23 @@ const authStateSlice = createSlice({
         },
       )
       .addMatcher(
+        isAnyOf(
+          getUserCartThunk.rejected,
+          getUserRetailCartThunk.rejected,
+          addProductToCartThunk.rejected,
+          addProductToRetailCartThunk.rejected,
+          deleteProductFromCartThunk.rejected,
+          deleteProductFromRetailCartThunk.rejected,
+          createOrderThunk.rejected,
+          createRetailOrderThunk.rejected,
+          forgotPasswordThunk.rejected,
+          logoutThunk.rejected,
+        ),
+        (state) => {
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
         isAnyOf(loginThunk.rejected, refreshTokenThunk.rejected, registerThunk.rejected),
         (state) => {
           state.isLoading = false;

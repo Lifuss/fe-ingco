@@ -13,10 +13,10 @@ import {
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import { useMediaQuery } from 'react-responsive';
-import TextPlaceholder from '../ui/TextPlaceholder';
+import TextPlaceholder from '../TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
-import ProductBlockList from '../ui/product/ProductBlockList';
-import FiltersBlock, { sortValueType } from '../ui/FiltersBlock';
+import ProductBlockList from '../product/ProductBlockList';
+import FiltersBlock, { sortValueType } from '../FiltersBlock';
 
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();

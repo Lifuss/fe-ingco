@@ -28,11 +28,50 @@ export const apiIngco = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
 });
 
-const setToken = (token: string) => {
+apiIngco.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined' && !config.headers.Authorization) {
+      const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+      let token = match ? decodeURIComponent(match[1]) : null;
+
+      if (!token) {
+        try {
+          const savedUserString = localStorage.getItem('persist:auth');
+          if (savedUserString) {
+            const savedUser = JSON.parse(savedUserString);
+            token = savedUser?.token ? JSON.parse(savedUser.token) : null;
+          }
+        } catch (e) {
+          console.error('Interceptor failed to read persist:auth:', e);
+        }
+      }
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+const setToken = (token: string, role?: string) => {
   apiIngco.defaults.headers.common.Authorization = `Bearer ${token}`;
+  if (typeof window !== 'undefined') {
+    document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
+    if (role) {
+      document.cookie = `role=${role}; path=/; max-age=86400; SameSite=Lax; Secure`;
+    }
+  }
 };
 const clearToken = () => {
   apiIngco.defaults.headers.common.Authorization = ``;
+  if (typeof window !== 'undefined') {
+    document.cookie = 'token=; path=/; max-age=0; SameSite=Lax; Secure';
+    document.cookie = 'role=; path=/; max-age=0; SameSite=Lax; Secure';
+  }
 };
 
 export const loginThunk = createAsyncThunk(
@@ -45,7 +84,7 @@ export const loginThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setToken(response.data.token);
+      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -71,7 +110,7 @@ export const registerThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setToken(response.data.token);
+      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -97,7 +136,7 @@ export const registerClientThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setToken(response.data.token);
+      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -154,6 +193,7 @@ export const refreshTokenThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
+      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -227,7 +267,7 @@ export const getUserCartThunk = createAsyncThunk('cart/get', async (_, { rejectW
     const { data } = await apiIngco.get('users/cart');
     return data.cart;
   } catch (error) {
-    rejectWithValue(error);
+    return rejectWithValue(error);
   }
 });
 
@@ -238,7 +278,7 @@ export const getUserRetailCartThunk = createAsyncThunk(
       const { data } = await apiIngco.get('users/cart/retail');
       return data.cart;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -253,7 +293,7 @@ export const addProductToCartThunk = createAsyncThunk(
       });
       return data.cart;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -285,7 +325,7 @@ export const deleteProductFromCartThunk = createAsyncThunk(
       });
       return data.cart;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -302,7 +342,7 @@ export const deleteProductFromRetailCartThunk = createAsyncThunk(
       });
       return data.cart;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -327,7 +367,7 @@ export const createOrderThunk = createAsyncThunk(
       const { data } = await apiIngco.post('orders', order);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -357,7 +397,7 @@ export const createRetailOrderThunk = createAsyncThunk(
       const { data } = await apiIngco.post('orders/retail', order);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -368,7 +408,7 @@ export const forgotPasswordThunk = createAsyncThunk(
     try {
       await apiIngco.post('users/forgot', { resetData });
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );

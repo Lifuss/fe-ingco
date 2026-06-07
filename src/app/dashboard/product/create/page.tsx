@@ -25,8 +25,7 @@ const Page = () => {
     if (!categories.length) {
       dispatch(fetchCategoriesThunk(''));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [dispatch, categories.length]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

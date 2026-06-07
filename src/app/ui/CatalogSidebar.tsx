@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
-import { ShieldCheck, Zap, Plug, Filter, ChevronRight, Phone } from 'lucide-react';
+import { ShieldCheck, Zap, Plug, Filter, Phone } from 'lucide-react';
 import CallbackModal from './modals/CallbackModal';
 import { useDebounce } from 'use-debounce';
 
@@ -15,7 +15,6 @@ const CatalogSidebar = () => {
   const searchParams = useSearchParams();
 
   const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
-  const isShop = pathname.includes('/shop');
 
   // Callback Modal State
   const [isCallbackOpen, setIsCallbackOpen] = useState(false);
@@ -36,7 +35,7 @@ const CatalogSidebar = () => {
   const [debouncedMaxPower] = useDebounce(maxPowerInput, 500);
 
   // Helper to update URL params
-  const updateUrlParams = (updates: Record<string, string | null>) => {
+  const updateUrlParams = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', '1'); // reset page on filter change
 
@@ -52,7 +51,7 @@ const CatalogSidebar = () => {
       ? pathname
       : (pathname.includes('/shop') ? '/shop' : '/');
     router.replace(`${targetPath}?${params.toString()}`);
-  };
+  }, [searchParams, pathname, router]);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -77,7 +76,7 @@ const CatalogSidebar = () => {
       minPower: debouncedMinPower,
       maxPower: debouncedMaxPower,
     });
-  }, [debouncedMinPower, debouncedMaxPower, urlMinPower, urlMaxPower]);
+  }, [debouncedMinPower, debouncedMaxPower, urlMinPower, urlMaxPower, updateUrlParams]);
 
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { GroupBase, OptionsOrGroups } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import Select from 'react-select';
@@ -30,28 +30,36 @@ const NovaPoshtaComponent = () => {
     }));
   }, []);
 
-  const loadOptions = debounce(
-    (
-      inputValue: string,
-      callback: (options: OptionsOrGroups<CityOption, GroupBase<CityOption>>) => void,
-    ) => {
-      novaPoshta.fetchCities(inputValue).then((data) => {
-        if (!data) {
-          callback([]);
-          return;
-        }
-        const options = data.Addresses.map((city) => ({
-          label: city.Present,
-          value: {
-            fullDescription: city.Present,
-            MainDescription: city.MainDescription,
-          },
-        }));
-        callback(options);
-      });
-    },
-    500,
-  );
+  const loadOptions = useMemo(() => {
+    return debounce(
+      (
+        inputValue: string,
+        callback: (options: OptionsOrGroups<CityOption, GroupBase<CityOption>>) => void,
+      ) => {
+        novaPoshta.fetchCities(inputValue).then((data) => {
+          if (!data) {
+            callback([]);
+            return;
+          }
+          const options = data.Addresses.map((city) => ({
+            label: city.Present,
+            value: {
+              fullDescription: city.Present,
+              MainDescription: city.MainDescription,
+            },
+          }));
+          callback(options);
+        });
+      },
+      500,
+    );
+  }, [novaPoshta]);
+
+  useEffect(() => {
+    return () => {
+      loadOptions.cancel();
+    };
+  }, [loadOptions]);
 
   const handleChange = async (city: CityOption | null) => {
     setSelectedCity(city);

@@ -85,7 +85,7 @@ const Footer = () => {
               <Link
                 href={social.url}
                 key={social.name}
-                rel="nofollow"
+                rel="nofollow noopener noreferrer"
                 target="_blank"
                 aria-label={social.label}
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800 text-white hover:bg-primary-500 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"

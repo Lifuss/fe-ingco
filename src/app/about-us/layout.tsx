@@ -14,11 +14,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      const savedUserString = localStorage.getItem('persist:auth');
-      if (!savedUserString) return;
-
-      const savedUser = JSON.parse(savedUserString);
-      const token = savedUser?.token ? JSON.parse(savedUser.token) : null;
+      let token: string | null = null;
+      try {
+        const savedUserString = localStorage.getItem('persist:auth');
+        if (savedUserString) {
+          const savedUser = JSON.parse(savedUserString);
+          token = savedUser?.token ? JSON.parse(savedUser.token) : null;
+        }
+      } catch (e) {
+        console.error('Error parsing auth from local storage:', e);
+      }
 
       if (token) {
         dispatch(refreshTokenThunk())

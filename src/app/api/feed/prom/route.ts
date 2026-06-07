@@ -65,9 +65,11 @@ export async function GET() {
       .map((product) => {
         const inStock = product.countInStock > 0;
         const available = inStock ? 'true' : 'false';
-        const imageUrl = product.image.startsWith('http')
-          ? product.image
-          : `${process.env.NEXT_PUBLIC_API}${product.image}`;
+        const imageUrl = product.image
+          ? (product.image.startsWith('http')
+            ? product.image
+            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`)
+          : `${DOMAIN}/placeholder.webp`;
 
         const params: string[] = [];
         if (product.characteristics?.length) {

@@ -85,7 +85,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -97,19 +97,19 @@ export const getProductByIdThunk = createAsyncThunk(
       const { data } = await apiIngco.get(`/products/${productId}`);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
 
 export const getProductBySlugThunk = createAsyncThunk(
-  'product/fetch',
+  'product/fetchBySlug',
   async (productSlug: string, { rejectWithValue }) => {
     try {
       const { data } = await apiIngco.get(`/products/${productSlug}`);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -122,7 +122,7 @@ export const fetchCategoriesThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -144,7 +144,7 @@ export const fetchHistoryThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -156,7 +156,7 @@ export const deleteProductThunk = createAsyncThunk(
       await apiIngco.delete(`/products/${productId}`);
       return productId;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -199,7 +199,7 @@ export const deleteCategoryThunk = createAsyncThunk(
       return categoryId;
     } catch (error) {
       toast.error("В категорії існують прив'язані товари, видаліть їх, або змініть категорію");
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -221,7 +221,7 @@ export const fetchExcelFileThunk = createAsyncThunk(
       }
       return { blob: data, type: 'success', status: status };
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );

@@ -180,7 +180,11 @@ export default function HotOffers({ products }: HotOffersProps) {
           <Slider ref={sliderRef} {...sliderSettings}>
             {activeProducts.map((product) => {
               const apiBaseUrl = 'https://api-ingco-service.win';
-              const imageUrl = product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`;
+              const imageUrl = product.image
+                ? (product.image.startsWith('http')
+                  ? product.image
+                  : `${apiBaseUrl}${product.image}`)
+                : '/placeholder.webp';
 
               let isSale = product.rrcSale && product.rrcSale > 0;
               let price = isSale ? product.rrcSale : product.priceRetailRecommendation;

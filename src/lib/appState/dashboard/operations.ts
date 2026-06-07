@@ -14,7 +14,7 @@ export const createProductThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -33,7 +33,7 @@ export const updateProductThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -67,7 +67,7 @@ export const fetchUsersThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -184,7 +184,7 @@ export const fetchOrdersThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -199,7 +199,7 @@ export const updateOrderThunk = createAsyncThunk(
       const { data } = await apiIngco.put(`/orders/${orderId}`, updateOrder);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -214,7 +214,7 @@ export const updateRetailOrderThunk = createAsyncThunk(
       const { data } = await apiIngco.put(`/orders/retail/${orderId}`, updateOrder);
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );
@@ -226,7 +226,7 @@ export const fetchUsersStatsThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/users/stats');
       return data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error);
     }
   },
 );

@@ -31,7 +31,7 @@ const NOW = Date.now();
 
 const ProductCard = ({
   product,
-  listType,
+  listType: _listType,
   favoritesIdList,
   handleDirectToProduct,
   USDCurrency,
@@ -66,7 +66,6 @@ const ProductCard = ({
     priceRetailRecommendation = 0,
     price = 0,
     priceBulk,
-    description = '',
     slug,
     createdAt,
   } = product;
@@ -179,7 +178,7 @@ const ProductCard = ({
               )}
 
               <Image
-                src={NEXT_PUBLIC_API + image}
+                src={image ? NEXT_PUBLIC_API + image : '/placeholder.webp'}
                 alt={name}
                 className="object-contain p-2"
                 fill={true}

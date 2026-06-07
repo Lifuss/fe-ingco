@@ -21,7 +21,7 @@ const persistMainConfig = {
 };
 const persistAuthConfig = {
   key: 'auth',
-  whitelist: ['token', 'localStorageCart'],
+  whitelist: ['token', 'localStorageCart', 'user', 'isAuthenticated', 'isB2b'],
   storage,
 };
 

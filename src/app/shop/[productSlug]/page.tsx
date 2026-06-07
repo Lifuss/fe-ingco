@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, use } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import ProductSkeleton from '@/app/ui/ProductSkeleton';
 
 type PageProps = {
   params: Promise<{
@@ -28,6 +29,7 @@ const Page = ({ params }: PageProps) => {
   const barcodeRef = useRef<SVGSVGElement | null>(null);
 
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+  const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
   const USD = useAppSelector(selectUSDRate);
 
   const router = useRouter();
@@ -49,6 +51,7 @@ const Page = ({ params }: PageProps) => {
   }, [product]);
 
   const onAddToCart = async () => {
+    if (!product) return;
     await dispatch(addProductToCartThunk({ productId: product._id, quantity })).unwrap();
     setQuantity(1);
   };
@@ -58,9 +61,11 @@ const Page = ({ params }: PageProps) => {
     if (!product) return null;
 
     const productPrice = Math.ceil(product.price * USD);
-    const imageUrl = product.image.startsWith('http')
-      ? product.image
-      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+    const imageUrl = product.image
+      ? (product.image.startsWith('http')
+        ? product.image
+        : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`)
+      : '/placeholder.webp';
 
     return {
       '@context': 'https://schema.org',
@@ -101,11 +106,6 @@ const Page = ({ params }: PageProps) => {
         },
         itemCondition: 'https://schema.org/NewCondition',
       },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        reviewCount: '150',
-      },
       additionalProperty: product.characteristics.map((char) => ({
         '@type': 'PropertyValue',
         name: char.name,
@@ -143,7 +143,11 @@ const Page = ({ params }: PageProps) => {
     };
   };
 
-  if (!product) {
+  if (productLoading) {
+    return <ProductSkeleton />;
+  }
+
+  if (!product || !product._id) {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
         <SearchX size={52} />
@@ -191,7 +195,7 @@ const Page = ({ params }: PageProps) => {
         )}
         <div className="col-span-2">
           <Image
-            src={process.env.NEXT_PUBLIC_API + product.image}
+            src={product.image ? process.env.NEXT_PUBLIC_API + product.image : '/placeholder.webp'}
             alt={product.name}
             width={500}
             height={500}

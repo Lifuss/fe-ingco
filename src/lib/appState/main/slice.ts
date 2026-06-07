@@ -29,7 +29,8 @@ type initialStateType = {
   products: Product[];
   history: Order[];
   total: number;
-  product: Product;
+  product: Product | null;
+  productLoading: boolean;
   shopView: 'table' | 'list';
 };
 const initialState: initialStateType = {
@@ -47,24 +48,8 @@ const initialState: initialStateType = {
   total: 0,
   products: [],
   history: [],
-  product: {
-    _id: '',
-    name: '',
-    slug: '',
-    article: '',
-    description: '',
-    price: 0,
-    priceRetailRecommendation: 0,
-    characteristics: [],
-    countInStock: 0,
-    image: '',
-    warranty: 0,
-    seoKeywords: '',
-    category: null,
-    sort: 0,
-    createdAt: '',
-    updatedAt: '',
-  },
+  product: null,
+  productLoading: false,
 };
 
 const appStateSlice = createSlice({
@@ -77,8 +62,17 @@ const appStateSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getProductBySlugThunk.pending, (state) => {
+        state.productLoading = true;
+        state.product = null;
+      })
       .addCase(getProductBySlugThunk.fulfilled, (state, { payload }) => {
         state.product = payload;
+        state.productLoading = false;
+      })
+      .addCase(getProductBySlugThunk.rejected, (state) => {
+        state.productLoading = false;
+        state.product = null;
       })
       .addCase(fetchCurrencyRatesThunk.fulfilled, (state, { payload }) => {
         state.currencyRates = payload as PayloadCurrencyRates;
@@ -107,7 +101,9 @@ const appStateSlice = createSlice({
       })
       .addCase(updateProductThunk.fulfilled, (state, { payload }) => {
         const index = state.products.findIndex((product) => product._id === payload._id);
-        state.products[index] = payload;
+        if (index !== -1) {
+          state.products[index] = payload;
+        }
       })
       .addCase(createCategoryThunk.fulfilled, (state, { payload }) => {
         state.categories.push(payload);
@@ -117,7 +113,9 @@ const appStateSlice = createSlice({
       })
       .addCase(updateCategoryThunk.fulfilled, (state, { payload }) => {
         const index = state.categories.findIndex((category) => category._id === payload._id);
-        state.categories[index] = { ...state.categories[index], ...payload };
+        if (index !== -1) {
+          state.categories[index] = { ...state.categories[index], ...payload };
+        }
       })
       .addCase(deleteCategoryThunk.fulfilled, (state, { payload }) => {
         state.categories = state.categories.filter((category) => category._id !== payload);

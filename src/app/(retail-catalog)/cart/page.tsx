@@ -1,4 +1,4 @@
-import RetailCartTable from '~/retail/cart/RetailCartTable';
+import RetailCartTable from '@/app/ui/product/RetailCartTable';
 import CategoriesSidebar from '~/ui/CategoriesSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';

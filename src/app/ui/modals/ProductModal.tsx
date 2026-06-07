@@ -51,7 +51,7 @@ const ModalProduct = ({
             <div className="col-span-1 border-r-2 border-black pr-10">
               <div className="relative mb-10 h-[150px]">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API}${product.image}`}
+                  src={product.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '/placeholder.webp'}
                   alt={product.name}
                   layout="fill"
                   objectFit="contain"

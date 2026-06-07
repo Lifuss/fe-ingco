@@ -283,7 +283,9 @@ interface ProductCardProps {
 
 function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCartClick }: ProductCardProps) {
   const apiBaseUrl = 'https://api-ingco-service.win';
-  const imageUrl = product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`;
+  const imageUrl = product.image
+    ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
+    : '/placeholder.webp';
 
   const isSale = product.rrcSale && product.rrcSale > 0;
   const price = isSale ? product.rrcSale : product.priceRetailRecommendation;

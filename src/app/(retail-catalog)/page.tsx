@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import ProductList from '~/retail/ProductList';
+import ProductList from '@/app/ui/product/ProductList';
 import { useEffect } from 'react';
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { clearAuthState } from '@/lib/appState/user/slice';

@@ -1,4 +1,4 @@
-import ProductList from '~/retail/ProductList';
+import ProductList from '@/app/ui/product/ProductList';
 import CategoriesSidebar from '~/ui/CategoriesSidebar';
 import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';

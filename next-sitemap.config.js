@@ -12,6 +12,11 @@ module.exports = {
     '/private*',
     '/service*',
     '/shop*',
+    '/auth*',
+    '/cart',
+    '/favorites',
+    '/history',
+    '/retail*',
   ],
   robotsTxtOptions: {
     policies: [

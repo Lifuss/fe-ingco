@@ -79,9 +79,11 @@ export function generateProductMetadata({
   isB2B = false,
 }: ProductMetadataOptions): Metadata {
   const productPrice = price || product.rrcSale || product.priceRetailRecommendation;
-  const imageUrl = product.image.startsWith('http')
-    ? product.image
-    : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+  const imageUrl = product.image
+    ? (product.image.startsWith('http')
+      ? product.image
+      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`)
+    : `${SITE_URL}/placeholder.webp`;
   const pageUrl = `${SITE_URL}/${slug}`;
   const title = `${product.name} - ${product.article} | INGCO`;
   const description = `${product.name} - ${product.article}. ${product.description.substring(0, 150)}... ${isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою'}.`;

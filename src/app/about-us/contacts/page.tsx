@@ -38,7 +38,7 @@ const Page = () => {
         <li className="order-last col-span-2 mt-2 justify-self-center lg:order-none lg:col-span-1">
           <div className="flex justify-center gap-2">
             {socialArray.map((social) => (
-              <Link href={social.url} key={social.name} target="_blank noopener noreferrer">
+              <Link href={social.url} key={social.name} target="_blank" rel="noopener noreferrer">
                 <Icon
                   icon={social.name}
                   className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
@@ -117,7 +117,7 @@ const Page = () => {
         <li className="order-last col-span-2 mt-2 justify-self-center lg:order-none lg:col-span-1">
           <div className="flex justify-center gap-2">
             {socialArray.map((social) => (
-              <Link href={social.url} key={social.name} target="_blank noopener noreferrer">
+              <Link href={social.url} key={social.name} target="_blank" rel="noopener noreferrer">
                 <Icon
                   icon={social.name}
                   className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"

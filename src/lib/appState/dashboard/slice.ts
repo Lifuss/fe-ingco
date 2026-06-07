@@ -77,12 +77,16 @@ const Slice = createSlice({
       })
       .addCase(updateOrderThunk.fulfilled, (state, { payload }) => {
         const index = state.orders.findIndex((order) => order.orderCode === payload.orderCode);
-        state.orders[index] = payload;
+        if (index !== -1) {
+          state.orders[index] = payload;
+        }
         toast.success('Замовлення успішно змінено');
       })
       .addCase(updateUserThunk.fulfilled, (state, { payload }) => {
         const index = state.users.findIndex((user) => user._id === payload._id);
-        state.users[index] = payload;
+        if (index !== -1) {
+          state.users[index] = payload;
+        }
         toast.success('Користувач успішно змінений');
       })
       .addCase(deleteUserThunk.fulfilled, (state, { payload }) => {
@@ -96,7 +100,7 @@ const Slice = createSlice({
         state.usersStats = payload;
       })
       .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
-        state.supportTickets.filter((ticket) => ticket.ticketNumber !== payload);
+        state.supportTickets = state.supportTickets.filter((ticket) => ticket.ticketNumber !== payload);
       });
     builder
       .addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {
