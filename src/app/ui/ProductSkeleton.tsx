@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ProductSkeleton() {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 animate-pulse font-sans bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+    <div className="mx-auto w-full max-w-[1440px] px-4 py-8 animate-pulse font-sans bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
       {/* Breadcrumb Skeleton */}
       <div className="h-4 w-48 bg-neutral-200 rounded mb-6" />
 

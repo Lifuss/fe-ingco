@@ -39,7 +39,7 @@ const Footer = () => {
     <footer className="w-full bg-[#FFFDFB] border-t border-[#E5E3DD] py-12 px-6 md:px-[60px] flex flex-col gap-10 select-none">
       
       {/* Footer Top Grid */}
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+      <div className="w-full max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         
         {/* Column 1: Logo & Badge */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
@@ -147,7 +147,7 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom copyright area */}
-      <div className="w-full max-w-7xl mx-auto border-t border-[#E5E3DD]/45 pt-6 text-center">
+      <div className="w-full max-w-[1440px] mx-auto border-t border-[#E5E3DD]/45 pt-6 text-center">
         <p className="font-sans text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
           © 2026 INGCO. Всі права захищені.
         </p>

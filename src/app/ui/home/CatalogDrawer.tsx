@@ -397,7 +397,7 @@ export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
           className="absolute left-0 right-0 top-[100px] z-50 w-full border-b border-[#E5E3DD] bg-[#FFFDFB] shadow-xl animate-slide-down flex flex-col items-center select-none"
           onMouseLeave={onClose}
         >
-          <div className="w-full max-w-7xl px-6 py-8 grid grid-cols-12 gap-8 items-stretch min-h-[480px]">
+          <div className="w-full max-w-[1440px] px-6 py-8 grid grid-cols-12 gap-8 items-stretch min-h-[480px]">
             
             {/* 1. Left Sidebar: Categories Navigation */}
             <div className="col-span-3 border-r border-[#E5E3DD]/70 pr-4 flex flex-col justify-between">
