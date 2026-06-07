@@ -22,15 +22,13 @@ export type TableProps<T extends object> = {
 export default function Table<T extends object>({
   columns,
   data,
-  headerColor = 'bg-gray-100',
-  borderColor = 'border-gray-300',
+  headerColor,
+  borderColor = 'border-neutral-250',
   rowClickable,
   rowFunction,
 }: TableProps<T>) {
   'use no memo';
 
-  // The 'use no memo' directive already opts the component out of React Compiler memoization (which is correct for TanStack Table)
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable<T>({
     data,
     columns,
@@ -45,47 +43,86 @@ export default function Table<T extends object>({
     }
   }, [data]);
 
+  // Dynamic cell and header text alignment helper
+  const getAlignClass = (columnId: string) => {
+    const isCentered = [
+      'photoCol',
+      'favoriteCol',
+      'quantityCol',
+      'cartCol',
+      'editCol',
+      'actionCol',
+      'priceCol',
+      'priceUahCol',
+      'rrcCol',
+      'availabilityCol',
+      'sortCol',
+      'deleteCol',
+    ].includes(columnId);
+    return isCentered ? 'text-center' : 'text-left';
+  };
+
   return (
-    <table className="w-full text-sm lg:text-base" ref={tableRef}>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="sticky -top-1">
-            {headerGroup.headers.map((header) => (
-              <th
-                key={header.id}
-                colSpan={header.colSpan}
-                className={`border-px px-1 py-1 font-medium lg:px-3 lg:py-2 ${headerColor} ${borderColor}`}
-              >
-                {flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            onClick={rowClickable ? () => rowFunction(row.original) : undefined}
-            title={
-              (row.original as { availableCol?: boolean }).availableCol
-                ? 'Немає на складі в Україні'
-                : undefined
-            }
-            className={clsx(
-              rowClickable && 'cursor-pointer',
-              (row.original as { availableCol?: boolean }).availableCol &&
-                'pointer-events-none cursor-context-menu opacity-40',
-            )}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className={`border-px ${borderColor} px-[2px] text-center lg:px-1`}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white shadow-sm">
+      <table className="w-full border-collapse text-sm text-neutral-800 font-sans" ref={tableRef}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className="border-b border-neutral-200">
+              {headerGroup.headers.map((header) => {
+                const alignClass = getAlignClass(header.column.id);
+                // Ensure dynamic header classes have high-quality styling while preserving passed headerColor overrides
+                return (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={clsx(
+                      "px-4 py-3 font-display font-bold text-[11px] uppercase tracking-wider text-neutral-500 select-none sticky top-0 z-10 border-b border-neutral-200",
+                      alignClass,
+                      headerColor || "bg-neutral-50/90"
+                    )}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody className="divide-y divide-neutral-200/50">
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              onClick={rowClickable ? () => rowFunction(row.original) : undefined}
+              title={
+                (row.original as { availableCol?: boolean }).availableCol
+                  ? 'Немає на складі в Україні'
+                  : undefined
+              }
+              className={clsx(
+                rowClickable && 'cursor-pointer',
+                (row.original as { availableCol?: boolean }).availableCol
+                  ? 'pointer-events-none cursor-context-menu opacity-40 bg-neutral-50/25'
+                  : 'hover:bg-neutral-50/50 transition-colors bg-white'
+              )}
+            >
+              {row.getVisibleCells().map((cell) => {
+                const alignClass = getAlignClass(cell.column.id);
+                return (
+                  <td
+                    key={cell.id}
+                    className={clsx(
+                      "px-4 py-3 font-medium text-neutral-700 align-middle",
+                      alignClass
+                    )}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

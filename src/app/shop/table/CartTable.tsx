@@ -155,23 +155,22 @@ const CartTable = () => {
         accessorKey: 'quantityCol',
         cell: ({ row }) => {
           return (
-            <div>
+            <div className="flex items-center justify-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 shadow-inner h-8 w-[100px] mx-auto select-none font-sans text-xs">
               <button
-                className="mr-2"
                 onClick={() => handleQuantityChange(row.original._id, 'decrement')}
+                className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                type="button"
                 aria-label={`Зменшити кількість для ${row.original.nameCol}`}
               >
                 -
               </button>
-              <input
-                className="w-5 border-none p-0 text-center outline-none"
-                type="number"
-                value={row.original.quantityCol}
-                readOnly
-              />
+              <span className="w-8 text-center font-bold text-neutral-900">
+                {row.original.quantityCol}
+              </span>
               <button
-                className="ml-2"
                 onClick={() => handleQuantityChange(row.original._id, 'increment')}
+                className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                type="button"
                 aria-label={`Збільшити кількість для ${row.original.nameCol}`}
               >
                 +
@@ -188,29 +187,26 @@ const CartTable = () => {
           </div>
         ),
         accessorKey: 'totalCol',
-        cell: ({ row }) => {
-          return (
-            <div
-              className="relative"
-            >
-              {row.original.totalCol}
-              <button
-                className="absolute top-0 -right-7 fill-gray-400 hover:fill-red-500"
-                onClick={() => {
-                  dispatch(
-                    deleteProductFromCartThunk({
-                      productId: row.original._id,
-                      quantity: row.original.quantityCol,
-                    }),
-                  );
-                }}
-                aria-label={`Видалити ${row.original.nameCol} з кошика`}
-              >
-                <Icon icon="delete" className="h-5 w-5 fill-inherit" />
-              </button>
-            </div>
-          );
-        },
+      },
+      {
+        header: '',
+        id: 'deleteCol',
+        cell: ({ row }) => (
+          <button
+            className="flex items-center justify-center mx-auto text-neutral-400 hover:text-rose-500 transition-transform duration-200 hover:scale-110 cursor-pointer"
+            onClick={() => {
+              dispatch(
+                deleteProductFromCartThunk({
+                  productId: row.original._id,
+                  quantity: row.original.quantityCol,
+                }),
+              );
+            }}
+            aria-label={`Видалити ${row.original.nameCol} з кошика`}
+          >
+            <Icon icon="delete" className="h-5 w-5 fill-current" />
+          </button>
+        ),
       },
     ],
     [dispatch, handleQuantityChange, openProductModal],

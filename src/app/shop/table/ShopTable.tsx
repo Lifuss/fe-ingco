@@ -231,14 +231,17 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <button
             onClick={() => handleFavoriteClick(row.original._id)}
             data-favorite={row.original._id}
-            className={clsx(
-              'px-2 py-1 text-white',
-              favoritesList.includes(row.original._id)
-                ? 'fill-orange-500 stroke-black'
-                : 'fill-white stroke-black',
-            )}
+            className="px-2 py-1 transition-transform duration-200 hover:scale-110 cursor-pointer flex justify-center items-center mx-auto"
           >
-            <Heart className="fill-inherit stroke-inherit stroke-1" size={30} />
+            <Heart
+              className={clsx(
+                "transition-colors duration-200",
+                favoritesList.includes(row.original._id)
+                  ? "fill-primary-500 stroke-primary-500"
+                  : "fill-none stroke-neutral-400 hover:stroke-neutral-600"
+              )}
+              size={20}
+            />
           </button>
         ),
       },
@@ -261,7 +264,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <input
             name={row.original._id}
             type="number"
-            className="h-8 w-[70px] rounded-md p-1 text-center"
+            className="h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center font-sans text-xs font-semibold focus:outline-none focus:border-primary-500 focus:bg-white transition-colors"
             onBlur={(e) => {
               handleQuantityChange(row.original._id, parseInt(e.target.value));
             }}
