@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
+import { SITE_URL } from '@/lib/metadata';
 
 interface BreadcrumbItem {
   label: string;
@@ -17,6 +18,7 @@ interface BreadcrumbsProps {
 
 const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const buildHref = (item: BreadcrumbItem) => {
     if (!item.href) return undefined;
@@ -52,14 +54,22 @@ const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
         '@type': 'ListItem',
         position: 1,
         name: 'Головна',
-        item: 'https://ingco-service.win',
+        item: SITE_URL,
       },
-      ...itemsWithHref.map((item, index) => ({
-        '@type': 'ListItem',
-        position: index + 2,
-        name: item.label,
-        item: item.href ? `https://ingco-service.win${item.href}` : undefined,
-      })),
+      ...itemsWithHref.map((item, index) => {
+        const itemUrl = item.href
+          ? `${SITE_URL}${item.href}`
+          : index === itemsWithHref.length - 1
+            ? `${SITE_URL}${pathname}`
+            : undefined;
+
+        return {
+          '@type': 'ListItem',
+          position: index + 2,
+          name: item.label,
+          item: itemUrl,
+        };
+      }),
     ],
   };
 

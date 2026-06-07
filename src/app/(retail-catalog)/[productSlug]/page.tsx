@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getProductBySlugThunk } from '@/lib/appState/main/operations';
+import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import {
   addProductToRetailCartThunk,
   addFavoriteProductThunk,
@@ -40,6 +40,7 @@ import Header from '~/ui/home/Header';
 import Footer from '~/ui/Footer';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
 import ProductSkeleton from '~/ui/ProductSkeleton';
+import ProductCard from '@/app/ui/product/ProductCard';
 
 type PageProps = {
   params: Promise<{
@@ -54,6 +55,7 @@ export default function Page({ params }: PageProps) {
 
   // Redux state
   const product = useAppSelector((state) => state.persistedMainReducer.product);
+  const products = useAppSelector((state) => state.persistedMainReducer.products || []);
   const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
@@ -73,6 +75,22 @@ export default function Page({ params }: PageProps) {
   useEffect(() => {
     dispatch(getProductBySlugThunk(productSlug));
   }, [dispatch, productSlug]);
+
+  // Fetch related products for cross-sell recommendations
+  useEffect(() => {
+    if (product?.category?._id) {
+      dispatch(
+        fetchMainTableDataThunk({
+          page: 1,
+          limit: 5,
+          isRetail: true,
+          category: product.category._id,
+          query: '',
+          sortValue: 'default',
+        })
+      );
+    }
+  }, [dispatch, product?.category?._id]);
 
   // Generate barcode if product has one
   useEffect(() => {
@@ -291,6 +309,11 @@ export default function Page({ params }: PageProps) {
       });
     }
   };
+
+  // Filter out the current product from recommendations
+  const relatedProducts = products
+    .filter((p) => p._id !== product._id)
+    .slice(0, 4);
 
   return (
     <>
@@ -708,36 +731,50 @@ export default function Page({ params }: PageProps) {
                 Купують разом
               </h2>
 
-              {/* 4 skeletons horizontal block */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[1, 2, 3, 4].map((idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between"
-                  >
-                    <div className="flex flex-col gap-3">
-                      {/* Image placeholder */}
-                      <div className="w-full aspect-square bg-neutral-100 rounded-xl animate-pulse flex items-center justify-center">
-                        <div className="w-8 h-8 rounded-full border-2 border-neutral-200/60 border-t-neutral-400 animate-spin"></div>
+              {relatedProducts.length === 0 ? (
+                /* 4 skeletons horizontal block */
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map((idx) => (
+                    <div 
+                      key={idx} 
+                      className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between"
+                    >
+                      <div className="flex flex-col gap-3">
+                        {/* Image placeholder */}
+                        <div className="w-full aspect-square bg-neutral-100 rounded-xl animate-pulse flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full border-2 border-neutral-200/60 border-t-neutral-400 animate-spin"></div>
+                        </div>
+                        
+                        {/* Title block */}
+                        <div className="flex flex-col gap-1.5 py-1">
+                          <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-11/12"></div>
+                          <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-3/4"></div>
+                        </div>
                       </div>
-                      
-                      {/* Title block */}
-                      <div className="flex flex-col gap-1.5 py-1">
-                        <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-11/12"></div>
-                        <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-3/4"></div>
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-neutral-100">
-                      {/* Price block */}
-                      <div className="h-4 bg-neutral-200 rounded-md animate-pulse w-1/2"></div>
-                      
-                      {/* Button CTA */}
-                      <div className="h-9 bg-neutral-200/80 rounded-lg animate-pulse w-full"></div>
+                      <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-neutral-100">
+                        {/* Price block */}
+                        <div className="h-4 bg-neutral-200 rounded-md animate-pulse w-1/2"></div>
+                        
+                        {/* Button CTA */}
+                        <div className="h-9 bg-neutral-200/80 rounded-lg animate-pulse w-full"></div>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 list-none p-0 m-0">
+                  {relatedProducts.map((item) => (
+                    <ProductCard
+                      key={item._id}
+                      product={item}
+                      listType="retail"
+                      favoritesIdList={favorites}
+                      handleDirectToProduct={(_id, slug) => router.push(`/${slug}`)}
+                    />
+                  ))}
+                </ul>
+              )}
             </section>
 
           </div>

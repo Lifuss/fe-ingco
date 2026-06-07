@@ -39,8 +39,27 @@ export default function FaqSection() {
     setOpenId(openId === id ? null : id);
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqData.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+
   return (
     <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema, null, 2),
+        }}
+      />
       {/* Header Block */}
       <div className="flex flex-col gap-1 border-b border-[#E5E3DD] pb-4">
         <h2 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">

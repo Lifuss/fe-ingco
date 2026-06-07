@@ -86,6 +86,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
+    languages: {
+      'uk-UA': SITE_URL,
+    },
   },
   verification: {
     google: 'yd6FgNFGbN9s2OJB1udZrzSxHIqSYY8f5JZ_r0-qLLI',

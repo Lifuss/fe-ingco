@@ -114,35 +114,6 @@ const Page = ({ params }: PageProps) => {
     };
   };
 
-  const generateBreadcrumbSchema = () => {
-    if (!product) return null;
-
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Головна',
-          item: 'https://ingco-service.win',
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Каталог партнера',
-          item: 'https://ingco-service.win/shop',
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: product.name,
-          item: `https://ingco-service.win/shop/${productSlug}`,
-        },
-      ],
-    };
-  };
-
   if (productLoading) {
     return <ProductSkeleton />;
   }
@@ -161,7 +132,6 @@ const Page = ({ params }: PageProps) => {
   }
 
   const productSchema = generateProductSchema();
-  const breadcrumbSchema = generateBreadcrumbSchema();
 
   const breadcrumbsItems = [
     { label: 'Каталог партнера', href: '/shop', preserveQuery: true },
@@ -175,14 +145,6 @@ const Page = ({ params }: PageProps) => {
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(productSchema, null, 2),
-          }}
-        />
-      )}
-      {breadcrumbSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(breadcrumbSchema, null, 2),
           }}
         />
       )}

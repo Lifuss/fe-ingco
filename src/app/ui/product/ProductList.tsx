@@ -17,6 +17,7 @@ import TextPlaceholder from '../TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import ProductBlockList from '../product/ProductBlockList';
 import FiltersBlock, { sortValueType } from '../FiltersBlock';
+import { SITE_URL } from '@/lib/metadata';
 
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -160,8 +161,27 @@ const ProductList = ({ isFavoritePage = false }) => {
 
   const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
 
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: productsData.map((product, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}/${product.slug}`,
+      name: product.name,
+    })),
+  };
+
   return (
     <>
+      {productsData.length > 0 && !isFavoritePage && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(itemListSchema, null, 2),
+          }}
+        />
+      )}
       {productsData.length === 0 ? (
         <div className="pt-10">
           <TextPlaceholder

@@ -61,6 +61,9 @@ export function generateBaseMetadata({
     },
     alternates: {
       canonical: pageUrl,
+      languages: {
+        'uk-UA': pageUrl,
+      },
     },
   };
 }
@@ -116,6 +119,9 @@ export function generateProductMetadata({
     },
     alternates: {
       canonical: pageUrl,
+      languages: {
+        'uk-UA': pageUrl,
+      },
     },
     other: {
       'product:price:amount': productPrice?.toString() || '',
