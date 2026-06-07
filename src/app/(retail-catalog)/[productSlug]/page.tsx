@@ -123,7 +123,7 @@ export default function Page({ params }: PageProps) {
     };
 
     const observer = new IntersectionObserver(observerCallback, {
-      rootMargin: '-100px 0px -50% 0px',
+      rootMargin: '-60px 0px -50% 0px',
       threshold: 0.1,
     });
 
@@ -297,7 +297,7 @@ export default function Page({ params }: PageProps) {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      const offset = 100; // Account for sticky menu
+      const offset = 60; // Account for sticky menu
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = el.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
@@ -320,11 +320,13 @@ export default function Page({ params }: PageProps) {
       <Header />
       <main className="flex flex-col gap-4 px-4 md:px-[60px] pt-8 bg-neutral-50 min-h-[600px]">
         {/* Dynamic breadcrumbs */}
-        <Breadcrumbs items={breadcrumbsItems} />
+        <div className="max-w-[1440px] w-full mx-auto">
+          <Breadcrumbs items={breadcrumbsItems} />
+        </div>
 
         {/* ScrollSpy Tabs navigation */}
-        <div className="sticky top-[64px] z-40 bg-white border-b border-neutral-200 -mx-4 md:-mx-[60px] px-4 md:px-[60px] shadow-sm">
-          <div className="flex gap-6 md:gap-10 overflow-x-auto py-3.5 scrollbar-none max-w-7xl mx-auto">
+        <div className="sticky top-0 z-40 bg-white border-b border-neutral-200 -mx-4 md:-mx-[60px] px-4 md:px-[60px] shadow-sm">
+          <div className="flex gap-6 md:gap-10 overflow-x-auto py-3.5 scrollbar-none max-w-[1440px] mx-auto">
             {[
               { id: 'about-product', label: 'Про товар' },
               { id: 'specifications', label: 'Характеристики' },
@@ -347,7 +349,7 @@ export default function Page({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 xl:flex-row 2xl:gap-14 max-w-7xl w-full mx-auto py-6">
+        <div className="flex flex-col gap-4 xl:flex-row 2xl:gap-14 max-w-[1440px] w-full mx-auto py-6">
           <CatalogSidebar />
           
           <div className="w-full flex flex-col gap-10">
