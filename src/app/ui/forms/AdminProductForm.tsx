@@ -1,13 +1,16 @@
+'use client';
+
 import Image from 'next/image';
-import ToBackButton from '../ToBackButton';
 import { ChangeEvent, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/lib/types';
 import Icon from '../assets/Icon';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
+import clsx from 'clsx';
 
 const questionSvg = (
   <span>
-    <CircleHelp size={20} className="text-gray-400" />
+    <CircleHelp size={16} className="text-neutral-400 hover:text-neutral-500 transition-colors" />
   </span>
 );
 
@@ -34,109 +37,258 @@ const AdminProductForm = ({
   setCharacteristic,
   categories,
   product,
+  isEdit = false,
 }: AdminProductFormProps) => {
+  const router = useRouter();
+
   return (
-    <>
-      <ToBackButton />
-      <h1 className="mb-6 text-center text-4xl 2xl:mb-20">Створення продукту</h1>
+    <div className="w-full max-w-6xl mx-auto px-4 py-6 font-sans">
+      {/* Premium Dashboard Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="flex items-center justify-center p-2 rounded-xl border border-neutral-200 bg-white text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 shadow-sm transition-all cursor-pointer select-none"
+          title="Назад"
+        >
+          <ArrowLeft size={18} />
+        </button>
+        <div>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-400">Панель керування</span>
+          <h1 className="text-2xl font-display font-bold text-neutral-900 leading-tight">
+            {isEdit ? 'Редагування продукту' : 'Створення продукту'}
+          </h1>
+        </div>
+      </div>
 
-      <form className="flex flex-col items-center text-lg" onSubmit={handleSubmit}>
-        <label>
-          <span className="text-red-600">*</span>Найменування
-          <input
-            name="name"
-            defaultValue={product?.name}
-            required
-            placeholder="Найменування"
-            className="mb-4 block w-[500px] rounded-lg p-2 text-lg focus:bg-blue-100 focus:ring-2 focus:ring-blue-600 focus:outline-none 2xl:mb-10"
-          />
-        </label>
-        <div className="flex gap-20">
-          <div className="flex flex-col gap-2">
-            <label className="w-[250px]">
-              <div className="flex justify-between">
-                <div>
-                  <span className="text-red-600">*</span>
-                  <h3 className="inline">Фото</h3>
-                </div>
-                <span
-                  className="cursor-help"
-                  title="рекомендований формат webp + оптимізація на сайтах по типу squoosh.app (якість зжимання 80-90%)"
-                >
-                  {questionSvg}
-                </span>
-              </div>
+      <form className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" onSubmit={handleSubmit}>
+        
+        {/* Left column: Product Specs, Data, Characteristics */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          
+          {/* Card 1: General Info */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-3 flex items-center gap-2">
+              Основна інформація
+            </h2>
+
+            {/* Name input */}
+            <div className="flex flex-col">
+              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                <span>Найменування</span>
+                <span className="text-rose-500">*</span>
+              </label>
               <input
-                type="file"
-                name="image"
-                accept="image/*"
-                className="block w-full rounded-md p-2"
-                onChange={handleImageChange}
+                name="name"
+                defaultValue={product?.name}
+                required
+                placeholder="Введіть повну назву інструменту..."
+                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
               />
-              <Image
-                src={imageUrl || '/placeholder.webp'}
-                className="block rounded-md"
-                alt={product?.name || 'Фото товару'}
-                width={250}
-                height={250}
-              />
-            </label>
+            </div>
 
-            <label>
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="inline">Опис товару</h3>
-                </div>
+            {/* Grid rows for Category & Specs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                  <span>Артикул</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="article"
+                  defaultValue={product?.article}
+                  placeholder="Наприклад: HPET1103"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+                  required
+                />
               </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Категорія
+                </label>
+                <select
+                  name="category"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
+                  defaultValue={product?.category?._id}
+                >
+                  {categories?.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Штрихкод
+                </label>
+                <input
+                  type="text"
+                  name="barcode"
+                  defaultValue={product?.barcode}
+                  placeholder="Штрихкод EAN-13"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Сортування (Пріоритет)
+                </label>
+                <input
+                  type="number"
+                  step={1}
+                  name="sort"
+                  defaultValue={product?.sort || 0}
+                  placeholder="0"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Description textarea */}
+            <div className="flex flex-col">
+              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                Опис товару
+              </label>
               <textarea
                 name="description"
-                placeholder="Опис товару"
+                placeholder="Введіть детальний опис інструменту, його функцій та переваг..."
                 defaultValue={product?.description}
                 required
-                className="block min-h-[150px] w-full rounded-lg p-2 focus:bg-blue-100"
+                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all min-h-[120px] font-sans leading-relaxed"
               />
-            </label>
-            <label>
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="inline">Ключові слова через кому+пробіл (SEO)</h3>
-                </div>
-                <span
-                  className="cursor-help"
-                  title="Приклад ключових слів для товару: акумуляторний шуруповерт, шуруповерт P20S, INGCO шуруповерт, шуруповерт з акумулятором 20В, інструмент для закручування шурупів, бездротовий шуруповерт, шуруповерт з зарядним пристроєм, шуруповерт з 2 акумуляторами, шуруповерт для дому, шуруповерт з аксесуарами"
-                >
-                  {questionSvg}
-                </span>
-              </div>
-              <input
-                type="text"
-                name="seoKeywords"
-                defaultValue={product?.seoKeywords}
-                placeholder="Ключові слова"
-                className="block w-full rounded-lg focus:bg-blue-100"
-              />
-            </label>
-            <label>
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="inline">Характеристики</h3>
-                </div>
-                <span
-                  className="cursor-help"
-                  title="Якщо потрібна суто лиш назва, то в значені хар-ки прописуємо мінус ( - )
-                  В картці роздрібного магазину відображається тільки перші 3
-                  характеристики і в них обмеження на 25 символів. Варіант на якому важлива інформація обрізається: 'Номінальна напруга (В): 220-240' &gt; 'Номінальна напруга (В): 2...' Більш описовий варіант: 'Напруга (В): 220-240 (Номінальна)' &gt; 'Напруга (В): 220-240 (Н..' *Це не стосується модальних вікон(при кліку на картку) там повний опис без обрізань"
-                >
-                  {questionSvg}
-                </span>
+            </div>
+
+          </div>
+
+          {/* Card 2: Pricing & Stock */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-3 flex items-center gap-2">
+              Ціноутворення та наявність
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Прихідна ціна ($)
+                </label>
+                <input
+                  type="number"
+                  name="enterPrice"
+                  step="0.001"
+                  placeholder="0.00"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  defaultValue={product?.enterPrice || 0}
+                />
               </div>
 
-              <div className="mb-2 flex">
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                  <span>Ціна ($)</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  step="0.001"
+                  defaultValue={product?.price}
+                  placeholder="0.00"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                  <span>РРЦ (₴)</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  defaultValue={product?.priceRetailRecommendation}
+                  name="priceRetailRecommendation"
+                  placeholder="0"
+                  step="0.1"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  РРЦ зі знижкою (₴)
+                </label>
+                <input
+                  type="number"
+                  name="rrcSale"
+                  defaultValue={product?.rrcSale || 0}
+                  step="0.001"
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                  <span>К-сть в наявності</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="countInStock"
+                  defaultValue={product?.countInStock}
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  required
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                  Гарантія (міс)
+                </label>
+                <input
+                  type="number"
+                  step={1}
+                  name="warranty"
+                  defaultValue={product?.warranty || 24}
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  required
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Card 3: Characteristics */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+                Характеристики інструменту
+              </h2>
+              <span
+                className="cursor-help"
+                title="Якщо потрібна суто лиш назва, то в значені хар-ки прописуємо мінус ( - )
+В картці роздрібного магазину відображається тільки перші 3 характеристики і в них обмеження на 25 символів."
+              >
+                {questionSvg}
+              </span>
+            </div>
+
+            {/* Inputs inline */}
+            <div className="flex flex-col md:flex-row gap-3 items-end">
+              <div className="flex-grow flex flex-col">
+                <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Назва характеристики</label>
                 <input
                   type="text"
                   name="characteristicName"
-                  placeholder="назва хар-ки"
-                  className="block w-[140px] rounded-s-md focus:bg-blue-100"
+                  placeholder="Напруга, Вага, Потужність..."
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm focus:outline-none focus:border-primary-500 focus:bg-white transition-all"
                   value={characteristic.name}
                   onChange={(e) =>
                     setCharacteristic((prev) => ({
@@ -145,11 +297,14 @@ const AdminProductForm = ({
                     }))
                   }
                 />
+              </div>
+              <div className="flex-grow flex flex-col">
+                <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Значення характеристики</label>
                 <input
                   type="text"
                   name="characteristicDesc"
-                  placeholder="значення хар-ки"
-                  className="block rounded-e-md focus:bg-blue-100"
+                  placeholder="20V, 1.5кг, 1400Вт..."
+                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm focus:outline-none focus:border-primary-500 focus:bg-white transition-all"
                   value={characteristic.value}
                   onChange={(e) =>
                     setCharacteristic((prev) => ({
@@ -162,170 +317,146 @@ const AdminProductForm = ({
               <button
                 type="button"
                 onClick={() => {
-                  setCharacteristics((prev) => [...prev, characteristic]);
-                  setCharacteristic({ name: '', value: '' });
+                  if (characteristic.name.trim()) {
+                    setCharacteristics((prev) => [...prev, characteristic]);
+                    setCharacteristic({ name: '', value: '' });
+                  }
                 }}
-                className="rounded-lg bg-green-400 p-2 transition-colors hover:bg-green-500"
+                className="bg-primary-500 hover:bg-primary-600 text-white rounded-lg px-4 py-2 text-sm font-semibold transition-all shadow-md shadow-orange-500/10 cursor-pointer flex items-center gap-1 shrink-0 h-9"
               >
-                Додати
-              </button>
-            </label>
-            <ul className="list-disc pl-5">
-              {characteristics.map((char, i) => (
-                <li key={i} className="relative">
-                  {char.name}: {char.value}
-                  <div className="absolute top-0 right-0">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCharacteristics((prev) => prev.filter((_, index) => index !== i));
-                      }}
-                    >
-                      <Icon
-                        icon="delete"
-                        className="fill-inactive h-5 w-5 cursor-pointer transition-colors hover:fill-red-700"
-                      />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label>
-              <span className="text-red-600">*</span>Артикль
-              <input
-                type="text"
-                name="article"
-                defaultValue={product?.article}
-                placeholder="Артикль"
-                className="block rounded-lg focus:bg-blue-100"
-                required
-              />
-            </label>
-
-            <label>
-              Категорія
-              <select
-                name="category"
-                className="block rounded-lg"
-                defaultValue={product?.category?._id}
-              >
-                {categories?.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label htmlFor="enterPrice">
-              Прихідна ціна $
-              <input
-                type="number"
-                name="enterPrice"
-                step="0.001"
-                placeholder="Прихідна ціна"
-                className="block rounded-lg focus:bg-blue-100"
-                defaultValue={product?.enterPrice}
-              />
-            </label>
-            <label htmlFor="price">
-              <span className="text-red-600">*</span>Ціна $
-              <input
-                type="number"
-                name="price"
-                step="0.001"
-                defaultValue={product?.price}
-                placeholder="Ціна $"
-                className="block rounded-lg focus:bg-blue-100"
-                required
-              />
-            </label>
-
-            <label>
-              <span className="text-red-600">*</span>РРЦ ₴
-              <input
-                type="number"
-                defaultValue={product?.priceRetailRecommendation}
-                name="priceRetailRecommendation"
-                placeholder="РРЦ грн"
-                step="0.1"
-                className="block rounded-lg focus:bg-blue-100"
-                required
-              />
-            </label>
-            <label>
-              РРЦ зі знижкою ₴
-              <input
-                type="number"
-                name="rrcSale"
-                defaultValue={product?.rrcSale}
-                step="0.001"
-                className="block rounded-lg focus:bg-blue-100"
-                placeholder="Ціна зі знижкою"
-              />
-            </label>
-
-            <label>
-              <span className="text-red-600">*</span>К-сть в наявності
-              <input
-                type="number"
-                name="countInStock"
-                defaultValue={product?.countInStock}
-                className="block rounded-lg focus:bg-blue-100"
-                required
-                placeholder="Кількість"
-              />
-            </label>
-            <label>
-              Гарантія(міс)
-              <input
-                type="number"
-                step={1}
-                name="warranty"
-                defaultValue={product?.warranty}
-                className="block rounded-lg focus:bg-blue-100"
-                required
-              />
-            </label>
-            <label>
-              Сортування
-              <input
-                type="number"
-                step={1}
-                name="sort"
-                defaultValue={product?.sort}
-                className="block rounded-lg focus:bg-blue-100"
-                required
-              />
-            </label>
-            <label>
-              Штрихкод
-              <input
-                type="text"
-                name="barcode"
-                defaultValue={product?.barcode}
-                className="block rounded-lg focus:bg-blue-100"
-              />
-            </label>
-            <div className="mt-10 flex flex-col gap-2">
-              <button
-                type="submit"
-                className="rounded-lg bg-green-400 p-2 transition-colors hover:bg-green-500"
-              >
-                Підтвердити
-              </button>
-              <button
-                className="rounded-lg bg-red-200 p-2 transition-colors hover:bg-red-400"
-                type="reset"
-              >
-                Скинути
+                <Plus size={16} />
+                <span>Додати</span>
               </button>
             </div>
+
+            {/* Added list */}
+            <div className="border border-neutral-100 rounded-xl overflow-hidden bg-neutral-50/30 mt-2">
+              {characteristics.length > 0 ? (
+                <div className="flex flex-col divide-y divide-neutral-100">
+                  {characteristics.map((char, i) => (
+                    <div key={i} className="flex justify-between items-center px-4 py-2.5 text-sm hover:bg-neutral-50 transition-colors">
+                      <div className="flex gap-2">
+                        <span className="font-semibold text-neutral-500">{char.name}:</span>
+                        <span className="font-semibold text-neutral-800">{char.value}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCharacteristics((prev) => prev.filter((_, index) => index !== i));
+                        }}
+                        className="text-neutral-400 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Видалити"
+                      >
+                        <Icon icon="delete" className="h-4 w-4 fill-current" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-5 text-center text-xs text-neutral-400 font-medium">Характеристики відсутні</div>
+              )}
+            </div>
+
           </div>
+
         </div>
+
+        {/* Right column: Image upload, SEO, Actions */}
+        <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-6">
+          
+          {/* Card 4: Product Image */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+                Зображення товару
+              </h2>
+              <span
+                className="cursor-help"
+                title="Рекомендований формат: WebP (для кращого стиснення) з якістю 80-90%."
+              >
+                {questionSvg}
+              </span>
+            </div>
+
+            {/* Premium Uploader Dropzone */}
+            <div className="flex flex-col gap-4 items-center">
+              <div className="relative border-2 border-dashed border-neutral-200 rounded-xl p-4 w-full flex flex-col items-center justify-center bg-[#FAFAFF] hover:bg-neutral-50 hover:border-neutral-300 transition-colors cursor-pointer group">
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  onChange={handleImageChange}
+                />
+                <div className="flex flex-col items-center justify-center text-center gap-1.5 pointer-events-none select-none">
+                  <Icon icon="edit" className="h-6 w-6 text-neutral-400 group-hover:text-neutral-500 fill-none stroke-current" />
+                  <span className="text-xs font-semibold text-neutral-600 group-hover:text-neutral-700">Оберіть файл зображення</span>
+                  <span className="text-[10px] text-neutral-400">Формат WEBP або PNG, до 2MB</span>
+                </div>
+              </div>
+
+              {/* Preview Frame */}
+              <div className="w-[180px] h-[180px] border border-neutral-100 rounded-xl overflow-hidden p-2 bg-white flex items-center justify-center shadow-sm select-none">
+                <Image
+                  src={imageUrl || '/placeholder.webp'}
+                  className="max-h-full w-auto object-contain rounded-lg"
+                  alt={product?.name || 'Фото товару'}
+                  width={180}
+                  height={180}
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Card 5: SEO settings */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+                Пошукова оптимізація
+              </h2>
+              <span
+                className="cursor-help"
+                title="Ключові слова використовуються для внутрішнього пошуку сайту та для Google SEO."
+              >
+                {questionSvg}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">
+                Ключові слова (через кому + пробіл)
+              </label>
+              <textarea
+                name="seoKeywords"
+                defaultValue={product?.seoKeywords}
+                placeholder="шуруповерт, акумуляторний інструмент, INGCO..."
+                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all min-h-[80px]"
+              />
+            </div>
+
+          </div>
+
+          {/* Card 6: Action buttons */}
+          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-3">
+            <button
+              type="submit"
+              className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all cursor-pointer text-xs uppercase tracking-wider"
+            >
+              Підтвердити
+            </button>
+            <button
+              type="reset"
+              className="w-full border border-neutral-300 hover:border-neutral-400 text-neutral-700 font-display font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer bg-white text-xs uppercase tracking-wider"
+            >
+              Скинути
+            </button>
+          </div>
+
+        </div>
+
       </form>
-    </>
+    </div>
   );
 };
 
