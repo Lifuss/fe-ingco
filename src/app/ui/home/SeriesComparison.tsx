@@ -3,13 +3,19 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Check, Heart, ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
-import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
+import { 
+  addProductToRetailCartThunk, 
+  addProductToCartThunk,
+  addFavoriteProductThunk, 
+  deleteFavoriteProductThunk 
+} from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
@@ -28,6 +34,8 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const industrialContainerRef = React.useRef<HTMLDivElement | null>(null);
 
   const isAuth = authState.isAuthenticated || false;
+  const user = authState.user;
+  const isB2BUser = authState.isB2b || (user && ((user as any).isB2B === true || (user as any).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
 
@@ -88,16 +96,29 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
 
   const handleCartClick = (product: Product) => {
     if (isAuth) {
-      dispatch(
-        addProductToRetailCartThunk({
-          productId: product._id,
-          quantity: 1,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${product.name} додано в кошик`);
-        });
+      if (isB2BUser) {
+        dispatch(
+          addProductToCartThunk({
+            productId: product._id,
+            quantity: 1,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(`${product.name} додано в кошик`);
+          });
+      } else {
+        dispatch(
+          addProductToRetailCartThunk({
+            productId: product._id,
+            quantity: 1,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(`${product.name} додано в кошик`);
+          });
+      }
     } else {
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
       dispatch(
@@ -282,6 +303,7 @@ interface ProductCardProps {
 }
 
 function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCartClick }: ProductCardProps) {
+  const router = useRouter();
   const apiBaseUrl = 'https://api-ingco-service.win';
   const imageUrl = product.image
     ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
@@ -291,8 +313,53 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
   const price = isSale ? product.rrcSale : product.priceRetailRecommendation;
   const originalPrice = isSale ? product.priceRetailRecommendation : null;
 
+  const mouseCoords = React.useRef({ x: 0, y: 0 });
+  const touchCoords = React.useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    mouseCoords.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    const diffX = Math.abs(e.clientX - mouseCoords.current.x);
+    const diffY = Math.abs(e.clientY - mouseCoords.current.y);
+    if (diffX < 5 && diffY < 5) {
+      router.push(`/${product.slug}`);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchCoords.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    if (e.changedTouches.length > 0) {
+      const diffX = Math.abs(e.changedTouches[0].clientX - touchCoords.current.x);
+      const diffY = Math.abs(e.changedTouches[0].clientY - touchCoords.current.y);
+      if (diffX < 5 && diffY < 5) {
+        router.push(`/${product.slug}`);
+      }
+    }
+  };
+
   return (
-    <div className="group relative flex flex-col justify-between h-full bg-white border border-neutral-100 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:border-amber-500/20 overflow-hidden">
+    <div
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="group relative flex flex-col justify-between h-full bg-white border border-[#E5E3DD] rounded-xl p-4 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-amber-500/40 hover:scale-[1.01] cursor-pointer overflow-hidden"
+    >
       {/* Top action/tag ribbon */}
       <div className="flex justify-between items-center z-10">
         <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded uppercase select-none ${badgeBg}`}>

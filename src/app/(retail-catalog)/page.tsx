@@ -64,7 +64,13 @@ export default function Page() {
         const savedUserString = localStorage.getItem('persist:auth');
         if (savedUserString) {
           const savedUser = JSON.parse(savedUserString);
-          token = savedUser?.token ? JSON.parse(savedUser.token) : null;
+          if (savedUser?.token) {
+            try {
+              token = JSON.parse(savedUser.token);
+            } catch {
+              token = savedUser.token; // Fallback if token is already a plain string
+            }
+          }
         }
       } catch (e) {
         console.error('Error parsing auth from local storage:', e);

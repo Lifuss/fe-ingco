@@ -3,13 +3,19 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
-import { addProductToRetailCartThunk, addFavoriteProductThunk, deleteFavoriteProductThunk } from '@/lib/appState/user/operation';
+import { 
+  addProductToRetailCartThunk, 
+  addProductToCartThunk,
+  addFavoriteProductThunk, 
+  deleteFavoriteProductThunk 
+} from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
@@ -75,6 +81,8 @@ export default function HotOffers({ products }: HotOffersProps) {
   useSliderMouseWheel(sliderRef, sliderContainerRef, activeProducts.length);
 
   const isAuth = authState.isAuthenticated || false;
+  const user = authState.user;
+  const isB2BUser = authState.isB2b || (user && ((user as any).isB2B === true || (user as any).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
 
@@ -96,16 +104,29 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   const handleCartClick = (product: Product) => {
     if (isAuth) {
-      dispatch(
-        addProductToRetailCartThunk({
-          productId: product._id,
-          quantity: 1,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${product.name} додано в кошик`);
-        });
+      if (isB2BUser) {
+        dispatch(
+          addProductToCartThunk({
+            productId: product._id,
+            quantity: 1,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(`${product.name} додано в кошик`);
+          });
+      } else {
+        dispatch(
+          addProductToRetailCartThunk({
+            productId: product._id,
+            quantity: 1,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            toast.success(`${product.name} додано в кошик`);
+          });
+      }
     } else {
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
       dispatch(
@@ -178,106 +199,17 @@ export default function HotOffers({ products }: HotOffersProps) {
       <div ref={sliderContainerRef} className="relative px-4 cursor-grab select-none active:cursor-grabbing">
         {activeProducts.length > 0 ? (
           <Slider ref={sliderRef} {...sliderSettings}>
-            {activeProducts.map((product) => {
-              const apiBaseUrl = 'https://api-ingco-service.win';
-              const imageUrl = product.image
-                ? (product.image.startsWith('http')
-                  ? product.image
-                  : `${apiBaseUrl}${product.image}`)
-                : '/placeholder.webp';
-
-              let isSale = product.rrcSale && product.rrcSale > 0;
-              let price = isSale ? product.rrcSale : product.priceRetailRecommendation;
-              let originalPrice = isSale ? product.priceRetailRecommendation : null;
-
-              if (!isSale && activeTab === 'popular' && product.priceRetailRecommendation > 100) {
-                isSale = true;
-                originalPrice = product.priceRetailRecommendation;
-                price = Math.round(product.priceRetailRecommendation * 0.85); // 15% off
-              }
-
-              const isFav = favoritesIdList.includes(product._id);
-              const isStandart = product.article.toUpperCase().startsWith('CDLI') && !product.article.toUpperCase().startsWith('CIDLI');
-
-              return (
-                <div key={product._id} className="px-2 py-3 h-full">
-                  <div className="group relative flex flex-col justify-between h-full bg-white border border-neutral-100 rounded-xl p-4 shadow-sm hover:shadow-lg hover:border-amber-500/20 transition-all duration-300 overflow-hidden">
-                    {/* Top action/tag ribbon */}
-                    <div className="flex justify-between items-center z-10">
-                      <div className="flex gap-1.5 items-center">
-                        <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded uppercase select-none ${
-                          isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {isStandart ? 'STANDART' : 'INDUSTRIAL'}
-                        </span>
-                        {isSale && (
-                          <span className="flex items-center gap-0.5 bg-red-50 text-red-600 font-sans text-[10px] font-bold px-1.5 py-0.5 rounded select-none border border-red-200">
-                            <Percent size={10} />
-                            Акція
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleFavoriteClick(product)}
-                        className={`p-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
-                        aria-label="Додати в обране"
-                      >
-                        <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
-                      </button>
-                    </div>
-
-                    {/* Product Image */}
-                    <div className="relative w-full h-[160px] my-2 overflow-hidden rounded flex items-center justify-center">
-                      <Image
-                        src={imageUrl}
-                        alt={product.name}
-                        width={180}
-                        height={180}
-                        className="object-contain w-auto max-h-[150px] transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex flex-col gap-2">
-                      {/* Availability */}
-                      <div className="flex items-center gap-1.5 font-sans text-xs">
-                        <span className={`w-2 h-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
-                        <span className={product.countInStock > 0 ? 'text-green-600' : 'text-red-500'}>
-                          {product.countInStock > 0 ? 'В наявності' : 'Немає в наявності'}
-                        </span>
-                      </div>
-
-                      {/* Title */}
-                      <Link href={`/${product.slug}`} className="font-display font-semibold text-neutral-800 text-sm line-clamp-2 min-h-[40px] hover:text-primary-500 transition-colors">
-                        {product.name}
-                      </Link>
-
-                      {/* Pricing & Add to Cart */}
-                      <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
-                        <div className="flex flex-col">
-                          {originalPrice && (
-                            <span className="font-sans text-xs text-neutral-400 line-through">
-                              {originalPrice} ₴
-                            </span>
-                          )}
-                          <span className="font-display font-bold text-lg text-neutral-900">
-                            {price} ₴
-                          </span>
-                        </div>
-
-                        <button
-                          onClick={() => handleCartClick(product)}
-                          className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 transition-colors cursor-pointer shadow-md shadow-orange-500/10 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          aria-label="Додати в кошик"
-                        >
-                          <ShoppingCart size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {activeProducts.map((product) => (
+              <div key={product._id} className="px-2 py-3 h-full">
+                <HotOfferCard
+                  product={product}
+                  activeTab={activeTab}
+                  isFav={favoritesIdList.includes(product._id)}
+                  onFavClick={handleFavoriteClick}
+                  onCartClick={handleCartClick}
+                />
+              </div>
+            ))}
           </Slider>
         ) : (
           <div className="w-full text-center text-neutral-400 py-10">
@@ -286,5 +218,155 @@ export default function HotOffers({ products }: HotOffersProps) {
         )}
       </div>
     </section>
+  );
+}
+
+interface HotOfferCardProps {
+  product: Product;
+  activeTab: 'popular' | 'p20s' | 'sets';
+  isFav: boolean;
+  onFavClick: (product: Product) => void;
+  onCartClick: (product: Product) => void;
+}
+
+function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: HotOfferCardProps) {
+  const router = useRouter();
+  const apiBaseUrl = 'https://api-ingco-service.win';
+  const imageUrl = product.image
+    ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
+    : '/placeholder.webp';
+
+  let isSale = product.rrcSale && product.rrcSale > 0;
+  let price = isSale ? product.rrcSale : product.priceRetailRecommendation;
+  let originalPrice = isSale ? product.priceRetailRecommendation : null;
+
+  if (!isSale && activeTab === 'popular' && product.priceRetailRecommendation > 100) {
+    isSale = true;
+    originalPrice = product.priceRetailRecommendation;
+    price = Math.round(product.priceRetailRecommendation * 0.85); // 15% off
+  }
+
+  const isStandart = product.article.toUpperCase().startsWith('CDLI') && !product.article.toUpperCase().startsWith('CIDLI');
+
+  const mouseCoords = useRef({ x: 0, y: 0 });
+  const touchCoords = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    mouseCoords.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    const diffX = Math.abs(e.clientX - mouseCoords.current.x);
+    const diffY = Math.abs(e.clientY - mouseCoords.current.y);
+    if (diffX < 5 && diffY < 5) {
+      router.push(`/${product.slug}`);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchCoords.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    if (e.changedTouches.length > 0) {
+      const diffX = Math.abs(e.changedTouches[0].clientX - touchCoords.current.x);
+      const diffY = Math.abs(e.changedTouches[0].clientY - touchCoords.current.y);
+      if (diffX < 5 && diffY < 5) {
+        router.push(`/${product.slug}`);
+      }
+    }
+  };
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="group relative flex flex-col justify-between h-full bg-white border border-[#E5E3DD] rounded-xl p-4 shadow-sm hover:shadow-lg hover:border-amber-500/40 hover:scale-[1.01] transition-all duration-300 cursor-pointer overflow-hidden"
+    >
+      {/* Top action/tag ribbon */}
+      <div className="flex justify-between items-center z-10">
+        <div className="flex gap-1.5 items-center">
+          <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded uppercase select-none ${
+            isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
+          }`}>
+            {isStandart ? 'STANDART' : 'INDUSTRIAL'}
+          </span>
+          {isSale && (
+            <span className="flex items-center gap-0.5 bg-red-50 text-red-600 font-sans text-[10px] font-bold px-1.5 py-0.5 rounded select-none border border-red-200">
+              <Percent size={10} />
+              Акція
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => onFavClick(product)}
+          className={`p-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
+          aria-label="Додати в обране"
+        >
+          <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
+        </button>
+      </div>
+
+      {/* Product Image */}
+      <div className="relative w-full h-[160px] my-2 overflow-hidden rounded flex items-center justify-center">
+        <Image
+          src={imageUrl}
+          alt={product.name}
+          width={180}
+          height={180}
+          className="object-contain w-auto max-h-[150px] transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+
+      {/* Product Info */}
+      <div className="flex flex-col gap-2">
+        {/* Availability */}
+        <div className="flex items-center gap-1.5 font-sans text-xs">
+          <span className={`w-2 h-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span className={product.countInStock > 0 ? 'text-green-600' : 'text-red-500'}>
+            {product.countInStock > 0 ? 'В наявності' : 'Немає в наявності'}
+          </span>
+        </div>
+
+        {/* Title */}
+        <Link href={`/${product.slug}`} className="font-display font-semibold text-neutral-800 text-sm line-clamp-2 min-h-[40px] hover:text-primary-500 transition-colors">
+          {product.name}
+        </Link>
+
+        {/* Pricing & Add to Cart */}
+        <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
+          <div className="flex flex-col">
+            {originalPrice && (
+              <span className="font-sans text-xs text-neutral-400 line-through">
+                {originalPrice} ₴
+              </span>
+            )}
+            <span className="font-display font-bold text-lg text-neutral-900">
+              {price} ₴
+            </span>
+          </div>
+
+          <button
+            onClick={() => onCartClick(product)}
+            className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 transition-colors cursor-pointer shadow-md shadow-orange-500/10 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            aria-label="Додати в кошик"
+          >
+            <ShoppingCart size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -94,6 +94,9 @@ const authStateSlice = createSlice({
       .addCase(logoutThunk.fulfilled, (state) => {
         Object.assign(state, initialState);
       })
+      .addCase(logoutThunk.rejected, (state) => {
+        Object.assign(state, initialState);
+      })
       .addCase(createOrderThunk.fulfilled, (state) => {
         state.user.cart = [];
         state.isLoading = false;
