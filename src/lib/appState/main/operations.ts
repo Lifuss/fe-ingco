@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
-import { sortValueType } from '@/app/ui/FiltersBlock';
+import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',

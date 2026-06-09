@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ProductClicksPieChart from './diagrams/PieChart';
-import { Button } from './buttons/button';
-import UserActivityChart from './diagrams/UserActivityChart';
+import ProductClicksPieChart from '../diagrams/PieChart';
+import { Button } from '../buttons/button';
+import UserActivityChart from '../diagrams/UserActivityChart';
 
 const getLastWeekDate = () => {
   const date = new Date();

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Header from './ui/home/Header';
+import Header from './ui/header/Header';
 import Footer from './ui/Footer';
 
 export default function NotFound() {

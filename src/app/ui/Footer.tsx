@@ -1,15 +1,13 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import Icon from './assets/Icon';
 import { SOCIAL_LINKS, CONTACTS } from '@/lib/constants';
 import Logo from './Logo';
 
-const Footer = () => {
-  const pathname = usePathname();
+interface FooterProps {
+  isShop?: boolean;
+}
 
-  const isShop = pathname.includes('/shop');
+const Footer = ({ isShop = false }: FooterProps) => {
   const baseUrl = isShop ? '/shop' : '/';
 
   const socialArray: { name: string; url: string; label: string }[] = [

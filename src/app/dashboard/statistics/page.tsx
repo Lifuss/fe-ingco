@@ -1,4 +1,4 @@
-import Statistics from '@/app/ui/Statistics';
+import Statistics from '@/app/ui/dashboard/Statistics';
 
 const Page = () => {
   return (

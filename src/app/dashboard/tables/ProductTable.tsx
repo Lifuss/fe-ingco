@@ -1,7 +1,7 @@
 'use client';
 
 import Icon from '@/app/ui/assets/Icon';
-import { sortValueType } from '@/app/ui/FiltersBlock';
+import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import { deleteProductThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';

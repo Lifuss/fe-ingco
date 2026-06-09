@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { setShopView } from '@/lib/appState/main/slice';
 import { LayoutGrid, List, ChevronDown } from 'lucide-react';
-import Breadcrumbs from './Breadcrumbs';
+import Breadcrumbs from '../Breadcrumbs';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';

@@ -1,6 +1,6 @@
 'use client';
 
-import AddToCartButton from '@/app/ui/AddToCartButton';
+import AddToCartButton from '@/app/ui/buttons/AddToCartButton';
 import Breadcrumbs from '@/app/ui/Breadcrumbs';
 import { Button } from '@/app/ui/buttons/button';
 import { getProductBySlugThunk } from '@/lib/appState/main/operations';
@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, use } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import ProductSkeleton from '@/app/ui/ProductSkeleton';
+import ProductSkeleton from '@/app/ui/skeletons/ProductSkeleton';
 
 type PageProps = {
   params: Promise<{

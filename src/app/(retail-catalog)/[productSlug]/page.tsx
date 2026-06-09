@@ -35,11 +35,11 @@ import {
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
-import CatalogSidebar from '~/ui/CatalogSidebar';
-import Header from '~/ui/home/Header';
+import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
+import Header from '~/ui/header/Header';
 import Footer from '~/ui/Footer';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
-import ProductSkeleton from '~/ui/ProductSkeleton';
+import ProductSkeleton from '~/ui/skeletons/ProductSkeleton';
 import ProductCard from '@/app/ui/product/ProductCard';
 
 type PageProps = {

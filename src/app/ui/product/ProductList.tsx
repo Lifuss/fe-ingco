@@ -16,7 +16,7 @@ import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../TextPlaceholder';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import ProductBlockList from '../product/ProductBlockList';
-import FiltersBlock, { sortValueType } from '../FiltersBlock';
+import FiltersBlock, { sortValueType } from '../catalog/FiltersBlock';
 import { SITE_URL } from '@/lib/metadata';
 
 const ProductList = ({ isFavoritePage = false }) => {

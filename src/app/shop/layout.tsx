@@ -1,7 +1,7 @@
 'use client';
-import CatalogSidebar from '../ui/CatalogSidebar';
+import CatalogSidebar from '../ui/catalog/CatalogSidebar';
 import withAuth from '../service/PrivateRouting';
-import Header from '../ui/home/Header';
+import Header from '../ui/header/Header';
 import Footer from '../ui/Footer';
 import { ReactNode } from 'react';
 
@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           className="absolute z-50 hidden h-[200px] w-[200px] 2xl:h-[250px] 2xl:w-[250px]"
         ></div>
       </main>
-      <Footer />
+      <Footer isShop={true} />
     </>
   );
 };

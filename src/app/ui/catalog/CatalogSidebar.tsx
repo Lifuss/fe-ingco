@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { ShieldCheck, Zap, Plug, Filter, Phone } from 'lucide-react';
-import CallbackModal from './modals/CallbackModal';
+import CallbackModal from '../modals/CallbackModal';
 import { useDebounce } from 'use-debounce';
 
 const CatalogSidebar = () => {

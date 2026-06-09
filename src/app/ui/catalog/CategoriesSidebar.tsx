@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import Icon from './assets/Icon';
+import Icon from '../assets/Icon';
 import { FileSpreadsheet } from 'lucide-react';
 
 const Sidebar = () => {

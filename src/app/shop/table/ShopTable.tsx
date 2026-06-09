@@ -19,7 +19,7 @@ import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
 import { Heart, MousePointerClick, SquareMousePointer } from 'lucide-react';
 import ShopList from './ShopList';
-import FiltersBlock, { sortValueType } from '@/app/ui/FiltersBlock';
+import FiltersBlock, { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import { type ColumnDef } from '@tanstack/react-table';
 
 type ShopTableRow = {

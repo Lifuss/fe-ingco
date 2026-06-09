@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Footer from '../ui/Footer';
-import Header from '../ui/home/Header';
+import Header from '../ui/header/Header';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);

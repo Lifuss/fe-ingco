@@ -8,8 +8,8 @@ import { clearAuthState } from '@/lib/appState/user/slice';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { toast } from 'react-toastify';
 import { useRouter, useSearchParams } from 'next/navigation';
-import CatalogSidebar from '~/ui/CatalogSidebar';
-import Header from '~/ui/home/Header';
+import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
+import Header from '~/ui/header/Header';
 import Footer from '~/ui/Footer';
 
 // B2C Landing Page Components

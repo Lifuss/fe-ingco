@@ -23,6 +23,8 @@ import { cn } from '@/lib/utils';
 interface CatalogDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 interface SubcategoryItem {
@@ -35,7 +37,12 @@ interface SubcategoryGroup {
   items: SubcategoryItem[];
 }
 
-export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
+export default function CatalogDrawer({
+  isOpen,
+  onClose,
+  onMouseEnter,
+  onMouseLeave,
+}: CatalogDrawerProps) {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
@@ -157,7 +164,7 @@ export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
           items: [
             { name: 'Плоскогубці', query: 'плоскогубці' },
             { name: 'Бокорізи / Кусачки', query: 'кусачки' },
-            { name: 'Кліщі переставні', query: 'кліщі' },
+            { name: 'Кліщі переставні', query: 'kліщі' },
           ],
         },
         {
@@ -238,7 +245,7 @@ export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
           title: 'Витратні матеріали',
           items: [
             { name: 'Свердла по металу / бетону', query: 'свердло' },
-            { name: 'Бури SDS-Plus', query: 'бур' },
+            { name: 'Бури SDS-Plus', query: 'бури' },
             { name: 'Диски відрізні', query: 'диск' },
             { name: 'Коронки свердлильні', query: 'коронка' },
           ],
@@ -395,7 +402,8 @@ export default function CatalogDrawer({ isOpen, onClose }: CatalogDrawerProps) {
         {/* Main Drawer Container */}
         <div
           className="absolute left-0 right-0 top-[100px] z-50 w-full border-b border-[#E5E3DD] bg-[#FFFDFB] shadow-xl animate-slide-down flex flex-col items-center select-none"
-          onMouseLeave={onClose}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave || onClose}
         >
           <div className="w-full max-w-[1440px] px-6 py-8 grid grid-cols-12 gap-8 items-stretch min-h-[480px]">
             

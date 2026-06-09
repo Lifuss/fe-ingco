@@ -5,7 +5,7 @@ import PartnerGuide from '../about-us/PartnerGuide';
 import AboutBrand from '../about-us/AboutBrand';
 import AboutUs from '../about-us/AboutUs';
 import Footer from '../Footer';
-import Header from '../home/Header';
+import Header from '../header/Header';
 
 const AboutUsPage = ({ isMainPage = true }: { isMainPage: boolean }) => {
   return isMainPage ? (

@@ -1,7 +1,7 @@
 import Search from '@/app/ui/search';
 import Link from 'next/link';
 import UserTable from '../tables/UserTable';
-import UsersStats from '@/app/ui/UsersStats';
+import UsersStats from '@/app/ui/dashboard/UsersStats';
 
 const Page = () => {
   return (

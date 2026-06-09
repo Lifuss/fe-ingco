@@ -1,6 +1,6 @@
 import HistoryTable from '~/shop/table/HistoryTable';
-import CategoriesSidebar from '~/ui/CategoriesSidebar';
-import Header from '~/ui/home/Header';
+import CategoriesSidebar from '~/ui/catalog/CategoriesSidebar';
+import Header from '~/ui/header/Header';
 import Footer from '~/ui/Footer';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
