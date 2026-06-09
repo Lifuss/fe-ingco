@@ -309,7 +309,7 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
     ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
     : '/placeholder.webp';
 
-  const isSale = product.rrcSale && product.rrcSale > 0;
+  const isSale = !!(product.rrcSale && product.rrcSale > 0);
   const price = isSale ? product.rrcSale : product.priceRetailRecommendation;
   const originalPrice = isSale ? product.priceRetailRecommendation : null;
 
@@ -409,7 +409,7 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
         {/* Pricing & Add to Cart */}
         <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
           <div className="flex flex-col">
-            {originalPrice && (
+            {!!originalPrice && (
               <span className="font-sans text-xs text-neutral-400 line-through">
                 {originalPrice} ₴
               </span>

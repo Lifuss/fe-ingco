@@ -236,7 +236,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
     ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
     : '/placeholder.webp';
 
-  let isSale = product.rrcSale && product.rrcSale > 0;
+  let isSale = !!(product.rrcSale && product.rrcSale > 0);
   let price = isSale ? product.rrcSale : product.priceRetailRecommendation;
   let originalPrice = isSale ? product.priceRetailRecommendation : null;
 
@@ -348,7 +348,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
         {/* Pricing & Add to Cart */}
         <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
           <div className="flex flex-col">
-            {originalPrice && (
+            {!!originalPrice && (
               <span className="font-sans text-xs text-neutral-400 line-through">
                 {originalPrice} ₴
               </span>
