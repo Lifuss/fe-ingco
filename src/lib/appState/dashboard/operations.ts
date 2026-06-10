@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
-import { normalizeProduct, normalizeOrder } from '@/lib/utils';
+import { normalizeProduct, normalizeOrder, normalizeUser } from '@/lib/utils';
 
 // products thunks
 export const createProductThunk = createAsyncThunk(
@@ -64,9 +64,12 @@ export const fetchUsersThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.get('/users', {
-        params: { q, role, isB2B, isUserVerified, isDeleted, page, limit },
+        params: { q, role: role.toUpperCase(), isB2B, isUserVerified, isDeleted, page, limit },
       });
-      return data;
+      return {
+        ...data,
+        users: (data.users || []).map(normalizeUser),
+      };
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -93,8 +96,12 @@ export const createUserThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.post('/users', credentials);
-      return data;
+      const payload = {
+        ...credentials,
+        role: credentials.role ? credentials.role.toUpperCase() : undefined,
+      };
+      const { data } = await apiIngco.post('/users', payload);
+      return normalizeUser(data);
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -105,9 +112,13 @@ export const updateUserThunk = createAsyncThunk(
   'updateUser',
   async (user: Omit<User, 'token' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.put(`/users/${user.id}`, user);
+      const payload = {
+        ...user,
+        role: user.role ? user.role.toUpperCase() : undefined,
+      };
+      const { data } = await apiIngco.put(`/users/${user.id}`, payload);
 
-      return data;
+      return normalizeUser(data);
     } catch (error) {
       return rejectWithValue(error);
     }

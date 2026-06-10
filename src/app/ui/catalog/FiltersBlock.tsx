@@ -11,11 +11,11 @@ interface FilterBlockProps {
   listType: 'partner' | 'retail';
 }
 
-export type sortValueType = 'default' | 'popular' | 'cheep' | 'expensive' | 'name';
+export type sortValueType = 'default' | 'popular' | 'cheap' | 'expensive' | 'name';
 
 const sortOptions: { label: string; sortValue: sortValueType }[] = [
   { label: 'За популярністю', sortValue: 'popular' },
-  { label: 'Від дешевших', sortValue: 'cheep' },
+  { label: 'Від дешевших', sortValue: 'cheap' },
   { label: 'Від дорожчих', sortValue: 'expensive' },
   { label: 'За назвою', sortValue: 'name' },
 ];

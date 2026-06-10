@@ -106,7 +106,7 @@ const setToken = (token: string, role?: string) => {
   if (typeof window !== 'undefined') {
     document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
     if (role) {
-      document.cookie = `role=${role}; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `role=${role.toLowerCase()}; path=/; max-age=86400; SameSite=Lax; Secure`;
     }
   }
 };

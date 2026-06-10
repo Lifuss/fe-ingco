@@ -1,4 +1,4 @@
-import { Order, Product } from './types';
+import { Order, Product, User } from './types';
 import { apiIngco } from './appState/user/operation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -38,6 +38,19 @@ export function normalizeOrder(order: any): Order {
         id: item.productId,
         name: item.productName || (item.product && item.product.name) || 'Продукт застарів та видалений з бази',
       },
+    })),
+  };
+}
+
+export function normalizeUser(user: any): any {
+  if (!user) return user;
+  return {
+    ...user,
+    role: user.role ? user.role.toLowerCase() : 'user',
+    orders: (user.orders || []).map((o: any) => ({
+      ...o,
+      orderCode: String(o.orderCode),
+      totalPrice: Number(o.totalPrice),
     })),
   };
 }

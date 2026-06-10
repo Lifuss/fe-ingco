@@ -108,7 +108,7 @@ const AdminProductForm = ({
                   Категорія
                 </label>
                 <select
-                  name="category"
+                  name="categoryId"
                   className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
                   defaultValue={product?.category?.id}
                 >

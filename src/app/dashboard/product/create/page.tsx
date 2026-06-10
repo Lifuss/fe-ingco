@@ -31,10 +31,7 @@ const Page = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
 
-    characteristics?.forEach((item, index) => {
-      formData.append(`characteristics[${index}][name]`, item.name);
-      formData.append(`characteristics[${index}][value]`, item.value);
-    });
+    formData.append('characteristics', JSON.stringify(characteristics));
     formData.delete('characteristicName');
     formData.delete('characteristicDesc');
 

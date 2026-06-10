@@ -18,6 +18,7 @@ import {
 } from './operation';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
+import { normalizeUser } from '@/lib/utils';
 
 const initialState = {
   user: {
@@ -85,9 +86,10 @@ const authStateSlice = createSlice({
     builder
       .addCase(registerThunk.fulfilled, (state, { payload }) => {
         state.token = payload.token;
-        state.user.isVerified = payload.isVerified;
-        state.user.login = payload.login;
-        state.user.role = payload.role;
+        const normalizedUser = normalizeUser(payload);
+        state.user.isVerified = normalizedUser.isVerified;
+        state.user.login = normalizedUser.login;
+        state.user.role = normalizedUser.role;
         state.isAuthenticated = true;
         state.isLoading = false;
       })
@@ -149,20 +151,21 @@ const authStateSlice = createSlice({
         isAnyOf(loginThunk.fulfilled, refreshTokenThunk.fulfilled),
         (state, { payload }) => {
           state.token = payload.token;
-          state.user.isVerified = payload.isVerified;
           state.isAuthenticated = true;
           state.isB2b = payload.isB2b;
           state.isLoading = false;
-          state.user.login = payload.login;
-          state.user.role = payload.role;
-          state.user.favorites = payload.favorites;
-          state.user.cart = payload.cart;
-          state.user.retailCart = payload.cartRetail;
-          state.user.firstName = payload.firstName;
-          state.user.lastName = payload.lastName;
-          state.user.email = payload.email;
-          state.user.phone = payload.phone;
-          state.user.surName = payload.surName;
+          const normalizedUser = normalizeUser(payload);
+          state.user.isVerified = normalizedUser.isVerified;
+          state.user.login = normalizedUser.login;
+          state.user.role = normalizedUser.role;
+          state.user.favorites = normalizedUser.favorites;
+          state.user.cart = normalizedUser.cart;
+          state.user.retailCart = normalizedUser.cartRetail;
+          state.user.firstName = normalizedUser.firstName;
+          state.user.lastName = normalizedUser.lastName;
+          state.user.email = normalizedUser.email;
+          state.user.phone = normalizedUser.phone;
+          state.user.surName = normalizedUser.surName;
         },
       )
       .addMatcher(
