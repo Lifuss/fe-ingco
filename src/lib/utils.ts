@@ -23,6 +23,25 @@ export function normalizeProduct(p: unknown): Product {
   };
 }
 
+export function normalizeOrder(order: any): Order {
+  if (!order) return order;
+  return {
+    ...order,
+    orderCode: String(order.orderCode),
+    totalPrice: Number(order.totalPrice),
+    products: (order.items || []).map((item: any) => ({
+      id: item.id,
+      quantity: item.quantity,
+      price: Number(item.unitPrice),
+      totalPriceByOneProduct: Number(item.totalPrice),
+      product: {
+        id: item.productId,
+        name: item.productName || (item.product && item.product.name) || 'Продукт застарів та видалений з бази',
+      },
+    })),
+  };
+}
+
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.

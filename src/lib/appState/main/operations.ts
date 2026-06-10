@@ -4,7 +4,7 @@ import { RootState } from '../store';
 import { apiIngco } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
-import { normalizeProduct } from '@/lib/utils';
+import { normalizeProduct, normalizeOrder } from '@/lib/utils';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
@@ -143,7 +143,10 @@ export const fetchHistoryThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/orders', {
         params: { page, q, limit, isRetail },
       });
-      return data;
+      return {
+        ...data,
+        orders: (data.orders || []).map(normalizeOrder),
+      };
     } catch (error) {
       return rejectWithValue(error);
     }

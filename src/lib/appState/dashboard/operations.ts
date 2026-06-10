@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco } from '../user/operation';
 import { Order, User } from '@/lib/types';
-import { normalizeProduct } from '@/lib/utils';
+import { normalizeProduct, normalizeOrder } from '@/lib/utils';
 
 // products thunks
 export const createProductThunk = createAsyncThunk(
@@ -183,7 +183,10 @@ export const fetchOrdersThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/orders/all', {
         params: { q, page, limit, isRetail, status },
       });
-      return data;
+      return {
+        ...data,
+        orders: (data.orders || []).map(normalizeOrder),
+      };
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -197,8 +200,22 @@ export const updateOrderThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.put(`/orders/${orderId}`, updateOrder);
-      return data;
+      const payload: Record<string, any> = {};
+      const fields: (keyof UpdateOrder)[] = [
+        'status',
+        'isPaid',
+        'declarationNumber',
+        'comment',
+        'shippingAddress',
+      ];
+      for (const field of fields) {
+        if (updateOrder[field] !== undefined) {
+          payload[field] = updateOrder[field];
+        }
+      }
+
+      const { data } = await apiIngco.put(`/orders/${orderId}`, payload);
+      return normalizeOrder(data);
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -212,8 +229,22 @@ export const updateRetailOrderThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.put(`/orders/retail/${orderId}`, updateOrder);
-      return data;
+      const payload: Record<string, any> = {};
+      const fields: (keyof UpdateOrder)[] = [
+        'status',
+        'isPaid',
+        'declarationNumber',
+        'comment',
+        'shippingAddress',
+      ];
+      for (const field of fields) {
+        if (updateOrder[field] !== undefined) {
+          payload[field] = updateOrder[field];
+        }
+      }
+
+      const { data } = await apiIngco.put(`/orders/retail/${orderId}`, payload);
+      return normalizeOrder(data);
     } catch (error) {
       return rejectWithValue(error);
     }

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { normalizeOrder } from '@/lib/utils';
 
 interface Register {
   email: string;
@@ -337,8 +338,16 @@ export const createOrderThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.post('orders', order);
-      return data;
+      const payload = {
+        items: order.products.map((p) => ({
+          productId: p.productId,
+          quantity: p.quantity,
+        })),
+        shippingAddress: order.shippingAddress,
+        comment: order.comment,
+      };
+      const { data } = await apiIngco.post('orders', payload);
+      return normalizeOrder(data);
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
     }
@@ -367,8 +376,21 @@ export const createRetailOrderThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.post('orders/retail', order);
-      return data;
+      const payload = {
+        items: order.products.map((p) => ({
+          productId: p.productId,
+          quantity: p.quantity,
+        })),
+        shippingAddress: order.shippingAddress,
+        comment: order.comment,
+        firstName: order.firstName,
+        lastName: order.lastName,
+        surName: order.surName,
+        phone: order.phone,
+        email: order.email,
+      };
+      const { data } = await apiIngco.post('orders/retail', payload);
+      return normalizeOrder(data);
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
     }
