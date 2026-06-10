@@ -57,7 +57,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     totalPages,
     currencyRates: { USD = 0 },
   } = state.persistedMainReducer;
-  const favorites: Product[] = state.persistedAuthReducer.user.favorites;
+  const favorites: Product[] = state.persistedAuthReducer.user?.favorites || [];
   const favoritesList = favorites.map((product) => product.id);
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
