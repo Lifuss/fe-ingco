@@ -60,7 +60,7 @@ export default function Page({ params }: PageProps) {
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favoritesState = useAppSelector((state) => state.persistedAuthReducer.user?.favorites || []);
-  const favoritesIdList = favoritesState.map((p: any) => typeof p === 'object' && p !== null ? p.id : Number(p));
+  const favoritesIdList = favoritesState.map((p: unknown) => typeof p === 'object' && p !== null ? (p as { id: number }).id : Number(p));
 
   // UI state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -106,6 +106,7 @@ export default function Page({ params }: PageProps) {
         console.error('Barcode generation error:', err);
       }
     }
+  }, [product]);
 
   // ScrollSpy using IntersectionObserver
   useEffect(() => {
@@ -148,6 +149,7 @@ export default function Page({ params }: PageProps) {
         <Footer />
       </>
     );
+  }
   if (!product || !product.id) {
     return (
       <>
@@ -762,18 +764,17 @@ export default function Page({ params }: PageProps) {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 list-none p-0 m-0">
                   {relatedProducts.map((item) => (
                     <ProductCard
-                      key={item._id}
+                      key={item.id}
                       product={item}
                       listType="retail"
-                      favoritesIdList={favorites}
-                      handleDirectToProduct={(_id, slug) => router.push(`/${slug}`)}
+                      favoritesIdList={favoritesIdList}
+                      handleDirectToProduct={(id, slug) => router.push(`/${slug}`)}
                     />
                   ))}
                 </ul>
               )}
             </section>
-
-
+          </div>
         </div>
       </main>
 

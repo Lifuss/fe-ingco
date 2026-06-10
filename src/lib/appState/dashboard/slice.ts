@@ -82,6 +82,7 @@ const Slice = createSlice({
         }
         toast.success('Замовлення успішно змінено');
       })
+      .addCase(updateUserThunk.fulfilled, (state, { payload }) => {
         const index = state.users.findIndex((user) => user.id === payload.id);
         if (index !== -1) {
           state.users[index] = payload;

@@ -37,7 +37,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const user = authState.user;
   const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true || (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
-  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
+  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? Number(p) : p.id);
 
 
 
@@ -82,11 +82,11 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
 
   const handleFavoriteClick = (product: Product) => {
     if (isAuth) {
-      if (favoritesIdList.includes(product._id)) {
-        dispatch(deleteFavoriteProductThunk(product._id));
+      if (favoritesIdList.includes(product.id)) {
+        dispatch(deleteFavoriteProductThunk(product.id));
         toast.info(`${product.name} видалено з обраного`);
       } else {
-        dispatch(addFavoriteProductThunk(product._id));
+        dispatch(addFavoriteProductThunk(product.id));
         toast.success(`${product.name} додано в обране`);
       }
     } else {
@@ -99,7 +99,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
       if (isB2BUser) {
         dispatch(
           addProductToCartThunk({
-            productId: product._id,
+            productId: product.id,
             quantity: 1,
           }),
         )
@@ -110,7 +110,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
       } else {
         dispatch(
           addProductToRetailCartThunk({
-            productId: product._id,
+            productId: product.id,
             quantity: 1,
           }),
         )
@@ -125,7 +125,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
         addProductToLocalStorageCart({
           productId: restProduct,
           quantity: 1,
-          _id: product._id,
+          id: product.id,
         }),
       );
       toast.success(`${product.name} додано в кошик`);
@@ -199,12 +199,12 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             {standartProducts.length > 0 ? (
               <Slider ref={standartSliderRef} {...getSliderSettings(standartProducts.length)}>
                 {standartProducts.map((product) => (
-                  <div key={product._id} className="px-2 py-3 h-full">
+                  <div key={product.id} className="px-2 py-3 h-full">
                     <ProductCarouselCard
                       product={product}
                       badge="STANDART"
                       badgeBg="bg-neutral-100 text-neutral-600"
-                      isFav={favoritesIdList.includes(product._id)}
+                      isFav={favoritesIdList.includes(product.id)}
                       onFavClick={() => handleFavoriteClick(product)}
                       onCartClick={() => handleCartClick(product)}
                     />
@@ -269,12 +269,12 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             {industrialProducts.length > 0 ? (
               <Slider ref={industrialSliderRef} {...getSliderSettings(industrialProducts.length)}>
                 {industrialProducts.map((product) => (
-                  <div key={product._id} className="px-2 py-3 h-full">
+                  <div key={product.id} className="px-2 py-3 h-full">
                     <ProductCarouselCard
                       product={product}
                       badge="INDUSTRIAL"
                       badgeBg="bg-amber-100 text-amber-800"
-                      isFav={favoritesIdList.includes(product._id)}
+                      isFav={favoritesIdList.includes(product.id)}
                       onFavClick={() => handleFavoriteClick(product)}
                       onCartClick={() => handleCartClick(product)}
                     />

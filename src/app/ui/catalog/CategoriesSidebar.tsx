@@ -41,7 +41,7 @@ const Sidebar = () => {
     if (categoryId === '') {
       params.delete('category');
     } else {
-      params.set('category', categoryId);
+      params.set('category', String(categoryId));
     }
     if (categoryId) {
       params.set('page', '1');

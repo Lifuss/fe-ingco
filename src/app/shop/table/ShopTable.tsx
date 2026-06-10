@@ -262,7 +262,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         id: 'quantityCol',
         cell: ({ row }) => (
           <input
-            name={row.original.id}
+            name={String(row.original.id)}
             type="number"
             className="h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center font-sans text-xs font-semibold focus:outline-none focus:border-primary-500 focus:bg-white transition-colors"
             onBlur={(e) => {

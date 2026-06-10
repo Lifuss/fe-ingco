@@ -118,7 +118,7 @@ const Page = ({ params }: PageProps) => {
     return <ProductSkeleton />;
   }
 
-  if (!product || !product._id) {
+  if (!product || !product.id) {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
         <SearchX size={52} />

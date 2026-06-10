@@ -325,15 +325,6 @@ const AdminProductForm = ({
               >
                 <Plus size={16} />
                 <span>Додати</span>
-              >
-                Підтвердити
-              </button>
-              <button
-                className="rounded-lg bg-red-200 p-2 transition-colors hover:bg-red-400"
-                type="reset"
-              >
-                Скинути
->>>>>>> f2b0c55 (refactor: update product identifiers from _id to id across the application for consistency and improved type safety)
               </button>
             </div>
 

@@ -49,8 +49,8 @@ export default function CatalogDrawer({
   const productsCategories = React.useMemo(() => rawCategories || [], [rawCategories]);
   
   // Set the first category as active by default if loaded
-  const [activeCategoryId, setActiveCategoryId] = useState<string>('');
-  const [mobileExpandedCatId, setMobileExpandedCatId] = useState<string>('');
+  const [activeCategoryId, setActiveCategoryId] = useState<number | ''>('');
+  const [mobileExpandedCatId, setMobileExpandedCatId] = useState<number | ''>('');
 
   React.useEffect(() => {
     if (productsCategories.length === 0) {
@@ -60,7 +60,7 @@ export default function CatalogDrawer({
 
   React.useEffect(() => {
     if (productsCategories.length > 0 && !activeCategoryId) {
-      setActiveCategoryId(productsCategories[0]._id);
+      setActiveCategoryId(productsCategories[0].id);
     }
   }, [productsCategories, activeCategoryId]);
 
@@ -287,7 +287,7 @@ export default function CatalogDrawer({
     ];
   };
 
-  const activeCategory = productsCategories.find((c) => c._id === activeCategoryId);
+  const activeCategory = productsCategories.find((c) => c.id === activeCategoryId);
   const activeSubgroups = activeCategory ? getSubcategoryGroups(activeCategory.name) : [];
 
   return (
@@ -321,12 +321,12 @@ export default function CatalogDrawer({
           {/* Categories Accordion */}
           <div className="flex-grow overflow-y-auto p-3 flex flex-col gap-2">
             {productsCategories.map((cat) => {
-              const isExpanded = cat._id === mobileExpandedCatId;
+              const isExpanded = cat.id === mobileExpandedCatId;
               const subGroups = getSubcategoryGroups(cat.name);
               return (
-                <div key={cat._id} className="border-b border-[#E5E3DD]/40 pb-2">
+                <div key={cat.id} className="border-b border-[#E5E3DD]/40 pb-2">
                   <button
-                    onClick={() => setMobileExpandedCatId(isExpanded ? '' : cat._id)}
+                    onClick={() => setMobileExpandedCatId(isExpanded ? '' : cat.id)}
                     className={cn(
                       'w-full flex items-center justify-between py-2 px-3 rounded-lg text-left font-display font-bold text-sm text-neutral-700 transition-colors cursor-pointer',
                       isExpanded && 'bg-[#FFF2EB] text-primary-500'
@@ -345,7 +345,7 @@ export default function CatalogDrawer({
                   {isExpanded && (
                     <div className="pl-9 pr-2 pt-2 pb-1 flex flex-col gap-4">
                       <Link
-                        href={getSearchUrl(cat._id, '')}
+                        href={getSearchUrl(String(cat.id), '')}
                         onClick={onClose}
                         className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1 cursor-pointer"
                       >
@@ -361,7 +361,7 @@ export default function CatalogDrawer({
                             {group.items.map((item, idx) => (
                               <li key={idx}>
                                 <Link
-                                  href={getSearchUrl(cat._id, item.query)}
+                                  href={getSearchUrl(String(cat.id), item.query)}
                                   onClick={onClose}
                                   className="text-neutral-600 hover:text-primary-500 text-xs font-semibold block py-0.5 cursor-pointer"
                                 >
@@ -411,13 +411,13 @@ export default function CatalogDrawer({
             <div className="col-span-3 border-r border-[#E5E3DD]/70 pr-4 flex flex-col justify-between">
               <ul className="flex flex-col gap-1.5">
                 {productsCategories.map((cat) => {
-                  const isActive = cat._id === activeCategoryId;
+                  const isActive = cat.id === activeCategoryId;
                   return (
-                    <li key={cat._id}>
+                    <li key={cat.id}>
                       <button
-                        onMouseEnter={() => setActiveCategoryId(cat._id)}
+                        onMouseEnter={() => setActiveCategoryId(cat.id)}
                         onClick={() => {
-                          setActiveCategoryId(cat._id);
+                          setActiveCategoryId(cat.id);
                           onClose();
                         }}
                         className={cn(
@@ -474,7 +474,7 @@ export default function CatalogDrawer({
                         {group.items.map((item, idx) => (
                           <li key={idx}>
                             <Link
-                              href={getSearchUrl(activeCategoryId, item.query)}
+                              href={getSearchUrl(String(activeCategoryId), item.query)}
                               onClick={onClose}
                               className="text-neutral-600 hover:text-primary-500 font-medium transition-colors cursor-pointer"
                             >

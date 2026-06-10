@@ -29,6 +29,10 @@ export default function HotOffers({ products }: HotOffersProps) {
   const [activeTab, setActiveTab] = useState<'popular' | 'p20s' | 'sets'>('popular');
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+
+  const batteryToolCategoryId = String(categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id || CATEGORY_IDS.BATTERY_TOOL);
+  const p20sLineCategoryId = String(categoriesList.find((c) => c.name.toLowerCase().includes('p20s') || c.name.toLowerCase().includes('акумуляторна лінійка p20s'))?.id || CATEGORY_IDS.P20S_LINE);
   
   const sliderRef = useRef<Slider | null>(null);
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
@@ -40,11 +44,11 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   const p20sOffers = products
     .filter((p) => {
-      const catId = p.category?._id || '';
+      const catId = p.category?.id ? String(p.category.id) : '';
       const name = p.name.toLowerCase();
       return (
-        catId === CATEGORY_IDS.P20S_LINE ||
-        catId === CATEGORY_IDS.BATTERY_TOOL ||
+        catId === p20sLineCategoryId ||
+        catId === batteryToolCategoryId ||
         name.includes('батарея') ||
         name.includes('акумулятор') ||
         name.includes('зарядн')
@@ -84,17 +88,17 @@ export default function HotOffers({ products }: HotOffersProps) {
   const user = authState.user;
   const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true || (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
-  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
+  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? Number(p) : p.id);
 
 
 
   const handleFavoriteClick = (product: Product) => {
     if (isAuth) {
-      if (favoritesIdList.includes(product._id)) {
-        dispatch(deleteFavoriteProductThunk(product._id));
+      if (favoritesIdList.includes(product.id)) {
+        dispatch(deleteFavoriteProductThunk(product.id));
         toast.info(`${product.name} видалено з обраного`);
       } else {
-        dispatch(addFavoriteProductThunk(product._id));
+        dispatch(addFavoriteProductThunk(product.id));
         toast.success(`${product.name} додано в обране`);
       }
     } else {
@@ -107,7 +111,7 @@ export default function HotOffers({ products }: HotOffersProps) {
       if (isB2BUser) {
         dispatch(
           addProductToCartThunk({
-            productId: product._id,
+            productId: product.id,
             quantity: 1,
           }),
         )
@@ -118,7 +122,7 @@ export default function HotOffers({ products }: HotOffersProps) {
       } else {
         dispatch(
           addProductToRetailCartThunk({
-            productId: product._id,
+            productId: product.id,
             quantity: 1,
           }),
         )
@@ -133,7 +137,7 @@ export default function HotOffers({ products }: HotOffersProps) {
         addProductToLocalStorageCart({
           productId: restProduct,
           quantity: 1,
-          _id: product._id,
+          id: product.id,
         }),
       );
       toast.success(`${product.name} додано в кошик`);
@@ -200,11 +204,11 @@ export default function HotOffers({ products }: HotOffersProps) {
         {activeProducts.length > 0 ? (
           <Slider ref={sliderRef} {...sliderSettings}>
             {activeProducts.map((product) => (
-              <div key={product._id} className="px-2 py-3 h-full">
+              <div key={product.id} className="px-2 py-3 h-full">
                 <HotOfferCard
                   product={product}
                   activeTab={activeTab}
-                  isFav={favoritesIdList.includes(product._id)}
+                  isFav={favoritesIdList.includes(product.id)}
                   onFavClick={handleFavoriteClick}
                   onCartClick={handleCartClick}
                 />

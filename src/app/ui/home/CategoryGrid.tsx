@@ -5,15 +5,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { CATEGORY_IDS } from '@/lib/constants';
+import { useAppSelector } from '@/lib/hooks';
 
 export default function CategoryGrid() {
+  const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+
+  const getCategoryIdByName = (name: string, fallback: string) => {
+    const matched = categoriesList.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    return matched ? String(matched.id) : fallback;
+  };
+
   const categories = [
     {
       id: 1,
       title: 'Акумуляторний інструмент',
       subtitle: 'Один акумулятор для понад 150 інструментів',
       image: '/categories/accum.webp',
-      href: `/?category=${CATEGORY_IDS.BATTERY_TOOL}`,
+      href: `/?category=${getCategoryIdByName('Акумуляторний інструмент', CATEGORY_IDS.BATTERY_TOOL)}`,
       span: 'lg:col-span-2 lg:row-span-2 h-[350px] lg:h-[464px]',
     },
     {
@@ -21,7 +29,7 @@ export default function CategoryGrid() {
       title: 'Ручний інструмент',
       subtitle: '',
       image: '/categories/handtools.webp',
-      href: `/?category=${CATEGORY_IDS.HAND_TOOL}`,
+      href: `/?category=${getCategoryIdByName('Ручний інструмент', CATEGORY_IDS.HAND_TOOL)}`,
       span: 'h-[220px]',
     },
     {
@@ -37,7 +45,7 @@ export default function CategoryGrid() {
       title: 'Мережевий електроінструмент',
       subtitle: '',
       image: '/categories/powertools.webp',
-      href: `/?category=${CATEGORY_IDS.POWER_TOOL}`,
+      href: `/?category=${getCategoryIdByName('Мережевий електроінструмент', CATEGORY_IDS.POWER_TOOL)}`,
       span: 'md:col-span-2 h-[220px]',
     },
   ];

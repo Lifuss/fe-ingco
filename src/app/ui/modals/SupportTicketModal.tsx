@@ -35,12 +35,12 @@ const SupportTicketModal = ({ isOpen, closeModal, ticket }: SupportTicketModalPr
 
   if (selectedTicket === null) return null;
 
-  const { name, email, updatedAt, message, isAnswered, ticketNumber, _id, phone } = selectedTicket;
+  const { name, email, updatedAt, message, isAnswered, ticketNumber, id, phone } = selectedTicket;
 
   const handleButton = () => {
     dispatch(
       updateSupportTicketThunk({
-        ticketId: _id,
+        ticketId: id,
         isAnswered: !isAnswered,
         ticketNumber,
       }),

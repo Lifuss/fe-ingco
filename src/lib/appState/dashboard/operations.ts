@@ -272,7 +272,7 @@ export const updateSupportTicketThunk = createAsyncThunk(
       isAnswered = true,
       ticketNumber,
     }: {
-      ticketId: string;
+      ticketId: number;
       isAnswered: boolean;
       ticketNumber: number;
     },

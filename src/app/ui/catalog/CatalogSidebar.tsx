@@ -128,14 +128,14 @@ const CatalogSidebar = () => {
         
         <ul className="flex flex-col gap-2.5 max-h-[250px] overflow-y-auto pr-1">
           {productsCategories.map((category) => {
-            const isChecked = activeCategoryId === category._id;
+            const isChecked = activeCategoryId === String(category.id);
             return (
-              <li key={category._id} className="flex items-center">
+              <li key={category.id} className="flex items-center">
                 <label className="flex items-center gap-3 cursor-pointer w-full group py-0.5">
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={() => handleCategoryChange(category._id)}
+                    onChange={() => handleCategoryChange(String(category.id))}
                     className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500"
                   />
                   <span className={`text-sm transition-colors group-hover:text-gray-950 ${isChecked ? 'text-gray-950 font-semibold' : 'text-gray-600'}`}>

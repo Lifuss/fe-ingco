@@ -57,7 +57,7 @@ const ProductList = ({ isFavoritePage = false }) => {
     }
     if (category) {
       productsData = productsData.filter((product) =>
-        product.category?._id === category || product.category?.name.toLowerCase().includes(category.toLowerCase()),
+        String(product.category?.id) === category || product.category?.name.toLowerCase().includes(category.toLowerCase()),
       );
     }
   }
