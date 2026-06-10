@@ -50,7 +50,7 @@ const serializeAxiosError = (error: unknown) => {
 apiIngco.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      let authHeader: any = undefined;
+      let authHeader: unknown = undefined;
       if (config.headers) {
         if (typeof config.headers.get === 'function') {
           authHeader = config.headers.get('Authorization') || config.headers.get('authorization');

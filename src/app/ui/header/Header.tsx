@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Logo from '~/ui/Logo';
 import Search from '~/ui/search';
 import SubHeader from './SubHeader';

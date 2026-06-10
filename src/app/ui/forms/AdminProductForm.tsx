@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { Product } from '@/lib/types';
 import Icon from '../assets/Icon';
 import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
-import clsx from 'clsx';
 
 const questionSvg = (
   <span>

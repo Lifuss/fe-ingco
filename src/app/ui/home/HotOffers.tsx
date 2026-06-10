@@ -82,7 +82,7 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   const isAuth = authState.isAuthenticated || false;
   const user = authState.user;
-  const isB2BUser = authState.isB2b || (user && ((user as any).isB2B === true || (user as any).isB2b === true));
+  const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true || (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => typeof p === 'string' ? p : p._id);
 

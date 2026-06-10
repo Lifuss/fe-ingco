@@ -63,7 +63,7 @@ export default function Table<T extends object>({
   };
 
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white shadow-sm">
+    <div className={clsx("w-full overflow-x-auto rounded-xl border bg-white shadow-sm", borderColor)}>
       <table className="w-full border-collapse text-sm text-neutral-800 font-sans" ref={tableRef}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
