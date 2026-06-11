@@ -52,7 +52,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
 
     if (user.isVerified === false && pathname !== '/auth/login' && pathname !== '/auth/register') {
       toast.info('Ваш статус верифікації, не підтверджений');
-      redirect('/home');
+      redirect('/');
     }
 
     // Admin routing

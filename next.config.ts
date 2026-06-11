@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/shop/:path*',
+        source: '/export',
         headers: [
           {
             key: 'Cache-Control',

@@ -5,8 +5,7 @@ description: "Best practices for performance, security, accessibility, and code 
 # Best Practices
 
 ## Performance
-- Use Next.js Image component for images
-- Implement lazy loading with `LazyImage` component
+- Use Next.js Image component for images (handles lazy loading by default)
 - Use `next/dynamic` for code splitting when needed
 - Cache API responses appropriately
 - Remove console.logs in production (configured in `next.config.js`)

@@ -13,8 +13,8 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  // 2. Shop protection: Authenticated users only
-  if (pathname.startsWith('/shop')) {
+  // 2. Export protection: Authenticated users only
+  if (pathname.startsWith('/export')) {
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
@@ -24,5 +24,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/shop/:path*'],
+  matcher: ['/dashboard/:path*', '/export/:path*'],
 };

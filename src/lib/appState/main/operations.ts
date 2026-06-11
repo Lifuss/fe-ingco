@@ -126,6 +126,17 @@ export const fetchCategoriesThunk = createAsyncThunk(
       return rejectWithValue(error);
     }
   },
+  {
+    condition: (query, { getState }) => {
+      if (query === '') {
+        const { persistedMainReducer: state } = getState() as RootState;
+        if (state.categories && state.categories.length > 0) {
+          return false;
+        }
+      }
+      return true;
+    },
+  }
 );
 
 export const fetchHistoryThunk = createAsyncThunk(

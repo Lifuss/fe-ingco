@@ -45,7 +45,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   return (
     <aside className="h-full bg-sidebar-dark pt-10 pr-6 pl-[20px] 2xl:pl-[40px]">
-      <Link href={'/shop'}>
+      <Link href={'/'}>
         <svg
           width="91"
           height="24"
