@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import {
@@ -44,7 +43,6 @@ export default function CatalogDrawer({
   onMouseLeave,
 }: CatalogDrawerProps) {
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
   const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
   const productsCategories = React.useMemo(() => rawCategories || [], [rawCategories]);
   
@@ -66,8 +64,7 @@ export default function CatalogDrawer({
 
   if (!isOpen) return null;
 
-  const isShop = pathname.includes('/shop');
-  const baseUrl = isShop ? '/shop' : '/';
+  const baseUrl = '/';
 
   // Helper to generate search link URLs
   const getSearchUrl = (categoryId: string, query: string = '') => {

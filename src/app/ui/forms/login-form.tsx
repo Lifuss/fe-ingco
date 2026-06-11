@@ -12,18 +12,16 @@ import Loader from '../utils/Loader';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
-  const { isLoading, isAuthenticated, isB2b } = useAppSelector(
+  const { isLoading, isAuthenticated } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated && isB2b) {
-      redirect('/shop');
-    } else if (isAuthenticated && !isB2b) {
+    if (isAuthenticated) {
       redirect('/');
     }
-  }, [isAuthenticated, isB2b]);
+  }, [isAuthenticated]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,12 +30,8 @@ function LoginForm() {
     const password = form.password.value.trim();
     dispatch(loginThunk({ login, password }))
       .unwrap()
-      .then(({ isB2B }) => {
-        if (isB2B) {
-          router.push('/shop');
-        } else {
-          router.push('/');
-        }
+      .then(() => {
+        router.push('/');
         toast.success('💸Вітаємо в INGCO!💸');
       })
       .catch((error) => {

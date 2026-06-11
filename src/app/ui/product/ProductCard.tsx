@@ -79,7 +79,7 @@ const ProductCard = ({
     : 0;
 
   // B2B Wholesale UAH price
-  const wholesalePriceUah = priceBulk || Math.ceil(price * usdRate);
+  const wholesalePriceUah = Math.ceil((priceBulk || price) * usdRate);
 
   // Favorite toggle handler
   const handleFavClick = (e: React.MouseEvent) => {
@@ -144,10 +144,10 @@ const ProductCard = ({
 
   return (
     <>
-      <li className="relative group w-full max-w-[340px] mx-auto min-h-[380px] font-sans">
+      <li className={clsx("relative group w-full max-w-[340px] mx-auto font-sans", isB2BUser ? "min-h-[430px]" : "min-h-[380px]")}>
         
         {/* Hover card container expanding downwards */}
-        <div className="absolute top-0 left-0 w-full bg-white rounded-2xl border border-gray-200 p-4 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary-500 hover:z-30 flex flex-col justify-between min-h-[380px] h-full hover:h-auto">
+        <div className={clsx("absolute top-0 left-0 w-full bg-white rounded-2xl border border-gray-200 p-4 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary-500 hover:z-30 flex flex-col justify-between h-full hover:h-auto", isB2BUser ? "min-h-[430px]" : "min-h-[380px]")}>
           
           <div className="grow cursor-pointer flex flex-col" onClick={() => handleDirectToProduct(id, slug)}>
             
@@ -240,15 +240,30 @@ const ProductCard = ({
                   {isB2BUser ? (
                     // B2B Pricing Structure
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] text-gray-400 font-bold tracking-wide uppercase">
-                        РРЦ: {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
+                      <span className="text-[10px] text-gray-400 font-bold tracking-wide uppercase flex flex-col gap-0.5">
+                        <span>
+                          РРЦ: {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
+                          {priceRetailRecommendation > wholesalePriceUah && (
+                            <span className="text-teal-600 font-bold ml-1.5 normal-case">
+                              (Маржа: {Math.ceil(((priceRetailRecommendation - wholesalePriceUah) / priceRetailRecommendation) * 100)}% / +{priceRetailRecommendation - wholesalePriceUah} ₴)
+                            </span>
+                          )}
+                        </span>
+                        {!!(rrcSale && rrcSale > wholesalePriceUah) && (
+                          <span className="text-red-500 font-bold">
+                            РРЦ Акція: {rrcSale.toLocaleString('uk-UA')}.00 ₴
+                            <span className="text-teal-600 font-bold ml-1.5 normal-case">
+                              (Маржа: {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}% / +{rrcSale - wholesalePriceUah} ₴)
+                            </span>
+                          </span>
+                        )}
                       </span>
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-extrabold text-gray-900">
                           {wholesalePriceUah.toLocaleString('uk-UA')}.00 ₴
                         </span>
                       </div>
-                      <span className="text-xs font-bold text-teal-600 tracking-wide">
+                      <span className="text-xs font-bold text-gray-400 tracking-wide">
                         ${price.toFixed(2)} / од.
                       </span>
                     </div>

@@ -1,22 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Heart, ShoppingBasket } from 'lucide-react';
 import { useAppSelector } from '@/lib/hooks';
 import UserModal from '~/ui/modals/UserModal';
 import Icon from '~/ui/assets/Icon';
 
 export default function HeaderActions() {
-  const pathname = usePathname();
-  const { isAuthenticated, user, localStorageCart } = useAppSelector(
+  const { isAuthenticated, isB2b, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
 
-  const isShop = pathname.includes('shop');
-
-  // Calculate items in cart based on auth status and B2B vs B2C
-  const itemsInCart = isShop
+  // Calculate items in cart based on B2B status
+  const itemsInCart = isB2b
     ? user?.cart?.length || 0
     : isAuthenticated
       ? user?.retailCart?.length || 0
@@ -26,7 +22,7 @@ export default function HeaderActions() {
     <div className="hidden lg:flex items-center gap-6 shrink-0">
       {/* 1. Favorites Action */}
       <Link
-        href={isShop ? '/shop/favorites' : '/favorites'}
+        href="/favorites"
         className="flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold text-primary-600 hover:text-primary-800 transition-colors cursor-pointer select-none"
       >
         <Heart size={22} className="stroke-current stroke-[2.3] fill-none" />
@@ -35,7 +31,7 @@ export default function HeaderActions() {
 
       {/* 2. Cart Action */}
       <Link
-        href={isShop ? '/shop/cart' : '/cart'}
+        href="/cart"
         className="relative flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold text-primary-600 hover:text-primary-800 transition-colors cursor-pointer select-none"
       >
         <div className="relative">

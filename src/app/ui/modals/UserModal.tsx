@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { logoutThunk } from '@/lib/appState/user/operation';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
@@ -13,7 +13,6 @@ import { FileClock, LogOut, Table } from 'lucide-react';
 
 const User = ({ showLabel = true }: { showLabel?: boolean }) => {
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
   const router = useRouter();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -53,8 +52,6 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
     };
   }, [modalIsOpen]);
 
-  const pathVariants = pathname.includes('/shop') ? 'shop' : 'retail';
-
   return (
     <div className="relative flex items-center justify-center">
       {/* Profile Trigger Button */}
@@ -92,7 +89,7 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
 
             {/* Menu Links */}
             <Link
-              href={`/${pathVariants}/history`}
+              href="/history"
               className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-neutral-600 hover:text-primary-500 hover:bg-neutral-50 transition-colors text-xs font-semibold"
               onClick={closeModal}
             >

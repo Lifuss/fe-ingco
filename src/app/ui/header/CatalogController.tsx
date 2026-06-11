@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+
 import { LayoutGrid, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CatalogDrawer from './CatalogDrawer';
@@ -118,9 +118,6 @@ export function CatalogMobileButton() {
 
 export function CatalogDesktopButton() {
   const { isOpen, toggle, openWithDelay, closeWithDelay, closeInstant } = useCatalog();
-  const pathname = usePathname();
-  const isShop = pathname.includes('shop');
-
   return (
     <div
       className="hidden lg:inline-flex items-stretch rounded-lg shadow-sm shadow-orange-500/5 shrink-0 select-none overflow-hidden"
@@ -129,7 +126,7 @@ export function CatalogDesktopButton() {
     >
       {/* Left Part: Direct link to Catalog grid */}
       <Link
-        href={isShop ? '/shop?catalog=true' : '/?catalog=true'}
+        href="/?catalog=true"
         onClick={closeInstant}
         className={cn(
           'flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm tracking-wide transition-all cursor-pointer border border-transparent border-r-0 rounded-l-lg',

@@ -26,15 +26,14 @@ const ProductBlockList = ({
   const searchParams = useSearchParams();
   
   const isProductsLoading = useAppSelector((state) => state.persistedMainReducer.tableLoading);
-  const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
   
   const viewParam = searchParams.get('view') || 'grid';
-  const isListView = listType === 'partner' ? shopView === 'list' : viewParam === 'list';
+  const isListView = listType === 'partner' ? false : viewParam === 'list';
 
   const handleDirectToProduct = (id: number, slug: string) => {
     logProductClick(id);
 
-    const base = listType === 'retail' ? `/${slug}` : `/shop/${slug}`;
+    const base = `/${slug}`;
     const qs = searchParams.toString();
     const link = qs ? `${base}?${qs}` : base;
     router.push(link);

@@ -30,7 +30,7 @@ export default function RegisterPartnerForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect('/shop');
+      redirect('/');
     }
   }, [isAuthenticated]);
 
@@ -59,7 +59,7 @@ export default function RegisterPartnerForm() {
             autoClose: 15000,
           },
         );
-        router.push('/home');
+        router.push('/');
         reset();
       }
     } catch (error) {

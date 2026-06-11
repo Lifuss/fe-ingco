@@ -31,7 +31,6 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
 
   const activeCategoryId = searchParams.get('category') || '';
   const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
-  const viewParam = searchParams.get('view') || 'grid';
 
   // Determine active category name for breadcrumbs & title
   const activeCategory = productsCategories.find((c) => String(c.id) === activeCategoryId);
@@ -39,8 +38,8 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
 
   // Breadcrumbs items
   const breadcrumbItems: { label: string; href?: string }[] = [
-    { label: 'Головна', href: listType === 'retail' ? '/' : '/shop' },
-    { label: 'Інструменти', href: listType === 'retail' ? '/?catalog=true' : '/shop?catalog=true' },
+    { label: 'Головна', href: '/' },
+    { label: 'Інструменти', href: '/?catalog=true' },
   ];
 
   if (activeCategory) {
@@ -69,7 +68,6 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
     }
   };
 
-  const isListView = listType === 'partner' ? shopView === 'list' : viewParam === 'list';
 
   return (
     <div className="w-full font-sans">
@@ -99,20 +97,20 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
           {listType === 'partner' && (
             <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
               <button
-                onClick={() => handleViewChange('grid')}
+                onClick={() => handleViewChange('list')}
                 className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                  !isListView ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                  shopView === 'list' ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
                 }`}
-                aria-label="Table view"
+                aria-label="Grid view"
               >
                 <LayoutGrid size={15} />
               </button>
               <button
-                onClick={() => handleViewChange('list')}
+                onClick={() => handleViewChange('grid')}
                 className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                  isListView ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                  shopView === 'table' ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
                 }`}
-                aria-label="List view"
+                aria-label="Table view"
               >
                 <List size={15} />
               </button>

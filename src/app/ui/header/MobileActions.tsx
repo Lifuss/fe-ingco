@@ -1,22 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Heart, ShoppingBasket } from 'lucide-react';
 import { useAppSelector } from '@/lib/hooks';
 import UserModal from '~/ui/modals/UserModal';
 import Icon from '~/ui/assets/Icon';
 
 export default function MobileActions() {
-  const pathname = usePathname();
-  const { isAuthenticated, user, localStorageCart } = useAppSelector(
+  const { isAuthenticated, isB2b, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
 
-  const isShop = pathname.includes('shop');
-
-  // Calculate items in cart based on auth status and B2B vs B2C
-  const itemsInCart = isShop
+  // Calculate items in cart based on B2B status
+  const itemsInCart = isB2b
     ? user?.cart?.length || 0
     : isAuthenticated
       ? user?.retailCart?.length || 0
@@ -25,7 +21,7 @@ export default function MobileActions() {
   return (
     <div className="flex lg:hidden items-center gap-2">
       <Link
-        href={isShop ? '/shop/favorites' : '/favorites'}
+        href="/favorites"
         className="flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
         aria-label="Favorites"
       >
@@ -33,7 +29,7 @@ export default function MobileActions() {
       </Link>
 
       <Link
-        href={isShop ? '/shop/cart' : '/cart'}
+        href="/cart"
         className="relative flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
         aria-label="Cart"
       >

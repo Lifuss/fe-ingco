@@ -7,8 +7,8 @@ interface FooterProps {
   isShop?: boolean;
 }
 
-const Footer = ({ isShop = false }: FooterProps) => {
-  const baseUrl = isShop ? '/shop' : '/';
+const Footer = ({ isShop: _isShop = false }: FooterProps) => {
+  const baseUrl = '/';
 
   const socialArray: { name: string; url: string; label: string }[] = [
     {
@@ -66,7 +66,7 @@ const Footer = ({ isShop = false }: FooterProps) => {
               </Link>
             </li>
             <li>
-              <Link href="/shop" className="hover:text-primary-500 transition-colors cursor-pointer">
+              <Link href="/about-us/partnership" className="hover:text-primary-500 transition-colors cursor-pointer">
                 Оптовий каталог
               </Link>
             </li>

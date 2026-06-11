@@ -23,9 +23,7 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
   const isExcludedPath = excludedPaths.some((path) => splitedPathname.includes(path));
 
   if (!isExcludedPath) {
-    if (pathname.startsWith('/shop/') && splitedPathname.length >= 3) {
-      validPathname = '/shop';
-    } else if (splitedPathname.length === 2 && pathname !== '/' && !pathname.startsWith('/shop')) {
+    if (splitedPathname.length === 2 && pathname !== '/') {
       validPathname = '/';
     }
   }

@@ -38,7 +38,7 @@ const guideContent = [
     isButton: true,
     button: (
       <Link
-        href={'/home/contacts'}
+        href={'/about-us/contacts'}
         className="border-orange-light text-orange-light mt-auto rounded-lg border bg-inherit p-1 text-center text-xs transition-all hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white md:p-2 2xl:text-base"
       >
         Отримати консультацію

@@ -2,15 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useAppSelector } from '@/lib/hooks';
 
 export default function Logo() {
-  const pathname = usePathname();
-  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
-
-  const isShop = isB2b || pathname?.includes('/shop');
-  const targetUrl = isShop ? '/shop' : '/';
+  const targetUrl = '/';
 
   return (
     <div className="flex items-start gap-1 relative">

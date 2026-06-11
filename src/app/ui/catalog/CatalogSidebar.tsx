@@ -47,9 +47,7 @@ const CatalogSidebar = () => {
       }
     });
 
-    const targetPath = pathname === '/' || pathname === '/shop'
-      ? pathname
-      : (pathname.includes('/shop') ? '/shop' : '/');
+    const targetPath = pathname === '/favorites' ? '/favorites' : '/';
     router.replace(`${targetPath}?${params.toString()}`);
   }, [searchParams, pathname, router]);
 
@@ -101,9 +99,7 @@ const CatalogSidebar = () => {
     if (searchParams.get('query')) {
       params.set('query', searchParams.get('query') || '');
     }
-    const targetPath = pathname === '/' || pathname === '/shop'
-      ? pathname
-      : (pathname.includes('/shop') ? '/shop' : '/');
+    const targetPath = pathname === '/favorites' ? '/favorites' : '/';
     router.replace(`${targetPath}?${params.toString()}`);
   };
 
