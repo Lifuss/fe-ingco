@@ -39,7 +39,6 @@ import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
 import ProductSkeleton from '~/ui/skeletons/ProductSkeleton';
 import ProductCard from '@/app/ui/product/ProductCard';
-import B2BProductDetail from '@/app/ui/product/B2BProductDetail';
 
 type PageProps = {
   params: Promise<{
@@ -62,6 +61,8 @@ export default function Page({ params }: PageProps) {
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favoritesState = useAppSelector((state) => state.persistedAuthReducer.user?.favorites || []);
   const favoritesIdList = favoritesState.map((p: unknown) => typeof p === 'object' && p !== null ? (p as { id: number }).id : Number(p));
+  const usdRate = useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || 40;
+  const wholesalePriceUah = product ? Math.ceil((product.priceBulk || product.price || 0) * usdRate) : 0;
 
   // UI state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -191,7 +192,7 @@ export default function Page({ params }: PageProps) {
         addProductToCartThunk({
           productId: product.id,
           quantity: qty,
-          isRetail: true,
+          isRetail: !isB2b,
         })
       ).unwrap();
     } else {
@@ -229,7 +230,7 @@ export default function Page({ params }: PageProps) {
 
   // Breadcrumbs
   const breadcrumbsItems: { label: string; href?: string }[] = [
-    { label: 'Головна', href: '/' },
+    { label: isB2b ? 'Каталог партнера' : 'Головна', href: '/' },
   ];
   const electroCategory = categories?.find(c => c.name?.toLowerCase().includes('електроінструмент'));
   if (electroCategory) {
@@ -304,10 +305,6 @@ export default function Page({ params }: PageProps) {
   const relatedProducts = products
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
-
-  if (isAuthenticated && isB2b) {
-    return <B2BProductDetail productSlug={productSlug} />;
-  }
 
   return (
     <>
@@ -500,23 +497,57 @@ export default function Page({ params }: PageProps) {
                   {/* Price and Counter Row */}
                   <div className="flex flex-wrap items-center justify-between gap-4 py-2">
                     <div className="flex flex-col">
-                      <span className="text-xs text-neutral-400 font-semibold uppercase">Ціна</span>
-                      <div className="flex items-baseline gap-2">
-                        {product.rrcSale ? (
-                          <>
-                            <span className="text-2xl font-bold font-display text-primary">
-                              {product.rrcSale.toLocaleString('uk-UA')} ₴
+                      {isB2b ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs text-neutral-400 font-semibold uppercase">Ціна партнера</span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold font-display text-neutral-900">
+                              {wholesalePriceUah.toLocaleString('uk-UA')} ₴
                             </span>
-                            <span className="text-sm text-neutral-400 line-through">
-                              {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-2xl font-bold font-display text-neutral-900">
-                            {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                          </div>
+                          <span className="text-xs font-bold text-neutral-400 tracking-wide">
+                            ${(product.priceBulk || product.price || 0).toFixed(2)} / од.
                           </span>
-                        )}
-                      </div>
+                          <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
+                            <span>
+                              РРЦ: {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                              {product.priceRetailRecommendation > wholesalePriceUah && (
+                                <span className="text-teal-600 font-bold ml-1.5">
+                                  (Маржа: {Math.ceil(((product.priceRetailRecommendation - wholesalePriceUah) / product.priceRetailRecommendation) * 100)}% / +{product.priceRetailRecommendation - wholesalePriceUah} ₴)
+                                </span>
+                              )}
+                            </span>
+                            {!!(product.rrcSale && product.rrcSale > wholesalePriceUah) && (
+                              <span className="text-red-500 font-bold">
+                                РРЦ Акція: {product.rrcSale.toLocaleString('uk-UA')} ₴
+                                <span className="text-teal-600 font-bold ml-1.5">
+                                  (Маржа: {Math.ceil(((product.rrcSale - wholesalePriceUah) / product.rrcSale) * 100)}% / +{product.rrcSale - wholesalePriceUah} ₴)
+                                </span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-xs text-neutral-400 font-semibold uppercase">Ціна</span>
+                          <div className="flex items-baseline gap-2">
+                            {product.rrcSale ? (
+                              <>
+                                <span className="text-2xl font-bold font-display text-primary">
+                                  {product.rrcSale.toLocaleString('uk-UA')} ₴
+                                </span>
+                                <span className="text-sm text-neutral-400 line-through">
+                                  {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-2xl font-bold font-display text-neutral-900">
+                                {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Quantity counter */}
