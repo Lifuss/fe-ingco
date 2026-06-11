@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
+import CatalogLayoutClientWrapper from './CatalogLayoutClientWrapper';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Каталог інструментів INGCO',
@@ -9,5 +10,5 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 export default function RetailCatalogLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <CatalogLayoutClientWrapper>{children}</CatalogLayoutClientWrapper>;
 }

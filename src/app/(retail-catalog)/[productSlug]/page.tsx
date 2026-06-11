@@ -36,11 +36,10 @@ import {
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
-import Header from '~/ui/header/Header';
-import Footer from '~/ui/Footer';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
 import ProductSkeleton from '~/ui/skeletons/ProductSkeleton';
 import ProductCard from '@/app/ui/product/ProductCard';
+import B2BProductDetail from '@/app/ui/product/B2BProductDetail';
 
 type PageProps = {
   params: Promise<{
@@ -54,6 +53,8 @@ export default function Page({ params }: PageProps) {
   const { productSlug } = use(params);
 
   // Redux state
+  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
   const product = useAppSelector((state) => state.persistedMainReducer.product);
   const products = useAppSelector((state) => state.persistedMainReducer.products || []);
   const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
@@ -138,39 +139,31 @@ export default function Page({ params }: PageProps) {
 
   if (productLoading) {
     return (
-      <>
-        <Header />
-        <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
-          <CatalogSidebar />
-          <div className="min-h-[550px] w-full">
-            <ProductSkeleton />
-          </div>
-        </main>
-        <Footer />
-      </>
+      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+        <CatalogSidebar />
+        <div className="min-h-[550px] w-full">
+          <ProductSkeleton />
+        </div>
+      </main>
     );
   }
   if (!product || !product.id) {
     return (
-      <>
-        <Header />
-        <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
-          <CatalogSidebar />
-          <div className="min-h-[550px] w-full">
-            <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
-              <SearchX size={52} className="text-neutral-400" />
-              <h2 className="text-2xl font-display font-semibold text-neutral-800">Продукт не знайдено</h2>
-              <button
-                className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-md transition-all cursor-pointer"
-                onClick={() => router.push('/')}
-              >
-                В каталог
-              </button>
-            </div>
+      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+        <CatalogSidebar />
+        <div className="min-h-[550px] w-full">
+          <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
+            <SearchX size={52} className="text-neutral-400" />
+            <h2 className="text-2xl font-display font-semibold text-neutral-800">Продукт не знайдено</h2>
+            <button
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-md transition-all cursor-pointer"
+              onClick={() => router.push('/')}
+            >
+              В каталог
+            </button>
           </div>
-        </main>
-        <Footer />
-      </>
+        </div>
+      </main>
     );
   }
 
@@ -311,9 +304,12 @@ export default function Page({ params }: PageProps) {
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
+  if (isAuthenticated && isB2b) {
+    return <B2BProductDetail productSlug={productSlug} />;
+  }
+
   return (
     <>
-      <Header />
       <main className="flex flex-col gap-4 px-4 md:px-[60px] pt-8 bg-neutral-50 min-h-[600px]">
         {/* Dynamic breadcrumbs */}
         <div className="max-w-[1440px] w-full mx-auto">
@@ -832,7 +828,6 @@ export default function Page({ params }: PageProps) {
         ></iframe>
       </Modal>
 
-      <Footer />
     </>
   );
 }

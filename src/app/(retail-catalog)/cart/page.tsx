@@ -1,31 +1,17 @@
-import RetailCartTable from '@/app/ui/product/RetailCartTable';
-import CategoriesSidebar from '~/ui/catalog/CategoriesSidebar';
-import Header from '~/ui/header/Header';
-import Footer from '~/ui/Footer';
-import { Metadata } from 'next';
-import { generatePageMetadata } from '@/lib/metadata';
+'use client';
 
-export const metadata: Metadata = generatePageMetadata({
-  title: 'Кошик покупок',
-  description: 'Ваш кошик покупок інструментів INGCO',
-  path: '/cart',
-  noindex: true,
-  nofollow: true,
-});
+import RetailCartTable from '@/app/ui/product/RetailCartTable';
+import CartTable from '@/app/ui/product/CartTable';
+import { useAppSelector } from '@/lib/hooks';
 
 const Page = () => {
+  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
   return (
-    <>
-      <Header />
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
-        <CategoriesSidebar />
-        <div className="min-h-[550px] w-full">
-          <RetailCartTable />
-          <div id="image" className="absolute z-50 hidden h-[200px] w-[200px]"></div>
-        </div>
-      </main>
-      <Footer />
-    </>
+    <main className="min-h-[550px] w-full px-[60px] pt-8 bg-white">
+      {isAuthenticated && isB2b ? <CartTable /> : <RetailCartTable />}
+      <div id="image" className="absolute z-50 hidden h-[200px] w-[200px]"></div>
+    </main>
   );
 };
 

@@ -2,15 +2,14 @@
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import ProductList from '@/app/ui/product/ProductList';
+import ShopTable from '@/app/ui/product/ShopTable';
 import { useEffect } from 'react';
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { clearAuthState } from '@/lib/appState/user/slice';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { toast } from 'react-toastify';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
-import Header from '~/ui/header/Header';
-import Footer from '~/ui/Footer';
 
 // B2C Landing Page Components
 import RetailHero from '~/ui/home/RetailHero';
@@ -27,7 +26,6 @@ export default function Page() {
   const { products = [] } = useAppSelector((state) => state.persistedMainReducer);
 
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const category = searchParams.get('category') || '';
@@ -53,11 +51,6 @@ export default function Page() {
   }, [dispatch, showCatalog, products.length]);
 
   useEffect(() => {
-    if (isAuthenticated && isB2b) {
-      router.push('/shop');
-      return;
-    }
-
     if (!isAuthenticated) {
       let token: string | null = null;
       try {
@@ -78,47 +71,47 @@ export default function Page() {
       if (token) {
         dispatch(refreshTokenThunk())
           .unwrap()
-          .then((response) => {
-            if (response.isB2b) {
-              router.push('/shop');
-            }
-          })
           .catch(() => {
             dispatch(clearAuthState());
             toast.info('Сесія закінчилися. Для взаємодії з акаунтом будь ласка, увійдіть знову.');
           });
       }
     }
-  }, [dispatch, router, isAuthenticated, isB2b]);
+  }, [dispatch, isAuthenticated]);
 
   if (isAuthenticated && isB2b) {
-    return null;
+    return (
+      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+        <CatalogSidebar />
+        <div className="min-h-[550px] w-full">
+          <ShopTable />
+          <div
+            id="image"
+            className="absolute z-50 hidden h-[200px] w-[200px] 2xl:h-[250px] 2xl:w-[250px]"
+          ></div>
+        </div>
+      </main>
+    );
   }
 
-  return (
-    <>
-      <Header />
-      {showCatalog ? (
-        <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
-          <CatalogSidebar />
-          <div className="min-h-[550px] w-full">
-            <ProductList />
-          </div>
-        </main>
-      ) : (
-        <main className="flex flex-col bg-[#FFF8F5] min-h-[550px]">
-          <RetailHero />
-          <TrustRibbon />
-          <HotOffers products={products} />
-          <CategoryGrid />
-          <SeriesComparison products={products} />
-          <Testimonials />
-          <FaqSection />
-          <ConsultationCTA />
-        </main>
-      )}
-      <Footer />
-    </>
+  return showCatalog ? (
+    <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+      <CatalogSidebar />
+      <div className="min-h-[550px] w-full">
+        <ProductList />
+      </div>
+    </main>
+  ) : (
+    <main className="flex flex-col bg-[#FFF8F5] min-h-[550px]">
+      <RetailHero />
+      <TrustRibbon />
+      <HotOffers products={products} />
+      <CategoryGrid />
+      <SeriesComparison products={products} />
+      <Testimonials />
+      <FaqSection />
+      <ConsultationCTA />
+    </main>
   );
 }
 

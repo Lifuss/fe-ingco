@@ -1,30 +1,26 @@
-import ProductList from '@/app/ui/product/ProductList';
-import CategoriesSidebar from '~/ui/catalog/CategoriesSidebar';
-import Header from '~/ui/header/Header';
-import Footer from '~/ui/Footer';
-import { Metadata } from 'next';
-import { generatePageMetadata } from '@/lib/metadata';
+'use client';
 
-export const metadata: Metadata = generatePageMetadata({
-  title: 'Обрані товари',
-  description: 'Ваші обрані інструменти INGCO',
-  path: '/favorites',
-  noindex: true,
-  nofollow: true,
-});
+import ProductList from '@/app/ui/product/ProductList';
+import ShopTable from '@/app/ui/product/ShopTable';
+import { useAppSelector } from '@/lib/hooks';
 
 const Page = () => {
+  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
   return (
-    <>
-      <Header />
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
-        <CategoriesSidebar />
-        <div className="min-h-[550px] w-full">
-          <ProductList isFavoritePage />
-        </div>
-      </main>
-      <Footer />
-    </>
+    <main className="min-h-[550px] w-full px-[60px] pt-8 bg-white">
+      {isAuthenticated && isB2b ? (
+        <>
+          <ShopTable isFavoritePage={true} />
+          <div
+            id="image"
+            className="absolute z-50 hidden h-[200px] w-[200px] 2xl:h-[250px] 2xl:w-[250px]"
+          ></div>
+        </>
+      ) : (
+        <ProductList isFavoritePage={true} />
+      )}
+    </main>
   );
 };
 

@@ -1,30 +1,15 @@
-import HistoryTable from '~/shop/table/HistoryTable';
-import CategoriesSidebar from '~/ui/catalog/CategoriesSidebar';
-import Header from '~/ui/header/Header';
-import Footer from '~/ui/Footer';
-import { Metadata } from 'next';
-import { generatePageMetadata } from '@/lib/metadata';
+'use client';
 
-export const metadata: Metadata = generatePageMetadata({
-  title: 'Історія замовлень',
-  description: 'Історія ваших замовлень інструментів INGCO',
-  path: '/history',
-  noindex: true,
-  nofollow: true,
-});
+import HistoryTable from '@/app/ui/product/HistoryTable';
+import { useAppSelector } from '@/lib/hooks';
 
 const Page = () => {
+  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
   return (
-    <>
-      <Header />
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14">
-        <CategoriesSidebar />
-        <div className="min-h-[550px] w-full">
-          <HistoryTable isRetail />
-        </div>
-      </main>
-      <Footer />
-    </>
+    <main className="min-h-[550px] w-full px-[60px] pt-8 bg-white">
+      <HistoryTable isRetail={!isB2b} />
+    </main>
   );
 };
 
