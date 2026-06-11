@@ -11,7 +11,6 @@ import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
 import { 
-  addProductToRetailCartThunk, 
   addProductToCartThunk,
   addFavoriteProductThunk, 
   deleteFavoriteProductThunk 
@@ -108,29 +107,17 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   const handleCartClick = (product: Product) => {
     if (isAuth) {
-      if (isB2BUser) {
-        dispatch(
-          addProductToCartThunk({
-            productId: product.id,
-            quantity: 1,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`${product.name} додано в кошик`);
-          });
-      } else {
-        dispatch(
-          addProductToRetailCartThunk({
-            productId: product.id,
-            quantity: 1,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`${product.name} додано в кошик`);
-          });
-      }
+      dispatch(
+        addProductToCartThunk({
+          productId: product.id,
+          quantity: 1,
+          isRetail: !isB2BUser,
+        }),
+      )
+        .unwrap()
+        .then(() => {
+          toast.success(`${product.name} додано в кошик`);
+        });
     } else {
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
       dispatch(

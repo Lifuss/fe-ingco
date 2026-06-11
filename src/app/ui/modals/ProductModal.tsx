@@ -1,7 +1,7 @@
 'use client';
 import Modal from 'react-modal';
 import { useAppDispatch } from '@/lib/hooks';
-import { addProductToCartThunk, addProductToRetailCartThunk } from '@/lib/appState/user/operation';
+import { addProductToCartThunk } from '@/lib/appState/user/operation';
 import { useState } from 'react';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
@@ -88,32 +88,21 @@ const ModalProduct = ({
                   )}
                   <button
                     onClick={() => {
-                      if (!isRetail) {
-                        if (productQuantity > 0) {
-                          dispatch(
-                            addProductToCartThunk({
-                              productId: product.id,
-                              quantity: productQuantity,
-                            }),
-                          )
-                            .unwrap()
-                            .then(() => {
-                              toast.success(`${product.name} додано в кошик`);
-                            });
-                        } else {
-                          toast.error('Кількість товару не може бути менше 1');
-                        }
-                      } else {
+                      const qty = !isRetail ? productQuantity : 1;
+                      if (qty > 0) {
                         dispatch(
-                          addProductToRetailCartThunk({
+                          addProductToCartThunk({
                             productId: product.id,
-                            quantity: 1,
+                            quantity: qty,
+                            isRetail,
                           }),
                         )
                           .unwrap()
                           .then(() => {
                             toast.success(`${product.name} додано в кошик`);
                           });
+                      } else {
+                        toast.error('Кількість товару не може бути менше 1');
                       }
                     }}
                   >

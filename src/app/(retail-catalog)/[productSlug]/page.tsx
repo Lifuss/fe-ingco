@@ -29,7 +29,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import {
-  addProductToRetailCartThunk,
+  addProductToCartThunk,
   addFavoriteProductThunk,
   deleteFavoriteProductThunk
 } from '@/lib/appState/user/operation';
@@ -188,9 +188,10 @@ export default function Page({ params }: PageProps) {
     const qty = typeof quantity === 'number' ? quantity : 1;
     if (isAuth) {
       await dispatch(
-        addProductToRetailCartThunk({
+        addProductToCartThunk({
           productId: product.id,
           quantity: qty,
+          isRetail: true,
         })
       ).unwrap();
     } else {

@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
-  addProductToRetailCartThunk,
+  addProductToCartThunk,
   deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { Product } from '@/lib/types';
@@ -131,9 +131,10 @@ const ProductList = ({ isFavoritePage = false }) => {
   const handleCartClick = (id: number, productName: string) => {
     if (isAuth) {
       dispatch(
-        addProductToRetailCartThunk({
+        addProductToCartThunk({
           productId: id,
           quantity: 1,
+          isRetail: true,
         }),
       )
         .unwrap()

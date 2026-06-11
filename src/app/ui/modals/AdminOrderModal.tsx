@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../buttons/button';
 import { useEffect, useRef, useState } from 'react';
-import { updateOrderThunk, updateRetailOrderThunk } from '@/lib/appState/dashboard/operations';
+import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
 import { printOrderExcel } from '@/lib/utils';
@@ -88,21 +88,13 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
       ...updatedOrderWithoutUser
     } = updatedOrder;
 
-    if (isRetail) {
-      dispatch(
-        updateRetailOrderThunk({
-          orderId: selectedOrder.id,
-          updateOrder: updatedOrderWithoutUser,
-        }),
-      );
-    } else {
-      dispatch(
-        updateOrderThunk({
-          orderId: selectedOrder.id,
-          updateOrder: updatedOrderWithoutUser,
-        }),
-      );
-    }
+    dispatch(
+      updateOrderThunk({
+        orderId: selectedOrder.id,
+        updateOrder: updatedOrderWithoutUser,
+        isRetail,
+      }),
+    );
 
     closeModal();
   };

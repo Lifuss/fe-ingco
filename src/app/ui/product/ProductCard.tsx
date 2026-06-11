@@ -8,7 +8,6 @@ import { Heart, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { 
   addProductToCartThunk, 
-  addProductToRetailCartThunk,
   addFavoriteProductThunk,
   deleteFavoriteProductThunk
 } from '@/lib/appState/user/operation';
@@ -117,15 +116,15 @@ const ProductCard = ({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isAuth) {
-      if (isB2BUser) {
-        dispatch(addProductToCartThunk({ productId: id, quantity }))
-          .unwrap()
-          .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
-      } else {
-        dispatch(addProductToRetailCartThunk({ productId: id, quantity }))
-          .unwrap()
-          .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
-      }
+      dispatch(
+        addProductToCartThunk({
+          productId: id,
+          quantity,
+          isRetail: !isB2BUser,
+        }),
+      )
+        .unwrap()
+        .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
     } else {
       // Guest local cart
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;

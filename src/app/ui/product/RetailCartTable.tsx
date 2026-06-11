@@ -6,9 +6,9 @@ import Image from 'next/image';
 import { SubmitEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 import {
-  addProductToRetailCartThunk,
+  addProductToCartThunk,
   createRetailOrderThunk,
-  deleteProductFromRetailCartThunk,
+  deleteProductFromCartThunk,
 } from '@/lib/appState/user/operation';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
@@ -62,9 +62,9 @@ const RetailCartTable = () => {
   const handleQuantityChange = (id: number, operation: string) => {
     if (isAuth) {
       if (operation === 'increment') {
-        dispatch(addProductToRetailCartThunk({ productId: id, quantity: 1 }));
+        dispatch(addProductToCartThunk({ productId: id, quantity: 1, isRetail: true }));
       } else {
-        dispatch(deleteProductFromRetailCartThunk({ productId: id, quantity: 1 }));
+        dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1, isRetail: true }));
       }
     } else {
       if (operation === 'increment') {
@@ -195,9 +195,10 @@ const RetailCartTable = () => {
                 onClick={() => {
                   if (isAuth) {
                     dispatch(
-                      deleteProductFromRetailCartThunk({
+                      deleteProductFromCartThunk({
                         productId: row.original.id,
                         quantity: row.original.quantityCol,
+                        isRetail: true,
                       }),
                     );
                   } else {
