@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apiIngco } from '../user/operation';
+import { apiIngco, serializeAxiosError } from '../user/operation';
 import { Order, User } from '@/lib/types';
 import { normalizeProduct, normalizeOrder, normalizeUser } from '@/lib/utils';
 
@@ -15,7 +15,7 @@ export const createProductThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -34,7 +34,7 @@ export const updateProductThunk = createAsyncThunk(
       });
       return normalizeProduct(data);
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -60,18 +60,19 @@ export const fetchUsersThunk = createAsyncThunk(
       page: number;
       limit: number;
     },
-    { rejectWithValue },
+    { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/users', {
         params: { q, role: role.toUpperCase(), isB2B, isUserVerified, isDeleted, page, limit },
+        signal,
       });
       return {
         ...data,
         users: (data.users || []).map(normalizeUser),
       };
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -103,7 +104,7 @@ export const createUserThunk = createAsyncThunk(
       const { data } = await apiIngco.post('/users', payload);
       return normalizeUser(data);
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -120,7 +121,7 @@ export const updateUserThunk = createAsyncThunk(
 
       return normalizeUser(data);
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -132,7 +133,7 @@ export const restoreUserThunk = createAsyncThunk(
       await apiIngco.post(`/users/restore/${userId}`);
       return userId;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -144,7 +145,7 @@ export const deleteUserThunk = createAsyncThunk(
       await apiIngco.delete(`/users/${userId}`);
       return userId;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -188,18 +189,19 @@ export const fetchOrdersThunk = createAsyncThunk(
         | 'замовлення виконано'
         | 'замовлення скасовано';
     },
-    { rejectWithValue },
+    { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/orders/all', {
         params: { q, page, limit, isRetail, status },
+        signal,
       });
       return {
         ...data,
         orders: (data.orders || []).map(normalizeOrder),
       };
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -207,7 +209,7 @@ export const fetchOrdersThunk = createAsyncThunk(
 export const updateOrderThunk = createAsyncThunk(
   'updateOrder',
   async (
-    { orderId, updateOrder }: { orderId: number; updateOrder: UpdateOrder },
+    { orderId, updateOrder, isRetail = false }: { orderId: number; updateOrder: UpdateOrder; isRetail?: boolean },
     { rejectWithValue },
   ) => {
     try {
@@ -225,39 +227,11 @@ export const updateOrderThunk = createAsyncThunk(
         }
       }
 
-      const { data } = await apiIngco.put(`/orders/${orderId}`, payload);
+      const url = isRetail ? `/orders/retail/${orderId}` : `/orders/${orderId}`;
+      const { data } = await apiIngco.put(url, payload);
       return normalizeOrder(data);
     } catch (error) {
-      return rejectWithValue(error);
-    }
-  },
-);
-
-export const updateRetailOrderThunk = createAsyncThunk(
-  'updateOrder',
-  async (
-    { orderId, updateOrder }: { orderId: number; updateOrder: UpdateOrder },
-    { rejectWithValue },
-  ) => {
-    try {
-      const payload: Record<string, any> = {};
-      const fields: (keyof UpdateOrder)[] = [
-        'status',
-        'isPaid',
-        'declarationNumber',
-        'comment',
-        'shippingAddress',
-      ];
-      for (const field of fields) {
-        if (updateOrder[field] !== undefined) {
-          payload[field] = updateOrder[field];
-        }
-      }
-
-      const { data } = await apiIngco.put(`/orders/retail/${orderId}`, payload);
-      return normalizeOrder(data);
-    } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -269,7 +243,7 @@ export const fetchUsersStatsThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/users/stats');
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -288,7 +262,7 @@ export const fetchSupportTicketsThunk = createAsyncThunk(
       page: number;
       limit: number;
     },
-    { rejectWithValue },
+    { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/users/support', {
@@ -298,10 +272,11 @@ export const fetchSupportTicketsThunk = createAsyncThunk(
           limit,
           isAnswered,
         },
+        signal,
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -326,7 +301,7 @@ export const updateSupportTicketThunk = createAsyncThunk(
       });
       return ticketNumber;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );

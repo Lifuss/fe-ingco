@@ -2,15 +2,12 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
   addFavoriteProductThunk,
   addProductToCartThunk,
-  addProductToRetailCartThunk,
   createOrderThunk,
   createRetailOrderThunk,
   deleteFavoriteProductThunk,
   deleteProductFromCartThunk,
-  deleteProductFromRetailCartThunk,
   forgotPasswordThunk,
   getUserCartThunk,
-  getUserRetailCartThunk,
   loginThunk,
   logoutThunk,
   refreshTokenThunk,
@@ -132,19 +129,14 @@ const authStateSlice = createSlice({
           addProductToCartThunk.fulfilled,
           deleteProductFromCartThunk.fulfilled,
         ),
-        (state, { payload }) => {
-          state.user.cart = payload;
+        (state, { payload, meta }) => {
+          const isRetail = meta.arg && typeof meta.arg === 'object' && 'isRetail' in meta.arg ? (meta.arg as any).isRetail : false;
+          if (isRetail) {
+            state.user.retailCart = payload;
+          } else {
+            state.user.cart = payload;
+          }
           state.isLoading = false;
-        },
-      )
-      .addMatcher(
-        isAnyOf(
-          getUserRetailCartThunk.fulfilled,
-          addProductToRetailCartThunk.fulfilled,
-          deleteProductFromRetailCartThunk.fulfilled,
-        ),
-        (state, { payload }) => {
-          state.user.retailCart = payload;
         },
       )
       .addMatcher(
@@ -183,11 +175,8 @@ const authStateSlice = createSlice({
       .addMatcher(
         isAnyOf(
           getUserCartThunk.rejected,
-          getUserRetailCartThunk.rejected,
           addProductToCartThunk.rejected,
-          addProductToRetailCartThunk.rejected,
           deleteProductFromCartThunk.rejected,
-          deleteProductFromRetailCartThunk.rejected,
           createOrderThunk.rejected,
           createRetailOrderThunk.rejected,
           forgotPasswordThunk.rejected,

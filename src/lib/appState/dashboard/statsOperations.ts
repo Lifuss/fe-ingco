@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apiIngco } from '../user/operation';
+import { apiIngco, serializeAxiosError } from '../user/operation';
 
 export const getProductClicksThunk = createAsyncThunk(
   'stats/productClicks',
@@ -18,7 +18,7 @@ export const getProductClicksThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -50,7 +50,7 @@ export const getUserActivityThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );

@@ -1,47 +1,35 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
-import { apiIngco } from '../user/operation';
+import { apiIngco, serializeAxiosError } from '../user/operation';
 import { toast } from 'react-toastify';
 import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import { normalizeProduct, normalizeOrder } from '@/lib/utils';
 
 export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
-  async (_, { rejectWithValue, getState, signal }) => {
+  async (_, { rejectWithValue, signal }) => {
     try {
-      let newBody: { lastUpdate?: string; USD?: number; EUR?: number } = {};
-      const { persistedMainReducer: state } = getState() as RootState;
+      const { data } = await axios.get('/api/currency', {
+        headers: { 'Cache-Control': 'no-cache' },
+        timeout: 8000, // 8s timeout to prevent hanging requests
+        signal,
+      });
 
-      if (
-        !state.currencyRates?.lastUpdate ||
-        Date.now() - new Date(state.currencyRates.lastUpdate).getTime() > 1800000 ||
-        !state.currencyRates.USD
-      ) {
-        newBody = {
-          lastUpdate: new Date().toISOString(),
-        };
-
-        const { data } = await axios.get('/api/currency', {
-          headers: { 'Cache-Control': 'no-cache' },
-          timeout: 8000, // 8s timeout to prevent hanging requests
-          signal,
-        });
-
-        if (!data || !data.USD || !data.EUR) {
-          throw new Error('Invalid currency data received');
-        }
-
-        newBody.USD = parseFloat(Number(data.USD).toFixed(1));
-        newBody.EUR = parseFloat(Number(data.EUR).toFixed(1));
-
-        if (!newBody.USD || !newBody.EUR || isNaN(newBody.USD) || isNaN(newBody.EUR)) {
-          throw new Error('Currency rates not found or invalid');
-        }
-        return newBody;
-      } else {
-        return state.currencyRates;
+      if (!data || !data.USD || !data.EUR) {
+        throw new Error('Invalid currency data received');
       }
+
+      const newBody = {
+        lastUpdate: new Date().toISOString(),
+        USD: parseFloat(Number(data.USD).toFixed(1)),
+        EUR: parseFloat(Number(data.EUR).toFixed(1)),
+      };
+
+      if (!newBody.USD || !newBody.EUR || isNaN(newBody.USD) || isNaN(newBody.EUR)) {
+        throw new Error('Currency rates not found or invalid');
+      }
+      return newBody;
     } catch (error) {
       const isCanceled =
         axios.isCancel(error) ||
@@ -58,6 +46,19 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
       );
     }
   },
+  {
+    condition: (_, { getState }) => {
+      const { persistedMainReducer: state } = getState() as RootState;
+      if (
+        state.currencyRates?.lastUpdate &&
+        Date.now() - new Date(state.currencyRates.lastUpdate).getTime() <= 1800000 &&
+        state.currencyRates.USD
+      ) {
+        return false;
+      }
+      return true;
+    },
+  }
 );
 
 export const fetchMainTableDataThunk = createAsyncThunk(
@@ -78,15 +79,16 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       sortValue: sortValueType;
       isRetail: boolean;
     },
-    { rejectWithValue },
+    { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/products', {
         params: { page, q: query, limit, category, sortValue, isRetail },
+        signal,
       });
       return { ...data, products: data.products.map(normalizeProduct) };
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -98,7 +100,7 @@ export const getProductByIdThunk = createAsyncThunk(
       const { data } = await apiIngco.get(`/products/${productId}`);
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -110,10 +112,11 @@ export const getProductBySlugThunk = createAsyncThunk(
       const { data } = await apiIngco.get(`/products/${productSlug}`);
       return normalizeProduct(data);
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
+
 export const fetchCategoriesThunk = createAsyncThunk(
   'categories/fetch',
   async (query: string, { rejectWithValue }) => {
@@ -123,7 +126,7 @@ export const fetchCategoriesThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
   {
@@ -148,18 +151,19 @@ export const fetchHistoryThunk = createAsyncThunk(
       limit = 15,
       isRetail,
     }: { page: number; q: string; limit?: number; isRetail: boolean },
-    { rejectWithValue },
+    { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/orders', {
         params: { page, q, limit, isRetail },
+        signal,
       });
       return {
         ...data,
         orders: (data.orders || []).map(normalizeOrder),
       };
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -171,7 +175,7 @@ export const deleteProductThunk = createAsyncThunk(
       await apiIngco.delete(`/products/${productId}`);
       return productId;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -183,7 +187,7 @@ export const createCategoryThunk = createAsyncThunk(
       const { data } = await apiIngco.post('/categories', { name, renderSort });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -201,7 +205,7 @@ export const updateCategoryThunk = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -214,7 +218,7 @@ export const deleteCategoryThunk = createAsyncThunk(
       return categoryId;
     } catch (error) {
       toast.error("В категорії існують прив'язані товари, видаліть їх, або змініть категорію");
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -236,7 +240,7 @@ export const fetchExcelFileThunk = createAsyncThunk(
       }
       return { blob: data, type: 'success', status: status };
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
@@ -261,15 +265,19 @@ export const supportTicketThunk = createAsyncThunk(
       await apiIngco.post('/users/support', { name, email, message, phone });
       return;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(serializeAxiosError(error));
     }
   },
 );
 
 export const trackProductClickThunk = createAsyncThunk(
   'product/trackProductClick',
-  async (productId: number) => {
-    await apiIngco.get(`/stats/products/${productId}`);
-    return productId;
+  async (productId: number, { rejectWithValue }) => {
+    try {
+      await apiIngco.get(`/stats/products/${productId}`);
+      return productId;
+    } catch (error) {
+      return rejectWithValue(serializeAxiosError(error));
+    }
   },
 );

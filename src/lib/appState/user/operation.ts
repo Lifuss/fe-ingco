@@ -29,7 +29,7 @@ export const apiIngco = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
 });
 
-const serializeAxiosError = (error: unknown) => {
+export const serializeAxiosError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     return {
       message: error.response?.data?.message || error.message,
@@ -47,6 +47,7 @@ const serializeAxiosError = (error: unknown) => {
   return String(error);
 };
 
+let cachedToken: string | null = null;
 
 apiIngco.interceptors.request.use(
   (config) => {
@@ -66,20 +67,25 @@ apiIngco.interceptors.request.use(
         let token = match ? decodeURIComponent(match[1]) : null;
 
         if (!token) {
-          try {
-            const savedUserString = localStorage.getItem('persist:auth');
-            if (savedUserString) {
-              const savedUser = JSON.parse(savedUserString);
-              if (savedUser?.token) {
-                try {
-                  token = JSON.parse(savedUser.token);
-                } catch {
-                  token = savedUser.token; // Fallback if token is already a plain string
+          if (cachedToken) {
+            token = cachedToken;
+          } else {
+            try {
+              const savedUserString = localStorage.getItem('persist:auth');
+              if (savedUserString) {
+                const savedUser = JSON.parse(savedUserString);
+                if (savedUser?.token) {
+                  try {
+                    token = JSON.parse(savedUser.token);
+                  } catch {
+                    token = savedUser.token; // Fallback if token is already a plain string
+                  }
+                  cachedToken = token;
                 }
               }
+            } catch (e) {
+              console.error('Interceptor failed to read persist:auth:', e);
             }
-          } catch (e) {
-            console.error('Interceptor failed to read persist:auth:', e);
           }
         }
 
@@ -102,6 +108,7 @@ apiIngco.interceptors.request.use(
 );
 
 const setToken = (token: string, role?: string) => {
+  cachedToken = token;
   apiIngco.defaults.headers.common.Authorization = `Bearer ${token}`;
   if (typeof window !== 'undefined') {
     document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
@@ -111,6 +118,7 @@ const setToken = (token: string, role?: string) => {
   }
 };
 const clearToken = () => {
+  cachedToken = null;
   apiIngco.defaults.headers.common.Authorization = ``;
   if (typeof window !== 'undefined') {
     document.cookie = 'token=; path=/; max-age=0; SameSite=Lax; Secure';
@@ -236,20 +244,12 @@ export const deleteFavoriteProductThunk = createAsyncThunk(
   },
 );
 
-export const getUserCartThunk = createAsyncThunk('cart/get', async (_, { rejectWithValue }) => {
-  try {
-    const { data } = await apiIngco.get('users/cart');
-    return data.cart;
-  } catch (error) {
-    return rejectWithValue(serializeAxiosError(error));
-  }
-});
-
-export const getUserRetailCartThunk = createAsyncThunk(
-  'cart/getRetail',
-  async (_, { rejectWithValue }) => {
+export const getUserCartThunk = createAsyncThunk(
+  'cart/get',
+  async (arg: { isRetail?: boolean } | undefined, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.get('users/cart/retail');
+      const isRetail = arg?.isRetail ?? false;
+      const { data } = await apiIngco.get(isRetail ? 'users/cart/retail' : 'users/cart');
       return data.cart;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -259,24 +259,12 @@ export const getUserRetailCartThunk = createAsyncThunk(
 
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
-  async ({ productId, quantity }: { productId: number; quantity: number }, { rejectWithValue }) => {
+  async (
+    { productId, quantity, isRetail = false }: { productId: number; quantity: number; isRetail?: boolean },
+    { rejectWithValue },
+  ) => {
     try {
-      const { data } = await apiIngco.post('users/cart', {
-        productId,
-        quantity,
-      });
-      return data.cart;
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
-  },
-);
-
-export const addProductToRetailCartThunk = createAsyncThunk(
-  'cart/addRetail',
-  async ({ productId, quantity }: { productId: number; quantity: number }, { rejectWithValue }) => {
-    try {
-      const { data } = await apiIngco.post('users/cart/retail', {
+      const { data } = await apiIngco.post(isRetail ? 'users/cart/retail' : 'users/cart', {
         productId,
         quantity,
       });
@@ -290,28 +278,11 @@ export const addProductToRetailCartThunk = createAsyncThunk(
 export const deleteProductFromCartThunk = createAsyncThunk(
   'cart/delete',
   async (
-    { productId, quantity = 1 }: { productId: number; quantity: number },
+    { productId, quantity = 1, isRetail = false }: { productId: number; quantity?: number; isRetail?: boolean },
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.delete(`users/cart`, {
-        data: { productId, quantity },
-      });
-      return data.cart;
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
-  },
-);
-
-export const deleteProductFromRetailCartThunk = createAsyncThunk(
-  'cart/deleteRetail',
-  async (
-    { productId, quantity = 1 }: { productId: number; quantity: number },
-    { rejectWithValue },
-  ) => {
-    try {
-      const { data } = await apiIngco.delete(`users/cart/retail`, {
+      const { data } = await apiIngco.delete(isRetail ? 'users/cart/retail' : 'users/cart', {
         data: { productId, quantity },
       });
       return data.cart;
