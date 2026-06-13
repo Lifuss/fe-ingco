@@ -38,7 +38,7 @@ const CartTable = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
-  const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user.cart);
+  const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user?.cart) || [];
   const selectedCurrency = useAppSelector(selectCurrency);
 
   const handleQuantityChange = useCallback((id: number, operation: string) => {

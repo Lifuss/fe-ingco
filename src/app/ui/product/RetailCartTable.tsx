@@ -41,12 +41,12 @@ const RetailCartTable = () => {
 
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const {
-    retailCart,
-    firstName,
-    lastName,
-    surName,
-    phone,
-    email,
+    retailCart = [],
+    firstName = '',
+    lastName = '',
+    surName = '',
+    phone = '',
+    email = '',
   }: {
     retailCart: CartData;
     firstName: string;
@@ -54,10 +54,10 @@ const RetailCartTable = () => {
     surName: string;
     phone: string;
     email: string;
-  } = useAppSelector((state) => state.persistedAuthReducer.user);
-  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart);
+  } = useAppSelector((state) => state.persistedAuthReducer.user) || {};
+  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart) || [];
 
-  const selectedCart = isAuth ? retailCart : localStorageCart;
+  const selectedCart = (isAuth ? retailCart : localStorageCart) || [];
 
   const handleQuantityChange = (id: number, operation: string) => {
     if (isAuth) {

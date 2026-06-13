@@ -6,9 +6,18 @@ export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const role = request.cookies.get('role')?.value;
 
+  console.log('PROXY CHECK:', {
+    pathname,
+    hasToken: !!token,
+    tokenLength: token ? token.length : 0,
+    role,
+    cookiesKeys: Array.from(request.cookies.getAll()).map(c => c.name)
+  });
+
   // 1. Dashboard protection: Admin only
   if (pathname.startsWith('/dashboard')) {
     if (!token || role !== 'admin') {
+      console.warn('PROXY REDIRECTING FROM DASHBOARD:', { token: !!token, role });
       return NextResponse.redirect(new URL('/', request.url));
     }
   }

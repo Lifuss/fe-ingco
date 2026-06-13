@@ -36,7 +36,8 @@ const Page = () => {
         router.push('/dashboard/users');
       })
       .catch((error) => {
-        if (error.response.status === 409) {
+        const status = error?.status || error?.response?.status;
+        if (status === 409) {
           toast.error('Користувач з таким email або логіном вже існує');
         } else {
           toast.error('Помилка створення користувача');

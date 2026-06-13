@@ -82,7 +82,8 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
         closeModal();
       })
       .catch((error) => {
-        if (error.response.status === 409) {
+        const status = error?.status || error?.response?.status;
+        if (status === 409) {
           toast.error('Користувач з таким логіном або емейлом вже існує');
         } else {
           toast.error('Помилка при оновленні користувача');

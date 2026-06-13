@@ -107,13 +107,19 @@ apiIngco.interceptors.request.use(
   },
 );
 
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const COOKIE_FLAGS = `path=/; max-age=604800; SameSite=Lax${isLocalhost ? '' : '; Secure'}`;
+
 const setToken = (token: string, role?: string) => {
   cachedToken = token;
   apiIngco.defaults.headers.common.Authorization = `Bearer ${token}`;
   if (typeof window !== 'undefined') {
-    document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
+    document.cookie = `token=${token}; ${COOKIE_FLAGS}`;
     if (role) {
-      document.cookie = `role=${role.toLowerCase()}; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `role=${role.toLowerCase()}; ${COOKIE_FLAGS}`;
     }
   }
 };
@@ -121,8 +127,9 @@ const clearToken = () => {
   cachedToken = null;
   apiIngco.defaults.headers.common.Authorization = ``;
   if (typeof window !== 'undefined') {
-    document.cookie = 'token=; path=/; max-age=0; SameSite=Lax; Secure';
-    document.cookie = 'role=; path=/; max-age=0; SameSite=Lax; Secure';
+    const clearFlags = `path=/; max-age=0; SameSite=Lax${isLocalhost ? '' : '; Secure'}`;
+    document.cookie = `token=; ${clearFlags}`;
+    document.cookie = `role=; ${clearFlags}`;
   }
 };
 
