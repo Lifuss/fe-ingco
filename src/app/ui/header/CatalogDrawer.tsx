@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Category } from '@/lib/types';
+import { CATEGORY_IDS } from '@/lib/constants';
 
 interface CatalogDrawerProps {
   isOpen: boolean;
@@ -210,17 +211,7 @@ export default function CatalogDrawer({
                                 </Link>
                               </li>
                             ))}
-                            {group.children.length === 0 && (
-                              <li>
-                                <Link
-                                  href={getSearchUrl(String(group.id))}
-                                  onClick={onClose}
-                                  className="text-neutral-400 hover:text-primary-500 text-[11px] font-semibold block py-0.5 cursor-pointer"
-                                >
-                                  Переглянути все
-                                </Link>
-                              </li>
-                            )}
+
                           </ul>
                         </div>
                       ))}
@@ -232,7 +223,7 @@ export default function CatalogDrawer({
 
             {/* Special Promo Item */}
             <Link
-              href="/?query=акція"
+              href={getSearchUrl(CATEGORY_IDS.PROMO)}
               onClick={onClose}
               className="mt-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-orange-50 text-primary-600 font-display font-bold text-sm uppercase tracking-wider border border-orange-100 cursor-pointer"
             >
@@ -296,7 +287,7 @@ export default function CatalogDrawer({
 
               {/* Bottom Special: Hot Deals / Offers */}
               <Link
-                href="/?query=акція"
+                href={getSearchUrl(CATEGORY_IDS.PROMO)}
                 onClick={onClose}
                 className="mt-6 flex items-center gap-3 px-4 py-3.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-primary-600 font-display font-bold text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-sm shadow-orange-500/5 border border-orange-200/50"
               >
@@ -347,17 +338,7 @@ export default function CatalogDrawer({
                             </Link>
                           </li>
                         ))}
-                        {group.children.length === 0 && (
-                          <li>
-                            <Link
-                              href={getSearchUrl(String(group.id))}
-                              onClick={onClose}
-                              className="text-neutral-400 hover:text-primary-500 text-xs font-semibold block cursor-pointer"
-                            >
-                              Переглянути все
-                            </Link>
-                          </li>
-                        )}
+
                       </ul>
                     </div>
                   ))}
