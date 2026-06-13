@@ -13,6 +13,9 @@ const questionSvg = (
   </span>
 );
 
+import { Category } from '@/lib/types';
+import { useMemo } from 'react';
+
 type AdminProductFormProps = {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   handleImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -21,10 +24,58 @@ type AdminProductFormProps = {
   setCharacteristics: React.Dispatch<React.SetStateAction<{ name: string; value: string }[]>>;
   characteristic: { name: string; value: string };
   setCharacteristic: React.Dispatch<React.SetStateAction<{ name: string; value: string }>>;
-  categories: { id: number; name: string }[];
+  categories: Category[];
   isEdit?: boolean;
   product?: Product;
+  selectedCategoryIds: number[];
+  setSelectedCategoryIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
+
+interface CategoryNode extends Category {
+  children: CategoryNode[];
+}
+
+function getSortedHierarchy(categories: Category[]): (Category & { depth: number })[] {
+  if (!categories || categories.length === 0) return [];
+
+  const map = new Map<number, CategoryNode>();
+  categories.forEach((c) => {
+    map.set(c.id, { ...c, children: [] });
+  });
+
+  const roots: CategoryNode[] = [];
+  categories.forEach((c) => {
+    const node = map.get(c.id)!;
+    if (c.parentId) {
+      const parent = map.get(c.parentId);
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const sortNodes = (nodes: CategoryNode[]) => {
+    nodes.sort((a, b) => a.renderSort - b.renderSort);
+    nodes.forEach((n) => sortNodes(n.children));
+  };
+  sortNodes(roots);
+
+  const flatten = (nodes: CategoryNode[], depth = 0): (Category & { depth: number })[] => {
+    const result: (Category & { depth: number })[] = [];
+    nodes.forEach((node) => {
+      const { children, ...rest } = node;
+      result.push({ ...rest, depth });
+      result.push(...flatten(children, depth + 1));
+    });
+    return result;
+  };
+
+  return flatten(roots);
+}
 
 const AdminProductForm = ({
   handleSubmit,
@@ -37,8 +88,12 @@ const AdminProductForm = ({
   categories,
   product,
   isEdit = false,
+  selectedCategoryIds,
+  setSelectedCategoryIds,
 }: AdminProductFormProps) => {
   const router = useRouter();
+
+  const sortedCategories = useMemo(() => getSortedHierarchy(categories), [categories]);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6 font-sans">
@@ -105,19 +160,68 @@ const AdminProductForm = ({
 
               <div className="flex flex-col">
                 <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
-                  Категорія
+                  Основна (Канонічна) категорія
                 </label>
                 <select
-                  name="categoryId"
+                  name="mainCategoryId"
                   className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
-                  defaultValue={product?.category?.id}
+                  defaultValue={product?.mainCategory?.id || product?.category?.id || ''}
                 >
-                  {categories?.map((category) => (
+                  <option value="">Не обрано</option>
+                  {sortedCategories.map((category) => (
                     <option key={category.id} value={category.id}>
+                      {'\u00A0'.repeat(category.depth * 4)}
+                      {category.depth > 0 ? '└─ ' : ''}
                       {category.name}
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Checklist for additional categories */}
+              <div className="flex flex-col col-span-1 md:col-span-2 mt-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2 flex items-center gap-1.5">
+                  <span>Додаткові категорії відображення</span>
+                  <span className="cursor-help" title="Дозволяє товару відображатися в кількох розділах, наприклад в Акціях чи Топах продажів.">
+                    {questionSvg}
+                  </span>
+                </label>
+                <div className="flex flex-col gap-2.5 max-h-[200px] overflow-y-auto border border-neutral-200 bg-[#FAFAFF] rounded-xl p-4 shadow-inner font-semibold">
+                  {sortedCategories.map((category) => {
+                    const isChecked = selectedCategoryIds.includes(category.id);
+                    return (
+                      <label
+                        key={category.id}
+                        className="flex items-center gap-3 cursor-pointer select-none group py-0.5"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setSelectedCategoryIds((prev) => prev.filter((id) => id !== category.id));
+                            } else {
+                              setSelectedCategoryIds((prev) => [...prev, category.id]);
+                            }
+                          }}
+                          className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500 cursor-pointer"
+                        />
+                        <span
+                          style={{ paddingLeft: `${category.depth * 16}px` }}
+                          className={`text-sm transition-colors group-hover:text-gray-950 ${
+                            isChecked ? 'text-gray-950 font-semibold' : 'text-gray-600'
+                          }`}
+                        >
+                          {category.depth > 0 && <span className="text-neutral-400 font-mono mr-1">└─</span>}
+                          {category.name}
+                        </span>
+                      </label>
+                    );
+                  })}
+                  {sortedCategories.length === 0 && (
+                    <span className="text-xs text-neutral-400">Категорії відсутні</span>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col">

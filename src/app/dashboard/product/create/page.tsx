@@ -21,6 +21,8 @@ const Page = () => {
     value: '',
   });
 
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+
   useEffect(() => {
     if (!categories.length) {
       dispatch(fetchCategoriesThunk(''));
@@ -32,6 +34,7 @@ const Page = () => {
     const formData = new FormData(e.currentTarget as HTMLFormElement);
 
     formData.append('characteristics', JSON.stringify(characteristics));
+    formData.append('categoryIds', JSON.stringify(selectedCategoryIds));
     formData.delete('characteristicName');
     formData.delete('characteristicDesc');
 
@@ -65,6 +68,8 @@ const Page = () => {
       imageUrl={imageUrl}
       characteristics={characteristics}
       characteristic={characteristic}
+      selectedCategoryIds={selectedCategoryIds}
+      setSelectedCategoryIds={setSelectedCategoryIds}
     />
   );
 };
