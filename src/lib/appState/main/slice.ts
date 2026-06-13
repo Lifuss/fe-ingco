@@ -9,6 +9,7 @@ import {
   fetchMainTableDataThunk,
   getProductBySlugThunk,
   updateCategoryThunk,
+  reorderCategoryThunk,
 } from './operations';
 import { Category, CurrencyRates, Product, Order } from '@/lib/types';
 import { updateProductThunk } from '../dashboard/operations';
@@ -119,6 +120,9 @@ const appStateSlice = createSlice({
       })
       .addCase(deleteCategoryThunk.fulfilled, (state, { payload }) => {
         state.categories = state.categories.filter((category) => category.id !== payload);
+      })
+      .addCase(reorderCategoryThunk.fulfilled, (state, { payload }) => {
+        state.categories = payload;
       });
   },
 });
