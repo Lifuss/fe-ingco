@@ -38,7 +38,7 @@ export const CATEGORY_IDS = {
   HAND_TOOL: '2',    // Ручний інструмент
   POWER_TOOL: '3',   // Мережевий електроінструмент
   P20S_LINE: '4',    // Акумуляторна лінійка P20S
-  PROMO: '76',       // Акція
+  PROMO: '52',       // Акція
 };
 
 // Social Media Channels
