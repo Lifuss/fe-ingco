@@ -15,29 +15,85 @@ import { customModalStyles } from '../../ui/modals/CategoryModal';
 import CategoryForm from '../../ui/forms/CategoryForm';
 import { toast } from 'react-toastify';
 import Icon from '@/app/ui/assets/Icon';
+import { Category } from '@/lib/types';
+import CategorySortView from './CategorySortView';
 
 type CategoryTableRow = {
+  id: number;
   nameCol: string;
   productsCountCol: number;
   editCol: number;
   deleteCol: number;
   renderSortCol: number;
+  depthCol: number;
+  parentIdCol: number | null;
+  showInMenuCol: boolean;
 };
 
+interface CategoryNode extends Category {
+  children: CategoryNode[];
+}
+
+function getSortedHierarchy(categories: Category[]): (Category & { depth: number })[] {
+  if (!categories || categories.length === 0) return [];
+
+  const map = new Map<number, CategoryNode>();
+  categories.forEach((c) => {
+    map.set(c.id, { ...c, children: [] });
+  });
+
+  const roots: CategoryNode[] = [];
+  categories.forEach((c) => {
+    const node = map.get(c.id)!;
+    if (c.parentId) {
+      const parent = map.get(c.parentId);
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const sortNodes = (nodes: CategoryNode[]) => {
+    nodes.sort((a, b) => a.renderSort - b.renderSort);
+    nodes.forEach((n) => sortNodes(n.children));
+  };
+  sortNodes(roots);
+
+  const flatten = (nodes: CategoryNode[], depth = 0): (Category & { depth: number })[] => {
+    const result: (Category & { depth: number })[] = [];
+    nodes.forEach((node) => {
+      const { children, ...rest } = node;
+      result.push({ ...rest, depth });
+      result.push(...flatten(children, depth + 1));
+    });
+    return result;
+  };
+
+  return flatten(roots);
+}
+
 const CategoryTable = () => {
+  const [viewMode, setViewMode] = useState<'table' | 'sort'>('table');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<{
+    id?: number;
     name: string;
     renderSort: number;
-  }>({ name: '', renderSort: 0 });
+    parentId?: number | null;
+    showInMenu?: boolean;
+  }>({ name: '', renderSort: 0, showInMenu: true });
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
 
-  const openModal = (name: string, id: number, renderSort: number) => {
+  const openModal = (id: number, name: string, renderSort: number, parentId: number | null, showInMenu: boolean) => {
     setSelectedId(id);
-    setSelectedCategory({ name, renderSort });
+    setSelectedCategory({ id, name, renderSort, parentId, showInMenu });
     setIsOpen(true);
   };
   const closeModal = () => setIsOpen(false);
@@ -52,31 +108,39 @@ const CategoryTable = () => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
-    const renderSortInput = form.elements.namedItem('renderSort') as HTMLInputElement;
+    const parentIdSelect = form.elements.namedItem('parentId') as HTMLSelectElement;
+    const showInMenuInput = form.elements.namedItem('showInMenu') as HTMLInputElement;
 
-    if (nameInput && renderSortInput) {
+    if (nameInput) {
       const name = nameInput.value.trim();
-      const renderSort = Number(renderSortInput.value.trim());
+      const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
+      const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(updateCategoryThunk({ id: selectedId, name, renderSort }))
+      dispatch(updateCategoryThunk({ id: selectedId, name, parentId, showInMenu }))
         .unwrap()
         .then(() => closeModal())
         .catch(
-          (err) => err.response.status === 409 && toast.error('Категорія з такою назвою вже існує'),
+          (err) => (err?.status === 409 || err?.response?.status === 409) && toast.error('Категорія з такою назвою вже існує'),
         );
     }
   };
 
+  const sortedCategories = useMemo(() => getSortedHierarchy(productsCategories), [productsCategories]);
+
   const data = useMemo<CategoryTableRow[]>(
     () =>
-      productsCategories?.map((category) => ({
+      sortedCategories.map((category) => ({
+        id: category.id,
         nameCol: category.name,
         productsCountCol: category.count,
         editCol: category.id,
         deleteCol: category.id,
         renderSortCol: category.renderSort,
+        depthCol: category.depth,
+        parentIdCol: category.parentId ?? null,
+        showInMenuCol: category.showInMenu,
       })),
-    [productsCategories],
+    [sortedCategories],
   );
 
   const columns = useMemo<ColumnDef<CategoryTableRow>[]>(
@@ -84,6 +148,17 @@ const CategoryTable = () => {
       {
         header: 'Найменування',
         accessorKey: 'nameCol',
+        cell: ({ row }) => {
+          const depth = row.original.depthCol;
+          return (
+            <div style={{ paddingLeft: `${depth * 24}px` }} className="flex items-center gap-1.5 text-left">
+              {depth > 0 && <span className="text-neutral-400 font-mono">└─</span>}
+              <span className={depth === 0 ? 'font-bold text-neutral-900' : 'text-neutral-600 font-medium'}>
+                {row.original.nameCol}
+              </span>
+            </div>
+          );
+        },
       },
       {
         header: 'Кількість товарів',
@@ -94,13 +169,30 @@ const CategoryTable = () => {
         accessorKey: 'renderSortCol',
       },
       {
+        header: 'Меню',
+        accessorKey: 'showInMenuCol',
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${row.original.showInMenuCol ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+              {row.original.showInMenuCol ? 'Так' : 'Ні'}
+            </span>
+          </div>
+        ),
+      },
+      {
         header: 'Редагувати',
         accessorKey: 'editCol',
         cell: ({ row }) => (
           <button
             className="flex w-full justify-center"
             onClick={() =>
-              openModal(row.original.nameCol, row.original.editCol, row.original.renderSortCol)
+              openModal(
+                row.original.editCol,
+                row.original.nameCol,
+                row.original.renderSortCol,
+                row.original.parentIdCol,
+                row.original.showInMenuCol,
+              )
             }
           >
             <Icon
@@ -130,13 +222,42 @@ const CategoryTable = () => {
   );
 
   return (
-    <div>
-      <Table
-        columns={columns}
-        data={data}
-        headerColor="bg-blue-200"
-        borderColor="border-gray-400"
-      />
+    <div className="flex flex-col gap-6 w-full font-sans">
+      {/* View Mode Tabs */}
+      <div className="flex border-b border-neutral-200">
+        <button
+          onClick={() => setViewMode('table')}
+          className={`py-2.5 px-5 font-bold text-sm transition-all border-b-2 -mb-px cursor-pointer ${
+            viewMode === 'table'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Список категорій
+        </button>
+        <button
+          onClick={() => setViewMode('sort')}
+          className={`py-2.5 px-5 font-bold text-sm transition-all border-b-2 -mb-px cursor-pointer ${
+            viewMode === 'sort'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Сортування (Drag & Drop)
+        </button>
+      </div>
+
+      {viewMode === 'table' ? (
+        <Table
+          columns={columns}
+          data={data}
+          headerColor="bg-blue-200"
+          borderColor="border-gray-400"
+        />
+      ) : (
+        <CategorySortView />
+      )}
+
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
@@ -145,9 +266,6 @@ const CategoryTable = () => {
       >
         <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedCategory} />
       </Modal>
-      {/* <div className="mx-auto mt-5 w-fit">
-        <Pagination totalPages={totalPages} />
-      </div> */}
     </div>
   );
 };

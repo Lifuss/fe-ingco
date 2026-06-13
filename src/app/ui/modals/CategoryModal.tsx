@@ -27,17 +27,19 @@ export const CategoryModalCreate = () => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
-    const renderSortInput = form.elements.namedItem('renderSort') as HTMLInputElement;
+    const parentIdSelect = form.elements.namedItem('parentId') as HTMLSelectElement;
+    const showInMenuInput = form.elements.namedItem('showInMenu') as HTMLInputElement;
 
-    if (nameInput && renderSortInput) {
+    if (nameInput) {
       const name = nameInput.value.trim();
-      const renderSort = Number(renderSortInput.value.trim());
+      const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
+      const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(createCategoryThunk({ name, renderSort }))
+      dispatch(createCategoryThunk({ name, parentId, showInMenu }))
         .unwrap()
         .then(() => closeModal())
         .catch(
-          (err) => err.response.status === 409 && toast.error('Категорія з такою назвою вже існує'),
+          (err) => (err?.status === 409 || err?.response?.status === 409) && toast.error('Категорія з такою назвою вже існує'),
         );
     }
   };
