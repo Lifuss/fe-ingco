@@ -4,7 +4,7 @@ const DOMAIN = 'https://ingco-service.win';
 const BACKEND_API = `${process.env.NEXT_PUBLIC_API}/api/products`;
 
 interface Category {
-  _id: string;
+  id: number;
   name: string;
 }
 
@@ -14,7 +14,7 @@ interface Characteristic {
 }
 
 interface Product {
-  _id: string;
+  id: number;
   name: string;
   slug: string;
   article: string;
@@ -112,13 +112,13 @@ export async function GET() {
           : '';
 
         return `
-    <offer id="${escapeXml(product._id)}" available="${available}" in_stock="${available}" selling_type="r">
+    <offer id="${escapeXml(String(product.id))}" available="${available}" in_stock="${available}" selling_type="r">
       <name>${escapeXml(name)}</name>
       <name_ua>${escapeXml(name)}</name_ua>
       <url>${DOMAIN}/${escapeXml(product.slug)}</url>
       <price>${displayPrice}</price>${oldPriceXml}
       <currencyId>UAH</currencyId>
-      <categoryId>${escapeXml(product.category?._id || 'uncategorized')}</categoryId>
+      <categoryId>${escapeXml(product.category ? String(product.category.id) : 'uncategorized')}</categoryId>
       <picture>${escapeXml(imageUrl)}</picture>
       <vendor>INGCO</vendor>
       <vendorCode>${escapeXml(article)}</vendorCode>
@@ -131,17 +131,17 @@ export async function GET() {
       })
       .join('');
 
-    const categoriesMap = new Map<string, string>();
+    const categoriesMap = new Map<number, string>();
     products.forEach((p) => {
       if (p.category) {
-        categoriesMap.set(p.category._id, p.category.name);
+        categoriesMap.set(p.category.id, p.category.name);
       }
     });
 
     const categories = Array.from(categoriesMap.entries())
       .map(
         ([id, name]) =>
-          `      <category id="${escapeXml(id)}">${escapeXml(name)}</category>`,
+          `      <category id="${escapeXml(String(id))}">${escapeXml(name)}</category>`,
       )
       .join('\n');
 

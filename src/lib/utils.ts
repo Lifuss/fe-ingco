@@ -9,9 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 
 // Prisma serializes Decimal fields as strings. This converts them back to numbers.
 export function normalizeProduct(p: unknown): Product {
-  const raw = p as Product;
+  const raw = p as any;
   return {
     ...raw,
+    category: raw.mainCategory || raw.category || null,
     price: Number(raw.price),
     priceBulk: raw.priceBulk != null ? Number(raw.priceBulk) : undefined,
     rrcSale: raw.rrcSale != null ? Number(raw.rrcSale) : undefined,

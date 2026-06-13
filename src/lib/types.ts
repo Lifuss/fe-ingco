@@ -3,6 +3,9 @@ export interface Category {
   name: string;
   renderSort: number;
   count: number;
+  parentId?: number | null;
+  path?: string;
+  showInMenu: boolean;
 }
 
 export interface Product {
@@ -24,6 +27,8 @@ export interface Product {
   seoKeywords: string;
   barcode?: string;
   category: Category | null;
+  mainCategory?: Category | null;
+  categories?: Category[];
   createdAt: string;
   updatedAt: string;
 }

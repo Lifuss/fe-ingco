@@ -34,10 +34,10 @@ export const COLORS = [
 
 // CMS Category IDs (Fallback Dynamic Values)
 export const CATEGORY_IDS = {
-  BATTERY_TOOL: '6659a5a64a306b72811fc174', // Акумуляторний інструмент
-  HAND_TOOL: '6673c98091de1ab45bd369dc',    // Ручний інструмент
-  POWER_TOOL: '6673c9a491de1ab45bd369e0',   // Мережевий електроінструмент
-  P20S_LINE: '68809c1077d2de27144ca874',    // Акумуляторна лінійка P20S
+  BATTERY_TOOL: '1', // Акумуляторний інструмент
+  HAND_TOOL: '2',    // Ручний інструмент
+  POWER_TOOL: '3',   // Мережевий електроінструмент
+  P20S_LINE: '4',    // Акумуляторна лінійка P20S
 };
 
 // Social Media Channels

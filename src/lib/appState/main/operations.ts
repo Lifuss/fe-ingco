@@ -182,9 +182,12 @@ export const deleteProductThunk = createAsyncThunk(
 
 export const createCategoryThunk = createAsyncThunk(
   'category/create',
-  async ({ name, renderSort }: { name: string; renderSort: number }, { rejectWithValue }) => {
+  async (
+    { name, renderSort, parentId, showInMenu }: { name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
+    { rejectWithValue },
+  ) => {
     try {
-      const { data } = await apiIngco.post('/categories', { name, renderSort });
+      const { data } = await apiIngco.post('/categories', { name, renderSort, parentId, showInMenu });
       return data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -195,13 +198,34 @@ export const createCategoryThunk = createAsyncThunk(
 export const updateCategoryThunk = createAsyncThunk(
   'category/update',
   async (
-    { id, name, renderSort }: { id: number; name: string; renderSort: number },
+    { id, name, renderSort, parentId, showInMenu }: { id: number; name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
     { rejectWithValue },
   ) => {
     try {
       const { data } = await apiIngco.put(`/categories/${id}`, {
         name,
         renderSort,
+        parentId,
+        showInMenu,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(serializeAxiosError(error));
+    }
+  },
+);
+
+export const reorderCategoryThunk = createAsyncThunk(
+  'category/reorder',
+  async (
+    { id, parentId, targetIndex }: { id: number; parentId: number | null; targetIndex: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await apiIngco.post('/categories/reorder', {
+        id,
+        parentId,
+        targetIndex,
       });
       return data;
     } catch (error) {
