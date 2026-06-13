@@ -12,12 +12,13 @@ import {
   Ruler,
   Cog,
   Shield,
-  Flame,
   ChevronRight,
   ArrowRight,
   X,
+  Flame,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Category } from '@/lib/types';
 
 interface CatalogDrawerProps {
   isOpen: boolean;
@@ -26,14 +27,8 @@ interface CatalogDrawerProps {
   onMouseLeave?: () => void;
 }
 
-interface SubcategoryItem {
-  name: string;
-  query: string;
-}
-
-interface SubcategoryGroup {
-  title: string;
-  items: SubcategoryItem[];
+interface CategoryNode extends Category {
+  children: CategoryNode[];
 }
 
 export default function CatalogDrawer({
@@ -43,35 +38,65 @@ export default function CatalogDrawer({
   onMouseLeave,
 }: CatalogDrawerProps) {
   const dispatch = useAppDispatch();
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const productsCategories = React.useMemo(() => rawCategories || [], [rawCategories]);
-  
-  // Set the first category as active by default if loaded
+  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+
+  // Build tree from flat category array
+  const categoryTree = React.useMemo(() => {
+    const menuCategories = rawCategories.filter((c) => c.showInMenu !== false);
+    const map = new Map<number, CategoryNode>();
+    menuCategories.forEach((c) => {
+      map.set(c.id, { ...c, children: [] });
+    });
+
+    const roots: CategoryNode[] = [];
+    menuCategories.forEach((c) => {
+      const node = map.get(c.id)!;
+      if (c.parentId) {
+        const parent = map.get(c.parentId);
+        if (parent) {
+          parent.children.push(node);
+        }
+      } else {
+        roots.push(node);
+      }
+    });
+
+    // Sort roots and child branches by renderSort
+    const sortNodes = (nodes: CategoryNode[]) => {
+      nodes.sort((a, b) => a.renderSort - b.renderSort);
+      nodes.forEach((n) => sortNodes(n.children));
+    };
+    sortNodes(roots);
+
+    return { roots, map };
+  }, [rawCategories]);
+
+  const rootCategories = categoryTree.roots;
+
   const [activeCategoryId, setActiveCategoryId] = useState<number | ''>('');
   const [mobileExpandedCatId, setMobileExpandedCatId] = useState<number | ''>('');
 
   React.useEffect(() => {
-    if (productsCategories.length === 0) {
+    if (rawCategories.length === 0) {
       dispatch(fetchCategoriesThunk(''));
     }
-  }, [dispatch, productsCategories.length]);
+  }, [dispatch, rawCategories.length]);
 
   React.useEffect(() => {
-    if (productsCategories.length > 0 && !activeCategoryId) {
-      setActiveCategoryId(productsCategories[0].id);
+    if (rootCategories.length > 0 && !activeCategoryId) {
+      setActiveCategoryId(rootCategories[0].id);
     }
-  }, [productsCategories, activeCategoryId]);
+  }, [rootCategories, activeCategoryId]);
 
   if (!isOpen) return null;
 
   const baseUrl = '/';
 
   // Helper to generate search link URLs
-  const getSearchUrl = (categoryId: string, query: string = '') => {
+  const getSearchUrl = (categoryId: string) => {
     const params = new URLSearchParams();
     params.set('page', '1');
     if (categoryId) params.set('category', categoryId);
-    if (query) params.set('query', query);
     return `${baseUrl}?${params.toString()}`;
   };
 
@@ -99,193 +124,8 @@ export default function CatalogDrawer({
     return <Wrench size={18} className="shrink-0 text-neutral-600" />;
   };
 
-  // Mocked subcategories mapper based on category name mapping
-  const getSubcategoryGroups = (name: string): SubcategoryGroup[] => {
-    const lower = name.toLowerCase();
-
-    // 1. ELEKTRO / POWER TOOLS
-    if (lower.includes('електро') || lower.includes('акумул')) {
-      return [
-        {
-          title: 'Дрилі та шуруповерти',
-          items: [
-            { name: 'Мережеві дрилі', query: 'дриль мережев' },
-            { name: 'Акумуляторні шуруповерти', query: 'шуруповерт' },
-            { name: 'Ударні дрилі', query: 'дриль ударн' },
-            { name: 'Гайковерти', query: 'гайковерт' },
-          ],
-        },
-        {
-          title: 'Шліфувальні машини',
-          items: [
-            { name: 'Кутові (Болгарки)', query: 'болгарка' },
-            { name: 'Ексцентрикові', query: 'шліфмашина ексцентр' },
-            { name: 'Стрічкові', query: 'шліфмашина стрічк' },
-            { name: 'Прямі шліфмашини', query: 'шліфмашина прям' },
-          ],
-        },
-        {
-          title: 'Перфоратори та відбійники',
-          items: [
-            { name: 'SDS-Plus перфоратори', query: 'перфоратор sds' },
-            { name: 'SDS-Max перфоратори', query: 'перфоратор max' },
-            { name: 'Відбійні молотки', query: 'відбійн' },
-          ],
-        },
-        {
-          title: 'Пили та рубанки',
-          items: [
-            { name: 'Дискові пили', query: 'пила дисков' },
-            { name: 'Лобзики', query: 'лобзик' },
-            { name: 'Шабельні пили', query: 'пила шабельн' },
-            { name: 'Електрорубанки', query: 'рубанок' },
-          ],
-        },
-      ];
-    }
-
-    // 2. HAND TOOLS
-    if (lower.includes('ручн')) {
-      return [
-        {
-          title: 'Викрутки та ключі',
-          items: [
-            { name: 'Набори викруток', query: 'викрутк' },
-            { name: 'Ключі ріжково-накидні', query: 'ключ' },
-            { name: 'Ключі розвідні', query: 'ключ розвідн' },
-            { name: 'Набори біт', query: 'біти' },
-          ],
-        },
-        {
-          title: 'Шарнірно-губцеві',
-          items: [
-            { name: 'Плоскогубці', query: 'плоскогубці' },
-            { name: 'Бокорізи / Кусачки', query: 'кусачки' },
-            { name: 'Кліщі переставні', query: 'kліщі' },
-          ],
-        },
-        {
-          title: 'Ріжучий інструмент',
-          items: [
-            { name: 'Ножівки по металу', query: 'ножівка' },
-            { name: 'Будівельні ножі', query: 'ніж' },
-            { name: 'Ножиці по металу', query: 'ножиці' },
-          ],
-        },
-        {
-          title: 'Ударний інструмент',
-          items: [
-            { name: 'Молотки', query: 'молоток' },
-            { name: 'Кувалди', query: 'кувалда' },
-            { name: 'Сокири', query: 'сокир' },
-          ],
-        },
-      ];
-    }
-
-    // 3. GARDEN TOOLS
-    if (lower.includes('сад')) {
-      return [
-        {
-          title: 'Газонокосарки та тримери',
-          items: [
-            { name: 'Акумуляторні косарки', query: 'косарка' },
-            { name: 'Електричні тримери', query: 'тример' },
-            { name: 'Ліска для тримера', query: 'ліска' },
-          ],
-        },
-        {
-          title: 'Ланцюгові пили',
-          items: [
-            { name: 'Акумуляторні ланцюгові', query: 'пила ланцюг' },
-            { name: 'Бензопили', query: 'бензопила' },
-            { name: 'Запасні ланцюги', query: 'ланцюг' },
-          ],
-        },
-        {
-          title: 'Полив та обприскування',
-          items: [
-            { name: 'Обприскувачі', query: 'обприскувач' },
-            { name: 'Садові шланги', query: 'шланг' },
-            { name: 'Пістолети для поливу', query: 'полив' },
-          ],
-        },
-      ];
-    }
-
-    // 4. MEASURE TOOLS
-    if (lower.includes('вимір') || lower.includes('прилад') || lower.includes('лазер')) {
-      return [
-        {
-          title: 'Лазерні прилади',
-          items: [
-            { name: 'Лазерні нівеліри', query: 'лазер' },
-            { name: 'Далекоміри (рулетки)', query: 'далекомір' },
-            { name: 'Штативи', query: 'штатив' },
-          ],
-        },
-        {
-          title: 'Класичні прилади',
-          items: [
-            { name: 'Рулетки будівельні', query: 'рулетка' },
-            { name: 'Будівельні рівні', query: 'рівень' },
-            { name: 'Штангенциркулі', query: 'штангенциркуль' },
-          ],
-        },
-      ];
-    }
-
-    // 5. ACCESSORIES
-    if (lower.includes('оснащ') || lower.includes('аксесу') || lower.includes('розхід')) {
-      return [
-        {
-          title: 'Витратні матеріали',
-          items: [
-            { name: 'Свердла по металу / бетону', query: 'свердло' },
-            { name: 'Бури SDS-Plus', query: 'бури' },
-            { name: 'Диски відрізні', query: 'диск' },
-            { name: 'Коронки свердлильні', query: 'коронка' },
-          ],
-        },
-        {
-          title: 'Акумулятори та зарядні пристрої P20S',
-          items: [
-            { name: 'Акумулятор P20S 2.0Аг', query: 'fbli2001' },
-            { name: 'Акумулятор P20S 4.0Аг', query: 'fbli2002' },
-            { name: 'Зарядні пристрої', query: 'zaryad' },
-          ],
-        },
-      ];
-    }
-
-    // 6. PROTECTIVE GEAR
-    if (lower.includes('захис') || lower.includes('екіп') || lower.includes('одяг')) {
-      return [
-        {
-          title: 'Засоби індивідуального захисту',
-          items: [
-            { name: 'Робочі рукавички', query: 'рукавички' },
-            { name: 'Захисні окуляри', query: 'окуляри' },
-            { name: 'Маски зварювальника', query: 'маска' },
-            { name: 'Навушники протишумні', query: 'навушники' },
-          ],
-        },
-      ];
-    }
-
-    // FALLBACK
-    return [
-      {
-        title: 'Популярні товари категорії',
-        items: [
-          { name: 'Переглянути весь асортимент', query: '' },
-        ],
-      },
-    ];
-  };
-
-  const activeCategory = productsCategories.find((c) => c.id === activeCategoryId);
-  const activeSubgroups = activeCategory ? getSubcategoryGroups(activeCategory.name) : [];
+  const activeCategory = categoryTree.map.get(Number(activeCategoryId));
+  const activeSubgroups = activeCategory ? activeCategory.children : [];
 
   return (
     <>
@@ -317,9 +157,9 @@ export default function CatalogDrawer({
 
           {/* Categories Accordion */}
           <div className="flex-grow overflow-y-auto p-3 flex flex-col gap-2">
-            {productsCategories.map((cat) => {
+            {rootCategories.map((cat) => {
               const isExpanded = cat.id === mobileExpandedCatId;
-              const subGroups = getSubcategoryGroups(cat.name);
+              const subGroups = categoryTree.map.get(cat.id)?.children || [];
               return (
                 <div key={cat.id} className="border-b border-[#E5E3DD]/40 pb-2">
                   <button
@@ -342,23 +182,27 @@ export default function CatalogDrawer({
                   {isExpanded && (
                     <div className="pl-9 pr-2 pt-2 pb-1 flex flex-col gap-4">
                       <Link
-                        href={getSearchUrl(String(cat.id), '')}
+                        href={getSearchUrl(String(cat.id))}
                         onClick={onClose}
                         className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         Переглянути все <ArrowRight size={12} />
                       </Link>
 
-                      {subGroups.map((group, gIdx) => (
-                        <div key={gIdx} className="flex flex-col gap-1.5">
-                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
-                            {group.title}
-                          </span>
+                      {subGroups.map((group) => (
+                        <div key={group.id} className="flex flex-col gap-1.5">
+                          <Link
+                            href={getSearchUrl(String(group.id))}
+                            onClick={onClose}
+                            className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-800 hover:text-primary-500"
+                          >
+                            {group.name}
+                          </Link>
                           <ul className="flex flex-col gap-1.5 pl-1">
-                            {group.items.map((item, idx) => (
-                              <li key={idx}>
+                            {group.children.map((item) => (
+                              <li key={item.id}>
                                 <Link
-                                  href={getSearchUrl(String(cat.id), item.query)}
+                                  href={getSearchUrl(String(item.id))}
                                   onClick={onClose}
                                   className="text-neutral-600 hover:text-primary-500 text-xs font-semibold block py-0.5 cursor-pointer"
                                 >
@@ -366,6 +210,17 @@ export default function CatalogDrawer({
                                 </Link>
                               </li>
                             ))}
+                            {group.children.length === 0 && (
+                              <li>
+                                <Link
+                                  href={getSearchUrl(String(group.id))}
+                                  onClick={onClose}
+                                  className="text-neutral-400 hover:text-primary-500 text-[11px] font-semibold block py-0.5 cursor-pointer"
+                                >
+                                  Переглянути все
+                                </Link>
+                              </li>
+                            )}
                           </ul>
                         </div>
                       ))}
@@ -377,7 +232,7 @@ export default function CatalogDrawer({
 
             {/* Special Promo Item */}
             <Link
-              href={getSearchUrl('', 'акція')}
+              href="/?query=акція"
               onClick={onClose}
               className="mt-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-orange-50 text-primary-600 font-display font-bold text-sm uppercase tracking-wider border border-orange-100 cursor-pointer"
             >
@@ -407,20 +262,18 @@ export default function CatalogDrawer({
             {/* 1. Left Sidebar: Categories Navigation */}
             <div className="col-span-3 border-r border-[#E5E3DD]/70 pr-4 flex flex-col justify-between">
               <ul className="flex flex-col gap-1.5">
-                {productsCategories.map((cat) => {
+                {rootCategories.map((cat) => {
                   const isActive = cat.id === activeCategoryId;
                   return (
                     <li key={cat.id}>
-                      <button
+                      <Link
+                        href={getSearchUrl(String(cat.id))}
                         onMouseEnter={() => setActiveCategoryId(cat.id)}
-                        onClick={() => {
-                          setActiveCategoryId(cat.id);
-                          onClose();
-                        }}
+                        onClick={onClose}
                         className={cn(
                           'w-full flex items-center justify-between px-4 py-3 rounded-lg text-left font-display font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer',
                           isActive
-                            ? 'bg-[#FFF2EB] text-primary-500 shadow-sm border-l-4 border-primary-500'
+                             ? 'bg-[#FFF2EB] text-primary-500 shadow-sm border-l-4 border-primary-500'
                             : 'text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900',
                         )}
                       >
@@ -435,7 +288,7 @@ export default function CatalogDrawer({
                             isActive ? 'translate-x-0.5 text-primary-500' : 'text-neutral-400',
                           )}
                         />
-                      </button>
+                      </Link>
                     </li>
                   );
                 })}
@@ -443,7 +296,7 @@ export default function CatalogDrawer({
 
               {/* Bottom Special: Hot Deals / Offers */}
               <Link
-                href={getSearchUrl('', 'акція')}
+                href="/?query=акція"
                 onClick={onClose}
                 className="mt-6 flex items-center gap-3 px-4 py-3.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-primary-600 font-display font-bold text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-sm shadow-orange-500/5 border border-orange-200/50"
               >
@@ -457,21 +310,36 @@ export default function CatalogDrawer({
               
               {/* Title & Columns Grid */}
               <div className="flex flex-col gap-6">
-                <h2 className="font-display font-bold text-2xl text-neutral-900 border-b border-[#E5E3DD]/45 pb-3">
-                  {activeCategory?.name}
-                </h2>
+                <div className="flex justify-between items-center border-b border-[#E5E3DD]/45 pb-3">
+                  <h2 className="font-display font-bold text-2xl text-neutral-900">
+                    {activeCategory?.name}
+                  </h2>
+                  {activeCategory && (
+                    <Link
+                      href={getSearchUrl(String(activeCategory.id))}
+                      onClick={onClose}
+                      className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      Переглянути всі товари категорії <ArrowRight size={12} />
+                    </Link>
+                  )}
+                </div>
 
-                <div className="grid grid-cols-3 gap-6">
-                  {activeSubgroups.map((group, gIdx) => (
-                    <div key={gIdx} className="flex flex-col gap-3">
-                      <h3 className="font-display font-bold text-xs uppercase tracking-wider text-neutral-400 select-none">
-                        {group.title}
-                      </h3>
+                <div className="grid grid-cols-3 gap-6 max-h-[350px] overflow-y-auto pr-2">
+                  {activeSubgroups.map((group) => (
+                    <div key={group.id} className="flex flex-col gap-3">
+                      <Link
+                        href={getSearchUrl(String(group.id))}
+                        onClick={onClose}
+                        className="font-display font-bold text-xs uppercase tracking-wider text-neutral-800 hover:text-primary-500 transition-colors select-none"
+                      >
+                        {group.name}
+                      </Link>
                       <ul className="flex flex-col gap-2 font-sans text-[13px]">
-                        {group.items.map((item, idx) => (
-                          <li key={idx}>
+                        {group.children.map((item) => (
+                          <li key={item.id}>
                             <Link
-                              href={getSearchUrl(String(activeCategoryId), item.query)}
+                              href={getSearchUrl(String(item.id))}
                               onClick={onClose}
                               className="text-neutral-600 hover:text-primary-500 font-medium transition-colors cursor-pointer"
                             >
@@ -479,9 +347,23 @@ export default function CatalogDrawer({
                             </Link>
                           </li>
                         ))}
+                        {group.children.length === 0 && (
+                          <li>
+                            <Link
+                              href={getSearchUrl(String(group.id))}
+                              onClick={onClose}
+                              className="text-neutral-400 hover:text-primary-500 text-xs font-semibold block cursor-pointer"
+                            >
+                              Переглянути все
+                            </Link>
+                          </li>
+                        )}
                       </ul>
                     </div>
                   ))}
+                  {activeSubgroups.length === 0 && (
+                    <span className="text-sm text-neutral-400">Підкатегорії відсутні</span>
+                  )}
                 </div>
               </div>
 
@@ -489,7 +371,7 @@ export default function CatalogDrawer({
               <div className="flex justify-end mt-6">
                 {/* Promo Banner Card */}
                 <Link
-                  href={getSearchUrl('', 'P20S')}
+                  href="/?query=P20S"
                   onClick={onClose}
                   className="relative w-full max-w-xl rounded-2xl overflow-hidden bg-gradient-to-r from-neutral-900 to-neutral-950 border border-neutral-800 p-6 flex justify-between items-center shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
                 >

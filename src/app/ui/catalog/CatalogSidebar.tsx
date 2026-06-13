@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
-import { ShieldCheck, Zap, Plug, Filter, Phone } from 'lucide-react';
+import { ShieldCheck, Zap, Plug, Filter, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
 import { useDebounce } from 'use-debounce';
+import { Category } from '@/lib/types';
 
 const CatalogSidebar = () => {
   const dispatch = useAppDispatch();
@@ -14,13 +15,73 @@ const CatalogSidebar = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const productsCategories = useMemo(() => {
+    const explicitlyHiddenIds = new Set(
+      rawProductsCategories.filter((c) => c.showInMenu === false).map((c) => c.id)
+    );
+    return rawProductsCategories.filter((c) => {
+      if (c.showInMenu === false) return false;
+      let currentParentId = c.parentId;
+      while (currentParentId) {
+        if (explicitlyHiddenIds.has(currentParentId)) {
+          return false;
+        }
+        const parent = rawProductsCategories.find((pc) => pc.id === currentParentId);
+        currentParentId = parent ? parent.parentId : null;
+      }
+      return true;
+    });
+  }, [rawProductsCategories]);
+
+  interface SidebarCategoryNode extends Category {
+    children: SidebarCategoryNode[];
+  }
+
+  const [showAllSubcategories, setShowAllSubcategories] = useState(false);
 
   // Callback Modal State
   const [isCallbackOpen, setIsCallbackOpen] = useState(false);
 
   // Read URL search params
   const activeCategoryId = searchParams.get('category') || '';
+
+  useEffect(() => {
+    setShowAllSubcategories(false);
+  }, [activeCategoryId]);
+
+  const categoryTree = useMemo(() => {
+    const map = new Map<number, SidebarCategoryNode>();
+    productsCategories.forEach((c) => {
+      map.set(c.id, { ...c, children: [] });
+    });
+
+    const roots: SidebarCategoryNode[] = [];
+    productsCategories.forEach((c) => {
+      const node = map.get(c.id)!;
+      if (c.parentId) {
+        const parent = map.get(c.parentId);
+        if (parent) {
+          parent.children.push(node);
+        }
+      } else {
+        roots.push(node);
+      }
+    });
+
+    const sortNodes = (nodes: SidebarCategoryNode[]) => {
+      nodes.sort((a, b) => a.renderSort - b.renderSort);
+      nodes.forEach((n) => sortNodes(n.children));
+    };
+    sortNodes(roots);
+
+    return { roots, map };
+  }, [productsCategories]);
+
+  const activeNode = useMemo(() => {
+    if (!activeCategoryId) return null;
+    return categoryTree.map.get(Number(activeCategoryId)) || null;
+  }, [activeCategoryId, categoryTree]);
   const urlMinPower = searchParams.get('minPower') || '';
   const urlMaxPower = searchParams.get('maxPower') || '';
   const batteryChecked = searchParams.get('battery') === 'true';
@@ -108,48 +169,169 @@ const CatalogSidebar = () => {
   return (
     <aside className="w-full xl:w-[280px] shrink-0 font-sans flex flex-col gap-6">
       
-      {/* Category Checkboxes block */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+      {/* Category Hierarchical block */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm select-none">
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
           <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900">Категорії</h2>
-          {hasActiveFilters && (
+          {activeCategoryId && (
             <button
-              onClick={handleClearFilters}
+              onClick={() => updateUrlParams({ category: null })}
               className="text-xs text-primary-500 hover:text-primary-600 hover:underline font-medium"
             >
               Скинути
             </button>
           )}
         </div>
-        
-        <ul className="flex flex-col gap-2.5 max-h-[250px] overflow-y-auto pr-1">
-          {productsCategories.map((category) => {
-            const isChecked = activeCategoryId === String(category.id);
-            return (
-              <li key={category.id} className="flex items-center">
-                <label className="flex items-center gap-3 cursor-pointer w-full group py-0.5">
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => handleCategoryChange(String(category.id))}
-                    className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500"
-                  />
-                  <span className={`text-sm transition-colors group-hover:text-gray-950 ${isChecked ? 'text-gray-950 font-semibold' : 'text-gray-600'}`}>
-                    {category.name}
-                  </span>
-                  {category.count !== undefined && (
-                    <span className="ml-auto text-xs text-gray-400 font-medium bg-gray-50 px-1.5 py-0.5 rounded-full">
-                      ({category.count})
-                    </span>
-                  )}
-                </label>
-              </li>
-            );
-          })}
-          {productsCategories.length === 0 && (
+
+        <div className="flex flex-col gap-2.5">
+          {productsCategories.length === 0 ? (
             <span className="text-xs text-gray-400">Категорії завантажуються...</span>
+          ) : (
+            <div className="flex flex-col gap-2 font-sans">
+              {/* Back links if a category is selected */}
+              {activeNode && (
+                <div className="mb-2">
+                  {activeNode.parentId ? (
+                    (() => {
+                      const parent = categoryTree.map.get(activeNode.parentId);
+                      return (
+                        <button
+                          onClick={() => handleCategoryChange(String(parent?.id))}
+                          className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary-500 transition-colors mb-1 cursor-pointer"
+                        >
+                          <ChevronLeft size={14} className="stroke-[2.5]" />
+                          <span>Назад до {parent?.name}</span>
+                        </button>
+                      );
+                    })()
+                  ) : (
+                    <button
+                      onClick={() => updateUrlParams({ category: null })}
+                      className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary-500 transition-colors mb-1 cursor-pointer"
+                    >
+                      <ChevronLeft size={14} className="stroke-[2.5]" />
+                      <span>Всі категорії</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Category Tree/List Rendering */}
+              {(() => {
+                let listToRender: SidebarCategoryNode[] = [];
+                let highlightId: number | null = null;
+                let isNested = false;
+
+                if (!activeNode) {
+                  // No category selected: show roots
+                  listToRender = categoryTree.roots;
+                } else if (activeNode.children.length > 0) {
+                  // Parent selected: show the active parent and its children
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2 py-1 px-2 rounded-lg bg-[#FFF2EB] text-primary-600 font-bold text-sm">
+                        <span>{activeNode.name}</span>
+                      </div>
+                      
+                      <ul className="flex flex-col gap-2 pl-3 border-l border-gray-150 ml-2 mt-1">
+                        {(() => {
+                          const children = activeNode.children;
+                          const hasMore = children.length > 6;
+                          const visibleChildren = showAllSubcategories ? children : children.slice(0, 6);
+                          
+                          return (
+                            <>
+                              {visibleChildren.map((child) => (
+                                <li key={child.id}>
+                                  <button
+                                    onClick={() => handleCategoryChange(String(child.id))}
+                                    className="w-full text-left text-xs font-semibold text-gray-600 hover:text-primary-500 transition-colors flex items-center justify-between group py-0.5 cursor-pointer"
+                                  >
+                                    <span className="truncate pr-2">{child.name}</span>
+                                    {child.count !== undefined && (
+                                      <span className="text-[10px] text-gray-400 font-bold bg-gray-50 px-1.5 py-0.5 rounded-full group-hover:bg-primary-50 group-hover:text-primary-500 transition-colors shrink-0">
+                                        {child.count}
+                                      </span>
+                                    )}
+                                  </button>
+                                </li>
+                              ))}
+                              
+                              {hasMore && (
+                                <button
+                                  onClick={() => setShowAllSubcategories(!showAllSubcategories)}
+                                  className="text-[11px] font-bold text-primary-500 hover:text-primary-600 hover:underline text-left mt-1 flex items-center gap-1 cursor-pointer"
+                                >
+                                  <span>{showAllSubcategories ? 'Приховати' : `Показати більше (+${children.length - 6})`}</span>
+                                </button>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </ul>
+                    </div>
+                  );
+                } else {
+                  // Subcategory selected: show siblings, highlight active
+                  const parent = activeNode.parentId ? categoryTree.map.get(activeNode.parentId) : null;
+                  listToRender = parent ? parent.children : categoryTree.roots;
+                  highlightId = activeNode.id;
+                  isNested = parent ? true : false;
+                }
+
+                const hasMore = listToRender.length > 6;
+                const visibleList = showAllSubcategories ? listToRender : listToRender.slice(0, 6);
+
+                return (
+                  <ul className={`flex flex-col gap-2 ${isNested ? "pl-2" : ""}`}>
+                    {visibleList.map((category) => {
+                      const isSelected = category.id === highlightId;
+                      const hasChildren = category.children.length > 0;
+                      
+                      return (
+                        <li key={category.id}>
+                          <button
+                            onClick={() => handleCategoryChange(String(category.id))}
+                            className={`w-full text-left text-xs transition-colors flex items-center justify-between group py-1 cursor-pointer rounded-lg px-2 ${
+                              isSelected 
+                                ? "bg-[#FFF2EB] text-primary-600 font-bold" 
+                                : "text-gray-700 hover:bg-gray-50 hover:text-gray-950 font-medium"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 truncate pr-2">
+                              {hasChildren && !isSelected && (
+                                <ChevronRight size={12} className="text-gray-400 group-hover:text-primary-500 shrink-0" />
+                              )}
+                              <span className="truncate">{category.name}</span>
+                            </div>
+                            {category.count !== undefined && (
+                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                                isSelected 
+                                  ? "bg-primary-100 text-primary-600" 
+                                  : "bg-gray-50 text-gray-400 group-hover:bg-primary-50 group-hover:text-primary-500 transition-colors"
+                              }`}>
+                                {category.count}
+                              </span>
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+
+                    {hasMore && (
+                      <button
+                        onClick={() => setShowAllSubcategories(!showAllSubcategories)}
+                        className="text-[11px] font-bold text-primary-500 hover:text-primary-600 hover:underline text-left mt-1 pl-2 flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>{showAllSubcategories ? 'Приховати' : `Показати більше (+${listToRender.length - 6})`}</span>
+                      </button>
+                    )}
+                  </ul>
+                );
+              })()}
+            </div>
           )}
-        </ul>
+        </div>
       </div>
 
       {/* Technical Parameters block */}
