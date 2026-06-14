@@ -261,7 +261,7 @@ const AdminProductForm = ({
               <textarea
                 name="description"
                 placeholder="Введіть детальний опис інструменту, його функцій та переваг..."
-                defaultValue={product?.description}
+                defaultValue={product?.description ?? ''}
                 required
                 className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all min-h-[120px] font-sans leading-relaxed"
               />

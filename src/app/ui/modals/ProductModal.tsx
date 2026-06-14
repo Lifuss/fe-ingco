@@ -121,26 +121,26 @@ const ModalProduct = ({
                 </p>
               </div>
               <div className="">
-                {product.description.split('\n').map((item, index) => (
+                {(product.description || '').split('\n').map((item, index) => (
                   <p key={index}>{item}</p>
                 ))}
               </div>
-              {product.characteristics.length > 0 && (
+              {(product.characteristics?.length || 0) > 0 && (
                 <p className="mt-2 text-center">
                   <span className="font-medium">Характеристики</span>
                 </p>
               )}
 
               <div className="flex flex-col gap-2">
-                {product.characteristics?.map((item) =>
+                {product.characteristics?.map((item, index) =>
                   item.value !== '-' ? (
-                    <div key={item._id ?? item.name}>
+                    <div key={`${item.name}-${index}`}>
                       <p>
                         <span className="font-medium">{item.name}:</span> {item.value}
                       </p>
                     </div>
                   ) : (
-                    <div key={item._id ?? item.name}>
+                    <div key={`${item.name}-${index}`}>
                       <p>
                         <span className="font-medium">{item.name}</span>
                       </p>

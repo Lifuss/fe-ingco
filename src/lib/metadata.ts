@@ -89,7 +89,7 @@ export function generateProductMetadata({
     : `${SITE_URL}/placeholder.webp`;
   const pageUrl = `${SITE_URL}/${slug}`;
   const title = `${product.name} - ${product.article} | INGCO`;
-  const description = `${product.name} - ${product.article}. ${product.description.substring(0, 150)}... ${isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою'}.`;
+  const description = `${product.name} - ${product.article}. ${(product.description || '').substring(0, 150)}... ${isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою'}.`;
 
   return {
     title,

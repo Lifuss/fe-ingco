@@ -663,7 +663,7 @@ export default function Page({ params }: PageProps) {
                     {product.characteristics?.length > 0 ? (
                       product.characteristics.map((char, index) => (
                         <div
-                          key={char._id || index}
+                          key={`${char.name}-${index}`}
                           className={`flex justify-between px-5 py-3.5 text-sm md:text-base ${
                             index % 2 === 0 ? 'bg-neutral-50/50' : 'bg-white'
                           }`}
