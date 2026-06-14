@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
-import { ShieldCheck, Zap, Plug, Filter, Phone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Zap, Plug, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
 import { useDebounce } from 'use-debounce';
 import { Category } from '@/lib/types';
@@ -85,6 +85,26 @@ const CatalogSidebar = () => {
   }, [activeCategoryId, categoryTree]);
   const [dynamicFilters, setDynamicFilters] = useState<any[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({});
+
+  // Initialize/update expanded filters
+  useEffect(() => {
+    if (dynamicFilters.length > 0) {
+      setExpandedFilters((prev) => {
+        const next = { ...prev };
+        dynamicFilters.forEach((filter, idx) => {
+          const hasSelections = (selectedFilters[filter.code] || []).length > 0;
+          if (hasSelections) {
+            next[filter.code] = true;
+          } else if (next[filter.code] === undefined) {
+            // Expands first 5 groups by default
+            next[filter.code] = idx < 5;
+          }
+        });
+        return next;
+      });
+    }
+  }, [dynamicFilters, selectedFilters]);
 
   // Fetch filters dynamically when category changes
   useEffect(() => {
@@ -387,51 +407,67 @@ const CatalogSidebar = () => {
             {dynamicFilters.map((filter) => {
               const selectedValues = selectedFilters[filter.code] || [];
               const isSelectedAny = selectedValues.length > 0;
+              const isExpanded = !!expandedFilters[filter.code];
               return (
-                <div key={filter.code} className="flex flex-col">
-                  <h3 className="text-gray-750 flex justify-between items-center mb-2 text-xs font-bold tracking-wider uppercase">
+                <div key={filter.code} className="flex flex-col border-b border-neutral-100/60 pb-3 last:border-b-0 last:pb-0">
+                  <h3
+                    onClick={() =>
+                      setExpandedFilters((prev) => ({ ...prev, [filter.code]: !prev[filter.code] }))
+                    }
+                    className="group/filter-title text-gray-700 hover:text-primary-500 flex cursor-pointer select-none items-center justify-between mb-2 text-xs font-bold tracking-wider uppercase transition-colors"
+                  >
                     <span className="truncate pr-1">
                       {filter.name} {filter.unit ? `(${filter.unit})` : ''}
                     </span>
-                    {isSelectedAny && (
-                      <button
-                        onClick={() => {
-                          const nextFilters = { ...selectedFilters };
-                          delete nextFilters[filter.code];
-                          setSelectedFilters(nextFilters);
-                          const serialized =
-                            Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
-                          updateUrlParams({ filters: serialized });
-                        }}
-                        className="text-rose-500 hover:text-rose-600 shrink-0 text-[10px] font-semibold lowercase"
-                      >
-                        скинути
-                      </button>
-                    )}
-                  </h3>
-                  <div className="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
-                    {filter.activeValues.map((val: string) => {
-                      const isChecked = selectedValues.includes(val);
-                      return (
-                        <label
-                          key={val}
-                          className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none"
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {isSelectedAny && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const nextFilters = { ...selectedFilters };
+                            delete nextFilters[filter.code];
+                            setSelectedFilters(nextFilters);
+                            const serialized =
+                              Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
+                            updateUrlParams({ filters: serialized });
+                          }}
+                          className="text-rose-500 hover:text-rose-600 text-[10px] font-semibold lowercase"
                         >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) =>
-                              handleCheckboxChange(filter.code, val, e.target.checked)
-                            }
-                            className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
-                          />
-                          <span className="text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950 truncate">
-                            {val}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
+                          скинути
+                        </button>
+                      )}
+                      <ChevronDown
+                        size={14}
+                        className={`text-gray-400 group-hover/filter-title:text-primary-500 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180 text-primary-500' : ''
+                        }`}
+                      />
+                    </div>
+                  </h3>
+                  {isExpanded && (
+                    <div className="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1 transition-all duration-200">
+                      {filter.activeValues.map((val: string) => {
+                        const isChecked = selectedValues.includes(val);
+                        return (
+                          <label
+                            key={val}
+                            className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => handleCheckboxChange(filter.code, val, e.target.checked)}
+                              className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
+                            />
+                            <span className="text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950 truncate">
+                              {val}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
