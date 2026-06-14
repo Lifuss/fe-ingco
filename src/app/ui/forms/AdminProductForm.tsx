@@ -14,6 +14,8 @@ const questionSvg = (
 );
 
 import { Category } from '@/lib/types';
+import { apiIngco } from '@/lib/appState/user/operation';
+import { toast } from 'react-toastify';
 
 type AdminProductFormProps = {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
@@ -97,6 +99,8 @@ const AdminProductForm = ({
   );
   const [availableAttributes, setAvailableAttributes] = useState<any[]>([]);
   const [selectedAttrCode, setSelectedAttrCode] = useState<string>('');
+  const [isAddingNewOption, setIsAddingNewOption] = useState<boolean>(false);
+  const [newOptionValue, setNewOptionValue] = useState<string>('');
 
   useEffect(() => {
     if (selectedMainCategoryId) {
@@ -450,6 +454,8 @@ const AdminProductForm = ({
                     onChange={(e) => {
                       const code = e.target.value;
                       setSelectedAttrCode(code);
+                      setIsAddingNewOption(false);
+                      setNewOptionValue('');
                       if (code === '__custom__') {
                         setCharacteristic({
                           code: '',
@@ -498,20 +504,99 @@ const AdminProductForm = ({
                   Значення характеристики
                 </label>
                 {characteristic.options && characteristic.options.length > 0 ? (
-                  <select
-                    className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
-                    value={characteristic.value}
-                    onChange={(e) =>
-                      setCharacteristic((prev: any) => ({ ...prev, value: e.target.value }))
-                    }
-                  >
-                    <option value="">Оберіть значення...</option>
-                    {characteristic.options.map((opt: string) => (
-                      <option key={opt} value={opt}>
-                        {opt}
+                  isAddingNewOption ? (
+                    <div className="flex items-center gap-2 w-full">
+                      <input
+                        type="text"
+                        placeholder="Введіть нове значення..."
+                        className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                        value={newOptionValue}
+                        onChange={(e) => setNewOptionValue(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = newOptionValue.trim();
+                          if (!val) {
+                            toast.warning('Значення не може бути порожнім');
+                            return;
+                          }
+                          const attr = availableAttributes.find(
+                            (a) => a.code === characteristic.code,
+                          );
+                          if (!attr) {
+                            toast.error('Атрибут не знайдено');
+                            return;
+                          }
+                          if (attr.options?.includes(val)) {
+                            toast.warning('Таке значення вже існує');
+                            return;
+                          }
+                          const updatedOptions = [...(attr.options || []), val];
+                          apiIngco
+                            .patch(`/attributes/${attr.id}`, { options: updatedOptions })
+                            .then(() => {
+                              setAvailableAttributes((prev) =>
+                                prev.map((a) =>
+                                  a.id === attr.id ? { ...a, options: updatedOptions } : a,
+                                ),
+                              );
+                              setCharacteristic((prev: any) => ({
+                                ...prev,
+                                options: updatedOptions,
+                                value: val,
+                              }));
+                              setIsAddingNewOption(false);
+                              setNewOptionValue('');
+                              toast.success('Значення успішно додано до шаблону');
+                            })
+                            .catch((err) => {
+                              const msg =
+                                err.response?.data?.message || 'Не вдалося зберегти нове значення';
+                              toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                            });
+                        }}
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer shrink-0 text-xs"
+                      >
+                        Зберегти
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsAddingNewOption(false);
+                          setNewOptionValue('');
+                          setCharacteristic((prev: any) => ({ ...prev, value: '' }));
+                        }}
+                        className="bg-neutral-200 hover:bg-neutral-300 text-neutral-700 font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer shrink-0 text-xs"
+                      >
+                        Скасувати
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                      value={characteristic.value}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '__new_option__') {
+                          setIsAddingNewOption(true);
+                          setNewOptionValue('');
+                        } else {
+                          setCharacteristic((prev: any) => ({ ...prev, value: val }));
+                        }
+                      }}
+                    >
+                      <option value="">Оберіть значення...</option>
+                      {characteristic.options.map((opt: string) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                      <option value="__new_option__" className="text-primary-600 font-bold">
+                        + Додати нове значення...
                       </option>
-                    ))}
-                  </select>
+                    </select>
+                  )
                 ) : (
                   <div className="relative flex items-center">
                     <input
@@ -532,7 +617,6 @@ const AdminProductForm = ({
                     )}
                   </div>
                 )}
->>>>>>> eea8cb5 (feat: Add attributes CRUD and category linking interface in admin dashboard)
               </div>
 
               <button
