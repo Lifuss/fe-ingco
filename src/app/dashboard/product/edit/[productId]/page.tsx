@@ -23,15 +23,14 @@ const Page = ({ params }: PageProps) => {
   );
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const [characteristics, setCharacteristics] = useState<{ name: string; value: string }[]>(
+  const [characteristics, setCharacteristics] = useState<any[]>(
     () => product?.characteristics || [],
   );
-  const [characteristic, setCharacteristic] = useState<{
-    name: string;
-    value: string;
-  }>({
+  const [characteristic, setCharacteristic] = useState<any>({
+    code: '',
     name: '',
     value: '',
+    unit: '',
   });
   const imageUrl =
     uploadedImageUrl || (product?.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '');
@@ -58,7 +57,13 @@ const Page = ({ params }: PageProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-    formData.append('characteristics', JSON.stringify(characteristics));
+    const characteristicsObj = characteristics.reduce((acc, c) => {
+      const key = (c as any).code || c.name;
+      acc[key] = c.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    formData.append('characteristics', JSON.stringify(characteristicsObj));
     formData.append('categoryIds', JSON.stringify(selectedCategoryIds));
     formData.delete('characteristicName');
     formData.delete('characteristicDesc');

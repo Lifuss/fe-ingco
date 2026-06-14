@@ -38,6 +38,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
+  const filters = searchParams.get('filters') || '';
 
   // Spec filters from URL
   const minPower = searchParams.get('minPower')
@@ -121,10 +122,11 @@ const ProductList = ({ isFavoritePage = false }) => {
           limit,
           sortValue,
           isRetail: true,
+          filters,
         }),
       );
     }
-  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue]);
+  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue, filters]);
 
   function handleFavoriteClick(id: number) {
     if (isAuth) {

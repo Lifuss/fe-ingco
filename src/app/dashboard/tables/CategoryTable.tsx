@@ -80,6 +80,7 @@ const CategoryTable = () => {
   const [viewMode, setViewMode] = useState<'table' | 'sort'>('table');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
+  const [selectedAttributeIds, setSelectedAttributeIds] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<{
     id?: number;
     name: string;
@@ -100,9 +101,24 @@ const CategoryTable = () => {
   ) => {
     setSelectedId(id);
     setSelectedCategory({ id, name, renderSort, parentId, showInMenu });
+    setSelectedAttributeIds([]);
+
+    // Fetch linked attributes for this category
+    fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${id}/attributes`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setSelectedAttributeIds(data.map((a: any) => a.id));
+        }
+      })
+      .catch((err) => console.error('Failed to fetch category attributes:', err));
+
     setIsOpen(true);
   };
-  const closeModal = () => setIsOpen(false);
+  const closeModal = () => {
+    setIsOpen(false);
+    setSelectedAttributeIds([]);
+  };
 
   const query = searchParams.get('query') || '';
 
@@ -122,7 +138,7 @@ const CategoryTable = () => {
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(updateCategoryThunk({ id: selectedId, name, parentId, showInMenu }))
+      dispatch(updateCategoryThunk({ id: selectedId, name, parentId, showInMenu, attributeIds: selectedAttributeIds }))
         .unwrap()
         .then(() => closeModal())
         .catch(
@@ -284,7 +300,12 @@ const CategoryTable = () => {
         style={customModalStyles}
         ariaHideApp={false}
       >
-        <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedCategory} />
+        <CategoryForm
+          handleSubmit={handleSubmit}
+          defaultValue={selectedCategory}
+          selectedAttributeIds={selectedAttributeIds}
+          setSelectedAttributeIds={setSelectedAttributeIds}
+        />
       </Modal>
     </div>
   );

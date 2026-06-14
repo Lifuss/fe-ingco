@@ -2,7 +2,7 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Boxes, Inbox, Mails, PackageOpen, PieChart, ScanBarcode, Users } from 'lucide-react';
+import { Boxes, Inbox, Mails, PackageOpen, PieChart, ScanBarcode, Users, SlidersHorizontal } from 'lucide-react';
 
 const listData = [
   {
@@ -14,6 +14,11 @@ const listData = [
     title: 'Категорії',
     link: '/dashboard/categories',
     svg: <Boxes size={20} />,
+  },
+  {
+    title: 'Характеристики',
+    link: '/dashboard/attributes',
+    svg: <SlidersHorizontal size={20} />,
   },
   {
     title: 'Користувачі',

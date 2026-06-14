@@ -78,6 +78,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const query = searchParams.get('query') || '';
   const category = searchParams.get('category') || '';
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
+  const filters = searchParams.get('filters') || '';
 
   let productsData = products;
   if (isFavoritePage) {
@@ -104,10 +105,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
           category,
           isRetail: false,
           sortValue,
+          filters,
         }),
       );
     }
-  }, [dispatch, page, query, category, isFavoritePage, sortValue]);
+  }, [dispatch, page, query, category, isFavoritePage, sortValue, filters]);
 
   const handleFavoriteClick = useCallback(
     (id: number) => {

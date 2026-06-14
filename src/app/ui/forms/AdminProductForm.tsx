@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/lib/types';
 import Icon from '../assets/Icon';
@@ -14,16 +14,15 @@ const questionSvg = (
 );
 
 import { Category } from '@/lib/types';
-import { useMemo } from 'react';
 
 type AdminProductFormProps = {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   handleImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
   imageUrl: string;
-  characteristics: { name: string; value: string }[];
-  setCharacteristics: React.Dispatch<React.SetStateAction<{ name: string; value: string }[]>>;
-  characteristic: { name: string; value: string };
-  setCharacteristic: React.Dispatch<React.SetStateAction<{ name: string; value: string }>>;
+  characteristics: any[];
+  setCharacteristics: React.Dispatch<React.SetStateAction<any[]>>;
+  characteristic: any;
+  setCharacteristic: React.Dispatch<React.SetStateAction<any>>;
   categories: Category[];
   isEdit?: boolean;
   product?: Product;
@@ -92,6 +91,27 @@ const AdminProductForm = ({
   setSelectedCategoryIds,
 }: AdminProductFormProps) => {
   const router = useRouter();
+
+  const [selectedMainCategoryId, setSelectedMainCategoryId] = useState<number | ''>(
+    () => product?.mainCategory?.id || product?.category?.id || '',
+  );
+  const [availableAttributes, setAvailableAttributes] = useState<any[]>([]);
+  const [selectedAttrCode, setSelectedAttrCode] = useState<string>('');
+
+  useEffect(() => {
+    if (selectedMainCategoryId) {
+      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${selectedMainCategoryId}/attributes`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setAvailableAttributes(data);
+          }
+        })
+        .catch((err) => console.error('Failed to fetch category attributes:', err));
+    } else {
+      setAvailableAttributes([]);
+    }
+  }, [selectedMainCategoryId]);
 
   const sortedCategories = useMemo(() => getSortedHierarchy(categories), [categories]);
 
@@ -165,7 +185,8 @@ const AdminProductForm = ({
                 <select
                   name="mainCategoryId"
                   className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
-                  defaultValue={product?.mainCategory?.id || product?.category?.id || ''}
+                  value={selectedMainCategoryId}
+                  onChange={(e) => setSelectedMainCategoryId(e.target.value ? Number(e.target.value) : '')}
                 >
                   <option value="">Не обрано</option>
                   {sortedCategories.map((category) => (
@@ -390,48 +411,146 @@ const AdminProductForm = ({
 
             {/* Inputs inline */}
             <div className="flex flex-col items-end gap-3 md:flex-row">
-              <div className="flex flex-grow flex-col">
+              <div className="flex flex-grow flex-col min-w-[200px]">
                 <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
                   Назва характеристики
                 </label>
-                <input
-                  type="text"
-                  name="characteristicName"
-                  placeholder="Напруга, Вага, Потужність..."
-                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm transition-all focus:bg-white focus:outline-none"
-                  value={characteristic.name}
-                  onChange={(e) =>
-                    setCharacteristic((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                />
+                {selectedAttrCode === '__custom__' ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Назва нової характеристики..."
+                      className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                      value={characteristic.name}
+                      onChange={(e) =>
+                        setCharacteristic((prev: any) => ({
+                          ...prev,
+                          name: e.target.value,
+                          code: e.target.value
+                            ? e.target.value.toLowerCase().replace(/\s+/g, '_')
+                            : '',
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedAttrCode('');
+                        setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
+                      }}
+                      className="text-rose-500 hover:text-rose-700 shrink-0 cursor-pointer text-xs font-semibold underline"
+                    >
+                      Скасувати
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                    value={selectedAttrCode}
+                    onChange={(e) => {
+                      const code = e.target.value;
+                      setSelectedAttrCode(code);
+                      if (code === '__custom__') {
+                        setCharacteristic({
+                          code: '',
+                          name: '',
+                          value: '',
+                          unit: '',
+                          options: [],
+                        });
+                      } else {
+                        const attr = availableAttributes.find((a) => a.code === code);
+                        if (attr) {
+                          setCharacteristic({
+                            code: attr.code,
+                            name: attr.name,
+                            value: '',
+                            unit: attr.unit || '',
+                            options: attr.options || [],
+                          });
+                        } else {
+                          setCharacteristic({
+                            code: '',
+                            name: '',
+                            value: '',
+                            unit: '',
+                            options: [],
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    <option value="">Оберіть характеристику...</option>
+                    {availableAttributes.map((attr) => (
+                      <option key={attr.code} value={attr.code}>
+                        {attr.name} {attr.unit ? `(${attr.unit})` : ''}
+                      </option>
+                    ))}
+                    <option value="__custom__" className="text-primary-600 font-bold">
+                      + Додати нову (якої немає в списку)...
+                    </option>
+                  </select>
+                )}
               </div>
-              <div className="flex flex-grow flex-col">
+
+              <div className="flex flex-grow flex-col min-w-[200px]">
                 <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
                   Значення характеристики
                 </label>
-                <input
-                  type="text"
-                  name="characteristicDesc"
-                  placeholder="20V, 1.5кг, 1400Вт..."
-                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm transition-all focus:bg-white focus:outline-none"
-                  value={characteristic.value}
-                  onChange={(e) =>
-                    setCharacteristic((prev) => ({
-                      ...prev,
-                      value: e.target.value,
-                    }))
-                  }
-                />
+                {characteristic.options && characteristic.options.length > 0 ? (
+                  <select
+                    className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                    value={characteristic.value}
+                    onChange={(e) =>
+                      setCharacteristic((prev: any) => ({ ...prev, value: e.target.value }))
+                    }
+                  >
+                    <option value="">Оберіть значення...</option>
+                    {characteristic.options.map((opt: string) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      placeholder={
+                        characteristic.unit ? `Наприклад: 20` : `20V, 1.5кг, 1400Вт...`
+                      }
+                      className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] pl-3.5 pr-12 py-2 text-sm transition-all focus:bg-white focus:outline-none"
+                      value={characteristic.value}
+                      onChange={(e) =>
+                        setCharacteristic((prev: any) => ({ ...prev, value: e.target.value }))
+                      }
+                    />
+                    {characteristic.unit && (
+                      <span className="absolute right-3 pointer-events-none select-none bg-[#FAFAFF] px-1 font-bold text-xs text-neutral-400">
+                        {characteristic.unit}
+                      </span>
+                    )}
+                  </div>
+                )}
+>>>>>>> eea8cb5 (feat: Add attributes CRUD and category linking interface in admin dashboard)
               </div>
+
               <button
                 type="button"
                 onClick={() => {
-                  if (characteristic.name.trim()) {
-                    setCharacteristics((prev) => [...prev, characteristic]);
-                    setCharacteristic({ name: '', value: '' });
+                  if (characteristic.name.trim() && characteristic.value.trim()) {
+                    const suffix = characteristic.unit && !characteristic.value.endsWith(characteristic.unit) ? ` ${characteristic.unit}` : '';
+                    setCharacteristics((prev) => [
+                      ...prev,
+                      {
+                        code: characteristic.code || characteristic.name.toLowerCase().replace(/\s+/g, '_'),
+                        name: characteristic.name.trim(),
+                        value: characteristic.value.trim() + suffix,
+                        unit: characteristic.unit || null,
+                      }
+                    ]);
+                    setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
+                    setSelectedAttrCode('');
                   }
                 }}
                 className="bg-primary-500 hover:bg-primary-600 flex h-9 shrink-0 cursor-pointer items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-md shadow-orange-500/10 transition-all"
@@ -452,7 +571,9 @@ const AdminProductForm = ({
                     >
                       <div className="flex gap-2">
                         <span className="font-semibold text-neutral-500">{char.name}:</span>
-                        <span className="font-semibold text-neutral-800">{char.value}</span>
+                        <span className="font-semibold text-neutral-800">
+                          {char.value} {char.unit && !char.value.endsWith(char.unit) ? char.unit : ''}
+                        </span>
                       </div>
                       <button
                         type="button"

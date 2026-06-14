@@ -83,18 +83,38 @@ const CatalogSidebar = () => {
     if (!activeCategoryId) return null;
     return categoryTree.map.get(Number(activeCategoryId)) || null;
   }, [activeCategoryId, categoryTree]);
-  const urlMinPower = searchParams.get('minPower') || '';
-  const urlMaxPower = searchParams.get('maxPower') || '';
-  const batteryChecked = searchParams.get('battery') === 'true';
-  const mainsChecked = searchParams.get('mains') === 'true';
+  const [dynamicFilters, setDynamicFilters] = useState<any[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
 
-  // Local state for inputs (for smoother typing before debouncing)
-  const [minPowerInput, setMinPowerInput] = useState(urlMinPower);
-  const [maxPowerInput, setMaxPowerInput] = useState(urlMaxPower);
+  // Fetch filters dynamically when category changes
+  useEffect(() => {
+    if (activeCategoryId) {
+      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${activeCategoryId}/filters`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setDynamicFilters(data);
+          }
+        })
+        .catch((err) => console.error('Failed to fetch category filters:', err));
+    } else {
+      setDynamicFilters([]);
+    }
+  }, [activeCategoryId]);
 
-  // Debounce power values to prevent spamming updates while typing
-  const [debouncedMinPower] = useDebounce(minPowerInput, 500);
-  const [debouncedMaxPower] = useDebounce(maxPowerInput, 500);
+  // Sync selected filters from URL
+  const urlFilters = searchParams.get('filters');
+  useEffect(() => {
+    if (urlFilters) {
+      try {
+        setSelectedFilters(JSON.parse(urlFilters));
+      } catch {
+        setSelectedFilters({});
+      }
+    } else {
+      setSelectedFilters({});
+    }
+  }, [urlFilters]);
 
   // Helper to update URL params
   const updateUrlParams = useCallback(
@@ -121,55 +141,39 @@ const CatalogSidebar = () => {
     dispatch(fetchCategoriesThunk(''));
   }, [dispatch]);
 
-  // Update inputs if URL changes externally
-  useEffect(() => {
-    setMinPowerInput(urlMinPower);
-  }, [urlMinPower]);
-
-  useEffect(() => {
-    setMaxPowerInput(urlMaxPower);
-  }, [urlMaxPower]);
-
-  // Trigger search params update when debounced inputs or checkboxes change
-  useEffect(() => {
-    if (debouncedMinPower === urlMinPower && debouncedMaxPower === urlMaxPower) {
-      return;
-    }
-    updateUrlParams({
-      minPower: debouncedMinPower,
-      maxPower: debouncedMaxPower,
-    });
-  }, [debouncedMinPower, debouncedMaxPower, urlMinPower, urlMaxPower, updateUrlParams]);
-
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {
     if (activeCategoryId === categoryId) {
-      // Uncheck
-      updateUrlParams({ category: null });
+      updateUrlParams({ category: null, filters: null });
     } else {
-      // Check
-      updateUrlParams({ category: categoryId });
+      updateUrlParams({ category: categoryId, filters: null });
     }
   };
 
-  const handlePowerSourceChange = (source: 'battery' | 'mains', checked: boolean) => {
-    updateUrlParams({ [source]: checked ? 'true' : null });
+  // Checkbox toggle handler
+  const handleCheckboxChange = (code: string, value: string, checked: boolean) => {
+    const nextFilters = { ...selectedFilters };
+    if (checked) {
+      nextFilters[code] = [...(nextFilters[code] || []), value];
+    } else {
+      nextFilters[code] = (nextFilters[code] || []).filter((v) => v !== value);
+      if (nextFilters[code].length === 0) {
+        delete nextFilters[code];
+      }
+    }
+    setSelectedFilters(nextFilters);
+
+    const serialized = Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
+    updateUrlParams({ filters: serialized });
   };
 
   // Clear all filters
   const handleClearFilters = () => {
-    setMinPowerInput('');
-    setMaxPowerInput('');
-    const params = new URLSearchParams();
-    if (searchParams.get('query')) {
-      params.set('query', searchParams.get('query') || '');
-    }
-    const targetPath = pathname === '/favorites' ? '/favorites' : '/';
-    router.replace(`${targetPath}?${params.toString()}`);
+    setSelectedFilters({});
+    updateUrlParams({ filters: null });
   };
 
-  const hasActiveFilters =
-    activeCategoryId || urlMinPower || urlMaxPower || batteryChecked || mainsChecked;
+  const hasActiveFilters = Object.keys(selectedFilters).length > 0;
 
   return (
     <aside className="flex w-full shrink-0 flex-col gap-6 font-sans xl:w-[280px]">
@@ -357,11 +361,11 @@ const CatalogSidebar = () => {
 
       {/* Technical Parameters block */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <div className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
+        <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
+          <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
             <Filter size={14} className="text-primary-500" />
-            Технічні параметри
-          </div>
+            Характеристики
+          </h2>
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
@@ -370,65 +374,69 @@ const CatalogSidebar = () => {
               Скинути
             </button>
           )}
-        </h2>
-
-        {/* Power Min/Max Range */}
-        <div className="mb-5">
-          <h3 className="mb-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase">
-            Потужність (Вт)
-          </h3>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              placeholder="Мін"
-              value={minPowerInput}
-              onChange={(e) => setMinPowerInput(e.target.value)}
-              className="focus:border-primary-500 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium placeholder-gray-400 focus:outline-none"
-            />
-            <span className="text-gray-300">/</span>
-            <input
-              type="number"
-              placeholder="Макс"
-              value={maxPowerInput}
-              onChange={(e) => setMaxPowerInput(e.target.value)}
-              className="focus:border-primary-500 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium placeholder-gray-400 focus:outline-none"
-            />
-          </div>
         </div>
 
-        {/* Power Source Checkboxes */}
-        <div>
-          <h3 className="mb-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase">
-            Джерело живлення
-          </h3>
-          <div className="flex flex-col gap-2.5">
-            <label className="group flex cursor-pointer items-center gap-3 py-0.5">
-              <input
-                type="checkbox"
-                checked={batteryChecked}
-                onChange={(e) => handlePowerSourceChange('battery', e.target.checked)}
-                className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 rounded border-gray-300"
-              />
-              <span className="flex items-center gap-1.5 text-sm text-gray-600 transition-colors group-hover:text-gray-950">
-                <Zap size={14} className="text-amber-500" />
-                Акумулятор
-              </span>
-            </label>
-
-            <label className="group flex cursor-pointer items-center gap-3 py-0.5">
-              <input
-                type="checkbox"
-                checked={mainsChecked}
-                onChange={(e) => handlePowerSourceChange('mains', e.target.checked)}
-                className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 rounded border-gray-300"
-              />
-              <span className="flex items-center gap-1.5 text-sm text-gray-600 transition-colors group-hover:text-gray-950">
-                <Plug size={14} className="text-blue-500" />
-                Мережа 220В
-              </span>
-            </label>
+        {dynamicFilters.length === 0 ? (
+          <p className="text-xs text-neutral-400 font-semibold text-center py-4">
+            {activeCategoryId
+              ? 'Немає активних фільтрів для цієї категорії'
+              : 'Оберіть категорію для фільтрації товарів'}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-5">
+            {dynamicFilters.map((filter) => {
+              const selectedValues = selectedFilters[filter.code] || [];
+              const isSelectedAny = selectedValues.length > 0;
+              return (
+                <div key={filter.code} className="flex flex-col">
+                  <h3 className="text-gray-750 flex justify-between items-center mb-2 text-xs font-bold tracking-wider uppercase">
+                    <span className="truncate pr-1">
+                      {filter.name} {filter.unit ? `(${filter.unit})` : ''}
+                    </span>
+                    {isSelectedAny && (
+                      <button
+                        onClick={() => {
+                          const nextFilters = { ...selectedFilters };
+                          delete nextFilters[filter.code];
+                          setSelectedFilters(nextFilters);
+                          const serialized =
+                            Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
+                          updateUrlParams({ filters: serialized });
+                        }}
+                        className="text-rose-500 hover:text-rose-600 shrink-0 text-[10px] font-semibold lowercase"
+                      >
+                        скинути
+                      </button>
+                    )}
+                  </h3>
+                  <div className="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+                    {filter.activeValues.map((val: string) => {
+                      const isChecked = selectedValues.includes(val);
+                      return (
+                        <label
+                          key={val}
+                          className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) =>
+                              handleCheckboxChange(filter.code, val, e.target.checked)
+                            }
+                            className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
+                          />
+                          <span className="text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950 truncate">
+                            {val}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
+        )}
       </div>
 
       {/* B2B Personal Manager Banner */}

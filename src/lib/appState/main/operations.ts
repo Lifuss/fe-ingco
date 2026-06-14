@@ -72,6 +72,7 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       limit = 30,
       sortValue,
       isRetail = true,
+      filters,
     }: {
       query: string;
       page: number;
@@ -79,12 +80,13 @@ export const fetchMainTableDataThunk = createAsyncThunk(
       limit?: number;
       sortValue: sortValueType;
       isRetail: boolean;
+      filters?: string;
     },
     { rejectWithValue, signal },
   ) => {
     try {
       const { data } = await apiIngco.get('/products', {
-        params: { page, q: query, limit, category, sortValue, isRetail },
+        params: { page, q: query, limit, category, sortValue, isRetail, filters },
         signal,
       });
       return { ...data, products: data.products.map(normalizeProduct) };
@@ -189,7 +191,14 @@ export const createCategoryThunk = createAsyncThunk(
       renderSort,
       parentId,
       showInMenu,
-    }: { name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
+      attributeIds,
+    }: {
+      name: string;
+      renderSort?: number;
+      parentId?: number | null;
+      showInMenu?: boolean;
+      attributeIds?: number[];
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -199,6 +208,9 @@ export const createCategoryThunk = createAsyncThunk(
         parentId,
         showInMenu,
       });
+      if (attributeIds && attributeIds.length > 0) {
+        await apiIngco.post(`/categories/${data.id}/attributes`, { attributeIds });
+      }
       return data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -215,12 +227,14 @@ export const updateCategoryThunk = createAsyncThunk(
       renderSort,
       parentId,
       showInMenu,
+      attributeIds,
     }: {
       id: number;
-      name: string;
+      name?: string;
       renderSort?: number;
       parentId?: number | null;
       showInMenu?: boolean;
+      attributeIds?: number[];
     },
     { rejectWithValue },
   ) => {
@@ -231,6 +245,9 @@ export const updateCategoryThunk = createAsyncThunk(
         parentId,
         showInMenu,
       });
+      if (attributeIds !== undefined) {
+        await apiIngco.post(`/categories/${id}/attributes`, { attributeIds });
+      }
       return data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));

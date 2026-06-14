@@ -1,8 +1,8 @@
 'use client';
 
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAppSelector } from '@/lib/hooks';
 import { Category } from '@/lib/types';
-import React, { useMemo } from 'react';
 
 interface CategoryNode extends Category {
   children: CategoryNode[];
@@ -69,6 +69,8 @@ function getHierarchyOptions(categories: Category[], excludeId?: number) {
 const CategoryForm = ({
   handleSubmit,
   defaultValue,
+  selectedAttributeIds = [],
+  setSelectedAttributeIds,
 }: {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   defaultValue?: {
@@ -78,9 +80,24 @@ const CategoryForm = ({
     parentId?: number | null;
     showInMenu?: boolean;
   };
+  selectedAttributeIds?: number[];
+  setSelectedAttributeIds: React.Dispatch<React.SetStateAction<number[]>>;
 }) => {
   const rawCategoriesList = useAppSelector((state) => state.persistedMainReducer.categories);
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
+
+  const [allAttributes, setAllAttributes] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API}/api/attributes`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAllAttributes(data);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch attributes:', err));
+  }, []);
 
   const hierarchyOptions = useMemo(
     () => getHierarchyOptions(categoriesList, defaultValue?.id),
@@ -88,7 +105,7 @@ const CategoryForm = ({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="flex min-w-[320px] flex-col gap-4 font-sans">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-sans min-w-[340px] md:min-w-[420px]">
       <label className="flex flex-col gap-1">
         <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
           Назва категорії
@@ -134,6 +151,42 @@ const CategoryForm = ({
           Відображати в меню каталогу
         </span>
       </label>
+
+      <div className="flex flex-col gap-2.5 mt-2">
+        <span className="block text-sm font-bold text-neutral-700 uppercase tracking-wider">
+          Характеристики для фільтрації
+        </span>
+        {allAttributes.length === 0 ? (
+          <span className="text-xs text-neutral-400 italic">
+            Немає створених характеристик. Створіть їх спочатку в розділі «Характеристики».
+          </span>
+        ) : (
+          <div className="border border-neutral-200 rounded-lg p-3 bg-[#FAFAFF] max-h-40 overflow-y-auto flex flex-col gap-2">
+            {allAttributes.map((attr) => {
+              const isChecked = selectedAttributeIds.includes(attr.id);
+              return (
+                <label key={attr.id} className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none text-xs font-semibold text-neutral-700">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedAttributeIds([...selectedAttributeIds, attr.id]);
+                      } else {
+                        setSelectedAttributeIds(selectedAttributeIds.filter((id) => id !== attr.id));
+                      }
+                    }}
+                    className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500 cursor-pointer"
+                  />
+                  <span className="group-hover:text-neutral-950 transition-colors">
+                    {attr.name} <span className="text-[10px] text-neutral-400 font-mono font-bold">({attr.code})</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <button className="bg-primary-500 hover:bg-primary-600 mt-2 cursor-pointer rounded-lg px-4 py-2 text-sm font-bold tracking-wide text-white uppercase transition-colors">
         Підтвердити

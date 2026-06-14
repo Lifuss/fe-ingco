@@ -24,9 +24,13 @@ export const customModalStyles = {
 
 export const CategoryModalCreate = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [attributeIds, setAttributeIds] = useState<number[]>([]);
   const dispatch = useAppDispatch();
   const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const closeModal = () => {
+    setIsOpen(false);
+    setAttributeIds([]);
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +44,7 @@ export const CategoryModalCreate = () => {
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(createCategoryThunk({ name, parentId, showInMenu }))
+      dispatch(createCategoryThunk({ name, parentId, showInMenu, attributeIds }))
         .unwrap()
         .then(() => closeModal())
         .catch(
@@ -64,7 +68,11 @@ export const CategoryModalCreate = () => {
         style={customModalStyles}
         ariaHideApp={false}
       >
-        <CategoryForm handleSubmit={handleSubmit} />
+        <CategoryForm
+          handleSubmit={handleSubmit}
+          selectedAttributeIds={attributeIds}
+          setSelectedAttributeIds={setAttributeIds}
+        />
       </Modal>
     </>
   );
