@@ -38,30 +38,53 @@ npm run prettier:check # Verify formatting
 ## Project Structure
 
 ```
-app/                          # Next.js App Router
-  (retail-catalog)/           # Retail catalog (B2C) - root level
-    [productSlug]/            # Product detail pages
-    cart/                     # Shopping cart
-    favorites/                # Favorite products
-    history/                  # Order history
-    page.tsx                  # Main catalog page (root /)
-  api/                        # API routes (Server Actions)
-  auth/                       # Authentication pages (login, register)
-  dashboard/                  # Admin dashboard CRM
-  home/                       # Public home / marketing pages
-  retail/                     # Legacy retail routes (redirects to root)
-  ui/                         # Shared UI components
-  service/                    # StoreProvider, PrivateRouting/withAuth HOC
-  page.tsx                    # Root page - retail catalog
-lib/                          # Shared utilities and logic
-  appState/                   # Redux store, slices, operations
-  fonts/                      # Custom fonts
-  types.ts                    # TypeScript type definitions
-  definitions.ts              # Type definitions
-  validationSchema.ts         # Zod schemas
-  constants.ts                # App constants
-  utils.ts                    # Utility functions
-  novaPoshta.ts               # Nova Poshta API integration
+src/
+  app/                          # Next.js App Router
+    (retail-catalog)/           # B2C retail catalog route group (root /)
+      [productSlug]/            # Dynamic product detail pages
+      cart/                     # Shopping cart page
+      export/                   # B2B product export page
+      favorites/                # Favorite products page
+      history/                  # Order history page
+      layout.tsx                # Shared catalog layout
+      page.tsx                  # Main catalog page (root /)
+    about-us/                   # About us pages (contacts, partnership, support)
+    api/                        # Next.js API routes
+    auth/                       # Authentication pages (login, register, forgot)
+    dashboard/                  # Admin dashboard CRM
+      tables/                   # Data table views (ProductTable, CategoryTable, etc.)
+      Sidebar.tsx               # Dashboard navigation sidebar
+      layout.tsx                # Dashboard layout with sidebar
+    legal/                      # Legal pages (cookies, offer, privacy, returns, shipping, terms)
+    service/                    # StoreProvider, PrivateRouting/withAuth HOC
+    ui/                         # Shared UI components
+      buttons/                  # Button components
+      catalog/                  # Catalog-specific components (CatalogSidebar, FiltersBlock)
+      dashboard/                # Dashboard-specific components
+      forms/                    # Form components (AdminProductForm, CategoryForm, etc.)
+      header/                   # Header components
+      home/                     # Marketing/home section UI components (Hero, FAQ, etc.)
+      modals/                   # Modal dialog components
+      product/                  # Product display components (ProductCard, CartTable, etc.)
+      skeletons/                # Loading skeleton components
+    globals.css                 # Global styles (Tailwind + custom CSS variables)
+    layout.tsx                  # Root layout with providers
+  lib/                          # Shared utilities and logic
+    appState/                   # Redux store, slices, operations
+      store.ts                  # Redux store configuration
+      main/                     # Main slice (products, categories, currency rates)
+      dashboard/                # Dashboard slice (orders, users, stats, support)
+      user/                     # User/auth slice (auth, cart, favorites)
+    types.ts                    # TypeScript type definitions
+    definitions.ts              # Additional type definitions
+    validationSchema.ts         # Zod validation schemas
+    constants.ts                # App-wide constants (contacts, config)
+    utils.ts                    # Utility functions
+    hooks.tsx                   # Custom React hooks
+    metadata.ts                 # Next.js metadata helpers
+    novaPoshta.ts               # Nova Poshta delivery API integration
+  proxy.ts                      # Next.js middleware — protects /dashboard (admin-only) and
+                                # injects auth state into request headers for SSR
 ```
 
 ---
@@ -70,10 +93,20 @@ lib/                          # Shared utilities and logic
 
 - **Framework:** Next.js 16 (App Router), React 19, TypeScript 5.x
 - **State:** Redux Toolkit 2.11 + Redux Persist 6.0 + Redux Thunk 3.1
-- **Styling:** Tailwind CSS 4 with custom theme
+- **Styling:** Tailwind CSS 4 with custom theme; `prettier-plugin-tailwindcss` **auto-sorts Tailwind class order** on every format run
+- **UI Components:** shadcn v4 (Radix UI primitives); `class-variance-authority` for component variants
+- **Tables:** `@tanstack/react-table` v8 — used in all admin dashboard tables (always wrap with `'use no memo'` directive)
+- **Charts:** `recharts` v3 — used in dashboard analytics/diagrams
 - **Forms:** React Hook Form 7.72 + Zod 4.3 (with `@hookform/resolvers` 5.2)
-- **HTTP Client:** Axios 1.15
-- **Database Client:** `@vercel/postgres` (PostgreSQL)
+- **HTTP Client:** Axios 1.15 (custom `apiIngco` instance in `src/lib/appState/user/operation.ts` with auth + refresh interceptors)
+- **Database:** `@vercel/postgres` (PostgreSQL for Nova Poshta city/branch data)
+- **Icons:** `lucide-react`
+- **Carousel/Slider:** `react-slick` + `slick-carousel`
+- **Select:** `react-select` (used in category and product selectors)
+- **Modals:** `react-modal`
+- **Notifications:** `react-toastify` (always use for user-facing errors and success messages)
+- **Utilities:** `lodash`, `clsx`, `tailwind-merge`, `use-debounce`
+- **Barcodes:** `jsbarcode` (used in export/B2B features)
 
 ---
 
@@ -130,7 +163,7 @@ lib/                          # Shared utilities and logic
 
 ## Architecture Patterns
 
-### Next.js 14 App Router
+### Next.js App Router
 
 - Use `page.tsx` for route pages, `layout.tsx` for shared layouts, `error.tsx` for error boundaries, and `not-found.tsx` for 404 pages.
 - Use route groups `(retail-catalog)` to organize B2C routes without affecting URL structure.
@@ -145,16 +178,18 @@ lib/                          # Shared utilities and logic
 - **Redux Persist Configuration:**
   - Main slice persists: `currencyRates`, `shopView`.
   - Auth slice persists: `token`, `localStorageCart`.
-- **Thunk Pattern:** Always handle API errors in Redux thunks using `rejectWithValue(error)`.
+- **Thunk Pattern:** Always use `serializeAxiosError()` in `rejectWithValue` to avoid Redux non-serializable value warnings.
   ```typescript
+  import { serializeAxiosError } from '@/lib/appState/user/operation';
+
   export const fetchDataThunk = createAsyncThunk(
     'feature/fetchData',
     async (params, { rejectWithValue }) => {
       try {
         const response = await apiIngco.get('/endpoint', { params });
         return response.data;
-      } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Error');
+      } catch (error) {
+        return rejectWithValue(serializeAxiosError(error));
       }
     },
   );
@@ -204,6 +239,20 @@ lib/                          # Shared utilities and logic
 - **Error Handling:**
   - Always use try-catch block around asynchronous operations.
   - Inform users of errors using toast notifications via `react-toastify`.
+
+---
+
+## Common Mistakes to Avoid
+
+- **Never use inline styles** — always use Tailwind CSS utility classes.
+- **Never use the `pages/` router** — this project uses App Router exclusively.
+- **Never add new state management solutions** — use Redux Toolkit only.
+- **Never translate UI text to English** — all labels, badges, toasts, and messages must be in Ukrainian.
+- **Never call the backend API directly in components** — always dispatch a Redux thunk.
+- **Never use raw `error.response?.data?.message` in `rejectWithValue`** — use `serializeAxiosError(error)` to prevent non-serializable Redux state warnings.
+- **Do not remove the `'use no memo'` directive** from files using `@tanstack/react-table` — it disables React Compiler memoization which breaks TanStack Table's internal state.
+- **Do not create pages inside `app/ui/`** — `ui/` is for reusable components only; pages go in their route directories.
+- **Do not manually sort Tailwind classes** — `prettier-plugin-tailwindcss` handles class order automatically on every `npm run prettier` run.
 
 ---
 
