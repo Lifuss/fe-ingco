@@ -133,6 +133,7 @@ const ProductTable = () => {
         data={data}
         headerColor="bg-blue-200"
         borderColor="border-gray-400"
+        scrollTrigger={page}
       />
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />

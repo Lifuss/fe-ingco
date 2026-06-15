@@ -17,6 +17,7 @@ export type TableProps<T extends object> = {
   data: T[];
   headerColor?: string;
   borderColor?: string;
+  scrollTrigger?: unknown;
 } & (TableWithClickableRow<T> | TableWithoutClickableRow);
 
 export default function Table<T extends object>({
@@ -26,6 +27,7 @@ export default function Table<T extends object>({
   borderColor = 'border-neutral-250',
   rowClickable,
   rowFunction,
+  scrollTrigger,
 }: TableProps<T>) {
   'use no memo';
 
@@ -36,12 +38,17 @@ export default function Table<T extends object>({
   });
 
   const tableRef = useRef<HTMLTableElement>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (tableRef.current) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (scrollTrigger !== undefined && tableRef.current) {
       tableRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [data]);
+  }, [scrollTrigger]);
 
   // Dynamic cell and header text alignment helper
   const getAlignClass = (columnId: string) => {
@@ -63,8 +70,10 @@ export default function Table<T extends object>({
   };
 
   return (
-    <div className={clsx("w-full overflow-x-auto rounded-xl border bg-white shadow-sm", borderColor)}>
-      <table className="w-full border-collapse text-sm text-neutral-800 font-sans" ref={tableRef}>
+    <div
+      className={clsx('w-full overflow-x-auto rounded-xl border bg-white shadow-sm', borderColor)}
+    >
+      <table className="w-full border-collapse font-sans text-sm text-neutral-800" ref={tableRef}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="border-b border-neutral-200">
@@ -76,9 +85,9 @@ export default function Table<T extends object>({
                     key={header.id}
                     colSpan={header.colSpan}
                     className={clsx(
-                      "px-4 py-3 font-display font-bold text-[11px] uppercase tracking-wider text-neutral-500 select-none sticky top-0 z-10 border-b border-neutral-200",
+                      'font-display sticky top-0 z-10 border-b border-neutral-200 px-4 py-3 text-[11px] font-bold tracking-wider text-neutral-500 uppercase select-none',
                       alignClass,
-                      headerColor || "bg-neutral-50/90"
+                      headerColor || 'bg-neutral-50/90',
                     )}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -101,8 +110,8 @@ export default function Table<T extends object>({
               className={clsx(
                 rowClickable && 'cursor-pointer',
                 (row.original as { availableCol?: boolean }).availableCol
-                  ? 'pointer-events-none cursor-context-menu opacity-40 bg-neutral-50/25'
-                  : 'hover:bg-neutral-50/50 transition-colors bg-white'
+                  ? 'pointer-events-none cursor-context-menu bg-neutral-50/25 opacity-40'
+                  : 'bg-white transition-colors hover:bg-neutral-50/50',
               )}
             >
               {row.getVisibleCells().map((cell) => {
@@ -111,8 +120,8 @@ export default function Table<T extends object>({
                   <td
                     key={cell.id}
                     className={clsx(
-                      "px-4 py-3 font-medium text-neutral-700 align-middle",
-                      alignClass
+                      'px-4 py-3 align-middle font-medium text-neutral-700',
+                      alignClass,
                     )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
