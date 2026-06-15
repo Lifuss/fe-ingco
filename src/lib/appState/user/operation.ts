@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
 import { normalizeOrder } from '@/lib/utils';
+import { toast } from 'react-toastify';
 
 interface Register {
   email: string;
@@ -399,3 +400,54 @@ export const resetPasswordThunk = createAsyncThunk(
     }
   },
 );
+
+let storeInstance: any = null;
+
+export const injectStore = (store: any) => {
+  storeInstance = store;
+};
+
+apiIngco.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (originalRequest.url?.includes('/users/refresh') || originalRequest.url?.includes('/users/logout')) {
+        return Promise.reject(error);
+      }
+
+      if (storeInstance) {
+        try {
+          await storeInstance.dispatch(refreshTokenThunk()).unwrap();
+
+          const state = storeInstance.getState();
+          const newToken = state.persistedAuthReducer.token;
+          if (newToken) {
+            if (originalRequest.headers) {
+              if (typeof originalRequest.headers.set === 'function') {
+                originalRequest.headers.set('Authorization', `Bearer ${newToken}`);
+              } else {
+                originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+              }
+            }
+            return apiIngco(originalRequest);
+          }
+        } catch (refreshError) {
+          storeInstance.dispatch(logoutThunk());
+
+          if (typeof window !== 'undefined') {
+            toast.error('Сесія завершилася. Будь ласка, увійдіть знову.');
+            window.location.href = '/auth/login';
+          }
+          return Promise.reject(refreshError);
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
