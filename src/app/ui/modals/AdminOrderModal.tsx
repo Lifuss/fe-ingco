@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
 import { printOrderExcel } from '@/lib/utils';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
+import ConfirmModal from './ConfirmModal';
 
 type AdminOrderModalProps = {
   isOpen: boolean;
@@ -32,6 +33,8 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
   const dispatch = useAppDispatch();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(order);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const refForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -42,14 +45,15 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
 
   const { products, totalPrice, status, user } = selectedOrder;
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmitAttempt = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const confirmDialogBool = confirm('Ви впевненні що хочете змінити замовлення?');
-    if (!confirmDialogBool) {
-      return;
-    }
+    setShowSubmitConfirm(true);
+  };
 
-    const form = e.currentTarget;
+  const handleConfirmSubmit = () => {
+    const form = refForm.current;
+    if (!form) return;
+
     // FIXME
     // @ts-expect-error : form.status.value is a string
     const status = OrderStatusEnum[form.status.value];
@@ -99,13 +103,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
     closeModal();
   };
 
-  const handleReset = () => {
-    const confirmReset = confirm(
-      'Ця дія скине замовлення до початкового стану, всі зміни буде втрачено, продовжити?',
-    );
-    if (!confirmReset) {
-      return;
-    }
+  const handleConfirmReset = () => {
     setSelectedOrder(order);
     refForm.current?.reset();
   };
@@ -127,7 +125,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
       <div onClick={closeModal} className="absolute top-2 right-2">
         <X size={24} absoluteStrokeWidth className="cursor-pointer" />
       </div>
-      <form onSubmit={handleSubmit} ref={refForm} className="text-lg">
+      <form onSubmit={handleSubmitAttempt} ref={refForm} className="text-lg">
         <h2 className="font-medium">Номер замовлення: {order?.orderCode}</h2>
         <h3 className="w-full border-t border-gray-400">Клієнт:</h3>
         <div className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
@@ -216,10 +214,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                     </div>
                     <input
                       type="number"
-                      defaultValue={
-                        selectedOrder?.products.find((item) => item.id === product.id)?.quantity ||
-                        0
-                      }
+                      defaultValue={product.quantity || 0}
                       className="mx-auto h-fit max-w-[50px] rounded-md py-1 text-center font-medium"
                       onChange={(e) => {
                         if (!product?.id) return;
@@ -302,7 +297,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
             <Button
               className="h-10 bg-red-300 hover:bg-red-400 focus:bg-red-400 active:bg-red-500"
               type="button"
-              onClick={handleReset}
+              onClick={() => setShowResetConfirm(true)}
             >
               Відмінити зміни
             </Button>
@@ -328,6 +323,24 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
           </p>
         </div>
       </form>
+      <ConfirmModal
+        isOpen={showSubmitConfirm}
+        onClose={() => setShowSubmitConfirm(false)}
+        onConfirm={handleConfirmSubmit}
+        title="Збереження змін"
+        message="Ви впевнені, що хочете зберегти зміни в замовленні?"
+        confirmText="Зберегти"
+        type="warning"
+      />
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={handleConfirmReset}
+        title="Скидання змін"
+        message="Ця дія скине замовлення до початкового стану. Всі незбережені зміни буде втрачено. Продовжити?"
+        confirmText="Скинути"
+        type="danger"
+      />
     </Modal>
   );
 };
