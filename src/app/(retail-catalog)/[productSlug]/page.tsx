@@ -52,7 +52,7 @@ export default function Page({ params }: PageProps) {
   const { productSlug } = use(params);
 
   // Redux state
-  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
 
   const product = useAppSelector((state) => state.persistedMainReducer.product);
   const products = useAppSelector((state) => state.persistedMainReducer.products || []);

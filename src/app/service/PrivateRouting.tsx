@@ -3,7 +3,8 @@
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { clearAuthState } from '@/lib/appState/user/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { redirect, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { RootState } from '@/lib/appState/store';
 import { ComponentType, FC, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
@@ -13,7 +14,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
     const pathname = usePathname();
     const router = useRouter();
     const { isAuthenticated, user, _persist } = useAppSelector(
-      (state: any) => state.persistedAuthReducer,
+      (state: RootState) => state.persistedAuthReducer,
     );
     const rehydrated = _persist?.rehydrated;
 
@@ -52,7 +53,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
           console.error('Error parsing auth from local storage:', e);
         }
 
-        const logRedirect = (reason: string, extra: any = {}) => {
+        const logRedirect = (reason: string, extra: Record<string, unknown> = {}) => {
           if (typeof window !== 'undefined') {
             const logs = JSON.parse(sessionStorage.getItem('auth_logs') || '[]');
             logs.push({
@@ -83,7 +84,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
           router.replace('/auth/login');
         }
       }
-    }, [dispatch, pathname, router, isAuthenticated, rehydrated]);
+    }, [dispatch, pathname, router, isAuthenticated, rehydrated, user?.isVerified, user?.role]);
 
     if (!rehydrated) {
       return null;

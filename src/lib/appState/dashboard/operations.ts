@@ -217,7 +217,7 @@ export const updateOrderThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const payload: Record<string, any> = {};
+      const payload: Record<string, unknown> = {};
       const fields: (keyof UpdateOrder)[] = [
         'status',
         'isPaid',

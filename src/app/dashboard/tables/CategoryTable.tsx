@@ -89,7 +89,7 @@ const CategoryTable = () => {
   }>({ name: '', renderSort: 0, showInMenu: true });
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
 
   const openModal = (
     id: number,
@@ -134,7 +134,7 @@ const CategoryTable = () => {
   };
 
   const sortedCategories = useMemo(
-    () => getSortedHierarchy(productsCategories),
+    () => getSortedHierarchy(productsCategories || []),
     [productsCategories],
   );
 

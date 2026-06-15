@@ -36,13 +36,15 @@ const Page = ({ params }: PageProps) => {
   const imageUrl =
     uploadedImageUrl || (product?.image ? `${process.env.NEXT_PUBLIC_API}${product.image}` : '');
 
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
+    () => product?.categories?.map((c) => c.id) || [],
+  );
 
-  useEffect(() => {
-    if (product?.categories) {
-      setSelectedCategoryIds(product.categories.map((c) => c.id));
-    }
-  }, [product]);
+  const [prevProduct, setPrevProduct] = useState<Product | undefined>(product);
+  if (product !== prevProduct) {
+    setPrevProduct(product);
+    setSelectedCategoryIds(product?.categories?.map((c) => c.id) || []);
+  }
 
   useEffect(() => {
     if (!categories.length) {

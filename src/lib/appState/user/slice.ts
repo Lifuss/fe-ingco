@@ -17,7 +17,34 @@ import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import { normalizeUser } from '@/lib/utils';
 
-const initialState = {
+interface AuthUserState {
+  isVerified: boolean;
+  login: string;
+  role: string;
+  favorites: Product[];
+  cart: { quantity: number; id: number; productId: Product }[];
+  retailCart: { quantity: number; id: number; productId: Product }[];
+  firstName: string;
+  lastName: string;
+  surName: string;
+  email: string;
+  phone: string;
+}
+
+interface AuthState {
+  user: AuthUserState;
+  localStorageCart: {
+    productId: Product;
+    quantity: number;
+    id: number;
+  }[];
+  token: string;
+  isAuthenticated: boolean;
+  isB2b: boolean;
+  isLoading: boolean;
+}
+
+const initialState: AuthState = {
   user: {
     isVerified: false,
     login: '',
@@ -31,11 +58,7 @@ const initialState = {
     email: '',
     phone: '',
   },
-  localStorageCart: [] as {
-    productId: Product;
-    quantity: number;
-    id: number;
-  }[],
+  localStorageCart: [],
   token: '',
   isAuthenticated: false,
   isB2b: false,
@@ -132,7 +155,7 @@ const authStateSlice = createSlice({
         (state, { payload, meta }) => {
           const isRetail =
             meta.arg && typeof meta.arg === 'object' && 'isRetail' in meta.arg
-              ? (meta.arg as any).isRetail
+              ? (meta.arg as { isRetail?: boolean }).isRetail
               : false;
           if (isRetail) {
             state.user.retailCart = payload;
@@ -153,9 +176,9 @@ const authStateSlice = createSlice({
           state.user.isVerified = normalizedUser.isVerified;
           state.user.login = normalizedUser.login;
           state.user.role = normalizedUser.role;
-          state.user.favorites = normalizedUser.favorites;
-          state.user.cart = normalizedUser.cart;
-          state.user.retailCart = normalizedUser.cartRetail;
+          state.user.favorites = normalizedUser.favorites as unknown as Product[];
+          state.user.cart = normalizedUser.cart as unknown as { quantity: number; id: number; productId: Product }[];
+          state.user.retailCart = (normalizedUser.cartRetail || []) as unknown as { quantity: number; id: number; productId: Product }[];
           state.user.firstName = normalizedUser.firstName;
           state.user.lastName = normalizedUser.lastName;
           state.user.email = normalizedUser.email;

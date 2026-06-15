@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { AppStore, RootState } from '../store';
 import { normalizeOrder } from '@/lib/utils';
 import { toast } from 'react-toastify';
 
@@ -409,9 +409,9 @@ export const resetPasswordThunk = createAsyncThunk(
   },
 );
 
-let storeInstance: any = null;
+let storeInstance: AppStore | null = null;
 
-export const injectStore = (store: any) => {
+export const injectStore = (store: AppStore) => {
   storeInstance = store;
 };
 

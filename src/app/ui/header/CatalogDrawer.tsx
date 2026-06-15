@@ -39,11 +39,12 @@ export default function CatalogDrawer({
   onMouseLeave,
 }: CatalogDrawerProps) {
   const dispatch = useAppDispatch();
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
 
   // Build tree from flat category array
   const categoryTree = React.useMemo(() => {
-    const menuCategories = rawCategories.filter((c) => c.showInMenu !== false);
+    const categories = rawCategories || [];
+    const menuCategories = categories.filter((c) => c.showInMenu !== false);
     const map = new Map<number, CategoryNode>();
     menuCategories.forEach((c) => {
       map.set(c.id, { ...c, children: [] });

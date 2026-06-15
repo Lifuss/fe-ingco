@@ -16,19 +16,20 @@ const CatalogSidebar = () => {
   const searchParams = useSearchParams();
 
   const rawProductsCategories =
-    useAppSelector((state) => state.persistedMainReducer.categories) || [];
+    useAppSelector((state) => state.persistedMainReducer.categories);
   const productsCategories = useMemo(() => {
+    const categories = rawProductsCategories || [];
     const explicitlyHiddenIds = new Set(
-      rawProductsCategories.filter((c) => c.showInMenu === false).map((c) => c.id),
+      categories.filter((c) => c.showInMenu === false).map((c) => c.id),
     );
-    return rawProductsCategories.filter((c) => {
+    return categories.filter((c) => {
       if (c.showInMenu === false) return false;
       let currentParentId = c.parentId;
       while (currentParentId) {
         if (explicitlyHiddenIds.has(currentParentId)) {
           return false;
         }
-        const parent = rawProductsCategories.find((pc) => pc.id === currentParentId);
+        const parent = categories.find((pc) => pc.id === currentParentId);
         currentParentId = parent ? parent.parentId : null;
       }
       return true;
@@ -357,9 +358,19 @@ const CatalogSidebar = () => {
 
       {/* Technical Parameters block */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
-          <Filter size={14} className="text-primary-500" />
-          Технічні параметри
+        <h2 className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
+          <div className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
+            <Filter size={14} className="text-primary-500" />
+            Технічні параметри
+          </div>
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearFilters}
+              className="text-primary-500 hover:text-primary-600 text-xs font-medium hover:underline cursor-pointer"
+            >
+              Скинути
+            </button>
+          )}
         </h2>
 
         {/* Power Min/Max Range */}

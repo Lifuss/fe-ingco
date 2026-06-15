@@ -40,25 +40,19 @@ const RetailCartTable = () => {
   const dispatch = useAppDispatch();
 
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
-  const {
-    retailCart = [],
-    firstName = '',
-    lastName = '',
-    surName = '',
-    phone = '',
-    email = '',
-  }: {
-    retailCart: CartData;
-    firstName: string;
-    lastName: string;
-    surName: string;
-    phone: string;
-    email: string;
-  } = useAppSelector((state) => state.persistedAuthReducer.user) || {};
-  const localStorageCart =
-    useAppSelector((state) => state.persistedAuthReducer.localStorageCart) || [];
+  const userState = useAppSelector((state) => state.persistedAuthReducer.user);
+  const retailCart = userState?.retailCart;
+  const firstName = userState?.firstName || '';
+  const lastName = userState?.lastName || '';
+  const surName = userState?.surName || '';
+  const phone = userState?.phone || '';
+  const email = userState?.email || '';
+  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart);
 
-  const selectedCart = (isAuth ? retailCart : localStorageCart) || [];
+  const selectedCart = useMemo<CartData>(() => {
+    const cart = isAuth ? retailCart : localStorageCart;
+    return (cart as CartData) || [];
+  }, [isAuth, retailCart, localStorageCart]);
 
   const handleQuantityChange = (id: number, operation: string) => {
     if (isAuth) {

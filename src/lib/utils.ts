@@ -1,4 +1,4 @@
-import { Order, Product, User } from './types';
+import { Order, Product, Category, User } from './types';
 import { apiIngco } from './appState/user/operation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -7,9 +7,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+interface RawProduct extends Omit<Product, 'price' | 'priceBulk' | 'rrcSale' | 'enterPrice' | 'priceRetailRecommendation' | 'warranty' | 'sort' | 'countInStock' | 'category'> {
+  price: string | number;
+  priceBulk?: string | number | null;
+  rrcSale?: string | number | null;
+  enterPrice?: string | number | null;
+  priceRetailRecommendation: string | number;
+  warranty: string | number;
+  sort: string | number;
+  countInStock: string | number;
+  category?: Category | null;
+}
+
 // Prisma serializes Decimal fields as strings. This converts them back to numbers.
 export function normalizeProduct(p: unknown): Product {
-  const raw = p as any;
+  const raw = p as RawProduct;
   return {
     ...raw,
     category: raw.mainCategory || raw.category || null,
@@ -21,16 +33,32 @@ export function normalizeProduct(p: unknown): Product {
     warranty: Number(raw.warranty),
     sort: Number(raw.sort),
     countInStock: Number(raw.countInStock),
-  };
+  } as Product;
 }
 
-export function normalizeOrder(order: any): Order {
-  if (!order) return order;
+interface RawOrderItem {
+  id: number;
+  quantity: number;
+  unitPrice: string | number;
+  totalPrice: string | number;
+  productId: number;
+  productName?: string | null;
+  product?: { name?: string | null } | null;
+}
+
+interface RawOrder extends Omit<Order, 'products' | 'totalPrice'> {
+  totalPrice: string | number;
+  items?: RawOrderItem[] | null;
+}
+
+export function normalizeOrder(order: unknown): Order {
+  if (!order) return order as Order;
+  const raw = order as RawOrder;
   return {
-    ...order,
-    orderCode: String(order.orderCode),
-    totalPrice: Number(order.totalPrice),
-    products: (order.items || []).map((item: any) => ({
+    ...raw,
+    orderCode: String(raw.orderCode),
+    totalPrice: Number(raw.totalPrice),
+    products: (raw.items || []).map((item) => ({
       id: item.id,
       quantity: item.quantity,
       price: Number(item.unitPrice),
@@ -43,20 +71,32 @@ export function normalizeOrder(order: any): Order {
           'Продукт застарів та видалений з бази',
       },
     })),
-  };
+  } as Order;
 }
 
-export function normalizeUser(user: any): any {
-  if (!user) return user;
+interface RawUserOrder {
+  id: number;
+  orderCode: string | number;
+  status: string;
+  totalPrice: string | number;
+}
+
+export type NormalizedUserResult = User & {
+  cartRetail?: unknown[];
+};
+
+export function normalizeUser(user: unknown): NormalizedUserResult {
+  if (!user) return user as NormalizedUserResult;
+  const raw = user as Record<string, unknown>;
   return {
-    ...user,
-    role: user.role ? user.role.toLowerCase() : 'user',
-    orders: (user.orders || []).map((o: any) => ({
+    ...raw,
+    role: typeof raw.role === 'string' ? raw.role.toLowerCase() : 'user',
+    orders: (((raw.orders as RawUserOrder[]) || [])).map((o) => ({
       ...o,
       orderCode: String(o.orderCode),
       totalPrice: Number(o.totalPrice),
     })),
-  };
+  } as unknown as NormalizedUserResult;
 }
 
 export const generatePagination = (currentPage: number, totalPages: number) => {
