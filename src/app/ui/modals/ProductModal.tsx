@@ -10,6 +10,11 @@ import Icon from '../assets/Icon';
 import { X } from 'lucide-react';
 
 const customModalStyles = {
+  overlay: {
+    backgroundColor: 'rgba(15, 15, 14, 0.6)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 9999,
+  },
   content: {
     top: '50%',
     left: '50%',
