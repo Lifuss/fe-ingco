@@ -44,7 +44,9 @@ export const CategoryModalCreate = () => {
         .unwrap()
         .then(() => closeModal())
         .catch(
-          (err) => (err?.status === 409 || err?.response?.status === 409) && toast.error('Категорія з такою назвою вже існує'),
+          (err) =>
+            (err?.status === 409 || err?.response?.status === 409) &&
+            toast.error('Категорія з такою назвою вже існує'),
         );
     }
   };

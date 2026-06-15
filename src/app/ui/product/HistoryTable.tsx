@@ -102,7 +102,7 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
 
   return history.length ? (
     <>
-      <Table columns={columns} data={data} />
+      <Table columns={columns} data={data} scrollTrigger={page} />
       <div className="mx-auto mt-5 w-[43%] pb-10">
         <Pagination totalPages={totalPages} />
       </div>

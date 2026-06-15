@@ -2,7 +2,6 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-
 :root {
   /* Brand Primary Color Palette */
   --color-primary-50: #fffaea; /* Tinted background surfaces / soft badges */
@@ -54,7 +53,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --brand-cyan: #0A5D7C;
+  --brand-cyan: #0a5d7c;
   --flag-blue: #2589fe;
   --flag-yellow: #facc15;
 }
@@ -119,12 +118,12 @@
 
   /* Extracted custom colors from markup */
   --color-input-border: #1d1c1c; /* Border color for standard input fields */
-  --color-sidebar-dark: #10091A; /* Dark sidebar background in dashboard */
+  --color-sidebar-dark: #10091a; /* Dark sidebar background in dashboard */
   --color-sidebar-hover: #323347; /* Sidebar active item and hover background */
-  --color-dashboard-bg: #FAFAFF; /* Dashboard content background */
+  --color-dashboard-bg: #fafaff; /* Dashboard content background */
   --color-card-tint: #f6f6f663; /* Subtle light gray background tint */
   --color-brand-dark: #111827; /* Deep brand dark background */
-  --color-brand-accent-yellow: #FACC15; /* Secondary brand accent yellow */
+  --color-brand-accent-yellow: #facc15; /* Secondary brand accent yellow */
   --color-brand-cyan: var(--brand-cyan);
   --color-flag-blue: var(--flag-blue);
   --color-flag-yellow: var(--flag-yellow);
@@ -156,7 +155,6 @@
     @apply font-sans;
   }
 }
-
 
 @keyframes shimmer {
   100% {
@@ -230,13 +228,23 @@ body::-webkit-scrollbar {
 /* End Scrollbar styles */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideDown {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {

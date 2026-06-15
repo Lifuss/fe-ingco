@@ -51,32 +51,30 @@ export default function CategoryGrid() {
   ];
 
   return (
-    <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-8">
+    <section className="flex w-full flex-col gap-8 px-5 pb-16 md:px-[60px]">
       {/* Header Block */}
-      <div className="flex justify-between items-end border-b border-[#E5E3DD] pb-4">
+      <div className="flex items-end justify-between border-b border-[#E5E3DD] pb-4">
         <div className="flex flex-col gap-1">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">
+          <h2 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-3xl">
             Популярні категорії
           </h2>
-          <p className="font-sans text-neutral-500 text-sm">
-            Знайдіть потрібний інструмент швидко
-          </p>
+          <p className="font-sans text-sm text-neutral-500">Знайдіть потрібний інструмент швидко</p>
         </div>
         <Link
           href="/?catalog=true"
-          className="font-display font-semibold text-neutral-700 hover:text-primary-500 border border-[#CFCDC6] hover:border-primary-500 rounded-md px-4 py-2 transition-all duration-300 text-xs md:text-sm select-none cursor-pointer"
+          className="font-display hover:text-primary-500 hover:border-primary-500 cursor-pointer rounded-md border border-[#CFCDC6] px-4 py-2 text-xs font-semibold text-neutral-700 transition-all duration-300 select-none md:text-sm"
         >
           Всі категорії
         </Link>
       </div>
 
       {/* Grid container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {categories.map((cat) => (
           <Link
             key={cat.id}
             href={cat.href}
-            className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-[#E5E3DD]/30 transition-all duration-500 flex flex-col justify-end p-6 select-none cursor-pointer ${cat.span}`}
+            className={`group relative flex cursor-pointer flex-col justify-end overflow-hidden rounded-2xl border border-[#E5E3DD]/30 p-6 shadow-sm transition-all duration-500 select-none hover:shadow-md ${cat.span}`}
           >
             {/* Background Image */}
             <div className="absolute inset-0 z-0 overflow-hidden">
@@ -91,20 +89,20 @@ export default function CategoryGrid() {
             </div>
 
             {/* Content overlay */}
-            <div className="relative z-10 text-white flex justify-between items-end w-full gap-4">
+            <div className="relative z-10 flex w-full items-end justify-between gap-4 text-white">
               <div className="flex flex-col gap-2">
-                <h3 className="font-display font-bold text-lg md:text-xl lg:text-2xl leading-tight group-hover:text-amber-400 transition-colors">
+                <h3 className="font-display text-lg leading-tight font-bold transition-colors group-hover:text-amber-400 md:text-xl lg:text-2xl">
                   {cat.title}
                 </h3>
                 {cat.subtitle && (
-                  <p className="font-sans text-neutral-300 text-xs md:text-sm max-w-sm">
+                  <p className="max-w-sm font-sans text-xs text-neutral-300 md:text-sm">
                     {cat.subtitle}
                   </p>
                 )}
               </div>
 
               {/* Action arrow button */}
-              <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white backdrop-blur-sm group-hover:bg-primary-500 group-hover:border-primary-500 group-hover:text-white transition-all duration-300 shrink-0">
+              <div className="group-hover:bg-primary-500 group-hover:border-primary-500 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:text-white">
                 <ArrowUpRight size={18} />
               </div>
             </div>

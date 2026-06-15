@@ -15,10 +15,11 @@ const CatalogSidebar = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const rawProductsCategories =
+    useAppSelector((state) => state.persistedMainReducer.categories) || [];
   const productsCategories = useMemo(() => {
     const explicitlyHiddenIds = new Set(
-      rawProductsCategories.filter((c) => c.showInMenu === false).map((c) => c.id)
+      rawProductsCategories.filter((c) => c.showInMenu === false).map((c) => c.id),
     );
     return rawProductsCategories.filter((c) => {
       if (c.showInMenu === false) return false;
@@ -96,21 +97,24 @@ const CatalogSidebar = () => {
   const [debouncedMaxPower] = useDebounce(maxPowerInput, 500);
 
   // Helper to update URL params
-  const updateUrlParams = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1'); // reset page on filter change
+  const updateUrlParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', '1'); // reset page on filter change
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '') {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    });
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null || value === '') {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
 
-    const targetPath = pathname === '/favorites' ? '/favorites' : '/';
-    router.replace(`${targetPath}?${params.toString()}`);
-  }, [searchParams, pathname, router]);
+      const targetPath = pathname === '/favorites' ? '/favorites' : '/';
+      router.replace(`${targetPath}?${params.toString()}`);
+    },
+    [searchParams, pathname, router],
+  );
 
   // Fetch categories on mount
   useEffect(() => {
@@ -164,19 +168,19 @@ const CatalogSidebar = () => {
     router.replace(`${targetPath}?${params.toString()}`);
   };
 
-  const hasActiveFilters = activeCategoryId || urlMinPower || urlMaxPower || batteryChecked || mainsChecked;
+  const hasActiveFilters =
+    activeCategoryId || urlMinPower || urlMaxPower || batteryChecked || mainsChecked;
 
   return (
-    <aside className="w-full xl:w-[280px] shrink-0 font-sans flex flex-col gap-6">
-      
+    <aside className="flex w-full shrink-0 flex-col gap-6 font-sans xl:w-[280px]">
       {/* Category Hierarchical block */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm select-none">
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900">Категорії</h2>
+      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm select-none">
+        <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
+          <h2 className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</h2>
           {activeCategoryId && (
             <button
               onClick={() => updateUrlParams({ category: null })}
-              className="text-xs text-primary-500 hover:text-primary-600 hover:underline font-medium"
+              className="text-primary-500 hover:text-primary-600 text-xs font-medium hover:underline"
             >
               Скинути
             </button>
@@ -197,7 +201,7 @@ const CatalogSidebar = () => {
                       return (
                         <button
                           onClick={() => handleCategoryChange(String(parent?.id))}
-                          className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary-500 transition-colors mb-1 cursor-pointer"
+                          className="hover:text-primary-500 mb-1 flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gray-500 transition-colors"
                         >
                           <ChevronLeft size={14} className="stroke-[2.5]" />
                           <span>Назад до {parent?.name}</span>
@@ -207,7 +211,7 @@ const CatalogSidebar = () => {
                   ) : (
                     <button
                       onClick={() => updateUrlParams({ category: null })}
-                      className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary-500 transition-colors mb-1 cursor-pointer"
+                      className="hover:text-primary-500 mb-1 flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gray-500 transition-colors"
                     >
                       <ChevronLeft size={14} className="stroke-[2.5]" />
                       <span>Всі категорії</span>
@@ -229,40 +233,46 @@ const CatalogSidebar = () => {
                   // Parent selected: show the active parent and its children
                   return (
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2 py-1 px-2 rounded-lg bg-[#FFF2EB] text-primary-600 font-bold text-sm">
+                      <div className="text-primary-600 flex items-center gap-2 rounded-lg bg-[#FFF2EB] px-2 py-1 text-sm font-bold">
                         <span>{activeNode.name}</span>
                       </div>
-                      
-                      <ul className="flex flex-col gap-2 pl-3 border-l border-gray-150 ml-2 mt-1">
+
+                      <ul className="border-gray-150 mt-1 ml-2 flex flex-col gap-2 border-l pl-3">
                         {(() => {
                           const children = activeNode.children;
                           const hasMore = children.length > 6;
-                          const visibleChildren = showAllSubcategories ? children : children.slice(0, 6);
-                          
+                          const visibleChildren = showAllSubcategories
+                            ? children
+                            : children.slice(0, 6);
+
                           return (
                             <>
                               {visibleChildren.map((child) => (
                                 <li key={child.id}>
                                   <button
                                     onClick={() => handleCategoryChange(String(child.id))}
-                                    className="w-full text-left text-xs font-semibold text-gray-600 hover:text-primary-500 transition-colors flex items-center justify-between group py-0.5 cursor-pointer"
+                                    className="hover:text-primary-500 group flex w-full cursor-pointer items-center justify-between py-0.5 text-left text-xs font-semibold text-gray-600 transition-colors"
                                   >
                                     <span className="truncate pr-2">{child.name}</span>
                                     {child.count !== undefined && (
-                                      <span className="text-[10px] text-gray-400 font-bold bg-gray-50 px-1.5 py-0.5 rounded-full group-hover:bg-primary-50 group-hover:text-primary-500 transition-colors shrink-0">
+                                      <span className="group-hover:bg-primary-50 group-hover:text-primary-500 shrink-0 rounded-full bg-gray-50 px-1.5 py-0.5 text-[10px] font-bold text-gray-400 transition-colors">
                                         {child.count}
                                       </span>
                                     )}
                                   </button>
                                 </li>
                               ))}
-                              
+
                               {hasMore && (
                                 <button
                                   onClick={() => setShowAllSubcategories(!showAllSubcategories)}
-                                  className="text-[11px] font-bold text-primary-500 hover:text-primary-600 hover:underline text-left mt-1 flex items-center gap-1 cursor-pointer"
+                                  className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 text-left text-[11px] font-bold hover:underline"
                                 >
-                                  <span>{showAllSubcategories ? 'Приховати' : `Показати більше (+${children.length - 6})`}</span>
+                                  <span>
+                                    {showAllSubcategories
+                                      ? 'Приховати'
+                                      : `Показати більше (+${children.length - 6})`}
+                                  </span>
                                 </button>
                               )}
                             </>
@@ -273,7 +283,9 @@ const CatalogSidebar = () => {
                   );
                 } else {
                   // Subcategory selected: show siblings, highlight active
-                  const parent = activeNode.parentId ? categoryTree.map.get(activeNode.parentId) : null;
+                  const parent = activeNode.parentId
+                    ? categoryTree.map.get(activeNode.parentId)
+                    : null;
                   listToRender = parent ? parent.children : categoryTree.roots;
                   highlightId = activeNode.id;
                   isNested = parent ? true : false;
@@ -283,33 +295,38 @@ const CatalogSidebar = () => {
                 const visibleList = showAllSubcategories ? listToRender : listToRender.slice(0, 6);
 
                 return (
-                  <ul className={`flex flex-col gap-2 ${isNested ? "pl-2" : ""}`}>
+                  <ul className={`flex flex-col gap-2 ${isNested ? 'pl-2' : ''}`}>
                     {visibleList.map((category) => {
                       const isSelected = category.id === highlightId;
                       const hasChildren = category.children.length > 0;
-                      
+
                       return (
                         <li key={category.id}>
                           <button
                             onClick={() => handleCategoryChange(String(category.id))}
-                            className={`w-full text-left text-xs transition-colors flex items-center justify-between group py-1 cursor-pointer rounded-lg px-2 ${
-                              isSelected 
-                                ? "bg-[#FFF2EB] text-primary-600 font-bold" 
-                                : "text-gray-700 hover:bg-gray-50 hover:text-gray-950 font-medium"
+                            className={`group flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-1 text-left text-xs transition-colors ${
+                              isSelected
+                                ? 'text-primary-600 bg-[#FFF2EB] font-bold'
+                                : 'font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-950'
                             }`}
                           >
                             <div className="flex items-center gap-1.5 truncate pr-2">
                               {hasChildren && !isSelected && (
-                                <ChevronRight size={12} className="text-gray-400 group-hover:text-primary-500 shrink-0" />
+                                <ChevronRight
+                                  size={12}
+                                  className="group-hover:text-primary-500 shrink-0 text-gray-400"
+                                />
                               )}
                               <span className="truncate">{category.name}</span>
                             </div>
                             {category.count !== undefined && (
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
-                                isSelected 
-                                  ? "bg-primary-100 text-primary-600" 
-                                  : "bg-gray-50 text-gray-400 group-hover:bg-primary-50 group-hover:text-primary-500 transition-colors"
-                              }`}>
+                              <span
+                                className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                                  isSelected
+                                    ? 'bg-primary-100 text-primary-600'
+                                    : 'group-hover:bg-primary-50 group-hover:text-primary-500 bg-gray-50 text-gray-400 transition-colors'
+                                }`}
+                              >
                                 {category.count}
                               </span>
                             )}
@@ -321,9 +338,13 @@ const CatalogSidebar = () => {
                     {hasMore && (
                       <button
                         onClick={() => setShowAllSubcategories(!showAllSubcategories)}
-                        className="text-[11px] font-bold text-primary-500 hover:text-primary-600 hover:underline text-left mt-1 pl-2 flex items-center gap-1 cursor-pointer"
+                        className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 pl-2 text-left text-[11px] font-bold hover:underline"
                       >
-                        <span>{showAllSubcategories ? 'Приховати' : `Показати більше (+${listToRender.length - 6})`}</span>
+                        <span>
+                          {showAllSubcategories
+                            ? 'Приховати'
+                            : `Показати більше (+${listToRender.length - 6})`}
+                        </span>
                       </button>
                     )}
                   </ul>
@@ -335,15 +356,15 @@ const CatalogSidebar = () => {
       </div>
 
       {/* Technical Parameters block */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+        <h2 className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
           <Filter size={14} className="text-primary-500" />
           Технічні параметри
         </h2>
 
         {/* Power Min/Max Range */}
         <div className="mb-5">
-          <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2.5">
+          <h3 className="mb-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase">
             Потужність (Вт)
           </h3>
           <div className="flex items-center gap-2">
@@ -352,7 +373,7 @@ const CatalogSidebar = () => {
               placeholder="Мін"
               value={minPowerInput}
               onChange={(e) => setMinPowerInput(e.target.value)}
-              className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary-500 placeholder-gray-400 font-medium"
+              className="focus:border-primary-500 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium placeholder-gray-400 focus:outline-none"
             />
             <span className="text-gray-300">/</span>
             <input
@@ -360,38 +381,38 @@ const CatalogSidebar = () => {
               placeholder="Макс"
               value={maxPowerInput}
               onChange={(e) => setMaxPowerInput(e.target.value)}
-              className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary-500 placeholder-gray-400 font-medium"
+              className="focus:border-primary-500 w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium placeholder-gray-400 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Power Source Checkboxes */}
         <div>
-          <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2.5">
+          <h3 className="mb-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase">
             Джерело живлення
           </h3>
           <div className="flex flex-col gap-2.5">
-            <label className="flex items-center gap-3 cursor-pointer group py-0.5">
+            <label className="group flex cursor-pointer items-center gap-3 py-0.5">
               <input
                 type="checkbox"
                 checked={batteryChecked}
                 onChange={(e) => handlePowerSourceChange('battery', e.target.checked)}
-                className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500"
+                className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 rounded border-gray-300"
               />
-              <span className="flex items-center gap-1.5 text-sm text-gray-600 group-hover:text-gray-950 transition-colors">
+              <span className="flex items-center gap-1.5 text-sm text-gray-600 transition-colors group-hover:text-gray-950">
                 <Zap size={14} className="text-amber-500" />
                 Акумулятор
               </span>
             </label>
 
-            <label className="flex items-center gap-3 cursor-pointer group py-0.5">
+            <label className="group flex cursor-pointer items-center gap-3 py-0.5">
               <input
                 type="checkbox"
                 checked={mainsChecked}
                 onChange={(e) => handlePowerSourceChange('mains', e.target.checked)}
-                className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500"
+                className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 rounded border-gray-300"
               />
-              <span className="flex items-center gap-1.5 text-sm text-gray-600 group-hover:text-gray-950 transition-colors">
+              <span className="flex items-center gap-1.5 text-sm text-gray-600 transition-colors group-hover:text-gray-950">
                 <Plug size={14} className="text-blue-500" />
                 Мережа 220В
               </span>
@@ -401,32 +422,33 @@ const CatalogSidebar = () => {
       </div>
 
       {/* B2B Personal Manager Banner */}
-      <div className="relative overflow-hidden bg-manager-gradient text-white rounded-2xl p-5 shadow-md flex flex-col gap-4">
+      <div className="bg-manager-gradient relative flex flex-col gap-4 overflow-hidden rounded-2xl p-5 text-white shadow-md">
         {/* Decorative elements */}
-        <div className="absolute -top-12 -right-12 w-28 h-28 bg-primary-500/10 rounded-full blur-xl pointer-events-none" />
-        <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-500/10 rounded-full blur-lg pointer-events-none" />
+        <div className="bg-primary-500/10 pointer-events-none absolute -top-12 -right-12 h-28 w-28 rounded-full blur-xl" />
+        <div className="pointer-events-none absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-blue-500/10 blur-lg" />
 
         <div className="flex items-start gap-3">
-          <div className="flex items-center justify-center shrink-0 w-10 h-10 rounded-xl bg-primary-500/20 text-primary-400 border border-primary-500/30">
+          <div className="bg-primary-500/20 text-primary-400 border-primary-500/30 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border">
             <ShieldCheck size={20} />
           </div>
           <div>
-            <h3 className="font-bold text-sm uppercase tracking-wider text-gray-150">
+            <h3 className="text-gray-150 text-sm font-bold tracking-wider uppercase">
               Персональний менеджер
             </h3>
-            <p className="text-[11px] text-gray-400 font-semibold tracking-wide">
+            <p className="text-[11px] font-semibold tracking-wide text-gray-400">
               ДЛЯ B2B ПОКУПЦІВ
             </p>
           </div>
         </div>
 
-        <p className="text-xs text-gray-300 leading-relaxed">
-          Для оптових замовлень від <strong className="text-primary-400">50 000 грн</strong> зверніться до менеджера за персональними умовами.
+        <p className="text-xs leading-relaxed text-gray-300">
+          Для оптових замовлень від <strong className="text-primary-400">50 000 грн</strong>{' '}
+          зверніться до менеджера за персональними умовами.
         </p>
 
         <button
           onClick={() => setIsCallbackOpen(true)}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold text-xs rounded-xl transition-colors shadow-sm tracking-wide"
+          className="bg-primary-500 hover:bg-primary-600 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-wide text-white shadow-sm transition-colors"
         >
           <Phone size={12} className="fill-current" />
           Замовити дзвінок

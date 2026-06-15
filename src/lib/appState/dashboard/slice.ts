@@ -100,7 +100,9 @@ const Slice = createSlice({
         state.usersStats = payload;
       })
       .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
-        state.supportTickets = state.supportTickets.filter((ticket) => ticket.ticketNumber !== payload);
+        state.supportTickets = state.supportTickets.filter(
+          (ticket) => ticket.ticketNumber !== payload,
+        );
       });
     builder
       .addCase(getProductClicksThunk.fulfilled, (state, { payload }) => {

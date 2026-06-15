@@ -51,7 +51,10 @@ function getHierarchyOptions(categories: Category[], excludeId?: number) {
   };
   sortNodes(roots);
 
-  const flatten = (nodes: CategoryNode[], depth = 0): { id: number; name: string; depth: number }[] => {
+  const flatten = (
+    nodes: CategoryNode[],
+    depth = 0,
+  ): { id: number; name: string; depth: number }[] => {
     const result: { id: number; name: string; depth: number }[] = [];
     nodes.forEach((node) => {
       result.push({ id: node.id, name: node.name, depth });
@@ -68,7 +71,13 @@ const CategoryForm = ({
   defaultValue,
 }: {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  defaultValue?: { id?: number; name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean };
+  defaultValue?: {
+    id?: number;
+    name: string;
+    renderSort?: number;
+    parentId?: number | null;
+    showInMenu?: boolean;
+  };
 }) => {
   const rawCategoriesList = useAppSelector((state) => state.persistedMainReducer.categories);
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
@@ -79,25 +88,29 @@ const CategoryForm = ({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-sans min-w-[320px]">
+    <form onSubmit={handleSubmit} className="flex min-w-[320px] flex-col gap-4 font-sans">
       <label className="flex flex-col gap-1">
-        <span className="block text-sm font-bold text-neutral-700 uppercase tracking-wider">Назва категорії</span>
+        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
+          Назва категорії
+        </span>
         <input
           type="text"
           name="name"
           required
           placeholder="Назва"
           defaultValue={defaultValue && defaultValue.name}
-          className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+          className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
         />
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="block text-sm font-bold text-neutral-700 uppercase tracking-wider">Батьківська категорія</span>
+        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
+          Батьківська категорія
+        </span>
         <select
           name="parentId"
           defaultValue={defaultValue?.parentId ?? ''}
-          className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
+          className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
         >
           <option value="">Немає (Коренева)</option>
           {hierarchyOptions.map((cat) => (
@@ -110,19 +123,19 @@ const CategoryForm = ({
         </select>
       </label>
 
-      <label className="flex items-center gap-3 cursor-pointer py-1 select-none">
+      <label className="flex cursor-pointer items-center gap-3 py-1 select-none">
         <input
           type="checkbox"
           name="showInMenu"
           defaultChecked={defaultValue ? defaultValue.showInMenu !== false : true}
-          className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500 cursor-pointer"
+          className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
         />
-        <span className="text-sm font-bold text-neutral-700 uppercase tracking-wider">
+        <span className="text-sm font-bold tracking-wider text-neutral-700 uppercase">
           Відображати в меню каталогу
         </span>
       </label>
 
-      <button className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded-lg transition-colors cursor-pointer text-sm uppercase tracking-wide mt-2">
+      <button className="bg-primary-500 hover:bg-primary-600 mt-2 cursor-pointer rounded-lg px-4 py-2 text-sm font-bold tracking-wide text-white uppercase transition-colors">
         Підтвердити
       </button>
     </form>

@@ -7,7 +7,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <main className="grid grid-cols-6">
       <Sidebar />
-      <div className="relative col-span-5 bg-dashboard-bg px-[40px] pt-10 pb-10 pl-20">{children}</div>
+      <div className="bg-dashboard-bg relative col-span-5 px-[40px] pt-10 pb-10 pl-20">
+        {children}
+      </div>
     </main>
   );
 };

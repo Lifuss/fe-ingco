@@ -91,7 +91,13 @@ const CategoryTable = () => {
   const searchParams = useSearchParams();
   const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
 
-  const openModal = (id: number, name: string, renderSort: number, parentId: number | null, showInMenu: boolean) => {
+  const openModal = (
+    id: number,
+    name: string,
+    renderSort: number,
+    parentId: number | null,
+    showInMenu: boolean,
+  ) => {
     setSelectedId(id);
     setSelectedCategory({ id, name, renderSort, parentId, showInMenu });
     setIsOpen(true);
@@ -120,12 +126,17 @@ const CategoryTable = () => {
         .unwrap()
         .then(() => closeModal())
         .catch(
-          (err) => (err?.status === 409 || err?.response?.status === 409) && toast.error('Категорія з такою назвою вже існує'),
+          (err) =>
+            (err?.status === 409 || err?.response?.status === 409) &&
+            toast.error('Категорія з такою назвою вже існує'),
         );
     }
   };
 
-  const sortedCategories = useMemo(() => getSortedHierarchy(productsCategories), [productsCategories]);
+  const sortedCategories = useMemo(
+    () => getSortedHierarchy(productsCategories),
+    [productsCategories],
+  );
 
   const data = useMemo<CategoryTableRow[]>(
     () =>
@@ -151,9 +162,16 @@ const CategoryTable = () => {
         cell: ({ row }) => {
           const depth = row.original.depthCol;
           return (
-            <div style={{ paddingLeft: `${depth * 24}px` }} className="flex items-center gap-1.5 text-left">
-              {depth > 0 && <span className="text-neutral-400 font-mono">└─</span>}
-              <span className={depth === 0 ? 'font-bold text-neutral-900' : 'text-neutral-600 font-medium'}>
+            <div
+              style={{ paddingLeft: `${depth * 24}px` }}
+              className="flex items-center gap-1.5 text-left"
+            >
+              {depth > 0 && <span className="font-mono text-neutral-400">└─</span>}
+              <span
+                className={
+                  depth === 0 ? 'font-bold text-neutral-900' : 'font-medium text-neutral-600'
+                }
+              >
                 {row.original.nameCol}
               </span>
             </div>
@@ -173,7 +191,9 @@ const CategoryTable = () => {
         accessorKey: 'showInMenuCol',
         cell: ({ row }) => (
           <div className="flex justify-center">
-            <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${row.original.showInMenuCol ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+            <span
+              className={`rounded-lg px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase ${row.original.showInMenuCol ? 'border border-green-100 bg-green-50 text-green-600' : 'border border-orange-100 bg-orange-50 text-orange-600'}`}
+            >
               {row.original.showInMenuCol ? 'Так' : 'Ні'}
             </span>
           </div>
@@ -222,12 +242,12 @@ const CategoryTable = () => {
   );
 
   return (
-    <div className="flex flex-col gap-6 w-full font-sans">
+    <div className="flex w-full flex-col gap-6 font-sans">
       {/* View Mode Tabs */}
       <div className="flex border-b border-neutral-200">
         <button
           onClick={() => setViewMode('table')}
-          className={`py-2.5 px-5 font-bold text-sm transition-all border-b-2 -mb-px cursor-pointer ${
+          className={`-mb-px cursor-pointer border-b-2 px-5 py-2.5 text-sm font-bold transition-all ${
             viewMode === 'table'
               ? 'border-blue-500 text-blue-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -237,7 +257,7 @@ const CategoryTable = () => {
         </button>
         <button
           onClick={() => setViewMode('sort')}
-          className={`py-2.5 px-5 font-bold text-sm transition-all border-b-2 -mb-px cursor-pointer ${
+          className={`-mb-px cursor-pointer border-b-2 px-5 py-2.5 text-sm font-bold transition-all ${
             viewMode === 'sort'
               ? 'border-blue-500 text-blue-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'

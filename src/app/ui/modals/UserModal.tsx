@@ -14,14 +14,14 @@ import { FileClock, LogOut, Table } from 'lucide-react';
 const User = ({ showLabel = true }: { showLabel?: boolean }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
   const closeModal = () => setIsOpen(false);
-  
+
   const openQuestionModal = () => {
     setModalIsOpen(true);
     closeModal();
@@ -58,10 +58,10 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
       <button
         onClick={toggleDropdown}
         className={clsx(
-          isOpen ? 'text-primary-500' : 'text-neutral-500 hover:text-primary-500',
+          isOpen ? 'text-primary-500' : 'hover:text-primary-500 text-neutral-500',
           showLabel
-            ? 'flex flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold tracking-wide cursor-pointer outline-none select-none'
-            : 'flex items-center justify-center p-2 rounded-lg transition-colors cursor-pointer hover:bg-primary-50'
+            ? 'flex cursor-pointer flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold tracking-wide outline-none select-none'
+            : 'hover:bg-primary-50 flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors',
         )}
       >
         <Icon
@@ -75,22 +75,19 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
       {isOpen && (
         <>
           {/* Click-outside backdrop overlay (transparent) */}
-          <div
-            className="fixed inset-0 z-40 cursor-default bg-transparent"
-            onClick={closeModal}
-          />
-          
+          <div className="fixed inset-0 z-40 cursor-default bg-transparent" onClick={closeModal} />
+
           {/* Dropdown container */}
-          <div className="absolute right-0 top-full mt-2 w-[180px] bg-white border border-[#E5E3DD]/75 rounded-xl shadow-lg p-3.5 z-50 flex flex-col gap-2.5 font-sans select-none animate-fade-in">
+          <div className="animate-fade-in absolute top-full right-0 z-50 mt-2 flex w-[180px] flex-col gap-2.5 rounded-xl border border-[#E5E3DD]/75 bg-white p-3.5 font-sans shadow-lg select-none">
             {/* User name header */}
-            <h3 className="text-left text-sm font-bold text-neutral-800 border-b border-neutral-100 pb-1.5 px-1 truncate">
+            <h3 className="truncate border-b border-neutral-100 px-1 pb-1.5 text-left text-sm font-bold text-neutral-800">
               {user?.login}
             </h3>
 
             {/* Menu Links */}
             <Link
               href="/history"
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-neutral-600 hover:text-primary-500 hover:bg-neutral-50 transition-colors text-xs font-semibold"
+              className="hover:text-primary-500 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
               onClick={closeModal}
             >
               <FileClock size={15} className="text-neutral-500" />
@@ -100,7 +97,7 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
             {user?.role === 'admin' && (
               <Link
                 href="/dashboard"
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-neutral-600 hover:text-primary-500 hover:bg-neutral-50 transition-colors text-xs font-semibold"
+                className="hover:text-primary-500 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
                 onClick={closeModal}
               >
                 <Table size={15} className="text-neutral-500" />
@@ -110,7 +107,7 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
 
             <button
               onClick={openQuestionModal}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-neutral-600 hover:text-rose-600 hover:bg-rose-50/50 transition-colors cursor-pointer text-xs font-semibold"
+              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-semibold text-neutral-600 transition-colors hover:bg-rose-50/50 hover:text-rose-600"
             >
               <LogOut size={15} className="text-neutral-500" />
               <span>Вийти</span>
@@ -147,26 +144,26 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
           },
         }}
       >
-        <div className="flex flex-col gap-6 text-center select-none font-sans">
+        <div className="flex flex-col gap-6 text-center font-sans select-none">
           <div className="flex flex-col gap-2">
-            <h3 className="font-display font-bold text-lg text-neutral-900 leading-tight">
+            <h3 className="font-display text-lg leading-tight font-bold text-neutral-900">
               Вихід з профілю
             </h3>
-            <p className="text-neutral-500 text-sm font-medium">
+            <p className="text-sm font-medium text-neutral-500">
               Ви точно бажаєте вийти зі свого профілю?
             </p>
           </div>
-          
-          <div className="flex gap-3 justify-center">
+
+          <div className="flex justify-center gap-3">
             <button
               onClick={handleLogout}
-              className="px-5 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-md shadow-orange-500/10"
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display cursor-pointer rounded-xl px-5 py-2 text-xs font-bold tracking-wider text-white uppercase shadow-md shadow-orange-500/10 transition-colors"
             >
               Так, вийти
             </button>
             <button
               onClick={closeQuestionModal}
-              className="px-5 py-2 rounded-xl border border-neutral-300 hover:border-neutral-500 text-neutral-700 font-display font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer bg-white"
+              className="font-display cursor-pointer rounded-xl border border-neutral-300 bg-white px-5 py-2 text-xs font-bold tracking-wider text-neutral-700 uppercase transition-colors hover:border-neutral-500"
             >
               Скасувати
             </button>

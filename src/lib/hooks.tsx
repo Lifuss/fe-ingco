@@ -32,7 +32,7 @@ interface SliderWithState {
 export const useSliderMouseWheel = (
   sliderRef: React.RefObject<Slider | null>,
   containerRef: React.RefObject<HTMLDivElement | null>,
-  productCount: number
+  productCount: number,
 ) => {
   useEffect(() => {
     const el = containerRef.current;
@@ -59,7 +59,8 @@ export const useSliderMouseWheel = (
 
       // Only intercept horizontal scrolling/swipe (deltaX) to let standard vertical scrolling move the page normally
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
-        const currentSlide = (slider as unknown as SliderWithState).innerSlider?.state?.currentSlide ?? 0;
+        const currentSlide =
+          (slider as unknown as SliderWithState).innerSlider?.state?.currentSlide ?? 0;
         const isAtStart = currentSlide === 0;
         const isAtEnd = currentSlide >= productCount - slidesToShow;
         const isScrollingLeft = e.deltaX < 0;
@@ -84,4 +85,3 @@ export const useSliderMouseWheel = (
     };
   }, [sliderRef, containerRef, productCount]);
 };
-

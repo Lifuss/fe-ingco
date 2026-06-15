@@ -9,7 +9,7 @@ import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
 
 const questionSvg = (
   <span>
-    <CircleHelp size={16} className="text-neutral-400 hover:text-neutral-500 transition-colors" />
+    <CircleHelp size={16} className="text-neutral-400 transition-colors hover:text-neutral-500" />
   </span>
 );
 
@@ -96,39 +96,39 @@ const AdminProductForm = ({
   const sortedCategories = useMemo(() => getSortedHierarchy(categories), [categories]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6 font-sans">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 font-sans">
       {/* Premium Dashboard Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="mb-8 flex items-center gap-4">
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center justify-center p-2 rounded-xl border border-neutral-200 bg-white text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 shadow-sm transition-all cursor-pointer select-none"
+          className="flex cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm transition-all select-none hover:bg-neutral-50 hover:text-neutral-800"
           title="Назад"
         >
           <ArrowLeft size={18} />
         </button>
         <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-400">Панель керування</span>
-          <h1 className="text-2xl font-display font-bold text-neutral-900 leading-tight">
+          <span className="text-[10px] font-extrabold tracking-widest text-neutral-400 uppercase">
+            Панель керування
+          </span>
+          <h1 className="font-display text-2xl leading-tight font-bold text-neutral-900">
             {isEdit ? 'Редагування продукту' : 'Створення продукту'}
           </h1>
         </div>
       </div>
 
-      <form className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" onSubmit={handleSubmit}>
-        
+      <form className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12" onSubmit={handleSubmit}>
         {/* Left column: Product Specs, Data, Characteristics */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          
+        <div className="flex flex-col gap-6 lg:col-span-8">
           {/* Card 1: General Info */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-5">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-3 flex items-center gap-2">
+          <div className="flex flex-col gap-5 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <h2 className="flex items-center gap-2 border-b border-neutral-100 pb-3 text-sm font-bold tracking-wider text-neutral-800 uppercase">
               Основна інформація
             </h2>
 
             {/* Name input */}
             <div className="flex flex-col">
-              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+              <label className="mb-1.5 flex items-center gap-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                 <span>Найменування</span>
                 <span className="text-rose-500">*</span>
               </label>
@@ -137,14 +137,14 @@ const AdminProductForm = ({
                 defaultValue={product?.name}
                 required
                 placeholder="Введіть повну назву інструменту..."
-                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+                className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
               />
             </div>
 
             {/* Grid rows for Category & Specs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                <label className="mb-1.5 flex items-center gap-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>Артикул</span>
                   <span className="text-rose-500">*</span>
                 </label>
@@ -153,18 +153,18 @@ const AdminProductForm = ({
                   name="article"
                   defaultValue={product?.article}
                   placeholder="Наприклад: HPET1103"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   Основна (Канонічна) категорія
                 </label>
                 <select
                   name="mainCategoryId"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm text-neutral-800 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold cursor-pointer"
+                  className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
                   defaultValue={product?.mainCategory?.id || product?.category?.id || ''}
                 >
                   <option value="">Не обрано</option>
@@ -179,40 +179,47 @@ const AdminProductForm = ({
               </div>
 
               {/* Checklist for additional categories */}
-              <div className="flex flex-col col-span-1 md:col-span-2 mt-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2 flex items-center gap-1.5">
+              <div className="col-span-1 mt-2 flex flex-col md:col-span-2">
+                <label className="mb-2 flex items-center gap-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>Додаткові категорії відображення</span>
-                  <span className="cursor-help" title="Дозволяє товару відображатися в кількох розділах, наприклад в Акціях чи Топах продажів.">
+                  <span
+                    className="cursor-help"
+                    title="Дозволяє товару відображатися в кількох розділах, наприклад в Акціях чи Топах продажів."
+                  >
                     {questionSvg}
                   </span>
                 </label>
-                <div className="flex flex-col gap-2.5 max-h-[200px] overflow-y-auto border border-neutral-200 bg-[#FAFAFF] rounded-xl p-4 shadow-inner font-semibold">
+                <div className="flex max-h-[200px] flex-col gap-2.5 overflow-y-auto rounded-xl border border-neutral-200 bg-[#FAFAFF] p-4 font-semibold shadow-inner">
                   {sortedCategories.map((category) => {
                     const isChecked = selectedCategoryIds.includes(category.id);
                     return (
                       <label
                         key={category.id}
-                        className="flex items-center gap-3 cursor-pointer select-none group py-0.5"
+                        className="group flex cursor-pointer items-center gap-3 py-0.5 select-none"
                       >
                         <input
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => {
                             if (isChecked) {
-                              setSelectedCategoryIds((prev) => prev.filter((id) => id !== category.id));
+                              setSelectedCategoryIds((prev) =>
+                                prev.filter((id) => id !== category.id),
+                              );
                             } else {
                               setSelectedCategoryIds((prev) => [...prev, category.id]);
                             }
                           }}
-                          className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500 cursor-pointer"
+                          className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
                         />
                         <span
                           style={{ paddingLeft: `${category.depth * 16}px` }}
                           className={`text-sm transition-colors group-hover:text-gray-950 ${
-                            isChecked ? 'text-gray-950 font-semibold' : 'text-gray-600'
+                            isChecked ? 'font-semibold text-gray-950' : 'text-gray-600'
                           }`}
                         >
-                          {category.depth > 0 && <span className="text-neutral-400 font-mono mr-1">└─</span>}
+                          {category.depth > 0 && (
+                            <span className="mr-1 font-mono text-neutral-400">└─</span>
+                          )}
                           {category.name}
                         </span>
                       </label>
@@ -225,7 +232,7 @@ const AdminProductForm = ({
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   Штрихкод
                 </label>
                 <input
@@ -233,12 +240,12 @@ const AdminProductForm = ({
                   name="barcode"
                   defaultValue={product?.barcode}
                   placeholder="Штрихкод EAN-13"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   Сортування (Пріоритет)
                 </label>
                 <input
@@ -247,7 +254,7 @@ const AdminProductForm = ({
                   name="sort"
                   defaultValue={product?.sort || 0}
                   placeholder="0"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                 />
               </div>
@@ -255,7 +262,7 @@ const AdminProductForm = ({
 
             {/* Description textarea */}
             <div className="flex flex-col">
-              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+              <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                 Опис товару
               </label>
               <textarea
@@ -263,21 +270,20 @@ const AdminProductForm = ({
                 placeholder="Введіть детальний опис інструменту, його функцій та переваг..."
                 defaultValue={product?.description ?? ''}
                 required
-                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all min-h-[120px] font-sans leading-relaxed"
+                className="focus:border-primary-500 min-h-[120px] w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 font-sans text-sm leading-relaxed text-neutral-700 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
               />
             </div>
-
           </div>
 
           {/* Card 2: Pricing & Stock */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-5">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-3 flex items-center gap-2">
+          <div className="flex flex-col gap-5 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <h2 className="flex items-center gap-2 border-b border-neutral-100 pb-3 text-sm font-bold tracking-wider text-neutral-800 uppercase">
               Ціноутворення та наявність
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   Прихідна ціна ($)
                 </label>
                 <input
@@ -285,13 +291,13 @@ const AdminProductForm = ({
                   name="enterPrice"
                   step="0.001"
                   placeholder="0.00"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   defaultValue={product?.enterPrice || 0}
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                <label className="mb-1.5 flex items-center gap-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>Ціна ($)</span>
                   <span className="text-rose-500">*</span>
                 </label>
@@ -301,13 +307,13 @@ const AdminProductForm = ({
                   step="0.001"
                   defaultValue={product?.price}
                   placeholder="0.00"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                <label className="mb-1.5 flex items-center gap-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>РРЦ (₴)</span>
                   <span className="text-rose-500">*</span>
                 </label>
@@ -317,13 +323,13 @@ const AdminProductForm = ({
                   name="priceRetailRecommendation"
                   placeholder="0"
                   step="0.1"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   РРЦ зі знижкою (₴)
                 </label>
                 <input
@@ -331,13 +337,13 @@ const AdminProductForm = ({
                   name="rrcSale"
                   defaultValue={product?.rrcSale || 0}
                   step="0.001"
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   placeholder="0"
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 flex items-center gap-1">
+                <label className="mb-1.5 flex items-center gap-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>К-сть в наявності</span>
                   <span className="text-rose-500">*</span>
                 </label>
@@ -345,14 +351,14 @@ const AdminProductForm = ({
                   type="number"
                   name="countInStock"
                   defaultValue={product?.countInStock}
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                   placeholder="0"
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   Гарантія (міс)
                 </label>
                 <input
@@ -360,18 +366,17 @@ const AdminProductForm = ({
                   step={1}
                   name="warranty"
                   defaultValue={product?.warranty || 24}
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
                   required
                 />
               </div>
             </div>
-
           </div>
 
           {/* Card 3: Characteristics */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+          <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-neutral-800 uppercase">
                 Характеристики інструменту
               </h2>
               <span
@@ -384,14 +389,16 @@ const AdminProductForm = ({
             </div>
 
             {/* Inputs inline */}
-            <div className="flex flex-col md:flex-row gap-3 items-end">
-              <div className="flex-grow flex flex-col">
-                <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Назва характеристики</label>
+            <div className="flex flex-col items-end gap-3 md:flex-row">
+              <div className="flex flex-grow flex-col">
+                <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
+                  Назва характеристики
+                </label>
                 <input
                   type="text"
                   name="characteristicName"
                   placeholder="Напруга, Вага, Потужність..."
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm focus:outline-none focus:border-primary-500 focus:bg-white transition-all"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm transition-all focus:bg-white focus:outline-none"
                   value={characteristic.name}
                   onChange={(e) =>
                     setCharacteristic((prev) => ({
@@ -401,13 +408,15 @@ const AdminProductForm = ({
                   }
                 />
               </div>
-              <div className="flex-grow flex flex-col">
-                <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Значення характеристики</label>
+              <div className="flex flex-grow flex-col">
+                <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
+                  Значення характеристики
+                </label>
                 <input
                   type="text"
                   name="characteristicDesc"
                   placeholder="20V, 1.5кг, 1400Вт..."
-                  className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm focus:outline-none focus:border-primary-500 focus:bg-white transition-all"
+                  className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm transition-all focus:bg-white focus:outline-none"
                   value={characteristic.value}
                   onChange={(e) =>
                     setCharacteristic((prev) => ({
@@ -425,7 +434,7 @@ const AdminProductForm = ({
                     setCharacteristic({ name: '', value: '' });
                   }
                 }}
-                className="bg-primary-500 hover:bg-primary-600 text-white rounded-lg px-4 py-2 text-sm font-semibold transition-all shadow-md shadow-orange-500/10 cursor-pointer flex items-center gap-1 shrink-0 h-9"
+                className="bg-primary-500 hover:bg-primary-600 flex h-9 shrink-0 cursor-pointer items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-md shadow-orange-500/10 transition-all"
               >
                 <Plus size={16} />
                 <span>Додати</span>
@@ -433,11 +442,14 @@ const AdminProductForm = ({
             </div>
 
             {/* Added list */}
-            <div className="border border-neutral-100 rounded-xl overflow-hidden bg-neutral-50/30 mt-2">
+            <div className="mt-2 overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50/30">
               {characteristics.length > 0 ? (
                 <div className="flex flex-col divide-y divide-neutral-100">
                   {characteristics.map((char, i) => (
-                    <div key={i} className="flex justify-between items-center px-4 py-2.5 text-sm hover:bg-neutral-50 transition-colors">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50"
+                    >
                       <div className="flex gap-2">
                         <span className="font-semibold text-neutral-500">{char.name}:</span>
                         <span className="font-semibold text-neutral-800">{char.value}</span>
@@ -447,7 +459,7 @@ const AdminProductForm = ({
                         onClick={() => {
                           setCharacteristics((prev) => prev.filter((_, index) => index !== i));
                         }}
-                        className="text-neutral-400 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 transition-colors cursor-pointer"
+                        className="cursor-pointer rounded-md p-1 text-neutral-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
                         title="Видалити"
                       >
                         <Icon icon="delete" className="h-4 w-4 fill-current" />
@@ -456,21 +468,20 @@ const AdminProductForm = ({
                   ))}
                 </div>
               ) : (
-                <div className="p-5 text-center text-xs text-neutral-400 font-medium">Характеристики відсутні</div>
+                <div className="p-5 text-center text-xs font-medium text-neutral-400">
+                  Характеристики відсутні
+                </div>
               )}
             </div>
-
           </div>
-
         </div>
 
         {/* Right column: Image upload, SEO, Actions */}
-        <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-6">
-          
+        <div className="flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-4">
           {/* Card 4: Product Image */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+          <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-neutral-800 uppercase">
                 Зображення товару
               </h2>
               <span
@@ -482,40 +493,44 @@ const AdminProductForm = ({
             </div>
 
             {/* Premium Uploader Dropzone */}
-            <div className="flex flex-col gap-4 items-center">
-              <div className="relative border-2 border-dashed border-neutral-200 rounded-xl p-4 w-full flex flex-col items-center justify-center bg-[#FAFAFF] hover:bg-neutral-50 hover:border-neutral-300 transition-colors cursor-pointer group">
+            <div className="flex flex-col items-center gap-4">
+              <div className="group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-200 bg-[#FAFAFF] p-4 transition-colors hover:border-neutral-300 hover:bg-neutral-50">
                 <input
                   type="file"
                   name="image"
                   accept="image/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                   onChange={handleImageChange}
                 />
-                <div className="flex flex-col items-center justify-center text-center gap-1.5 pointer-events-none select-none">
-                  <Icon icon="edit" className="h-6 w-6 text-neutral-400 group-hover:text-neutral-500 fill-none stroke-current" />
-                  <span className="text-xs font-semibold text-neutral-600 group-hover:text-neutral-700">Оберіть файл зображення</span>
+                <div className="pointer-events-none flex flex-col items-center justify-center gap-1.5 text-center select-none">
+                  <Icon
+                    icon="edit"
+                    className="h-6 w-6 fill-none stroke-current text-neutral-400 group-hover:text-neutral-500"
+                  />
+                  <span className="text-xs font-semibold text-neutral-600 group-hover:text-neutral-700">
+                    Оберіть файл зображення
+                  </span>
                   <span className="text-[10px] text-neutral-400">Формат WEBP або PNG, до 2MB</span>
                 </div>
               </div>
 
               {/* Preview Frame */}
-              <div className="w-[180px] h-[180px] border border-neutral-100 rounded-xl overflow-hidden p-2 bg-white flex items-center justify-center shadow-sm select-none">
+              <div className="flex h-[180px] w-[180px] items-center justify-center overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-sm select-none">
                 <Image
                   src={imageUrl || '/placeholder.webp'}
-                  className="max-h-full w-auto object-contain rounded-lg"
+                  className="max-h-full w-auto rounded-lg object-contain"
                   alt={product?.name || 'Фото товару'}
                   width={180}
                   height={180}
                 />
               </div>
             </div>
-
           </div>
 
           {/* Card 5: SEO settings */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-neutral-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 flex items-center gap-2">
+          <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-neutral-800 uppercase">
                 Пошукова оптимізація
               </h2>
               <span
@@ -527,37 +542,34 @@ const AdminProductForm = ({
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] font-bold text-neutral-400 uppercase mb-1">
+              <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
                 Ключові слова (через кому + пробіл)
               </label>
               <textarea
                 name="seoKeywords"
                 defaultValue={product?.seoKeywords}
                 placeholder="шуруповерт, акумуляторний інструмент, INGCO..."
-                className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all min-h-[80px]"
+                className="focus:border-primary-500 min-h-[80px] w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-700 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
               />
             </div>
-
           </div>
 
           {/* Card 6: Action buttons */}
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 shadow-sm flex flex-col gap-3">
+          <div className="flex flex-col gap-3 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <button
               type="submit"
-              className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all cursor-pointer text-xs uppercase tracking-wider"
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-lg transition-all"
             >
               Підтвердити
             </button>
             <button
               type="reset"
-              className="w-full border border-neutral-300 hover:border-neutral-400 text-neutral-700 font-display font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer bg-white text-xs uppercase tracking-wider"
+              className="font-display flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-xs font-bold tracking-wider text-neutral-700 uppercase transition-all hover:border-neutral-400"
             >
               Скинути
             </button>
           </div>
-
         </div>
-
       </form>
     </div>
   );

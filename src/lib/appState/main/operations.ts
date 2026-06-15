@@ -33,12 +33,13 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
     } catch (error) {
       const isCanceled =
         axios.isCancel(error) ||
-        (error instanceof Error && (error.message.includes('aborted') || error.message.includes('canceled')));
+        (error instanceof Error &&
+          (error.message.includes('aborted') || error.message.includes('canceled')));
 
       if (!isCanceled) {
         console.error('Currency fetch error:', error);
       }
-      
+
       return rejectWithValue(
         axios.isAxiosError(error) && error.response?.status === 429
           ? 'Занадто багато запитів до банку. Спробуйте пізніше.'
@@ -58,7 +59,7 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
       }
       return true;
     },
-  }
+  },
 );
 
 export const fetchMainTableDataThunk = createAsyncThunk(
@@ -139,7 +140,7 @@ export const fetchCategoriesThunk = createAsyncThunk(
       }
       return true;
     },
-  }
+  },
 );
 
 export const fetchHistoryThunk = createAsyncThunk(
@@ -183,11 +184,21 @@ export const deleteProductThunk = createAsyncThunk(
 export const createCategoryThunk = createAsyncThunk(
   'category/create',
   async (
-    { name, renderSort, parentId, showInMenu }: { name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
+    {
+      name,
+      renderSort,
+      parentId,
+      showInMenu,
+    }: { name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await apiIngco.post('/categories', { name, renderSort, parentId, showInMenu });
+      const { data } = await apiIngco.post('/categories', {
+        name,
+        renderSort,
+        parentId,
+        showInMenu,
+      });
       return data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -198,7 +209,19 @@ export const createCategoryThunk = createAsyncThunk(
 export const updateCategoryThunk = createAsyncThunk(
   'category/update',
   async (
-    { id, name, renderSort, parentId, showInMenu }: { id: number; name: string; renderSort?: number; parentId?: number | null; showInMenu?: boolean },
+    {
+      id,
+      name,
+      renderSort,
+      parentId,
+      showInMenu,
+    }: {
+      id: number;
+      name: string;
+      renderSort?: number;
+      parentId?: number | null;
+      showInMenu?: boolean;
+    },
     { rejectWithValue },
   ) => {
     try {

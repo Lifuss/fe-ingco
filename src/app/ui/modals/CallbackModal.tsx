@@ -41,7 +41,7 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
       toast.error("Будь ласка, заповніть усі обов'язкові поля");
       return;
     }
-    
+
     setIsSubmitting(true);
     // Simulate API request
     setTimeout(() => {
@@ -61,50 +61,55 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
       ariaHideApp={false}
     >
       <div className="relative flex flex-col font-sans">
-        <button 
-          className="absolute -top-4 -right-4 text-gray-400 hover:text-gray-600 transition-colors" 
+        <button
+          className="absolute -top-4 -right-4 text-gray-400 transition-colors hover:text-gray-600"
           onClick={closeModal}
           aria-label="Закрити"
         >
           <X size={20} />
         </button>
 
-        <div className="mb-4 flex items-center justify-center self-center w-12 h-12 rounded-full bg-blue-100 text-blue-500">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center self-center rounded-full bg-blue-100 text-blue-500">
           <PhoneCall size={24} />
         </div>
 
         <h3 className="mb-2 text-center text-xl font-bold text-gray-900">Зворотний зв&apos;язок</h3>
         <p className="mb-6 text-center text-sm leading-relaxed text-gray-500">
-          Залиште ваші контакти, і ваш персональний менеджер передзвонить вам для узгодження оптових цін та умов.
+          Залиште ваші контакти, і ваш персональний менеджер передзвонить вам для узгодження оптових
+          цін та умов.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Ваше ім&apos;я *</label>
+            <label className="mb-1 block text-xs font-semibold text-gray-600 uppercase">
+              Ваше ім&apos;я *
+            </label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary-500"
+              className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3.5 py-2 text-sm focus:outline-none"
               placeholder="Іван Іванов"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">Номер телефону *</label>
+            <label className="mb-1 block text-xs font-semibold text-gray-600 uppercase">
+              Номер телефону *
+            </label>
             <input
               type="tel"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary-500"
+              className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3.5 py-2 text-sm focus:outline-none"
               placeholder="+380"
             />
           </div>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-2 py-2.5 px-4 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-400 text-white font-medium rounded-xl transition-colors shadow-sm focus:outline-none"
+            className="bg-primary-500 hover:bg-primary-600 mt-2 w-full rounded-xl px-4 py-2.5 font-medium text-white shadow-sm transition-colors focus:outline-none disabled:bg-gray-400"
           >
             {isSubmitting ? 'Надсилання...' : 'Замовити дзвінок'}
           </button>

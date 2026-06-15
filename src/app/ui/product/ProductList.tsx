@@ -40,8 +40,12 @@ const ProductList = ({ isFavoritePage = false }) => {
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
 
   // Spec filters from URL
-  const minPower = searchParams.get('minPower') ? parseInt(searchParams.get('minPower') as string) : null;
-  const maxPower = searchParams.get('maxPower') ? parseInt(searchParams.get('maxPower') as string) : null;
+  const minPower = searchParams.get('minPower')
+    ? parseInt(searchParams.get('minPower') as string)
+    : null;
+  const maxPower = searchParams.get('maxPower')
+    ? parseInt(searchParams.get('maxPower') as string)
+    : null;
   const battery = searchParams.get('battery') === 'true';
   const mains = searchParams.get('mains') === 'true';
 
@@ -56,8 +60,10 @@ const ProductList = ({ isFavoritePage = false }) => {
       );
     }
     if (category) {
-      productsData = productsData.filter((product) =>
-        String(product.category?.id) === category || product.category?.name.toLowerCase().includes(category.toLowerCase()),
+      productsData = productsData.filter(
+        (product) =>
+          String(product.category?.id) === category ||
+          product.category?.name.toLowerCase().includes(category.toLowerCase()),
       );
     }
   }
@@ -65,7 +71,9 @@ const ProductList = ({ isFavoritePage = false }) => {
   // Client-side specifications filtering
   if (minPower !== null || maxPower !== null) {
     productsData = productsData.filter((product) => {
-      const powerChar = product.characteristics?.find((c) => c.name.toLowerCase().includes('потужність'));
+      const powerChar = product.characteristics?.find((c) =>
+        c.name.toLowerCase().includes('потужність'),
+      );
       if (!powerChar) return false;
       const powerVal = parseInt(powerChar.value);
       if (isNaN(powerVal)) return false;
@@ -78,15 +86,17 @@ const ProductList = ({ isFavoritePage = false }) => {
   if (battery || mains) {
     productsData = productsData.filter((product) => {
       const nameLower = product.name.toLowerCase();
-      const hasBatteryIndicators = nameLower.includes('акумулятор') || 
+      const hasBatteryIndicators =
+        nameLower.includes('акумулятор') ||
         product.characteristics?.some(
-          (c) => c.name.toLowerCase().includes('напруга') || 
-                 c.value.toLowerCase().includes('li-ion') || 
-                 c.value.toLowerCase().includes('акум') ||
-                 c.value.toLowerCase().includes('в ') ||
-                 c.value.endsWith('в')
+          (c) =>
+            c.name.toLowerCase().includes('напруга') ||
+            c.value.toLowerCase().includes('li-ion') ||
+            c.value.toLowerCase().includes('акум') ||
+            c.value.toLowerCase().includes('в ') ||
+            c.value.endsWith('в'),
         );
-      
+
       const isBatteryProduct = !!hasBatteryIndicators;
       const isMainsProduct = !isBatteryProduct;
 

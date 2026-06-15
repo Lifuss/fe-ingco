@@ -37,8 +37,10 @@ const DropLine = ({ parentId, index, onMove, draggingId }: DropLineProps) => {
         setIsOver(false);
         onMove(draggingId, parentId, index);
       }}
-      className={`h-2.5 -my-1 transition-all rounded w-full z-10 relative ${
-        isOver && draggingId ? 'bg-amber-500 shadow shadow-amber-500/50 scale-[1.01]' : 'bg-transparent'
+      className={`relative z-10 -my-1 h-2.5 w-full rounded transition-all ${
+        isOver && draggingId
+          ? 'scale-[1.01] bg-amber-500 shadow shadow-amber-500/50'
+          : 'bg-transparent'
       }`}
     />
   );
@@ -107,7 +109,7 @@ const CategoryTreeNode = ({
   const hasChildren = node.children.length > 0;
 
   return (
-    <div className="flex flex-col gap-1 w-full font-sans">
+    <div className="flex w-full flex-col gap-1 font-sans">
       <div
         draggable
         onDragStart={handleDragStart}
@@ -115,30 +117,30 @@ const CategoryTreeNode = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all select-none w-full ${
+        className={`flex w-full items-center gap-3 rounded-xl border p-3.5 transition-all select-none ${
           draggingId === node.id
-            ? 'opacity-40 bg-neutral-50 border-neutral-200 border-dashed scale-[0.98]'
+            ? 'scale-[0.98] border-dashed border-neutral-200 bg-neutral-50 opacity-40'
             : isOverSelf
-            ? 'bg-amber-50 border-amber-400 border-2 border-dashed scale-[1.01] shadow-md shadow-amber-100'
-            : 'bg-white border-neutral-200 shadow-sm hover:border-neutral-300 hover:shadow-md cursor-grab active:cursor-grabbing'
+              ? 'scale-[1.01] border-2 border-dashed border-amber-400 bg-amber-50 shadow-md shadow-amber-100'
+              : 'cursor-grab border-neutral-200 bg-white shadow-sm hover:border-neutral-300 hover:shadow-md active:cursor-grabbing'
         }`}
       >
-        <GripVertical className="text-neutral-400 w-4 h-4 shrink-0" />
+        <GripVertical className="h-4 w-4 shrink-0 text-neutral-400" />
         <div className="flex flex-col">
-          <span className="font-bold text-neutral-800 text-sm">{node.name}</span>
+          <span className="text-sm font-bold text-neutral-800">{node.name}</span>
           {node.parentId && (
-            <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mt-0.5">
+            <span className="mt-0.5 text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
               Підкатегорія
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <span
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+            className={`rounded-md border px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${
               node.showInMenu
-                ? 'bg-green-50 text-green-600 border-green-100'
-                : 'bg-orange-50 text-orange-600 border-orange-100'
+                ? 'border-green-100 bg-green-50 text-green-600'
+                : 'border-orange-100 bg-orange-50 text-orange-600'
             }`}
           >
             {node.showInMenu ? 'У меню' : 'Прихована'}
@@ -147,7 +149,7 @@ const CategoryTreeNode = ({
       </div>
 
       {hasChildren && (
-        <div className="pl-6 border-l border-neutral-200 ml-5 mt-1.5 flex flex-col gap-1 w-full max-w-[calc(100%-20px)]">
+        <div className="mt-1.5 ml-5 flex w-full max-w-[calc(100%-20px)] flex-col gap-1 border-l border-neutral-200 pl-6">
           {node.children.map((child, index) => (
             <React.Fragment key={child.id}>
               <DropLine
@@ -247,23 +249,23 @@ const CategorySortView = () => {
           console.error('Reorder error:', err);
         });
     },
-    [dispatch, categoriesList]
+    [dispatch, categoriesList],
   );
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-neutral-50/50 p-6 rounded-2xl border border-neutral-200 font-sans">
+    <div className="flex w-full flex-col gap-2 rounded-2xl border border-neutral-200 bg-neutral-50/50 p-6 font-sans">
       <div className="mb-4">
-        <h3 className="text-sm font-bold text-neutral-800 uppercase tracking-wider mb-1">
+        <h3 className="mb-1 text-sm font-bold tracking-wider text-neutral-800 uppercase">
           Візуальне сортування категорій
         </h3>
         <p className="text-xs text-neutral-500">
-          Перетягуйте категорії за картку або значок меню.
-          Перетягніть картку прямо на іншу категорію, щоб зробити її підкатегорією.
-          Перетягуйте на помаранчеві смуги між категоріями, щоб вставити їх у конкретну позицію.
+          Перетягуйте категорії за картку або значок меню. Перетягніть картку прямо на іншу
+          категорію, щоб зробити її підкатегорією. Перетягуйте на помаранчеві смуги між категоріями,
+          щоб вставити їх у конкретну позицію.
         </p>
       </div>
 
-      <div className="flex flex-col gap-1 w-full">
+      <div className="flex w-full flex-col gap-1">
         {categoryTree.map((root, index) => (
           <React.Fragment key={root.id}>
             <DropLine

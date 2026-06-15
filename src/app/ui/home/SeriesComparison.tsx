@@ -10,10 +10,10 @@ import 'slick-carousel/slick/slick-theme.css';
 import { Check, Heart, ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
-import { 
+import {
   addProductToCartThunk,
-  addFavoriteProductThunk, 
-  deleteFavoriteProductThunk 
+  addFavoriteProductThunk,
+  deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
@@ -26,7 +26,7 @@ interface SeriesComparisonProps {
 export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
-  
+
   const standartSliderRef = React.useRef<Slider | null>(null);
   const industrialSliderRef = React.useRef<Slider | null>(null);
   const standartContainerRef = React.useRef<HTMLDivElement | null>(null);
@@ -34,11 +34,13 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
 
   const isAuth = authState.isAuthenticated || false;
   const user = authState.user;
-  const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true || (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
+  const isB2BUser =
+    authState.isB2b ||
+    (user &&
+      ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true ||
+        (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
-  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? Number(p) : p.id);
-
-
+  const favoritesIdList = favorites.map((p) => (typeof p === 'string' ? Number(p) : p.id));
 
   // Dynamic filter for Standart products (DIY/home)
   const standartProducts = products
@@ -123,50 +125,52 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   useSliderMouseWheel(industrialSliderRef, industrialContainerRef, industrialProducts.length);
 
   return (
-    <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-10">
+    <section className="flex w-full flex-col gap-10 px-5 pb-16 md:px-[60px]">
       {/* Title Block */}
-      <div className="flex flex-col gap-3 text-center max-w-3xl mx-auto">
-        <h2 className="font-display font-bold text-2xl md:text-4xl text-neutral-900 leading-tight">
+      <div className="mx-auto flex max-w-3xl flex-col gap-3 text-center">
+        <h2 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-4xl">
           Професійне рішення чи надійність для дому?
         </h2>
-        <p className="font-sans text-neutral-500 text-sm md:text-base leading-relaxed">
-          Оберіть інструмент, який відповідає вашим завданням. Від інтенсивного промислового використання до надійного помічника вдома.
+        <p className="font-sans text-sm leading-relaxed text-neutral-500 md:text-base">
+          Оберіть інструмент, який відповідає вашим завданням. Від інтенсивного промислового
+          використання до надійного помічника вдома.
         </p>
       </div>
 
       {/* Series Columns Wrapper */}
       <div className="flex flex-col gap-14">
         {/* STANDART Line */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
           {/* Info Card (Left) */}
-          <div className="lg:col-span-4 flex flex-col gap-5 justify-between bg-white border border-[#E5E3DD] rounded-2xl p-6 lg:p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-amber-500/20">
+          <div className="flex flex-col justify-between gap-5 rounded-2xl border border-[#E5E3DD] bg-white p-6 shadow-sm transition-all duration-300 hover:border-amber-500/20 hover:shadow-md lg:col-span-4 lg:p-8">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <span className="font-display font-bold text-xs uppercase tracking-wider text-neutral-400 select-none">
+                <span className="font-display text-xs font-bold tracking-wider text-neutral-400 uppercase select-none">
                   STANDART
                 </span>
-                <h3 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">
+                <h3 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-3xl">
                   Для дому та майстерні
                 </h3>
               </div>
-              <p className="font-sans text-neutral-500 text-sm leading-relaxed">
-                Оптимальне співвідношення ціни та якості для періодичних робіт, ремонту вдома чи невеликих майстерень.
+              <p className="font-sans text-sm leading-relaxed text-neutral-500">
+                Оптимальне співвідношення ціни та якості для періодичних робіт, ремонту вдома чи
+                невеликих майстерень.
               </p>
               <ul className="flex flex-col gap-3 font-sans text-sm text-neutral-700">
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Легка та ергономічна конструкція</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Доступна ціна</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Гарантія 1 рік</span>
@@ -175,18 +179,21 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             </div>
             <Link
               href="/?catalog=true&query=standart"
-              className="font-display font-semibold text-neutral-900 hover:text-primary-500 transition-colors mt-4 inline-flex items-center gap-1 text-sm md:text-base cursor-pointer"
+              className="font-display hover:text-primary-500 mt-4 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-neutral-900 transition-colors md:text-base"
             >
               Дивитись серію Standart ➔
             </Link>
           </div>
 
           {/* Product Carousel (Right) */}
-          <div ref={standartContainerRef} className="lg:col-span-8 relative px-4 cursor-grab select-none active:cursor-grabbing">
+          <div
+            ref={standartContainerRef}
+            className="relative cursor-grab px-4 select-none active:cursor-grabbing lg:col-span-8"
+          >
             {standartProducts.length > 0 ? (
               <Slider ref={standartSliderRef} {...getSliderSettings(standartProducts.length)}>
                 {standartProducts.map((product) => (
-                  <div key={product.id} className="px-2 py-3 h-full">
+                  <div key={product.id} className="h-full px-2 py-3">
                     <ProductCarouselCard
                       product={product}
                       badge="STANDART"
@@ -199,7 +206,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
                 ))}
               </Slider>
             ) : (
-              <div className="text-center text-neutral-400 py-10">
+              <div className="py-10 text-center text-neutral-400">
                 Завантаження товарів серії Standart...
               </div>
             )}
@@ -207,36 +214,37 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
         </div>
 
         {/* INDUSTRIAL Line */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
           {/* Info Card (Left) */}
-          <div className="lg:col-span-4 flex flex-col gap-5 justify-between bg-white border border-[#E5E3DD] rounded-2xl p-6 lg:p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-amber-500/20">
+          <div className="flex flex-col justify-between gap-5 rounded-2xl border border-[#E5E3DD] bg-white p-6 shadow-sm transition-all duration-300 hover:border-amber-500/20 hover:shadow-md lg:col-span-4 lg:p-8">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <span className="font-display font-bold text-xs uppercase tracking-wider text-amber-600 select-none">
+                <span className="font-display text-xs font-bold tracking-wider text-amber-600 uppercase select-none">
                   INDUSTRIAL
                 </span>
-                <h3 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">
+                <h3 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-3xl">
                   Для професіоналів
                 </h3>
               </div>
-              <p className="font-sans text-neutral-500 text-sm leading-relaxed">
-                Інструмент, розроблений для тривалих та екстремальних навантажень. Посилена конструкція, висока зносостійкість та ідеальний результат роботи.
+              <p className="font-sans text-sm leading-relaxed text-neutral-500">
+                Інструмент, розроблений для тривалих та екстремальних навантажень. Посилена
+                конструкція, висока зносостійкість та ідеальний результат роботи.
               </p>
               <ul className="flex flex-col gap-3 font-sans text-sm text-neutral-700">
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Тривала безперервна робота</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Захист двигуна та вузлів</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-50 text-primary-500">
+                  <div className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
                     <Check size={14} className="stroke-[3]" />
                   </div>
                   <span>Гарантія 2 роки</span>
@@ -245,18 +253,21 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             </div>
             <Link
               href="/?catalog=true&query=industrial"
-              className="font-display font-semibold text-neutral-900 hover:text-primary-500 transition-colors mt-4 inline-flex items-center gap-1 text-sm md:text-base cursor-pointer"
+              className="font-display hover:text-primary-500 mt-4 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-neutral-900 transition-colors md:text-base"
             >
               Дивитись серію Industrial ➔
             </Link>
           </div>
 
           {/* Product Carousel (Right) */}
-          <div ref={industrialContainerRef} className="lg:col-span-8 relative px-4 cursor-grab select-none active:cursor-grabbing">
+          <div
+            ref={industrialContainerRef}
+            className="relative cursor-grab px-4 select-none active:cursor-grabbing lg:col-span-8"
+          >
             {industrialProducts.length > 0 ? (
               <Slider ref={industrialSliderRef} {...getSliderSettings(industrialProducts.length)}>
                 {industrialProducts.map((product) => (
-                  <div key={product.id} className="px-2 py-3 h-full">
+                  <div key={product.id} className="h-full px-2 py-3">
                     <ProductCarouselCard
                       product={product}
                       badge="INDUSTRIAL"
@@ -269,7 +280,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
                 ))}
               </Slider>
             ) : (
-              <div className="text-center text-neutral-400 py-10">
+              <div className="py-10 text-center text-neutral-400">
                 Завантаження товарів серії Industrial...
               </div>
             )}
@@ -289,11 +300,20 @@ interface ProductCardProps {
   onCartClick: () => void;
 }
 
-function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCartClick }: ProductCardProps) {
+function ProductCarouselCard({
+  product,
+  badge,
+  badgeBg,
+  isFav,
+  onFavClick,
+  onCartClick,
+}: ProductCardProps) {
   const router = useRouter();
   const apiBaseUrl = 'https://api-ingco-service.win';
   const imageUrl = product.image
-    ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
+    ? product.image.startsWith('http')
+      ? product.image
+      : `${apiBaseUrl}${product.image}`
     : '/placeholder.webp';
 
   const isSale = !!(product.rrcSale && product.rrcSale > 0);
@@ -345,16 +365,18 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
       onMouseUp={handleMouseUp}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="group relative flex flex-col justify-between h-full bg-white border border-[#E5E3DD] rounded-xl p-4 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-amber-500/40 hover:scale-[1.01] cursor-pointer overflow-hidden"
+      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border border-[#E5E3DD] bg-white p-4 shadow-sm transition-all duration-300 hover:scale-[1.01] hover:border-amber-500/40 hover:shadow-lg"
     >
       {/* Top action/tag ribbon */}
-      <div className="flex justify-between items-center z-10">
-        <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded uppercase select-none ${badgeBg}`}>
+      <div className="z-10 flex items-center justify-between">
+        <span
+          className={`rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none ${badgeBg}`}
+        >
           {badge}
         </span>
         <button
           onClick={onFavClick}
-          className={`p-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
+          className={`cursor-pointer rounded-full p-1.5 transition-colors hover:bg-neutral-100 ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
           aria-label="Додати в обране"
         >
           <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
@@ -362,17 +384,17 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
       </div>
 
       {/* Product Image */}
-      <div className="relative w-full h-[150px] my-3 overflow-hidden rounded flex items-center justify-center">
+      <div className="relative my-3 flex h-[150px] w-full items-center justify-center overflow-hidden rounded">
         <Image
           src={imageUrl}
           alt={product.name}
           width={150}
           height={150}
-          className="object-contain w-auto max-h-[140px] transition-transform duration-300 group-hover:scale-105"
+          className="max-h-[140px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
         />
         {/* Sale Tag */}
         {isSale && (
-          <span className="absolute bottom-1 left-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded select-none">
+          <span className="absolute bottom-1 left-1 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white select-none">
             Акція
           </span>
         )}
@@ -382,33 +404,36 @@ function ProductCarouselCard({ product, badge, badgeBg, isFav, onFavClick, onCar
       <div className="flex flex-col gap-2">
         {/* Availability */}
         <div className="flex items-center gap-1.5 font-sans text-xs">
-          <span className={`w-2 h-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span
+            className={`h-2 w-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
+          />
           <span className={product.countInStock > 0 ? 'text-green-600' : 'text-red-500'}>
             {product.countInStock > 0 ? 'В наявності' : 'Немає в наявності'}
           </span>
         </div>
 
         {/* Title */}
-        <Link href={`/${product.slug}`} className="font-display font-semibold text-neutral-800 text-sm line-clamp-2 min-h-[40px] hover:text-primary-500 transition-colors">
+        <Link
+          href={`/${product.slug}`}
+          className="font-display hover:text-primary-500 line-clamp-2 min-h-[40px] text-sm font-semibold text-neutral-800 transition-colors"
+        >
           {product.name}
         </Link>
 
         {/* Pricing & Add to Cart */}
-        <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
+        <div className="mt-2 flex items-center justify-between border-t border-neutral-50 pt-3">
           <div className="flex flex-col">
             {!!originalPrice && (
               <span className="font-sans text-xs text-neutral-400 line-through">
                 {originalPrice} ₴
               </span>
             )}
-            <span className="font-display font-bold text-lg text-neutral-900">
-              {price} ₴
-            </span>
+            <span className="font-display text-lg font-bold text-neutral-900">{price} ₴</span>
           </div>
 
           <button
             onClick={onCartClick}
-            className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 transition-colors cursor-pointer shadow-md shadow-orange-500/10 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 focus:ring-primary-500 cursor-pointer rounded-full p-2.5 text-white shadow-md shadow-orange-500/10 transition-colors focus:ring-2 focus:outline-none"
             aria-label="Додати в кошик"
           >
             <ShoppingCart size={16} />

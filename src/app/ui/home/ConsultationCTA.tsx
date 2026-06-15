@@ -29,7 +29,7 @@ export default function ConsultationCTA() {
         email: 'consultation@ingco.ua',
         message: 'Заявка на консультацію з головної сторінки (блок "Важко обрати інструмент?")',
         phone: `+380${phone}`,
-      })
+      }),
     )
       .unwrap()
       .then(() => {
@@ -51,50 +51,53 @@ export default function ConsultationCTA() {
   };
 
   return (
-    <section className="w-full px-5 md:px-[60px] pb-16">
-      <div className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 border border-neutral-800 shadow-[0_10px_50px_rgba(245,158,11,0.1)] py-12 px-6 md:py-16 md:px-12 flex flex-col lg:flex-row justify-between items-center gap-10">
-        
+    <section className="w-full px-5 pb-16 md:px-[60px]">
+      <div className="relative flex w-full flex-col items-center justify-between gap-10 overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 px-6 py-12 shadow-[0_10px_50px_rgba(245,158,11,0.1)] md:px-12 md:py-16 lg:flex-row">
         {/* Glow effect overlays for high premium visuals */}
-        <div className="absolute top-[-50%] left-[-20%] w-[350px] h-[350px] bg-primary-500/10 rounded-full blur-[120px] pointer-events-none select-none" />
-        <div className="absolute bottom-[-50%] right-[-25%] w-[400px] h-[400px] bg-amber-500/15 rounded-full blur-[140px] pointer-events-none select-none" />
+        <div className="bg-primary-500/10 pointer-events-none absolute top-[-50%] left-[-20%] h-[350px] w-[350px] rounded-full blur-[120px] select-none" />
+        <div className="pointer-events-none absolute right-[-25%] bottom-[-50%] h-[400px] w-[400px] rounded-full bg-amber-500/15 blur-[140px] select-none" />
 
         {/* Info/Heading area */}
-        <div className="relative z-10 flex flex-col gap-4 text-left max-w-xl">
-          <div className="w-fit flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 font-semibold text-xs tracking-wider uppercase select-none">
+        <div className="relative z-10 flex max-w-xl flex-col gap-4 text-left">
+          <div className="flex w-fit items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-amber-400 uppercase select-none">
             <ShieldCheck size={14} className="stroke-[2.5]" /> Безкоштовний підбір
           </div>
 
-          <h2 className="font-display font-bold text-2xl md:text-4xl text-white leading-tight">
+          <h2 className="font-display text-2xl leading-tight font-bold text-white md:text-4xl">
             ВАЖКО ОБРАТИ ІНСТРУМЕНТ? <br />
             <span className="text-amber-500 drop-shadow-[0_2px_10px_rgba(245,158,11,0.2)]">
               МИ ДОПОМОЖЕМО!
             </span>
           </h2>
-          <p className="font-sans text-neutral-300 text-sm md:text-base leading-relaxed">
-            Залиште ваші контакти, і наш провідний технічний спеціаліст підбере ідеальний комплект інструментів під ваші завдання, умови використання та бюджет. Без переплат.
+          <p className="font-sans text-sm leading-relaxed text-neutral-300 md:text-base">
+            Залиште ваші контакти, і наш провідний технічний спеціаліст підбере ідеальний комплект
+            інструментів під ваші завдання, умови використання та бюджет. Без переплат.
           </p>
         </div>
 
         {/* Interactive Form area */}
-        <div className="relative z-10 w-full max-w-md bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl backdrop-blur-md shadow-inner">
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 shadow-inner backdrop-blur-md md:p-8">
           {isSubmitted ? (
-            <div className="flex flex-col items-center justify-center text-center py-6 gap-3 animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
+            <div className="animate-fade-in flex flex-col items-center justify-center gap-3 py-6 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-green-500/20 bg-green-500/10 text-green-400">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="font-display font-bold text-xl text-white">Заявка прийнята!</h3>
-              <p className="font-sans text-neutral-300 text-sm leading-relaxed max-w-xs">
+              <h3 className="font-display text-xl font-bold text-white">Заявка прийнята!</h3>
+              <p className="max-w-xs font-sans text-sm leading-relaxed text-neutral-300">
                 Ми зателефонуємо вам протягом 15 хвилин для консультації. Готуйте ваші запитання!
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <h3 className="font-display font-bold text-lg text-white mb-2">
+              <h3 className="font-display mb-2 text-lg font-bold text-white">
                 Замовити дзвінок спеціаліста
               </h3>
-              
+
               <div className="flex flex-col gap-1">
-                <label htmlFor="name-input" className="font-sans text-xs text-neutral-400 font-medium ml-1">
+                <label
+                  htmlFor="name-input"
+                  className="ml-1 font-sans text-xs font-medium text-neutral-400"
+                >
                   Ваше ім’я
                 </label>
                 <input
@@ -103,16 +106,19 @@ export default function ConsultationCTA() {
                   placeholder="Введіть ваше ім’я"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="font-sans text-sm bg-white/10 border border-white/15 focus:border-primary-500 focus:bg-white/15 rounded-md px-4 py-3 text-white placeholder-neutral-500 outline-none transition-all focus:ring-1 focus:ring-primary-500"
+                  className="focus:border-primary-500 focus:ring-primary-500 rounded-md border border-white/15 bg-white/10 px-4 py-3 font-sans text-sm text-white placeholder-neutral-500 transition-all outline-none focus:bg-white/15 focus:ring-1"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label htmlFor="phone-input" className="font-sans text-xs text-neutral-400 font-medium ml-1">
+                <label
+                  htmlFor="phone-input"
+                  className="ml-1 font-sans text-xs font-medium text-neutral-400"
+                >
                   Телефон *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-sm text-neutral-400 select-none">
+                  <span className="absolute top-1/2 left-4 -translate-y-1/2 font-sans text-sm text-neutral-400 select-none">
                     +380
                   </span>
                   <input
@@ -122,7 +128,7 @@ export default function ConsultationCTA() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 9))}
                     required
-                    className="w-full font-sans text-sm bg-white/10 border border-white/15 focus:border-primary-500 focus:bg-white/15 rounded-md pl-14 pr-4 py-3 text-white placeholder-neutral-500 outline-none transition-all focus:ring-1 focus:ring-primary-500"
+                    className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-md border border-white/15 bg-white/10 py-3 pr-4 pl-14 font-sans text-sm text-white placeholder-neutral-500 transition-all outline-none focus:bg-white/15 focus:ring-1"
                   />
                 </div>
               </div>
@@ -130,13 +136,28 @@ export default function ConsultationCTA() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group w-full font-display font-semibold text-sm md:text-base bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white rounded-md py-3.5 mt-2 transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed select-none"
+                className="group font-display bg-primary-500 hover:bg-primary-600 active:bg-primary-700 mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/10 transition-all duration-300 select-none hover:shadow-orange-500/20 disabled:cursor-not-allowed disabled:opacity-55 md:text-base"
               >
                 {isSubmitting ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="h-5 w-5 animate-spin text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     <span>Надсилання...</span>
                   </>
@@ -144,14 +165,16 @@ export default function ConsultationCTA() {
                   <>
                     <Phone size={18} fill="currentColor" />
                     <span>Передзвоніть мені</span>
-                    <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
                   </>
                 )}
               </button>
             </form>
           )}
         </div>
-
       </div>
     </section>
   );

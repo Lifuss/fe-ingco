@@ -7,7 +7,7 @@ const Page = () => {
   const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
 
   return (
-    <main className="min-h-[550px] w-full px-[60px] pt-8 bg-white">
+    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8">
       <HistoryTable isRetail={!isB2b} />
     </main>
   );

@@ -26,7 +26,6 @@ export default function ConfirmModal({
   cancelText = 'Скасувати',
   type = 'warning',
 }: ConfirmModalProps) {
-  
   const iconMap = {
     danger: <AlertCircle className="h-6 w-6 text-red-500" />,
     warning: <AlertTriangle className="h-6 w-6 text-amber-500" />,
@@ -67,27 +66,25 @@ export default function ConfirmModal({
         },
       }}
     >
-      <div className="flex flex-col gap-5 select-none font-sans">
+      <div className="flex flex-col gap-5 font-sans select-none">
         {/* Header / Icon */}
         <div className="flex items-start gap-4">
-          <div className="p-2.5 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center justify-center shrink-0">
+          <div className="flex shrink-0 items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50 p-2.5">
             {iconMap[type]}
           </div>
           <div className="flex flex-col gap-1.5">
-            <h3 className="font-display font-bold text-lg text-neutral-900 leading-tight">
+            <h3 className="font-display text-lg leading-tight font-bold text-neutral-900">
               {title}
             </h3>
-            <p className="text-neutral-500 text-sm font-medium leading-relaxed">
-              {message}
-            </p>
+            <p className="text-sm leading-relaxed font-medium text-neutral-500">{message}</p>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-3 justify-end mt-2">
+        <div className="mt-2 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-neutral-300 hover:border-neutral-500 text-neutral-700 font-display font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer bg-white"
+            className="font-display cursor-pointer rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-xs font-bold tracking-wider text-neutral-700 uppercase transition-colors hover:border-neutral-500"
           >
             {cancelText}
           </button>
@@ -96,7 +93,7 @@ export default function ConfirmModal({
               onConfirm();
               onClose();
             }}
-            className={`${buttonClassMap[type]} px-5 py-2.5 rounded-xl text-white font-display font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-md`}
+            className={`${buttonClassMap[type]} font-display cursor-pointer rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-colors`}
           >
             {confirmText}
           </Button>

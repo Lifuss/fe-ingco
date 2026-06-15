@@ -66,9 +66,9 @@ export async function GET() {
         const inStock = product.countInStock > 0;
         const available = inStock ? 'true' : 'false';
         const imageUrl = product.image
-          ? (product.image.startsWith('http')
+          ? product.image.startsWith('http')
             ? product.image
-            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`)
+            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
           : `${DOMAIN}/placeholder.webp`;
 
         const params: string[] = [];
@@ -82,9 +82,7 @@ export async function GET() {
           });
         }
         if (product.warranty) {
-          params.push(
-            `      <param name="Гарантія" unit="міс.">${product.warranty}</param>`,
-          );
+          params.push(`      <param name="Гарантія" unit="міс.">${product.warranty}</param>`);
         }
         const paramsXml = params.length ? '\n' + params.join('\n') : '';
 
@@ -92,10 +90,9 @@ export async function GET() {
           ? `\n      <barcode>${escapeXml(product.barcode)}</barcode>`
           : '';
 
-        const keywordsXml =
-          product.seoKeywords?.trim()
-            ? `\n      <keywords>${escapeXml(product.seoKeywords.trim())}</keywords>\n      <keywords_ua>${escapeXml(product.seoKeywords.trim())}</keywords_ua>`
-            : '';
+        const keywordsXml = product.seoKeywords?.trim()
+          ? `\n      <keywords>${escapeXml(product.seoKeywords.trim())}</keywords>\n      <keywords_ua>${escapeXml(product.seoKeywords.trim())}</keywords_ua>`
+          : '';
 
         const name = product.name.trim();
         const article = product.article.trim();
@@ -104,9 +101,7 @@ export async function GET() {
           product.rrcSale != null &&
           product.rrcSale > 0 &&
           product.rrcSale < product.priceRetailRecommendation;
-        const displayPrice = hasSale
-          ? product.rrcSale!
-          : product.priceRetailRecommendation;
+        const displayPrice = hasSale ? product.rrcSale! : product.priceRetailRecommendation;
         const oldPriceXml = hasSale
           ? `\n      <oldprice>${product.priceRetailRecommendation}</oldprice>`
           : '';

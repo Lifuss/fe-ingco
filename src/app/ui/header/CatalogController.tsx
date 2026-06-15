@@ -103,14 +103,14 @@ export function CatalogMobileButton() {
     <button
       onClick={toggle}
       className={cn(
-        'lg:hidden flex items-center gap-1.5 px-2 py-1.5 min-[426px]:px-3 min-[426px]:py-2 rounded-lg min-[426px]:text-white min-[426px]:bg-primary-500 focus:outline-none transition-colors border cursor-pointer select-none font-display font-bold text-sm tracking-wide shadow-sm',
+        'min-[426px]:bg-primary-500 font-display flex cursor-pointer items-center gap-1.5 rounded-lg border px-2 py-1.5 text-sm font-bold tracking-wide shadow-sm transition-colors select-none focus:outline-none min-[426px]:px-3 min-[426px]:py-2 min-[426px]:text-white lg:hidden',
         isOpen
-          ? 'bg-primary-600 text-white border-transparent shadow-inner'
-          : 'bg-white text-primary-600 border-primary-100 hover:bg-primary-50',
+          ? 'bg-primary-600 border-transparent text-white shadow-inner'
+          : 'text-primary-600 border-primary-100 hover:bg-primary-50 bg-white',
       )}
       aria-label="Toggle Catalog"
     >
-      <LayoutGrid size={26} className="stroke-[2.5] shrink-0" />
+      <LayoutGrid size={26} className="shrink-0 stroke-[2.5]" />
       <span className="hidden min-[426px]:inline">Каталог</span>
     </button>
   );
@@ -120,7 +120,7 @@ export function CatalogDesktopButton() {
   const { isOpen, toggle, openWithDelay, closeWithDelay, closeInstant } = useCatalog();
   return (
     <div
-      className="hidden lg:inline-flex items-stretch rounded-lg shadow-sm shadow-orange-500/5 shrink-0 select-none overflow-hidden"
+      className="hidden shrink-0 items-stretch overflow-hidden rounded-lg shadow-sm shadow-orange-500/5 select-none lg:inline-flex"
       onMouseEnter={openWithDelay}
       onMouseLeave={closeWithDelay}
     >
@@ -129,10 +129,10 @@ export function CatalogDesktopButton() {
         href="/?catalog=true"
         onClick={closeInstant}
         className={cn(
-          'flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm tracking-wide transition-all cursor-pointer border border-transparent border-r-0 rounded-l-lg',
+          'font-display flex cursor-pointer items-center gap-2 rounded-l-lg border border-r-0 border-transparent px-4 py-2.5 text-sm font-bold tracking-wide transition-all',
           isOpen
             ? 'bg-primary-600 text-white shadow-inner'
-            : 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700',
+            : 'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white',
         )}
       >
         <LayoutGrid size={16} className="stroke-[2.5]" />
@@ -146,16 +146,16 @@ export function CatalogDesktopButton() {
           toggle();
         }}
         className={cn(
-          'flex items-center justify-center px-2.5 py-2.5 transition-all cursor-pointer border border-transparent border-l-0 rounded-r-lg',
+          'flex cursor-pointer items-center justify-center rounded-r-lg border border-l-0 border-transparent px-2.5 py-2.5 transition-all',
           isOpen
-            ? 'bg-primary-600 text-white shadow-inner border-l border-primary-700/30'
-            : 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 border-l border-white/20',
+            ? 'bg-primary-600 border-primary-700/30 border-l text-white shadow-inner'
+            : 'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 border-l border-white/20 text-white',
         )}
         aria-label="Toggle Catalog Menu"
       >
         <ChevronDown
           size={16}
-          className={cn('transition-transform duration-200 stroke-[2.5]', isOpen && 'rotate-180')}
+          className={cn('stroke-[2.5] transition-transform duration-200', isOpen && 'rotate-180')}
         />
       </button>
     </div>

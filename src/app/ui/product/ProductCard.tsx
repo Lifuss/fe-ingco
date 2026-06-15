@@ -6,10 +6,10 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { 
-  addProductToCartThunk, 
+import {
+  addProductToCartThunk,
   addFavoriteProductThunk,
-  deleteFavoriteProductThunk
+  deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
@@ -37,18 +37,23 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
-  const usdRate = useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || USDCurrency || 40;
+  const usdRate =
+    useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || USDCurrency || 40;
 
   const isAuth = authState.isAuthenticated;
   const user = authState.user;
-  const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true || (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
+  const isB2BUser =
+    authState.isB2b ||
+    (user &&
+      ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true ||
+        (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
 
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
 
   if (!product || !product.id) {
     return (
-      <div className="relative flex justify-center rounded-2xl border-2 border-transparent p-4 shadow-md bg-white">
+      <div className="relative flex justify-center rounded-2xl border-2 border-transparent bg-white p-4 shadow-md">
         <h3 className="text-sm font-semibold text-gray-500">Сталась помилка завантаження товару</h3>
       </div>
     );
@@ -68,14 +73,15 @@ const ProductCard = ({
     slug,
     createdAt,
   } = product;
-  
+
   // Check if item is new (within last 60 days)
-  const isNew = createdAt ? (NOW - new Date(createdAt).getTime()) < 60 * 24 * 60 * 60 * 1000 : false;
+  const isNew = createdAt ? NOW - new Date(createdAt).getTime() < 60 * 24 * 60 * 60 * 1000 : false;
 
   // Calculate discount percent
-  const discountPercent = priceRetailRecommendation > 0 && rrcSale
-    ? Math.round(((priceRetailRecommendation - rrcSale) / priceRetailRecommendation) * 100)
-    : 0;
+  const discountPercent =
+    priceRetailRecommendation > 0 && rrcSale
+      ? Math.round(((priceRetailRecommendation - rrcSale) / priceRetailRecommendation) * 100)
+      : 0;
 
   // B2B Wholesale UAH price
   const wholesalePriceUah = Math.ceil((priceBulk || price) * usdRate);
@@ -97,12 +103,12 @@ const ProductCard = ({
   // Quantity handlers
   const handleDecrease = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
   const handleIncrease = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setQuantity(prev => prev + 1);
+    setQuantity((prev) => prev + 1);
   };
 
   const handleQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +139,7 @@ const ProductCard = ({
           productId: restProduct,
           quantity,
           id,
-        })
+        }),
       );
       toast.success(`${quantity} шт. - ${name} додано в кошик`);
     }
@@ -143,25 +149,34 @@ const ProductCard = ({
 
   return (
     <>
-      <li className={clsx("relative group w-full max-w-[340px] mx-auto font-sans", isB2BUser ? "min-h-[430px]" : "min-h-[380px]")}>
-        
+      <li
+        className={clsx(
+          'group relative mx-auto w-full max-w-[340px] font-sans',
+          isB2BUser ? 'min-h-[430px]' : 'min-h-[380px]',
+        )}
+      >
         {/* Hover card container expanding downwards */}
-        <div className={clsx("absolute top-0 left-0 w-full bg-white rounded-2xl border border-gray-200 p-4 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-primary-500 hover:z-30 flex flex-col justify-between h-full hover:h-auto", isB2BUser ? "min-h-[430px]" : "min-h-[380px]")}>
-          
-          <div className="grow cursor-pointer flex flex-col" onClick={() => handleDirectToProduct(id, slug)}>
-            
+        <div
+          className={clsx(
+            'hover:border-primary-500 absolute top-0 left-0 flex h-full w-full flex-col justify-between rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 ease-in-out hover:z-30 hover:h-auto hover:shadow-2xl',
+            isB2BUser ? 'min-h-[430px]' : 'min-h-[380px]',
+          )}
+        >
+          <div
+            className="flex grow cursor-pointer flex-col"
+            onClick={() => handleDirectToProduct(id, slug)}
+          >
             {/* Image container */}
-            <div className="relative h-[180px] w-full mb-2 shrink-0 flex items-center justify-center bg-white">
-              
+            <div className="relative mb-2 flex h-[180px] w-full shrink-0 items-center justify-center bg-white">
               {/* Top Left Badges */}
-              <div className="absolute top-0 left-0 z-10 flex flex-col gap-1 pointer-events-none">
+              <div className="pointer-events-none absolute top-0 left-0 z-10 flex flex-col gap-1">
                 {!!(rrcSale && discountPercent > 0) && (
-                  <span className="px-2 py-0.5 text-[10px] font-bold text-white bg-red-500 rounded-md tracking-wider shadow-sm uppercase">
+                  <span className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
                     АКЦІЯ -{discountPercent}%
                   </span>
                 )}
                 {!!isNew && (
-                  <span className="px-2 py-0.5 text-[10px] font-bold text-white bg-gray-900 rounded-md tracking-wider shadow-sm uppercase w-fit">
+                  <span className="w-fit rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
                     НОВИНКА
                   </span>
                 )}
@@ -169,8 +184,8 @@ const ProductCard = ({
 
               {/* Top Right Badges */}
               {countInStock <= 0 && (
-                <div className="absolute top-0 right-0 z-10 pointer-events-none">
-                  <span className="px-2 py-0.5 text-[9px] font-bold text-white bg-gray-400 rounded-md tracking-wider shadow-sm uppercase">
+                <div className="pointer-events-none absolute top-0 right-0 z-10">
+                  <span className="rounded-md bg-gray-400 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm">
                     НЕ В НАЯВНОСТІ
                   </span>
                 </div>
@@ -187,41 +202,59 @@ const ProductCard = ({
             </div>
 
             {/* SKU / Article */}
-            <div className="flex items-center justify-between shrink-0">
-              <span className="text-[11px] font-mono text-gray-450 tracking-wider">
+            <div className="flex shrink-0 items-center justify-between">
+              <span className="text-gray-450 font-mono text-[11px] tracking-wider">
                 АРТИКУЛ: {article}
               </span>
-              
+
               {/* Favorite Button */}
               <button
                 onClick={handleFavClick}
                 aria-label={`Додати ${name} до обраних`}
                 className={clsx(
-                  'transition-all hover:scale-110 p-1 rounded-full cursor-pointer',
-                  isFavorite ? 'text-primary-500' : 'text-gray-400 hover:text-primary-500'
+                  'cursor-pointer rounded-full p-1 transition-all hover:scale-110',
+                  isFavorite ? 'text-primary-500' : 'hover:text-primary-500 text-gray-400',
                 )}
               >
-                <Heart size={18} className={clsx('transition-colors', isFavorite ? 'fill-primary-500 stroke-primary-500' : 'fill-none stroke-current')} />
+                <Heart
+                  size={18}
+                  className={clsx(
+                    'transition-colors',
+                    isFavorite ? 'fill-primary-500 stroke-primary-500' : 'fill-none stroke-current',
+                  )}
+                />
               </button>
             </div>
 
             {/* Product Title */}
-            <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 h-[40px] shrink-0">
+            <h3 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">
               {name}
             </h3>
 
             {/* Technical characteristics: smooth transition fade in on hover */}
             {characteristics.length > 0 && (
-              <div className="hidden group-hover:block transition-all duration-300 opacity-0 group-hover:opacity-100 max-h-0 group-hover:max-h-[180px] overflow-hidden">
-                <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                  <table className="w-full text-[11px] border-collapse">
+              <div className="hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:block group-hover:max-h-[180px] group-hover:opacity-100">
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                  <table className="w-full border-collapse text-[11px]">
                     <tbody>
-                      {characteristics.filter(c => c.value !== '-' && c.name.toLowerCase() !== 'артикул' && c.name.toLowerCase() !== 'артикль' && c.name.toLowerCase() !== 'sku' && c.name.toLowerCase() !== 'article').slice(0, 3).map((char, index) => (
-                        <tr key={index} className="border-b border-gray-150 last:border-b-0">
-                          <td className="py-0.5 text-gray-500 font-medium">{char.name}</td>
-                          <td className="py-0.5 text-gray-900 font-bold text-right">{char.value}</td>
-                        </tr>
-                      ))}
+                      {characteristics
+                        .filter(
+                          (c) =>
+                            c.value !== '-' &&
+                            c.name.toLowerCase() !== 'артикул' &&
+                            c.name.toLowerCase() !== 'артикль' &&
+                            c.name.toLowerCase() !== 'sku' &&
+                            c.name.toLowerCase() !== 'article',
+                        )
+                        .slice(0, 3)
+                        .map((char, index) => (
+                          <tr key={index} className="border-gray-150 border-b last:border-b-0">
+                            <td className="py-0.5 font-medium text-gray-500">{char.name}</td>
+                            <td className="py-0.5 text-right font-bold text-gray-900">
+                              {char.value}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -230,29 +263,35 @@ const ProductCard = ({
           </div>
 
           {/* Pricing & Cart controls - sticky at bottom */}
-          <div className="mt-auto border-t border-gray-100 shrink-0">
+          <div className="mt-auto shrink-0 border-t border-gray-100">
             {countInStock > 0 ? (
               <div className="flex flex-col gap-2">
-                
                 {/* Price block */}
                 <div>
                   {isB2BUser ? (
                     // B2B Pricing Structure
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] text-gray-400 font-bold tracking-wide uppercase flex flex-col gap-0.5">
+                      <span className="flex flex-col gap-0.5 text-[10px] font-bold tracking-wide text-gray-400 uppercase">
                         <span>
                           РРЦ: {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
                           {priceRetailRecommendation > wholesalePriceUah && (
-                            <span className="text-teal-600 font-bold ml-1.5 normal-case">
-                              (Маржа: {Math.ceil(((priceRetailRecommendation - wholesalePriceUah) / priceRetailRecommendation) * 100)}% / +{priceRetailRecommendation - wholesalePriceUah} ₴)
+                            <span className="ml-1.5 font-bold text-teal-600 normal-case">
+                              (Маржа:{' '}
+                              {Math.ceil(
+                                ((priceRetailRecommendation - wholesalePriceUah) /
+                                  priceRetailRecommendation) *
+                                  100,
+                              )}
+                              % / +{priceRetailRecommendation - wholesalePriceUah} ₴)
                             </span>
                           )}
                         </span>
                         {!!(rrcSale && rrcSale > wholesalePriceUah) && (
-                          <span className="text-red-500 font-bold">
+                          <span className="font-bold text-red-500">
                             РРЦ Акція: {rrcSale.toLocaleString('uk-UA')}.00 ₴
-                            <span className="text-teal-600 font-bold ml-1.5 normal-case">
-                              (Маржа: {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}% / +{rrcSale - wholesalePriceUah} ₴)
+                            <span className="ml-1.5 font-bold text-teal-600 normal-case">
+                              (Маржа: {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}%
+                              / +{rrcSale - wholesalePriceUah} ₴)
                             </span>
                           </span>
                         )}
@@ -262,7 +301,7 @@ const ProductCard = ({
                           {wholesalePriceUah.toLocaleString('uk-UA')}.00 ₴
                         </span>
                       </div>
-                      <span className="text-xs font-bold text-gray-400 tracking-wide">
+                      <span className="text-xs font-bold tracking-wide text-gray-400">
                         ${price.toFixed(2)} / од.
                       </span>
                     </div>
@@ -271,10 +310,10 @@ const ProductCard = ({
                     <div className="flex items-baseline gap-2">
                       {rrcSale ? (
                         <>
-                          <span className="text-2xl font-extrabold text-primary-500">
+                          <span className="text-primary-500 text-2xl font-extrabold">
                             {rrcSale.toLocaleString('uk-UA')}.00 ₴
                           </span>
-                          <span className="text-xs text-gray-400 line-through font-semibold">
+                          <span className="text-xs font-semibold text-gray-400 line-through">
                             {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
                           </span>
                         </>
@@ -289,12 +328,11 @@ const ProductCard = ({
 
                 {/* Bottom interactive action panel */}
                 <div className="flex items-center gap-2">
-                  
                   {/* Quantity Counter */}
-                  <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-1">
+                  <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 px-1">
                     <button
                       onClick={handleDecrease}
-                      className="p-1.5 text-gray-500 hover:text-primary-500 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                      className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
                       aria-label="Decrease quantity"
                     >
                       <Minus size={13} strokeWidth={2.5} />
@@ -305,11 +343,11 @@ const ProductCard = ({
                       value={quantity}
                       onChange={handleQtyChange}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-10 text-center bg-transparent border-none text-xs font-bold text-gray-900 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-10 [appearance:textfield] border-none bg-transparent text-center text-xs font-bold text-gray-900 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                     <button
                       onClick={handleIncrease}
-                      className="p-1.5 text-gray-500 hover:text-primary-500 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                      className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
                       aria-label="Increase quantity"
                     >
                       <Plus size={13} strokeWidth={2.5} />
@@ -319,12 +357,10 @@ const ProductCard = ({
                   {/* Add To Cart Button */}
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-primary-500 hover:bg-primary-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+                    className="bg-primary-500 hover:bg-primary-600 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all active:scale-95"
                   >
-                    <ShoppingCart size={14} className="fill-current" />
-                    В кошик
+                    <ShoppingCart size={14} className="fill-current" />В кошик
                   </button>
-
                 </div>
               </div>
             ) : (
@@ -334,7 +370,7 @@ const ProductCard = ({
                   e.stopPropagation();
                   setIsOutOfStockOpen(true);
                 }}
-                className="w-full py-2 px-4 border border-gray-300 hover:border-primary-500 hover:text-primary-500 text-gray-700 font-bold text-xs rounded-xl transition-all text-center cursor-pointer"
+                className="hover:border-primary-500 hover:text-primary-500 w-full cursor-pointer rounded-xl border border-gray-300 px-4 py-2 text-center text-xs font-bold text-gray-700 transition-all"
               >
                 Детальніше
               </button>

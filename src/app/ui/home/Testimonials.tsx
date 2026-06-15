@@ -49,38 +49,38 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-8">
+    <section className="flex w-full flex-col gap-8 px-5 pb-16 md:px-[60px]">
       {/* Header Block */}
-      <div className="flex justify-between items-end border-b border-[#E5E3DD] pb-4">
+      <div className="flex items-end justify-between border-b border-[#E5E3DD] pb-4">
         <div className="flex flex-col gap-1">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">
+          <h2 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-3xl">
             ВІДГУКИ НАШИХ КЛІЄНТІВ
           </h2>
-          <p className="font-sans text-neutral-500 text-sm">
+          <p className="font-sans text-sm text-neutral-500">
             Думки реальних майстрів, які вже працюють інструментом INGCO
           </p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 font-display font-semibold text-neutral-700 bg-white border border-[#CFCDC6] rounded-md px-4 py-2 text-sm select-none">
-          <span className="text-amber-500 font-bold">★ 4.9 / 5</span>
+        <div className="font-display hidden items-center gap-2 rounded-md border border-[#CFCDC6] bg-white px-4 py-2 text-sm font-semibold text-neutral-700 select-none sm:flex">
+          <span className="font-bold text-amber-500">★ 4.9 / 5</span>
           <span className="text-neutral-400">|</span>
           <span className="text-xs">На основі 1,240 відгуків</span>
         </div>
       </div>
 
       {/* Grid containing testimonial cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {reviews.map((rev) => (
           <div
             key={rev.id}
-            className="group flex flex-col justify-between bg-white border border-neutral-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-amber-500/20 transition-all duration-500 hover:translate-y-[-4px]"
+            className="group flex flex-col justify-between rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm transition-all duration-500 hover:translate-y-[-4px] hover:border-amber-500/20 hover:shadow-md"
           >
             {/* Header info inside card */}
             <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div className="flex flex-col">
-                  <span className="font-display font-bold text-neutral-800 text-base flex items-center gap-1.5">
+                  <span className="font-display flex items-center gap-1.5 text-base font-bold text-neutral-800">
                     {rev.name}
-                    <span className="inline-flex items-center gap-0.5 bg-green-50 text-green-600 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-green-100">
+                    <span className="inline-flex items-center gap-0.5 rounded-full border border-green-100 bg-green-50 px-1.5 py-0.5 text-[10px] font-semibold text-green-600">
                       <ShieldCheck size={10} className="stroke-[3]" />
                       Перевірено
                     </span>
@@ -91,7 +91,9 @@ export default function Testimonials() {
                 </div>
 
                 {/* Tag */}
-                <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded select-none ${rev.tagBg}`}>
+                <span
+                  className={`rounded px-2 py-0.5 font-sans text-[10px] font-bold select-none ${rev.tagBg}`}
+                >
                   {rev.tag}
                 </span>
               </div>
@@ -104,15 +106,15 @@ export default function Testimonials() {
               </div>
 
               {/* Feedback text */}
-              <p className="font-sans text-neutral-600 text-sm leading-relaxed italic">
+              <p className="font-sans text-sm leading-relaxed text-neutral-600 italic">
                 &ldquo;{rev.text}&rdquo;
               </p>
             </div>
 
             {/* Subtle bottom line for visual anchor */}
-            <div className="mt-6 pt-4 border-t border-neutral-50 flex items-center justify-between text-xs text-neutral-400">
+            <div className="mt-6 flex items-center justify-between border-t border-neutral-50 pt-4 text-xs text-neutral-400">
               <span>Придбано офіційно</span>
-              <span className="font-display font-semibold text-amber-600 group-hover:text-primary-500 transition-colors">
+              <span className="font-display group-hover:text-primary-500 font-semibold text-amber-600 transition-colors">
                 INGCO Ukraine
               </span>
             </div>

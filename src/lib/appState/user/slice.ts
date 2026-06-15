@@ -130,7 +130,10 @@ const authStateSlice = createSlice({
           deleteProductFromCartThunk.fulfilled,
         ),
         (state, { payload, meta }) => {
-          const isRetail = meta.arg && typeof meta.arg === 'object' && 'isRetail' in meta.arg ? (meta.arg as any).isRetail : false;
+          const isRetail =
+            meta.arg && typeof meta.arg === 'object' && 'isRetail' in meta.arg
+              ? (meta.arg as any).isRetail
+              : false;
           if (isRetail) {
             state.user.retailCart = payload;
           } else {

@@ -5,11 +5,14 @@ import { PrevArrow, NextArrow } from './SliderArrows';
 /**
  * Generates reusable React Slick slider configuration settings with premium defaults.
  * Supports clean overrides and handles deep merging of responsive settings automatically.
- * 
+ *
  * @param productCount Total number of products in the slider list
  * @param overrides Optional Settings override object (e.g. autoplay, autoplaySpeed, custom infinite)
  */
-export const getSliderSettings = (productCount: number, overrides: Partial<Settings> = {}): Settings => {
+export const getSliderSettings = (
+  productCount: number,
+  overrides: Partial<Settings> = {},
+): Settings => {
   // Respect custom infinite overrides if provided, otherwise default to productCount boundaries
   const getInfiniteValue = (limit: number) => {
     return overrides.infinite !== undefined ? overrides.infinite : productCount > limit;
@@ -80,12 +83,16 @@ export const getSliderSettings = (productCount: number, overrides: Partial<Setti
   // If there are responsive overrides, safely merge settings inside responsive array items
   if (overrides.responsive && baseSettings.responsive) {
     mergedSettings.responsive = baseSettings.responsive.map((baseItem) => {
-      const overrideItem = overrides.responsive?.find((item) => item.breakpoint === baseItem.breakpoint);
+      const overrideItem = overrides.responsive?.find(
+        (item) => item.breakpoint === baseItem.breakpoint,
+      );
       if (overrideItem) {
-        const mergedItemSettings = 
+        const mergedItemSettings =
           typeof baseItem.settings === 'object' && typeof overrideItem.settings === 'object'
             ? { ...baseItem.settings, ...overrideItem.settings }
-            : overrideItem.settings !== undefined ? overrideItem.settings : baseItem.settings;
+            : overrideItem.settings !== undefined
+              ? overrideItem.settings
+              : baseItem.settings;
 
         return {
           ...baseItem,

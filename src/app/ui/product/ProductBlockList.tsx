@@ -24,9 +24,9 @@ const ProductBlockList = ({
   const { logProductClick } = useProductStats();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const isProductsLoading = useAppSelector((state) => state.persistedMainReducer.tableLoading);
-  
+
   const viewParam = searchParams.get('view') || 'grid';
   const isListView = listType === 'partner' ? false : viewParam === 'list';
 
@@ -41,11 +41,11 @@ const ProductBlockList = ({
 
   return (
     <div className="w-full">
-      <ul 
+      <ul
         className={
           isListView
-            ? 'flex flex-col gap-4 w-full'
-            : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full'
+            ? 'flex w-full flex-col gap-4'
+            : 'grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
         }
       >
         {productsData?.map((product) => {

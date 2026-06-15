@@ -27,7 +27,11 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const router = useRouter();
 
   const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
-  const { products = [], total = 0, shopView } = useAppSelector((state) => state.persistedMainReducer);
+  const {
+    products = [],
+    total = 0,
+    shopView,
+  } = useAppSelector((state) => state.persistedMainReducer);
 
   const activeCategoryId = searchParams.get('category') || '';
   const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
@@ -68,7 +72,6 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
     }
   };
 
-
   return (
     <div className="w-full font-sans">
       {/* Breadcrumbs */}
@@ -76,30 +79,28 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
 
       {/* Title & Stats */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900">
-          {categoryName}
-        </h1>
-        <p className="text-xs text-gray-500 font-medium">
+        <h1 className="text-2xl font-bold tracking-wide text-gray-900 uppercase">{categoryName}</h1>
+        <p className="text-xs font-medium text-gray-500">
           Показано {products.length} з {total} товарів
         </p>
       </div>
 
       {/* Controls Bar */}
-      <div className="flex items-center justify-between py-2 gap-4 flex-wrap">
-        
+      <div className="flex flex-wrap items-center justify-between gap-4 py-2">
         {/* Left space */}
-        <div className="flex items-center gap-2">
-        </div>
+        <div className="flex items-center gap-2"></div>
 
         {/* Right side controls */}
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="ml-auto flex items-center gap-4">
           {/* Grid / List Switcher (B2B only) */}
           {listType === 'partner' && (
-            <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
+            <div className="flex items-center rounded-lg border border-gray-200 bg-gray-100 p-0.5">
               <button
                 onClick={() => handleViewChange('list')}
-                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                  shopView === 'list' ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                className={`cursor-pointer rounded-md p-1.5 transition-colors ${
+                  shopView === 'list'
+                    ? 'text-primary-500 bg-white shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
                 }`}
                 aria-label="Grid view"
               >
@@ -107,8 +108,10 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
               </button>
               <button
                 onClick={() => handleViewChange('grid')}
-                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                  shopView === 'table' ? 'bg-white text-primary-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                className={`cursor-pointer rounded-md p-1.5 transition-colors ${
+                  shopView === 'table'
+                    ? 'text-primary-500 bg-white shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
                 }`}
                 aria-label="Table view"
               >
@@ -122,7 +125,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
             <select
               value={currentSort}
               onChange={handleSortChange}
-              className="appearance-none bg-white pl-4 pr-10 py-1.5 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:border-primary-500 cursor-pointer shadow-sm"
+              className="focus:border-primary-500 cursor-pointer appearance-none rounded-xl border border-gray-300 bg-white py-1.5 pr-10 pl-4 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none"
             >
               <option value="default">Сортувати</option>
               {sortOptions.map((opt) => (
@@ -131,7 +134,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
                 </option>
               ))}
             </select>
-            <ChevronDown size={14} className="absolute right-3 text-gray-400 pointer-events-none" />
+            <ChevronDown size={14} className="pointer-events-none absolute right-3 text-gray-400" />
           </div>
         </div>
       </div>

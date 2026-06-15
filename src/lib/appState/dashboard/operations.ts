@@ -209,7 +209,11 @@ export const fetchOrdersThunk = createAsyncThunk(
 export const updateOrderThunk = createAsyncThunk(
   'updateOrder',
   async (
-    { orderId, updateOrder, isRetail = false }: { orderId: number; updateOrder: UpdateOrder; isRetail?: boolean },
+    {
+      orderId,
+      updateOrder,
+      isRetail = false,
+    }: { orderId: number; updateOrder: UpdateOrder; isRetail?: boolean },
     { rejectWithValue },
   ) => {
     try {

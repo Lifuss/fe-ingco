@@ -3,7 +3,13 @@ import { Search, X } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 
-export default function SearchFoo({ placeholder, variant = 'default' }: { placeholder: string; variant?: 'default' | 'header' }) {
+export default function SearchFoo({
+  placeholder,
+  variant = 'default',
+}: {
+  placeholder: string;
+  variant?: 'default' | 'header';
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -65,14 +71,14 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
 
   if (variant === 'header') {
     return (
-      <div className="relative flex w-full max-w-none items-center rounded-lg bg-white border border-primary-500/30 px-4 py-2 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 transition-all font-sans text-sm shadow-sm">
+      <div className="border-primary-500/30 focus-within:border-primary-500 focus-within:ring-primary-500 relative flex w-full max-w-none items-center rounded-lg border bg-white px-4 py-2 font-sans text-sm shadow-sm transition-all focus-within:ring-1">
         <label htmlFor="header-search" className="sr-only">
           Пошук
         </label>
         <input
           id="header-search"
           name="search"
-          className="block w-full appearance-none border-none bg-transparent pr-12 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus-visible:outline-none"
+          className="block w-full appearance-none border-none bg-transparent pr-12 text-sm text-neutral-800 placeholder:text-neutral-400 focus:ring-0 focus:outline-none focus-visible:outline-none"
           placeholder={placeholder}
           onChange={handleInput}
           value={term}
@@ -85,7 +91,7 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
           <button
             type="button"
             onClick={handleReset}
-            className="absolute top-1/2 right-10 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-600 transition focus-visible:outline-none"
+            className="absolute top-1/2 right-10 -translate-y-1/2 rounded-full p-1 text-neutral-400 transition hover:text-neutral-600 focus-visible:outline-none"
             aria-label="Скинути пошук"
           >
             <X size={14} />
@@ -93,7 +99,7 @@ export default function SearchFoo({ placeholder, variant = 'default' }: { placeh
         )}
         <button
           type="button"
-          className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center justify-center p-2 rounded-full text-brand-cyan hover:text-primary-600 transition cursor-pointer focus-visible:outline-none"
+          className="text-brand-cyan hover:text-primary-600 absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full p-2 transition focus-visible:outline-none"
           onClick={handleSubmit}
           aria-label="Пошук"
         >

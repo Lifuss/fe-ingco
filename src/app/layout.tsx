@@ -216,7 +216,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="uk" data-scroll-behavior="smooth" className={cn('font-sans', ttFirs.variable)} suppressHydrationWarning>
+    <html
+      lang="uk"
+      data-scroll-behavior="smooth"
+      className={cn('font-sans', ttFirs.variable)}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="sitemap" type="application/xml" href={`${SITE_URL}/sitemap.xml`} />
         <script

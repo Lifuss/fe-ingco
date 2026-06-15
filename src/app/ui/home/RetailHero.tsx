@@ -4,8 +4,8 @@ import { ArrowRight, Percent } from 'lucide-react';
 
 export default function RetailHero() {
   return (
-    <section className="relative w-full px-5 md:px-[60px] pt-1 md:pt-2 pb-0">
-      <div className="relative w-full h-[420px] md:h-[420px] lg:h-[474px] rounded-2xl overflow-hidden shadow-2xl flex items-start pt-6 md:pt-8 lg:pt-10">
+    <section className="relative w-full px-5 pt-1 pb-0 md:px-[60px] md:pt-2">
+      <div className="relative flex h-[420px] w-full items-start overflow-hidden rounded-2xl pt-6 shadow-2xl md:h-[420px] md:pt-8 lg:h-[474px] lg:pt-10">
         {/* Background Image with dark overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -20,14 +20,14 @@ export default function RetailHero() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-4xl pl-6 pr-6 md:pl-12 lg:pl-16 text-white flex flex-col gap-5">
+        <div className="relative z-10 flex w-full max-w-4xl flex-col gap-5 pr-6 pl-6 text-white md:pl-12 lg:pl-16">
           {/* Promo Badge */}
-          <div className="w-fit flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-400 font-semibold text-xs tracking-wider uppercase select-none">
+          <div className="flex w-fit items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/20 px-3 py-1 text-xs font-semibold tracking-wider text-amber-400 uppercase select-none">
             <span className="animate-pulse">🔥</span> Офіційний представник
           </div>
 
           {/* Heading */}
-          <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight select-none">
+          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight select-none md:text-5xl lg:text-6xl">
             INGCO Україна — <br className="hidden md:block" />
             <span className="text-amber-500 drop-shadow-[0_2px_10px_rgba(245,158,11,0.3)]">
               Офіційний Імпортер
@@ -35,15 +35,16 @@ export default function RetailHero() {
           </h1>
 
           {/* Subtitle */}
-          <p className="font-sans text-sm md:text-lg lg:text-xl text-neutral-300 max-w-2xl font-light leading-relaxed">
-            15 років світового визнання та офіційна гарантія виробника. Професійні інструменти для справжніх майстрів.
+          <p className="max-w-2xl font-sans text-sm leading-relaxed font-light text-neutral-300 md:text-lg lg:text-xl">
+            15 років світового визнання та офіційна гарантія виробника. Професійні інструменти для
+            справжніх майстрів.
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap items-center gap-4 mt-2">
+          <div className="mt-2 flex flex-wrap items-center gap-4">
             <Link
               href="/?catalog=true"
-              className="group inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-6 py-3 rounded-md transition-all duration-300 shadow-lg shadow-orange-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 text-sm md:text-base cursor-pointer"
+              className="group bg-primary-500 hover:bg-primary-600 active:bg-primary-700 focus:ring-primary-500 inline-flex cursor-pointer items-center gap-2 rounded-md px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900 focus:outline-none md:text-base"
               aria-label="Перейти до роздрібного каталогу"
             >
               Перейти до каталогу
@@ -51,10 +52,10 @@ export default function RetailHero() {
             </Link>
             <Link
               href="/?catalog=true&promo=true"
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-medium border border-white/20 px-6 py-3 rounded-md transition-all duration-300 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-900 text-sm md:text-base cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-white/20 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-900 focus:outline-none active:bg-white/30 md:text-base"
               aria-label="Дивитися акції"
             >
-              <Percent size={18} className="text-white shrink-0" />
+              <Percent size={18} className="shrink-0 text-white" />
               Дивитися акції
             </Link>
           </div>

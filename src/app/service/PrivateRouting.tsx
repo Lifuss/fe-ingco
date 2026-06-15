@@ -12,7 +12,9 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
     const dispatch = useAppDispatch();
     const pathname = usePathname();
     const router = useRouter();
-    const { isAuthenticated, user, _persist } = useAppSelector((state: any) => state.persistedAuthReducer);
+    const { isAuthenticated, user, _persist } = useAppSelector(
+      (state: any) => state.persistedAuthReducer,
+    );
     const rehydrated = _persist?.rehydrated;
 
     if (typeof window !== 'undefined') {
@@ -22,7 +24,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
         isVerified: user?.isVerified,
         rehydrated,
         pathname,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
       const logs = JSON.parse(sessionStorage.getItem('auth_logs') || '[]');
       logs.push(debugInfo);
@@ -61,7 +63,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
               role: user?.role,
               isAuthenticated,
               isVerified: user?.isVerified,
-              ...extra
+              ...extra,
             });
             sessionStorage.setItem('auth_logs', JSON.stringify(logs));
           }
@@ -101,7 +103,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
           timestamp: new Date().toISOString(),
           role: user?.role,
           isAuthenticated,
-          isVerified: user?.isVerified
+          isVerified: user?.isVerified,
         });
         sessionStorage.setItem('auth_logs', JSON.stringify(logs));
       }
@@ -121,7 +123,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
           timestamp: new Date().toISOString(),
           role: user?.role,
           isAuthenticated,
-          isVerified: user?.isVerified
+          isVerified: user?.isVerified,
         });
         sessionStorage.setItem('auth_logs', JSON.stringify(logs));
       }

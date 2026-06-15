@@ -37,7 +37,10 @@ export function normalizeOrder(order: any): Order {
       totalPriceByOneProduct: Number(item.totalPrice),
       product: {
         id: item.productId,
-        name: item.productName || (item.product && item.product.name) || 'Продукт застарів та видалений з бази',
+        name:
+          item.productName ||
+          (item.product && item.product.name) ||
+          'Продукт застарів та видалений з бази',
       },
     })),
   };

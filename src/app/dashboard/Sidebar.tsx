@@ -44,7 +44,7 @@ const listData = [
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="h-full bg-sidebar-dark pt-10 pr-6 pl-[20px] 2xl:pl-[40px]">
+    <aside className="bg-sidebar-dark h-full pt-10 pr-6 pl-[20px] 2xl:pl-[40px]">
       <Link href={'/'}>
         <svg
           width="91"
@@ -89,7 +89,7 @@ const Sidebar = () => {
           <li key={index}>
             <Link
               href={item.link}
-              className={clsx('flex gap-4 rounded-md p-3 hover:bg-sidebar-hover', {
+              className={clsx('hover:bg-sidebar-hover flex gap-4 rounded-md p-3', {
                 'bg-sidebar-hover': pathname === item.link,
               })}
             >

@@ -83,9 +83,9 @@ export function generateProductMetadata({
 }: ProductMetadataOptions): Metadata {
   const productPrice = price || product.rrcSale || product.priceRetailRecommendation;
   const imageUrl = product.image
-    ? (product.image.startsWith('http')
+    ? product.image.startsWith('http')
       ? product.image
-      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`)
+      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
     : `${SITE_URL}/placeholder.webp`;
   const pageUrl = `${SITE_URL}/${slug}`;
   const title = `${product.name} - ${product.article} | INGCO`;

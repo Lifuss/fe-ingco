@@ -13,15 +13,14 @@ import {
 export default function Header() {
   return (
     <CatalogProvider>
-      <header className="w-full bg-[#FFFDFB] border-b border-[#E5E3DD] flex flex-col z-50">
+      <header className="z-50 flex w-full flex-col border-b border-[#E5E3DD] bg-[#FFFDFB]">
         {/* Top bar SubHeader */}
         <SubHeader />
 
         {/* Main Header bar */}
-        <div className="w-full flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6 py-3 lg:py-4 px-4 md:px-8 lg:px-10 xl:px-[60px]">
-          
+        <div className="flex w-full flex-col justify-between gap-4 px-4 py-3 md:px-8 lg:flex-row lg:items-center lg:gap-6 lg:px-10 lg:py-4 xl:px-[60px]">
           {/* Mobile Top Row / Desktop Row Items */}
-          <div className="flex items-center justify-between w-full lg:w-auto gap-4 shrink-0">
+          <div className="flex w-full shrink-0 items-center justify-between gap-4 lg:w-auto">
             <div className="flex items-center gap-3">
               <Logo />
 
@@ -34,7 +33,7 @@ export default function Header() {
           </div>
 
           {/* Catalog & Search Block */}
-          <div className="flex-grow flex items-center gap-4 w-full lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl">
+          <div className="flex w-full flex-grow items-center gap-4 lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl">
             {/* Desktop Catalog Split Button */}
             <CatalogDesktopButton />
 
@@ -44,7 +43,6 @@ export default function Header() {
 
           {/* Desktop Right Action Icons */}
           <HeaderActions />
-
         </div>
       </header>
 

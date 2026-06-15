@@ -268,7 +268,11 @@ export const getUserCartThunk = createAsyncThunk(
 export const addProductToCartThunk = createAsyncThunk(
   'cart/add',
   async (
-    { productId, quantity, isRetail = false }: { productId: number; quantity: number; isRetail?: boolean },
+    {
+      productId,
+      quantity,
+      isRetail = false,
+    }: { productId: number; quantity: number; isRetail?: boolean },
     { rejectWithValue },
   ) => {
     try {
@@ -286,7 +290,11 @@ export const addProductToCartThunk = createAsyncThunk(
 export const deleteProductFromCartThunk = createAsyncThunk(
   'cart/delete',
   async (
-    { productId, quantity = 1, isRetail = false }: { productId: number; quantity?: number; isRetail?: boolean },
+    {
+      productId,
+      quantity = 1,
+      isRetail = false,
+    }: { productId: number; quantity?: number; isRetail?: boolean },
     { rejectWithValue },
   ) => {
     try {
@@ -415,7 +423,10 @@ apiIngco.interceptors.response.use(
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      if (originalRequest.url?.includes('/users/refresh') || originalRequest.url?.includes('/users/logout')) {
+      if (
+        originalRequest.url?.includes('/users/refresh') ||
+        originalRequest.url?.includes('/users/logout')
+      ) {
         return Promise.reject(error);
       }
 
@@ -450,4 +461,3 @@ apiIngco.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-

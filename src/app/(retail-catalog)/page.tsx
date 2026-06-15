@@ -45,7 +45,7 @@ export default function Page() {
           isRetail: true,
           query: '',
           sortValue: 'default',
-        })
+        }),
       );
     }
   }, [dispatch, showCatalog, products.length]);
@@ -81,7 +81,7 @@ export default function Page() {
 
   if (isAuthenticated && isB2b) {
     return (
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+      <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
           <ShopTable />
@@ -95,14 +95,14 @@ export default function Page() {
   }
 
   return showCatalog ? (
-    <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+    <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
       <CatalogSidebar />
       <div className="min-h-[550px] w-full">
         <ProductList />
       </div>
     </main>
   ) : (
-    <main className="flex flex-col bg-[#FFF8F5] min-h-[550px]">
+    <main className="flex min-h-[550px] flex-col bg-[#FFF8F5]">
       <RetailHero />
       <TrustRibbon />
       <HotOffers products={products} />
@@ -114,4 +114,3 @@ export default function Page() {
     </main>
   );
 }
-

@@ -55,7 +55,8 @@ const RetailCartTable = () => {
     phone: string;
     email: string;
   } = useAppSelector((state) => state.persistedAuthReducer.user) || {};
-  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart) || [];
+  const localStorageCart =
+    useAppSelector((state) => state.persistedAuthReducer.localStorageCart) || [];
 
   const selectedCart = (isAuth ? retailCart : localStorageCart) || [];
 
@@ -375,7 +376,7 @@ const RetailCartTable = () => {
           </label>
           <button
             type="submit"
-            className="mt-auto ml-auto block h-fit w-fit rounded-lg bg-brand-dark px-2 py-2 text-lg text-white"
+            className="bg-brand-dark mt-auto ml-auto block h-fit w-fit rounded-lg px-2 py-2 text-lg text-white"
           >
             Підтвердити замовлення
           </button>

@@ -195,7 +195,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
         cell: ({ row }) => {
           return (
             <Image
-              src={row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp'}
+              src={
+                row.original.photoCol
+                  ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
+                  : '/placeholder.webp'
+              }
               alt={row.original.nameCol || 'Зображення товару'}
               width={40}
               height={40}
@@ -205,7 +209,9 @@ const ShopTable = ({ isFavoritePage = false }) => {
                 const img = document.getElementById('image') as HTMLDivElement;
                 if (img) {
                   const imgTag = document.createElement('img');
-                  imgTag.src = row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp';
+                  imgTag.src = row.original.photoCol
+                    ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
+                    : '/placeholder.webp';
                   imgTag.alt = row.original.nameCol || 'Зображення товару';
                   img.replaceChildren(imgTag);
                   img.style.top = `${e.clientY + 20}px`;
@@ -231,14 +237,14 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <button
             onClick={() => handleFavoriteClick(row.original.id)}
             data-favorite={row.original.id}
-            className="px-2 py-1 transition-transform duration-200 hover:scale-110 cursor-pointer flex justify-center items-center mx-auto"
+            className="mx-auto flex cursor-pointer items-center justify-center px-2 py-1 transition-transform duration-200 hover:scale-110"
           >
             <Heart
               className={clsx(
-                "transition-colors duration-200",
+                'transition-colors duration-200',
                 favoritesList.includes(row.original.id)
-                  ? "fill-primary-500 stroke-primary-500"
-                  : "fill-none stroke-neutral-400 hover:stroke-neutral-600"
+                  ? 'fill-primary-500 stroke-primary-500'
+                  : 'fill-none stroke-neutral-400 hover:stroke-neutral-600',
               )}
               size={20}
             />
@@ -264,7 +270,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <input
             name={String(row.original.id)}
             type="number"
-            className="h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center font-sans text-xs font-semibold focus:outline-none focus:border-primary-500 focus:bg-white transition-colors"
+            className="focus:border-primary-500 h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center font-sans text-xs font-semibold transition-colors focus:bg-white focus:outline-none"
             onBlur={(e) => {
               handleQuantityChange(row.original.id, parseInt(e.target.value));
             }}
@@ -322,7 +328,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
               className={`${state.persistedMainReducer.shopView === 'table' && 'max-h-[75vh] overflow-auto'}`}
             >
               {state.persistedMainReducer.shopView === 'table' ? (
-                <Table<ShopTableRow> columns={columns} data={data} />
+                <Table<ShopTableRow> columns={columns} data={data} scrollTrigger={page} />
               ) : (
                 <ShopList
                   isFavoritePage={isFavoritePage}

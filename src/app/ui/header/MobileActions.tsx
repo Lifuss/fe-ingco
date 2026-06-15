@@ -19,24 +19,24 @@ export default function MobileActions() {
       : localStorageCart?.length || 0;
 
   return (
-    <div className="flex lg:hidden items-center gap-2">
+    <div className="flex items-center gap-2 lg:hidden">
       <Link
         href="/favorites"
-        className="flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+        className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
         aria-label="Favorites"
       >
-        <Heart size={22} className="stroke-current stroke-[2.3] fill-none" />
+        <Heart size={22} className="fill-none stroke-current stroke-[2.3]" />
       </Link>
 
       <Link
         href="/cart"
-        className="relative flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+        className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 relative flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
         aria-label="Cart"
       >
         <div className="relative">
-          <ShoppingBasket size={22} className="stroke-current stroke-[2.3] fill-none" />
+          <ShoppingBasket size={22} className="fill-none stroke-current stroke-[2.3]" />
           {itemsInCart > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-primary-800 text-white text-[9px] font-extrabold rounded-full w-4.5 h-4.5 flex items-center justify-center border border-white shadow-sm">
+            <span className="bg-primary-800 absolute -top-1.5 -right-2 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white text-[9px] font-extrabold text-white shadow-sm">
               {itemsInCart}
             </span>
           )}
@@ -48,13 +48,10 @@ export default function MobileActions() {
       ) : (
         <Link
           href="/auth/login"
-          className="flex items-center justify-center p-2 rounded-lg text-primary-600 hover:bg-primary-50 hover:text-primary-800 transition-colors cursor-pointer"
+          className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
           aria-label="Profile"
         >
-          <Icon
-            icon="user"
-            className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3]"
-          />
+          <Icon icon="user" className="h-[22px] w-[22px] fill-none stroke-current stroke-[2.3]" />
         </Link>
       )}
     </div>

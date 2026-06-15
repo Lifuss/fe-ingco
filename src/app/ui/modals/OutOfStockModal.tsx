@@ -40,35 +40,31 @@ const OutOfStockModal = ({ isOpen, closeModal, productName, sku }: OutOfStockMod
       ariaHideApp={false}
     >
       <div className="relative flex flex-col items-center text-center font-sans">
-        <button 
-          className="absolute -top-4 -right-4 text-gray-400 hover:text-gray-600 transition-colors" 
+        <button
+          className="absolute -top-4 -right-4 text-gray-400 transition-colors hover:text-gray-600"
           onClick={closeModal}
           aria-label="Закрити"
         >
           <X size={20} />
         </button>
 
-        <div className="mb-4 flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-500">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-orange-500">
           <AlertCircle size={28} />
         </div>
 
         <h3 className="mb-2 text-xl font-bold text-gray-900">Товар очікується</h3>
-        
-        {productName && (
-          <p className="mb-1 text-sm font-semibold text-gray-700">{productName}</p>
-        )}
-        {sku && (
-          <p className="mb-4 text-xs font-mono text-gray-400">SKU: {sku}</p>
-        )}
+
+        {productName && <p className="mb-1 text-sm font-semibold text-gray-700">{productName}</p>}
+        {sku && <p className="mb-4 font-mono text-xs text-gray-400">SKU: {sku}</p>}
 
         <p className="mb-6 text-sm leading-relaxed text-gray-500">
-          Наразі цього товару немає в наявності на складі. Ми очікуємо на найближчу поставку. 
-          Будь ласка, зверніться до нашої служби підтримки або відвідайте сторінку пізніше.
+          Наразі цього товару немає в наявності на складі. Ми очікуємо на найближчу поставку. Будь
+          ласка, зверніться до нашої служби підтримки або відвідайте сторінку пізніше.
         </p>
 
         <button
           onClick={closeModal}
-          className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          className="bg-primary-500 hover:bg-primary-600 focus:ring-primary-500 w-full rounded-xl px-4 py-2.5 font-medium text-white shadow-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
         >
           Зрозуміло
         </button>

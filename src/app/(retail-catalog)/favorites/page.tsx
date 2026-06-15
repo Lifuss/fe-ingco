@@ -8,7 +8,7 @@ const Page = () => {
   const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
 
   return (
-    <main className="min-h-[550px] w-full px-[60px] pt-8 bg-white">
+    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8">
       {isAuthenticated && isB2b ? (
         <>
           <ShopTable isFavoritePage={true} />

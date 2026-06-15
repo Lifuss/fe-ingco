@@ -4,10 +4,10 @@ This file provides a quick reference for development commands. For detailed codi
 
 ## CLI Commands
 
-* **Start dev server:** `npm run dev`
-* **Production build:** `npm run build`
-* **Post-build (sitemap):** `npm run postbuild`
-* **Production server:** `npm run start`
-* **Run lint check:** `npm run lint`
-* **Prettier formatting:** `npm run prettier`
-* **Prettier check:** `npm run prettier:check`
+- **Start dev server:** `npm run dev`
+- **Production build:** `npm run build`
+- **Post-build (sitemap):** `npm run postbuild`
+- **Production server:** `npm run start`
+- **Run lint check:** `npm run lint`
+- **Prettier formatting:** `npm run prettier`
+- **Prettier check:** `npm run prettier:check`

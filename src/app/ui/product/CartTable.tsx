@@ -38,16 +38,20 @@ const CartTable = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const dispatch = useAppDispatch();
 
-  const selectedCart: CartData = useAppSelector((state) => state.persistedAuthReducer.user?.cart) || [];
+  const selectedCart: CartData =
+    useAppSelector((state) => state.persistedAuthReducer.user?.cart) || [];
   const selectedCurrency = useAppSelector(selectCurrency);
 
-  const handleQuantityChange = useCallback((id: number, operation: string) => {
-    if (operation === 'increment') {
-      dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
-    } else {
-      dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
-    }
-  }, [dispatch]);
+  const handleQuantityChange = useCallback(
+    (id: number, operation: string) => {
+      if (operation === 'increment') {
+        dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
+      } else {
+        dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
+      }
+    },
+    [dispatch],
+  );
 
   const openProductModal = useCallback((product: Product) => {
     setSelectedProduct(product);
@@ -101,7 +105,11 @@ const CartTable = () => {
         cell: ({ row }) => {
           return (
             <Image
-              src={row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp'}
+              src={
+                row.original.photoCol
+                  ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
+                  : '/placeholder.webp'
+              }
               alt={row.original.nameCol || 'Зображення товару'}
               width={40}
               height={40}
@@ -110,7 +118,9 @@ const CartTable = () => {
                 const img = document.getElementById('image') as HTMLDivElement;
                 if (img) {
                   const imgTag = document.createElement('img');
-                  imgTag.src = row.original.photoCol ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}` : '/placeholder.webp';
+                  imgTag.src = row.original.photoCol
+                    ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
+                    : '/placeholder.webp';
                   imgTag.alt = row.original.nameCol || 'Зображення товару';
                   img.replaceChildren(imgTag);
                   img.style.top = `${e.clientY + 20}px`;
@@ -149,10 +159,10 @@ const CartTable = () => {
         accessorKey: 'quantityCol',
         cell: ({ row }) => {
           return (
-            <div className="flex items-center justify-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 shadow-inner h-8 w-[100px] mx-auto select-none font-sans text-xs">
+            <div className="mx-auto flex h-8 w-[100px] items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 font-sans text-xs shadow-inner select-none">
               <button
                 onClick={() => handleQuantityChange(row.original.id, 'decrement')}
-                className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                className="flex h-full w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                 type="button"
                 aria-label={`Зменшити кількість для ${row.original.nameCol}`}
               >
@@ -163,7 +173,7 @@ const CartTable = () => {
               </span>
               <button
                 onClick={() => handleQuantityChange(row.original.id, 'increment')}
-                className="w-8 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                className="flex h-full w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                 type="button"
                 aria-label={`Збільшити кількість для ${row.original.nameCol}`}
               >
@@ -187,7 +197,7 @@ const CartTable = () => {
         id: 'deleteCol',
         cell: ({ row }) => (
           <button
-            className="flex items-center justify-center mx-auto text-neutral-400 hover:text-rose-500 transition-transform duration-200 hover:scale-110 cursor-pointer"
+            className="mx-auto flex cursor-pointer items-center justify-center text-neutral-400 transition-transform duration-200 hover:scale-110 hover:text-rose-500"
             onClick={() => {
               dispatch(
                 deleteProductFromCartThunk({
@@ -291,7 +301,7 @@ const CartTable = () => {
 
             <button
               type="submit"
-              className="mx-auto mt-5 mb-20 w-fit rounded-lg bg-brand-dark p-2 text-2xl text-white"
+              className="bg-brand-dark mx-auto mt-5 mb-20 w-fit rounded-lg p-2 text-2xl text-white"
             >
               Оформити замовлення
             </button>

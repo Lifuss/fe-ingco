@@ -11,7 +11,7 @@ export function proxy(request: NextRequest) {
     hasToken: !!token,
     tokenLength: token ? token.length : 0,
     role,
-    cookiesKeys: Array.from(request.cookies.getAll()).map(c => c.name)
+    cookiesKeys: Array.from(request.cookies.getAll()).map((c) => c.name),
   });
 
   // 1. Dashboard protection: Admin only

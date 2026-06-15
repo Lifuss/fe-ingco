@@ -10,10 +10,10 @@ import 'slick-carousel/slick/slick-theme.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
-import { 
+import {
   addProductToCartThunk,
-  addFavoriteProductThunk, 
-  deleteFavoriteProductThunk 
+  addFavoriteProductThunk,
+  deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
@@ -30,15 +30,24 @@ export default function HotOffers({ products }: HotOffersProps) {
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
 
-  const batteryToolCategoryId = String(categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id || CATEGORY_IDS.BATTERY_TOOL);
-  const p20sLineCategoryId = String(categoriesList.find((c) => c.name.toLowerCase().includes('p20s') || c.name.toLowerCase().includes('акумуляторна лінійка p20s'))?.id || CATEGORY_IDS.P20S_LINE);
-  
+  const batteryToolCategoryId = String(
+    categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id ||
+      CATEGORY_IDS.BATTERY_TOOL,
+  );
+  const p20sLineCategoryId = String(
+    categoriesList.find(
+      (c) =>
+        c.name.toLowerCase().includes('p20s') ||
+        c.name.toLowerCase().includes('акумуляторна лінійка p20s'),
+    )?.id || CATEGORY_IDS.P20S_LINE,
+  );
+
   const sliderRef = useRef<Slider | null>(null);
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Dynamic filter lists
   const popularOffers = products
-    .filter((p) => p.rrcSale && p.rrcSale > 0 || p.countInStock > 50)
+    .filter((p) => (p.rrcSale && p.rrcSale > 0) || p.countInStock > 50)
     .slice(0, 10);
 
   const p20sOffers = products
@@ -85,11 +94,13 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   const isAuth = authState.isAuthenticated || false;
   const user = authState.user;
-  const isB2BUser = authState.isB2b || (user && ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true || (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
+  const isB2BUser =
+    authState.isB2b ||
+    (user &&
+      ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true ||
+        (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
-  const favoritesIdList = favorites.map((p) => typeof p === 'string' ? Number(p) : p.id);
-
-
+  const favoritesIdList = favorites.map((p) => (typeof p === 'string' ? Number(p) : p.id));
 
   const handleFavoriteClick = (product: Product) => {
     if (isAuth) {
@@ -131,54 +142,52 @@ export default function HotOffers({ products }: HotOffersProps) {
     }
   };
 
-  const sliderSettings = getSliderSettings(activeProducts.length, { 
-    autoplay: true, 
-    autoplaySpeed: 4000, 
-    speed: 600, 
-    infinite: true 
+  const sliderSettings = getSliderSettings(activeProducts.length, {
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 600,
+    infinite: true,
   });
 
   return (
-    <section className="w-full px-5 md:px-[60px] pb-16 flex flex-col gap-6">
+    <section className="flex w-full flex-col gap-6 px-5 pb-16 md:px-[60px]">
       {/* Title & Tabs Block */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 border-b border-[#E5E3DD] pb-3">
+      <div className="flex flex-col gap-4 border-b border-[#E5E3DD] pb-3 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-1">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-neutral-900 leading-tight">
+          <h2 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-3xl">
             ГАРЯЧІ ПРОПОЗИЦІЇ
           </h2>
-          <p className="font-sans text-neutral-500 text-sm">
-            Найкращі рішення для ваших проектів
-          </p>
+          <p className="font-sans text-sm text-neutral-500">Найкращі рішення для ваших проектів</p>
         </div>
 
         {/* Tab Buttons */}
         <div className="flex flex-wrap gap-2 select-none">
           <button
             onClick={() => setActiveTab('popular')}
-            className={`font-display font-medium text-xs md:text-sm px-4 py-2 rounded-md transition-all duration-300 cursor-pointer ${
+            className={`font-display cursor-pointer rounded-md px-4 py-2 text-xs font-medium transition-all duration-300 md:text-sm ${
               activeTab === 'popular'
                 ? 'bg-primary-500 text-white shadow-md shadow-orange-500/10'
-                : 'bg-white text-neutral-600 border border-[#E5E3DD] hover:bg-neutral-50'
+                : 'border border-[#E5E3DD] bg-white text-neutral-600 hover:bg-neutral-50'
             }`}
           >
             Популярні товари
           </button>
           <button
             onClick={() => setActiveTab('p20s')}
-            className={`font-display font-medium text-xs md:text-sm px-4 py-2 rounded-md transition-all duration-300 cursor-pointer ${
+            className={`font-display cursor-pointer rounded-md px-4 py-2 text-xs font-medium transition-all duration-300 md:text-sm ${
               activeTab === 'p20s'
                 ? 'bg-primary-500 text-white shadow-md shadow-orange-500/10'
-                : 'bg-white text-neutral-600 border border-[#E5E3DD] hover:bg-neutral-50'
+                : 'border border-[#E5E3DD] bg-white text-neutral-600 hover:bg-neutral-50'
             }`}
           >
             Акумулятори P20S
           </button>
           <button
             onClick={() => setActiveTab('sets')}
-            className={`font-display font-medium text-xs md:text-sm px-4 py-2 rounded-md transition-all duration-300 cursor-pointer ${
+            className={`font-display cursor-pointer rounded-md px-4 py-2 text-xs font-medium transition-all duration-300 md:text-sm ${
               activeTab === 'sets'
                 ? 'bg-primary-500 text-white shadow-md shadow-orange-500/10'
-                : 'bg-white text-neutral-600 border border-[#E5E3DD] hover:bg-neutral-50'
+                : 'border border-[#E5E3DD] bg-white text-neutral-600 hover:bg-neutral-50'
             }`}
           >
             Професійні комплекти
@@ -187,11 +196,14 @@ export default function HotOffers({ products }: HotOffersProps) {
       </div>
 
       {/* Slider Carousel Wrapper */}
-      <div ref={sliderContainerRef} className="relative px-4 cursor-grab select-none active:cursor-grabbing">
+      <div
+        ref={sliderContainerRef}
+        className="relative cursor-grab px-4 select-none active:cursor-grabbing"
+      >
         {activeProducts.length > 0 ? (
           <Slider ref={sliderRef} {...sliderSettings}>
             {activeProducts.map((product) => (
-              <div key={product.id} className="px-2 py-3 h-full">
+              <div key={product.id} className="h-full px-2 py-3">
                 <HotOfferCard
                   product={product}
                   activeTab={activeTab}
@@ -203,7 +215,7 @@ export default function HotOffers({ products }: HotOffersProps) {
             ))}
           </Slider>
         ) : (
-          <div className="w-full text-center text-neutral-400 py-10">
+          <div className="w-full py-10 text-center text-neutral-400">
             Завантаження акційних пропозицій...
           </div>
         )}
@@ -224,7 +236,9 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
   const router = useRouter();
   const apiBaseUrl = 'https://api-ingco-service.win';
   const imageUrl = product.image
-    ? (product.image.startsWith('http') ? product.image : `${apiBaseUrl}${product.image}`)
+    ? product.image.startsWith('http')
+      ? product.image
+      : `${apiBaseUrl}${product.image}`
     : '/placeholder.webp';
 
   let isSale = !!(product.rrcSale && product.rrcSale > 0);
@@ -237,7 +251,9 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
     price = Math.round(product.priceRetailRecommendation * 0.85); // 15% off
   }
 
-  const isStandart = product.article.toUpperCase().startsWith('CDLI') && !product.article.toUpperCase().startsWith('CIDLI');
+  const isStandart =
+    product.article.toUpperCase().startsWith('CDLI') &&
+    !product.article.toUpperCase().startsWith('CIDLI');
 
   const mouseCoords = useRef({ x: 0, y: 0 });
   const touchCoords = useRef({ x: 0, y: 0 });
@@ -284,18 +300,20 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
       onMouseUp={handleMouseUp}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="group relative flex flex-col justify-between h-full bg-white border border-[#E5E3DD] rounded-xl p-4 shadow-sm hover:shadow-lg hover:border-amber-500/40 hover:scale-[1.01] transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border border-[#E5E3DD] bg-white p-4 shadow-sm transition-all duration-300 hover:scale-[1.01] hover:border-amber-500/40 hover:shadow-lg"
     >
       {/* Top action/tag ribbon */}
-      <div className="flex justify-between items-center z-10">
-        <div className="flex gap-1.5 items-center">
-          <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded uppercase select-none ${
-            isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
-          }`}>
+      <div className="z-10 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none ${
+              isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
+            }`}
+          >
             {isStandart ? 'STANDART' : 'INDUSTRIAL'}
           </span>
           {isSale && (
-            <span className="flex items-center gap-0.5 bg-red-50 text-red-600 font-sans text-[10px] font-bold px-1.5 py-0.5 rounded select-none border border-red-200">
+            <span className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 font-sans text-[10px] font-bold text-red-600 select-none">
               <Percent size={10} />
               Акція
             </span>
@@ -303,7 +321,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
         </div>
         <button
           onClick={() => onFavClick(product)}
-          className={`p-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
+          className={`cursor-pointer rounded-full p-1.5 transition-colors hover:bg-neutral-100 ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}
           aria-label="Додати в обране"
         >
           <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
@@ -311,13 +329,13 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
       </div>
 
       {/* Product Image */}
-      <div className="relative w-full h-[160px] my-2 overflow-hidden rounded flex items-center justify-center">
+      <div className="relative my-2 flex h-[160px] w-full items-center justify-center overflow-hidden rounded">
         <Image
           src={imageUrl}
           alt={product.name}
           width={180}
           height={180}
-          className="object-contain w-auto max-h-[150px] transition-transform duration-300 group-hover:scale-105"
+          className="max-h-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
@@ -325,33 +343,36 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
       <div className="flex flex-col gap-2">
         {/* Availability */}
         <div className="flex items-center gap-1.5 font-sans text-xs">
-          <span className={`w-2 h-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span
+            className={`h-2 w-2 rounded-full ${product.countInStock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
+          />
           <span className={product.countInStock > 0 ? 'text-green-600' : 'text-red-500'}>
             {product.countInStock > 0 ? 'В наявності' : 'Немає в наявності'}
           </span>
         </div>
 
         {/* Title */}
-        <Link href={`/${product.slug}`} className="font-display font-semibold text-neutral-800 text-sm line-clamp-2 min-h-[40px] hover:text-primary-500 transition-colors">
+        <Link
+          href={`/${product.slug}`}
+          className="font-display hover:text-primary-500 line-clamp-2 min-h-[40px] text-sm font-semibold text-neutral-800 transition-colors"
+        >
           {product.name}
         </Link>
 
         {/* Pricing & Add to Cart */}
-        <div className="flex justify-between items-center mt-2 border-t border-neutral-50 pt-3">
+        <div className="mt-2 flex items-center justify-between border-t border-neutral-50 pt-3">
           <div className="flex flex-col">
             {!!originalPrice && (
               <span className="font-sans text-xs text-neutral-400 line-through">
                 {originalPrice} ₴
               </span>
             )}
-            <span className="font-display font-bold text-lg text-neutral-900">
-              {price} ₴
-            </span>
+            <span className="font-display text-lg font-bold text-neutral-900">{price} ₴</span>
           </div>
 
           <button
             onClick={() => onCartClick(product)}
-            className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 transition-colors cursor-pointer shadow-md shadow-orange-500/10 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 focus:ring-primary-500 cursor-pointer rounded-full p-2.5 text-white shadow-md shadow-orange-500/10 transition-colors focus:ring-2 focus:outline-none"
             aria-label="Додати в кошик"
           >
             <ShoppingCart size={16} />

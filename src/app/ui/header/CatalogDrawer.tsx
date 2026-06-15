@@ -131,33 +131,43 @@ export default function CatalogDrawer({
   return (
     <>
       {/* MOBILE SIDE DRAWER (visible on < lg) */}
-      <div className={cn('lg:hidden fixed inset-0 z-50 flex select-none', isOpen ? 'pointer-events-auto' : 'pointer-events-none')}>
+      <div
+        className={cn(
+          'fixed inset-0 z-50 flex select-none lg:hidden',
+          isOpen ? 'pointer-events-auto' : 'pointer-events-none',
+        )}
+      >
         {/* Backdrop overlay */}
         <div
           className={cn(
             'absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300',
-            isOpen ? 'opacity-100' : 'opacity-0'
+            isOpen ? 'opacity-100' : 'opacity-0',
           )}
           onClick={onClose}
         />
-        
+
         {/* Slide-in menu container */}
         <div
           className={cn(
-            'relative w-[300px] max-w-[85vw] h-full bg-[#FFFDFB] shadow-2xl flex flex-col transition-transform duration-300 ease-out z-50 border-r border-[#E5E3DD]',
-            isOpen ? 'translate-x-0' : '-translate-x-full'
+            'relative z-50 flex h-full w-[300px] max-w-[85vw] flex-col border-r border-[#E5E3DD] bg-[#FFFDFB] shadow-2xl transition-transform duration-300 ease-out',
+            isOpen ? 'translate-x-0' : '-translate-x-full',
           )}
         >
           {/* Drawer Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#E5E3DD]">
-            <span className="font-display font-bold text-base text-neutral-900">Каталог товарів</span>
-            <button onClick={onClose} className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer">
+          <div className="flex items-center justify-between border-b border-[#E5E3DD] p-4">
+            <span className="font-display text-base font-bold text-neutral-900">
+              Каталог товарів
+            </span>
+            <button
+              onClick={onClose}
+              className="cursor-pointer rounded-full p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
+            >
               <X size={20} />
             </button>
           </div>
 
           {/* Categories Accordion */}
-          <div className="flex-grow overflow-y-auto p-3 flex flex-col gap-2">
+          <div className="flex flex-grow flex-col gap-2 overflow-y-auto p-3">
             {rootCategories.map((cat) => {
               const isExpanded = cat.id === mobileExpandedCatId;
               const subGroups = categoryTree.map.get(cat.id)?.children || [];
@@ -166,8 +176,8 @@ export default function CatalogDrawer({
                   <button
                     onClick={() => setMobileExpandedCatId(isExpanded ? '' : cat.id)}
                     className={cn(
-                      'w-full flex items-center justify-between py-2 px-3 rounded-lg text-left font-display font-bold text-sm text-neutral-700 transition-colors cursor-pointer',
-                      isExpanded && 'bg-[#FFF2EB] text-primary-500'
+                      'font-display flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-bold text-neutral-700 transition-colors',
+                      isExpanded && 'text-primary-500 bg-[#FFF2EB]',
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -176,16 +186,19 @@ export default function CatalogDrawer({
                     </div>
                     <ChevronRight
                       size={15}
-                      className={cn('transition-transform duration-200', isExpanded ? 'rotate-90 text-primary-500' : 'text-neutral-400')}
+                      className={cn(
+                        'transition-transform duration-200',
+                        isExpanded ? 'text-primary-500 rotate-90' : 'text-neutral-400',
+                      )}
                     />
                   </button>
 
                   {isExpanded && (
-                    <div className="pl-9 pr-2 pt-2 pb-1 flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 pt-2 pr-2 pb-1 pl-9">
                       <Link
                         href={getSearchUrl(String(cat.id))}
                         onClick={onClose}
-                        className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-primary-500 flex cursor-pointer items-center gap-1 text-xs font-bold hover:underline"
                       >
                         Переглянути все <ArrowRight size={12} />
                       </Link>
@@ -195,7 +208,7 @@ export default function CatalogDrawer({
                           <Link
                             href={getSearchUrl(String(group.id))}
                             onClick={onClose}
-                            className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-800 hover:text-primary-500"
+                            className="hover:text-primary-500 text-[10px] font-extrabold tracking-wider text-neutral-800 uppercase"
                           >
                             {group.name}
                           </Link>
@@ -205,13 +218,12 @@ export default function CatalogDrawer({
                                 <Link
                                   href={getSearchUrl(String(item.id))}
                                   onClick={onClose}
-                                  className="text-neutral-600 hover:text-primary-500 text-xs font-semibold block py-0.5 cursor-pointer"
+                                  className="hover:text-primary-500 block cursor-pointer py-0.5 text-xs font-semibold text-neutral-600"
                                 >
                                   {item.name}
                                 </Link>
                               </li>
                             ))}
-
                           </ul>
                         </div>
                       ))}
@@ -225,7 +237,7 @@ export default function CatalogDrawer({
             <Link
               href={getSearchUrl(CATEGORY_IDS.PROMO)}
               onClick={onClose}
-              className="mt-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-orange-50 text-primary-600 font-display font-bold text-sm uppercase tracking-wider border border-orange-100 cursor-pointer"
+              className="text-primary-600 font-display mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-orange-100 bg-orange-50 px-4 py-3 text-sm font-bold tracking-wider uppercase"
             >
               <Flame size={18} className="text-primary-500 animate-pulse" />
               <span>Акції та знижки</span>
@@ -238,20 +250,19 @@ export default function CatalogDrawer({
       <div className="hidden lg:block">
         {/* Background click-outside overlay back-drop */}
         <div
-          className="fixed inset-0 top-[100px] z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
+          className="animate-fade-in fixed inset-0 top-[100px] z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
           onClick={onClose}
         />
 
         {/* Main Drawer Container */}
         <div
-          className="absolute left-0 right-0 top-[100px] z-50 w-full border-b border-[#E5E3DD] bg-[#FFFDFB] shadow-xl animate-slide-down flex flex-col items-center select-none"
+          className="animate-slide-down absolute top-[100px] right-0 left-0 z-50 flex w-full flex-col items-center border-b border-[#E5E3DD] bg-[#FFFDFB] shadow-xl select-none"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave || onClose}
         >
-          <div className="w-full max-w-[1440px] px-6 py-8 grid grid-cols-12 gap-8 items-stretch min-h-[480px]">
-            
+          <div className="grid min-h-[480px] w-full max-w-[1440px] grid-cols-12 items-stretch gap-8 px-6 py-8">
             {/* 1. Left Sidebar: Categories Navigation */}
-            <div className="col-span-3 border-r border-[#E5E3DD]/70 pr-4 flex flex-col justify-between">
+            <div className="col-span-3 flex flex-col justify-between border-r border-[#E5E3DD]/70 pr-4">
               <ul className="flex flex-col gap-1.5">
                 {rootCategories.map((cat) => {
                   const isActive = cat.id === activeCategoryId;
@@ -262,9 +273,9 @@ export default function CatalogDrawer({
                         onMouseEnter={() => setActiveCategoryId(cat.id)}
                         onClick={onClose}
                         className={cn(
-                          'w-full flex items-center justify-between px-4 py-3 rounded-lg text-left font-display font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer',
+                          'font-display flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-bold tracking-wide transition-all duration-200',
                           isActive
-                             ? 'bg-[#FFF2EB] text-primary-500 shadow-sm border-l-4 border-primary-500'
+                            ? 'text-primary-500 border-primary-500 border-l-4 bg-[#FFF2EB] shadow-sm'
                             : 'text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900',
                         )}
                       >
@@ -276,7 +287,7 @@ export default function CatalogDrawer({
                           size={14}
                           className={cn(
                             'transition-transform duration-200',
-                            isActive ? 'translate-x-0.5 text-primary-500' : 'text-neutral-400',
+                            isActive ? 'text-primary-500 translate-x-0.5' : 'text-neutral-400',
                           )}
                         />
                       </Link>
@@ -289,7 +300,7 @@ export default function CatalogDrawer({
               <Link
                 href={getSearchUrl(CATEGORY_IDS.PROMO)}
                 onClick={onClose}
-                className="mt-6 flex items-center gap-3 px-4 py-3.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-primary-600 font-display font-bold text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-sm shadow-orange-500/5 border border-orange-200/50"
+                className="text-primary-600 font-display mt-6 flex cursor-pointer items-center gap-3 rounded-lg border border-orange-200/50 bg-orange-50 px-4 py-3.5 text-sm font-bold tracking-wider uppercase shadow-sm shadow-orange-500/5 transition-all duration-200 hover:bg-orange-100"
               >
                 <Flame size={18} className="text-primary-500 animate-pulse" />
                 <span>Акції та знижки</span>
@@ -297,32 +308,31 @@ export default function CatalogDrawer({
             </div>
 
             {/* 2. Right Panel: Dynamic Subcategories & Banner Grid */}
-            <div className="col-span-9 pl-4 flex flex-col justify-between">
-              
+            <div className="col-span-9 flex flex-col justify-between pl-4">
               {/* Title & Columns Grid */}
               <div className="flex flex-col gap-6">
-                <div className="flex justify-between items-center border-b border-[#E5E3DD]/45 pb-3">
-                  <h2 className="font-display font-bold text-2xl text-neutral-900">
+                <div className="flex items-center justify-between border-b border-[#E5E3DD]/45 pb-3">
+                  <h2 className="font-display text-2xl font-bold text-neutral-900">
                     {activeCategory?.name}
                   </h2>
                   {activeCategory && (
                     <Link
                       href={getSearchUrl(String(activeCategory.id))}
                       onClick={onClose}
-                      className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-primary-500 flex cursor-pointer items-center gap-1 text-xs font-bold hover:underline"
                     >
                       Переглянути всі товари категорії <ArrowRight size={12} />
                     </Link>
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-6 max-h-[350px] overflow-y-auto pr-2">
+                <div className="grid max-h-[350px] grid-cols-3 gap-6 overflow-y-auto pr-2">
                   {activeSubgroups.map((group) => (
                     <div key={group.id} className="flex flex-col gap-3">
                       <Link
                         href={getSearchUrl(String(group.id))}
                         onClick={onClose}
-                        className="font-display font-bold text-xs uppercase tracking-wider text-neutral-800 hover:text-primary-500 transition-colors select-none"
+                        className="font-display hover:text-primary-500 text-xs font-bold tracking-wider text-neutral-800 uppercase transition-colors select-none"
                       >
                         {group.name}
                       </Link>
@@ -332,13 +342,12 @@ export default function CatalogDrawer({
                             <Link
                               href={getSearchUrl(String(item.id))}
                               onClick={onClose}
-                              className="text-neutral-600 hover:text-primary-500 font-medium transition-colors cursor-pointer"
+                              className="hover:text-primary-500 cursor-pointer font-medium text-neutral-600 transition-colors"
                             >
                               {item.name}
                             </Link>
                           </li>
                         ))}
-
                       </ul>
                     </div>
                   ))}
@@ -349,34 +358,38 @@ export default function CatalogDrawer({
               </div>
 
               {/* Bottom Row Area (Promo Banner card at the bottom right) */}
-              <div className="flex justify-end mt-6">
+              <div className="mt-6 flex justify-end">
                 {/* Promo Banner Card */}
                 <Link
                   href="/?query=P20S"
                   onClick={onClose}
-                  className="relative w-full max-w-xl rounded-2xl overflow-hidden bg-gradient-to-r from-neutral-900 to-neutral-950 border border-neutral-800 p-6 flex justify-between items-center shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  className="group relative flex w-full max-w-xl cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-neutral-800 bg-gradient-to-r from-neutral-900 to-neutral-950 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
                 >
                   {/* Glow effects */}
-                  <div className="absolute top-[-30%] left-[-20%] w-[200px] h-[200px] bg-primary-500/10 rounded-full blur-[80px] pointer-events-none select-none" />
+                  <div className="bg-primary-500/10 pointer-events-none absolute top-[-30%] left-[-20%] h-[200px] w-[200px] rounded-full blur-[80px] select-none" />
 
                   {/* Banner Content */}
-                  <div className="relative z-10 flex flex-col gap-2.5 text-left max-w-sm">
-                    <span className="w-fit font-sans text-[9px] font-bold bg-amber-500 text-neutral-950 px-2 py-0.5 rounded uppercase select-none">
+                  <div className="relative z-10 flex max-w-sm flex-col gap-2.5 text-left">
+                    <span className="w-fit rounded bg-amber-500 px-2 py-0.5 font-sans text-[9px] font-bold text-neutral-950 uppercase select-none">
                       НОВИНКА
                     </span>
-                    <h3 className="font-display font-bold text-lg text-white leading-snug">
+                    <h3 className="font-display text-lg leading-snug font-bold text-white">
                       Акумуляторна лінійка P20S
                     </h3>
-                    <p className="font-sans text-neutral-400 text-xs leading-normal">
+                    <p className="font-sans text-xs leading-normal text-neutral-400">
                       Один акумулятор для понад 150 інструментів. Професійна потужність без дротів.
                     </p>
-                    <span className="mt-2 text-amber-500 font-display font-bold text-xs flex items-center gap-1 group-hover:text-amber-400 transition-colors">
-                      Дізнатися більше <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                    <span className="font-display mt-2 flex items-center gap-1 text-xs font-bold text-amber-500 transition-colors group-hover:text-amber-400">
+                      Дізнатися більше{' '}
+                      <ArrowRight
+                        size={12}
+                        className="transition-transform group-hover:translate-x-0.5"
+                      />
                     </span>
                   </div>
 
                   {/* Banner Image */}
-                  <div className="relative w-[180px] h-[110px] shrink-0 select-none overflow-hidden rounded-lg pointer-events-none">
+                  <div className="pointer-events-none relative h-[110px] w-[180px] shrink-0 overflow-hidden rounded-lg select-none">
                     <Image
                       src="/hero/tools_bg.png"
                       alt="Лінійка P20S"
@@ -387,9 +400,7 @@ export default function CatalogDrawer({
                   </div>
                 </Link>
               </div>
-
             </div>
-
           </div>
         </div>
       </div>

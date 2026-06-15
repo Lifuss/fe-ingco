@@ -22,7 +22,7 @@ const Page = () => {
       <div className="mt-20 grid place-content-center gap-4">
         <h1 className="mb-2 block text-center text-xl">Скидування паролю</h1>
         <input
-          className="peer block w-full rounded-2xl border border-input-border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+          className="peer border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
           id="resetPassword"
           type="text"
           name="resetPassword"

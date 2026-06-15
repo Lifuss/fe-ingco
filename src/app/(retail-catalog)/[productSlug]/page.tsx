@@ -23,7 +23,7 @@ import {
   Zap,
   RotateCw,
   Plus,
-  Minus
+  Minus,
 } from 'lucide-react';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -31,7 +31,7 @@ import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/m
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
-  deleteFavoriteProductThunk
+  deleteFavoriteProductThunk,
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
@@ -59,10 +59,16 @@ export default function Page({ params }: PageProps) {
   const productLoading = useAppSelector((state) => state.persistedMainReducer.productLoading);
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
-  const favoritesState = useAppSelector((state) => state.persistedAuthReducer.user?.favorites || []);
-  const favoritesIdList = favoritesState.map((p: unknown) => typeof p === 'object' && p !== null ? (p as { id: number }).id : Number(p));
+  const favoritesState = useAppSelector(
+    (state) => state.persistedAuthReducer.user?.favorites || [],
+  );
+  const favoritesIdList = favoritesState.map((p: unknown) =>
+    typeof p === 'object' && p !== null ? (p as { id: number }).id : Number(p),
+  );
   const usdRate = useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || 40;
-  const wholesalePriceUah = product ? Math.ceil((product.priceBulk || product.price || 0) * usdRate) : 0;
+  const wholesalePriceUah = product
+    ? Math.ceil((product.priceBulk || product.price || 0) * usdRate)
+    : 0;
 
   // UI state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -90,7 +96,7 @@ export default function Page({ params }: PageProps) {
           category: String(product.category.id),
           query: '',
           sortValue: 'default',
-        })
+        }),
       );
     }
   }, [dispatch, product?.category?.id]);
@@ -114,7 +120,7 @@ export default function Page({ params }: PageProps) {
   useEffect(() => {
     if (!product) return;
     const sections = ['about-product', 'specifications', 'description', 'reviews', 'cross-sell'];
-    
+
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -140,7 +146,7 @@ export default function Page({ params }: PageProps) {
 
   if (productLoading) {
     return (
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+      <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
           <ProductSkeleton />
@@ -150,14 +156,16 @@ export default function Page({ params }: PageProps) {
   }
   if (!product || !product.id) {
     return (
-      <main className="flex flex-col gap-4 px-[60px] pt-8 xl:flex-row 2xl:gap-14 bg-white">
+      <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
           <div className="flex h-[50vh] flex-col items-center justify-center gap-5">
             <SearchX size={52} className="text-neutral-400" />
-            <h2 className="text-2xl font-display font-semibold text-neutral-800">Продукт не знайдено</h2>
+            <h2 className="font-display text-2xl font-semibold text-neutral-800">
+              Продукт не знайдено
+            </h2>
             <button
-              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-md transition-all cursor-pointer"
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 cursor-pointer rounded-md px-6 py-2.5 font-semibold text-white transition-all"
               onClick={() => router.push('/')}
             >
               В каталог
@@ -193,7 +201,7 @@ export default function Page({ params }: PageProps) {
           productId: product.id,
           quantity: qty,
           isRetail: !isB2b,
-        })
+        }),
       ).unwrap();
     } else {
       const { price: _price, priceBulk: _priceBulk, ...normalizeProduct } = product;
@@ -203,8 +211,8 @@ export default function Page({ params }: PageProps) {
             productId: normalizeProduct,
             quantity: qty,
             id: product.id,
-          })
-        )
+          }),
+        ),
       );
     }
     toast.success(`Товар додано до кошика (${qty} шт.)`);
@@ -212,7 +220,8 @@ export default function Page({ params }: PageProps) {
 
   // Qty helpers
   const incrementQty = () => setQuantity((prev) => (typeof prev === 'number' ? prev + 1 : 1));
-  const decrementQty = () => setQuantity((prev) => (typeof prev === 'number' && prev > 1 ? prev - 1 : 1));
+  const decrementQty = () =>
+    setQuantity((prev) => (typeof prev === 'number' && prev > 1 ? prev - 1 : 1));
   const handleQtyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, '');
     if (val === '') {
@@ -232,29 +241,42 @@ export default function Page({ params }: PageProps) {
   const breadcrumbsItems: { label: string; href?: string }[] = [
     { label: isB2b ? 'Каталог партнера' : 'Головна', href: '/' },
   ];
-  const electroCategory = categories?.find(c => c.name?.toLowerCase().includes('електроінструмент'));
+  const electroCategory = categories?.find((c) =>
+    c.name?.toLowerCase().includes('електроінструмент'),
+  );
   if (electroCategory) {
-    breadcrumbsItems.push({ label: electroCategory.name, href: `/?category=${electroCategory.id}` });
+    breadcrumbsItems.push({
+      label: electroCategory.name,
+      href: `/?category=${electroCategory.id}`,
+    });
   } else {
     breadcrumbsItems.push({ label: 'Електроінструмент', href: '/' });
   }
-  if (product.category?.name && !product.category.name.toLowerCase().includes('електроінструмент')) {
-    breadcrumbsItems.push({ label: product.category.name, href: `/?category=${product.category.id}` });
+  if (
+    product.category?.name &&
+    !product.category.name.toLowerCase().includes('електроінструмент')
+  ) {
+    breadcrumbsItems.push({
+      label: product.category.name,
+      href: `/?category=${product.category.id}`,
+    });
   }
   breadcrumbsItems.push({ label: product.article || product.name });
-  const primaryImageUrl = product.image ? process.env.NEXT_PUBLIC_API + product.image : '/placeholder.webp';
+  const primaryImageUrl = product.image
+    ? process.env.NEXT_PUBLIC_API + product.image
+    : '/placeholder.webp';
   // Mock alternative angles
   const galleryImages = [
     { type: 'image', url: primaryImageUrl, className: 'object-contain' },
     { type: 'image', url: primaryImageUrl, className: 'object-contain scale-125' }, // Zoom view
     { type: 'image', url: primaryImageUrl, className: 'object-contain scale-95 rotate-3' }, // Angle view
-    { type: 'video', url: '/icons/video-play-mock', isPlay: true }
+    { type: 'video', url: '/icons/video-play-mock', isPlay: true },
   ];
 
   // Specific badges parser
   const getSpecValue = (names: string[], defaultValue: string) => {
     const found = product.characteristics?.find((char) =>
-      names.some((name) => char.name?.toLowerCase().includes(name))
+      names.some((name) => char.name?.toLowerCase().includes(name)),
     );
     return found ? found.value : defaultValue;
   };
@@ -274,14 +296,20 @@ export default function Page({ params }: PageProps) {
         html = html.replace(regex, '<strong>$1</strong>');
       }
       return (
-        <p key={i} className="mb-4 text-base text-neutral-700 leading-relaxed font-sans" dangerouslySetInnerHTML={{ __html: html }} />
+        <p
+          key={i}
+          className="mb-4 font-sans text-base leading-relaxed text-neutral-700"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       );
     });
     return parsed;
   };
 
   // Battery link resolver
-  const batteryCategory = categories?.find(c => c.name?.toLowerCase().includes('акумулятор') || c.name?.toLowerCase().includes('зарядн'));
+  const batteryCategory = categories?.find(
+    (c) => c.name?.toLowerCase().includes('акумулятор') || c.name?.toLowerCase().includes('зарядн'),
+  );
   const batteryLink = batteryCategory ? `/?category=${batteryCategory.id}` : '/?query=акумулятор';
 
   // Smooth scroll helper
@@ -296,41 +324,39 @@ export default function Page({ params }: PageProps) {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
 
   // Filter out the current product from recommendations
-  const relatedProducts = products
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
+  const relatedProducts = products.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
     <>
-      <main className="flex flex-col gap-4 px-4 md:px-[60px] pt-8 bg-neutral-50 min-h-[600px]">
+      <main className="flex min-h-[600px] flex-col gap-4 bg-neutral-50 px-4 pt-8 md:px-[60px]">
         {/* Dynamic breadcrumbs */}
-        <div className="max-w-[1440px] w-full mx-auto">
+        <div className="mx-auto w-full max-w-[1440px]">
           <Breadcrumbs items={breadcrumbsItems} />
         </div>
 
         {/* ScrollSpy Tabs navigation */}
-        <div className="sticky top-0 z-40 bg-white border-b border-neutral-200 -mx-4 md:-mx-[60px] px-4 md:px-[60px] shadow-sm">
-          <div className="flex gap-6 md:gap-10 overflow-x-auto py-3.5 scrollbar-none max-w-[1440px] mx-auto">
+        <div className="sticky top-0 z-40 -mx-4 border-b border-neutral-200 bg-white px-4 shadow-sm md:-mx-[60px] md:px-[60px]">
+          <div className="scrollbar-none mx-auto flex max-w-[1440px] gap-6 overflow-x-auto py-3.5 md:gap-10">
             {[
               { id: 'about-product', label: 'Про товар' },
               { id: 'specifications', label: 'Характеристики' },
               { id: 'description', label: 'Опис' },
               { id: 'reviews', label: 'Відгуки та питання' },
-              { id: 'cross-sell', label: 'Купують разом' }
+              { id: 'cross-sell', label: 'Купують разом' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => scrollToSection(tab.id)}
-                className={`font-display text-sm md:text-base font-semibold cursor-pointer pb-1 transition-all relative border-b-2 whitespace-nowrap ${
+                className={`font-display relative cursor-pointer border-b-2 pb-1 text-sm font-semibold whitespace-nowrap transition-all md:text-base ${
                   activeSection === tab.id
                     ? 'text-primary border-primary font-bold'
-                    : 'text-neutral-500 border-transparent hover:text-neutral-800'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-800'
                 }`}
               >
                 {tab.label}
@@ -339,24 +365,25 @@ export default function Page({ params }: PageProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 xl:flex-row 2xl:gap-14 max-w-[1440px] w-full mx-auto py-6">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 py-6 xl:flex-row 2xl:gap-14">
           <CatalogSidebar />
-          
-          <div className="w-full flex flex-col gap-10">
+
+          <div className="flex w-full flex-col gap-10">
             {/* Section 1: Hero Block (Hero & Buy Box) */}
-            <section id="about-product" className="grid grid-cols-1 lg:grid-cols-12 gap-8 scroll-mt-24">
-              
+            <section
+              id="about-product"
+              className="grid scroll-mt-24 grid-cols-1 gap-8 lg:grid-cols-12"
+            >
               {/* Left Column: Gallery & Micro Features */}
-              <div className="lg:col-span-7 flex flex-col gap-6">
-                
+              <div className="flex flex-col gap-6 lg:col-span-7">
                 {/* Product Name Title on Mobile */}
                 {!isTablet && (
                   <div>
-                    <h1 className="text-xl md:text-2xl font-bold font-display text-neutral-900 leading-tight mb-2">
+                    <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
                       {product.name}
                     </h1>
                     <div className="flex items-center gap-2">
-                      <span className="bg-neutral-200 text-neutral-700 font-mono text-[11px] px-2 py-0.5 rounded">
+                      <span className="rounded bg-neutral-200 px-2 py-0.5 font-mono text-[11px] text-neutral-700">
                         Артикул: {product.article}
                       </span>
                     </div>
@@ -364,14 +391,13 @@ export default function Page({ params }: PageProps) {
                 )}
 
                 {/* Main Media Box */}
-                <div className="aspect-square w-full bg-white border border-neutral-200 rounded-2xl p-6 flex items-center justify-center relative shadow-sm overflow-hidden select-none">
-                  
+                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm select-none">
                   {/* Badges absolute top-left */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-                    <span className="bg-neutral-900 text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded shadow-sm tracking-wide uppercase select-none">
+                  <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
+                    <span className="rounded bg-neutral-900 px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow-sm select-none md:text-xs">
                       PRO SERIES
                     </span>
-                    <span className="bg-brand-cyan text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded shadow-sm tracking-wide uppercase select-none">
+                    <span className="bg-brand-cyan rounded px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow-sm select-none md:text-xs">
                       P20S SYSTEM
                     </span>
                   </div>
@@ -386,14 +412,16 @@ export default function Page({ params }: PageProps) {
                       priority
                     />
                   ) : (
-                    <div 
+                    <div
                       onClick={() => setIsVideoModalOpen(true)}
-                      className="w-full h-full flex flex-col items-center justify-center bg-neutral-100/50 rounded-xl cursor-pointer hover:bg-neutral-100 transition-colors gap-3"
+                      className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl bg-neutral-100/50 transition-colors hover:bg-neutral-100"
                     >
-                      <div className="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-white shadow-lg shadow-primary-500/20 hover:scale-105 transition-transform duration-300">
+                      <div className="bg-primary-500 shadow-primary-500/20 flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-300 hover:scale-105">
                         <Play size={28} fill="currentColor" className="ml-1" />
                       </div>
-                      <span className="font-display font-semibold text-neutral-800 text-sm">Дивитися відеоогляд</span>
+                      <span className="font-display text-sm font-semibold text-neutral-800">
+                        Дивитися відеоогляд
+                      </span>
                     </div>
                   )}
                 </div>
@@ -410,9 +438,9 @@ export default function Page({ params }: PageProps) {
                           setActiveImageIndex(idx);
                         }
                       }}
-                      className={`aspect-square w-full rounded-xl bg-white border flex items-center justify-center p-2 transition-all cursor-pointer ${
+                      className={`flex aspect-square w-full cursor-pointer items-center justify-center rounded-xl border bg-white p-2 transition-all ${
                         item.type !== 'video' && activeImageIndex === idx
-                          ? 'border-primary shadow-sm bg-primary-50/20 ring-1 ring-primary'
+                          ? 'border-primary bg-primary-50/20 ring-primary shadow-sm ring-1'
                           : 'border-neutral-200 hover:border-neutral-400'
                       }`}
                     >
@@ -425,9 +453,11 @@ export default function Page({ params }: PageProps) {
                           className={`max-h-full w-auto object-contain ${item.className}`}
                         />
                       ) : (
-                        <div className="flex flex-col items-center justify-center text-neutral-500 hover:text-primary gap-1">
+                        <div className="hover:text-primary flex flex-col items-center justify-center gap-1 text-neutral-500">
                           <Play size={24} className="stroke-[2.5]" />
-                          <span className="text-[10px] font-bold tracking-wider uppercase">Відео</span>
+                          <span className="text-[10px] font-bold tracking-wider uppercase">
+                            Відео
+                          </span>
                         </div>
                       )}
                     </button>
@@ -436,48 +466,57 @@ export default function Page({ params }: PageProps) {
 
                 {/* Specific layout short badges */}
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
                     <Zap className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] text-neutral-500 uppercase font-semibold">Напруга</span>
-                    <span className="text-sm font-bold text-neutral-900 font-display">{voltage}</span>
+                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
+                      Напруга
+                    </span>
+                    <span className="font-display text-sm font-bold text-neutral-900">
+                      {voltage}
+                    </span>
                   </div>
-                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
                     <RotateCw className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] text-neutral-500 uppercase font-semibold">Обороти</span>
-                    <span className="text-sm font-bold text-neutral-900 font-display">{speed}</span>
+                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
+                      Обороти
+                    </span>
+                    <span className="font-display text-sm font-bold text-neutral-900">{speed}</span>
                   </div>
-                  <div className="bg-primary-50/40 border border-primary-100/60 rounded-xl p-3 flex flex-col items-center gap-1.5 shadow-sm">
+                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
                     <Sparkles className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] text-neutral-500 uppercase font-semibold">Сила удару</span>
-                    <span className="text-sm font-bold text-neutral-900 font-display">{impactForce}</span>
+                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
+                      Сила удару
+                    </span>
+                    <span className="font-display text-sm font-bold text-neutral-900">
+                      {impactForce}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Buy Box Card */}
-              <div className="lg:col-span-5 relative">
-                <div className="lg:sticky lg:top-[128px] bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-                  
+              <div className="relative lg:col-span-5">
+                <div className="flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:sticky lg:top-[128px]">
                   {/* Name Header and Wishlist on Desktop */}
                   {isTablet && (
-                    <div className="flex justify-between items-start gap-4">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="flex flex-col gap-1.5">
-                        <h1 className="text-xl md:text-2xl font-bold font-display text-neutral-900 leading-tight">
+                        <h1 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
                           {product.name}
                         </h1>
-                        <div className="w-fit bg-neutral-100 text-neutral-500 text-[11px] px-2 py-0.5 rounded font-mono font-medium">
+                        <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
                           Артикул: {product.article}
                         </div>
                       </div>
-                      
+
                       <button
                         onClick={handleFavoriteClick}
-                        className={`p-2.5 rounded-full border transition-all cursor-pointer ${
+                        className={`cursor-pointer rounded-full border p-2.5 transition-all ${
                           isFavorite
-                            ? 'bg-red-50 text-red-500 border-red-200 shadow-sm'
-                            : 'bg-neutral-50 text-neutral-400 border-neutral-200 hover:text-neutral-700 hover:bg-neutral-100'
+                            ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
+                            : 'border-neutral-200 bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700'
                         }`}
-                        title={isFavorite ? "Вилучити з обраного" : "Додати в обране"}
+                        title={isFavorite ? 'Вилучити з обраного' : 'Додати в обране'}
                       >
                         <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
                       </button>
@@ -486,11 +525,12 @@ export default function Page({ params }: PageProps) {
 
                   {/* Stock Availability */}
                   <div className="flex items-center gap-2 border-b border-neutral-100 pb-3">
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 flex items-center justify-center">
-                      <span className="w-1 h-1 rounded-full bg-white"></span>
+                    <span className="flex h-2.5 w-2.5 items-center justify-center rounded-full bg-green-500">
+                      <span className="h-1 w-1 rounded-full bg-white"></span>
                     </span>
-                    <span className="text-xs md:text-sm font-semibold text-green-600">
-                      В наявності ({product.countInStock > 50 ? '>50 шт.' : `${product.countInStock} шт.`})
+                    <span className="text-xs font-semibold text-green-600 md:text-sm">
+                      В наявності (
+                      {product.countInStock > 50 ? '>50 шт.' : `${product.countInStock} шт.`})
                     </span>
                   </div>
 
@@ -499,29 +539,41 @@ export default function Page({ params }: PageProps) {
                     <div className="flex flex-col">
                       {isB2b ? (
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-xs text-neutral-400 font-semibold uppercase">Ціна партнера</span>
+                          <span className="text-xs font-semibold text-neutral-400 uppercase">
+                            Ціна партнера
+                          </span>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold font-display text-neutral-900">
+                            <span className="font-display text-2xl font-bold text-neutral-900">
                               {wholesalePriceUah.toLocaleString('uk-UA')} ₴
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-neutral-400 tracking-wide">
+                          <span className="text-xs font-bold tracking-wide text-neutral-400">
                             ${(product.priceBulk || product.price || 0).toFixed(2)} / од.
                           </span>
                           <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
                             <span>
                               РРЦ: {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
                               {product.priceRetailRecommendation > wholesalePriceUah && (
-                                <span className="text-teal-600 font-bold ml-1.5">
-                                  (Маржа: {Math.ceil(((product.priceRetailRecommendation - wholesalePriceUah) / product.priceRetailRecommendation) * 100)}% / +{product.priceRetailRecommendation - wholesalePriceUah} ₴)
+                                <span className="ml-1.5 font-bold text-teal-600">
+                                  (Маржа:{' '}
+                                  {Math.ceil(
+                                    ((product.priceRetailRecommendation - wholesalePriceUah) /
+                                      product.priceRetailRecommendation) *
+                                      100,
+                                  )}
+                                  % / +{product.priceRetailRecommendation - wholesalePriceUah} ₴)
                                 </span>
                               )}
                             </span>
                             {!!(product.rrcSale && product.rrcSale > wholesalePriceUah) && (
-                              <span className="text-red-500 font-bold">
+                              <span className="font-bold text-red-500">
                                 РРЦ Акція: {product.rrcSale.toLocaleString('uk-UA')} ₴
-                                <span className="text-teal-600 font-bold ml-1.5">
-                                  (Маржа: {Math.ceil(((product.rrcSale - wholesalePriceUah) / product.rrcSale) * 100)}% / +{product.rrcSale - wholesalePriceUah} ₴)
+                                <span className="ml-1.5 font-bold text-teal-600">
+                                  (Маржа:{' '}
+                                  {Math.ceil(
+                                    ((product.rrcSale - wholesalePriceUah) / product.rrcSale) * 100,
+                                  )}
+                                  % / +{product.rrcSale - wholesalePriceUah} ₴)
                                 </span>
                               </span>
                             )}
@@ -529,11 +581,13 @@ export default function Page({ params }: PageProps) {
                         </div>
                       ) : (
                         <>
-                          <span className="text-xs text-neutral-400 font-semibold uppercase">Ціна</span>
+                          <span className="text-xs font-semibold text-neutral-400 uppercase">
+                            Ціна
+                          </span>
                           <div className="flex items-baseline gap-2">
                             {product.rrcSale ? (
                               <>
-                                <span className="text-2xl font-bold font-display text-primary">
+                                <span className="font-display text-primary text-2xl font-bold">
                                   {product.rrcSale.toLocaleString('uk-UA')} ₴
                                 </span>
                                 <span className="text-sm text-neutral-400 line-through">
@@ -541,7 +595,7 @@ export default function Page({ params }: PageProps) {
                                 </span>
                               </>
                             ) : (
-                              <span className="text-2xl font-bold font-display text-neutral-900">
+                              <span className="font-display text-2xl font-bold text-neutral-900">
                                 {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
                               </span>
                             )}
@@ -552,11 +606,13 @@ export default function Page({ params }: PageProps) {
 
                     {/* Quantity counter */}
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-xs text-neutral-400 font-semibold uppercase mr-1">Кількість</span>
-                      <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 shadow-inner h-10 w-[120px]">
+                      <span className="mr-1 text-xs font-semibold text-neutral-400 uppercase">
+                        Кількість
+                      </span>
+                      <div className="flex h-10 w-[120px] items-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 shadow-inner">
                         <button
                           onClick={decrementQty}
-                          className="w-10 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                          className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                           type="button"
                         >
                           <Minus size={14} />
@@ -566,11 +622,11 @@ export default function Page({ params }: PageProps) {
                           value={quantity}
                           onChange={handleQtyInputChange}
                           onBlur={handleQtyBlur}
-                          className="w-10 h-full text-center bg-transparent outline-none font-sans font-semibold text-neutral-900 border-none p-0 text-sm focus:ring-0"
+                          className="h-full w-10 border-none bg-transparent p-0 text-center font-sans text-sm font-semibold text-neutral-900 outline-none focus:ring-0"
                         />
                         <button
                           onClick={incrementQty}
-                          className="w-10 h-full flex items-center justify-center hover:bg-neutral-200 transition-colors text-neutral-500 cursor-pointer"
+                          className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                           type="button"
                         >
                           <Plus size={14} />
@@ -582,7 +638,7 @@ export default function Page({ params }: PageProps) {
                   {/* Add to Cart CTA */}
                   <button
                     onClick={handleAddToCart}
-                    className="w-full bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-display font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2.5 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all cursor-pointer text-base select-none"
+                    className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl px-6 py-3.5 text-base font-bold text-white shadow-lg transition-all select-none"
                   >
                     <ShoppingCart size={20} fill="currentColor" />
                     <span>Додати до кошика</span>
@@ -592,10 +648,10 @@ export default function Page({ params }: PageProps) {
                   {!isTablet && (
                     <button
                       onClick={handleFavoriteClick}
-                      className={`w-full py-2.5 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer font-sans text-sm font-semibold ${
+                      className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border py-2.5 font-sans text-sm font-semibold transition-all ${
                         isFavorite
-                          ? 'bg-red-50 text-red-500 border-red-200'
-                          : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
+                          ? 'border-red-200 bg-red-50 text-red-500'
+                          : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
                       }`}
                     >
                       <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
@@ -606,34 +662,56 @@ export default function Page({ params }: PageProps) {
                   {/* Trust triggers */}
                   <div className="flex flex-col gap-3 border-t border-neutral-100 pt-4">
                     <div className="flex items-start gap-3">
-                      <Truck className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <Truck className="text-brand-cyan mt-0.5 shrink-0 stroke-[2.2]" size={18} />
                       <div className="flex flex-col">
-                        <span className="text-xs md:text-sm font-bold text-neutral-800">Відправка сьогодні</span>
-                        <span className="text-[11px] text-neutral-500">При замовленні до 16:00</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-3">
-                      <ShieldCheck className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
-                      <div className="flex flex-col">
-                        <span className="text-xs md:text-sm font-bold text-neutral-800">Гарантія {product.warranty || 24} міс.</span>
-                        <span className="text-[11px] text-neutral-500">Офіційний сервісний центр</span>
+                        <span className="text-xs font-bold text-neutral-800 md:text-sm">
+                          Відправка сьогодні
+                        </span>
+                        <span className="text-[11px] text-neutral-500">
+                          При замовленні до 16:00
+                        </span>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <RotateCcw className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <ShieldCheck
+                        className="text-brand-cyan mt-0.5 shrink-0 stroke-[2.2]"
+                        size={18}
+                      />
                       <div className="flex flex-col">
-                        <span className="text-xs md:text-sm font-bold text-neutral-800">Повернення 14 днів</span>
-                        <span className="text-[11px] text-neutral-500">Безпроблемний обмін згідно закону</span>
+                        <span className="text-xs font-bold text-neutral-800 md:text-sm">
+                          Гарантія {product.warranty || 24} міс.
+                        </span>
+                        <span className="text-[11px] text-neutral-500">
+                          Офіційний сервісний центр
+                        </span>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <Receipt className="text-brand-cyan stroke-[2.2] shrink-0 mt-0.5" size={18} />
+                      <RotateCcw
+                        className="text-brand-cyan mt-0.5 shrink-0 stroke-[2.2]"
+                        size={18}
+                      />
                       <div className="flex flex-col">
-                        <span className="text-xs md:text-sm font-bold text-neutral-800">Безготівковий розрахунок</span>
-                        <span className="text-[11px] text-neutral-500">З ПДВ для юридичних осіб</span>
+                        <span className="text-xs font-bold text-neutral-800 md:text-sm">
+                          Повернення 14 днів
+                        </span>
+                        <span className="text-[11px] text-neutral-500">
+                          Безпроблемний обмін згідно закону
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <Receipt className="text-brand-cyan mt-0.5 shrink-0 stroke-[2.2]" size={18} />
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-neutral-800 md:text-sm">
+                          Безготівковий розрахунок
+                        </span>
+                        <span className="text-[11px] text-neutral-500">
+                          З ПДВ для юридичних осіб
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -641,24 +719,23 @@ export default function Page({ params }: PageProps) {
                   {/* Consultation trigger */}
                   <button
                     onClick={() => setIsConsultModalOpen(true)}
-                    className="w-full mt-1 border border-neutral-300 hover:border-neutral-500 text-neutral-700 font-sans font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center transition-all cursor-pointer text-sm bg-white"
+                    className="mt-1 flex w-full cursor-pointer items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2.5 font-sans text-sm font-semibold text-neutral-700 transition-all hover:border-neutral-500"
                   >
                     Отримати консультацію
                   </button>
                 </div>
               </div>
-
             </section>
 
             {/* Section 2: Detailed Specifications */}
             <section id="specifications" className="scroll-mt-24">
-              <h2 className="text-xl md:text-2xl font-bold font-display text-neutral-900 mb-6 pb-2 border-b border-neutral-200">
+              <h2 className="font-display mb-6 border-b border-neutral-200 pb-2 text-xl font-bold text-neutral-900 md:text-2xl">
                 Детальні технічні характеристики
               </h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+              <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
                 {/* Table Left */}
-                <div className="lg:col-span-7 bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm lg:col-span-7">
                   <div className="flex flex-col divide-y divide-neutral-100">
                     {product.characteristics?.length > 0 ? (
                       product.characteristics.map((char, index) => (
@@ -668,37 +745,43 @@ export default function Page({ params }: PageProps) {
                             index % 2 === 0 ? 'bg-neutral-50/50' : 'bg-white'
                           }`}
                         >
-                          <span className="text-neutral-500 font-medium font-sans pr-4">{char.name}</span>
-                          <span className="text-neutral-900 font-semibold font-sans text-right">
+                          <span className="pr-4 font-sans font-medium text-neutral-500">
+                            {char.name}
+                          </span>
+                          <span className="text-right font-sans font-semibold text-neutral-900">
                             {char.value === '-' ? '+' : char.value}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <div className="p-6 text-center text-neutral-400">Характеристики відсутні</div>
+                      <div className="p-6 text-center text-neutral-400">
+                        Характеристики відсутні
+                      </div>
                     )}
                   </div>
                 </div>
 
                 {/* Configuration Alert Banner Right */}
-                <div className="lg:col-span-5 bg-amber-50/60 border border-amber-200/50 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
+                <div className="flex flex-col gap-4 rounded-2xl border border-amber-200/50 bg-amber-50/60 p-6 shadow-sm lg:col-span-5">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-100 border border-amber-200 rounded-full text-amber-600 shrink-0">
+                    <div className="shrink-0 rounded-full border border-amber-200 bg-amber-100 p-2 text-amber-600">
                       <Info size={20} className="stroke-[2.5]" />
                     </div>
-                    <h3 className="font-display font-bold text-base text-neutral-900 leading-tight">
+                    <h3 className="font-display text-base leading-tight font-bold text-neutral-900">
                       Комплектація (Без АКБ та ЗП)
                     </h3>
                   </div>
-                  
-                  <p className="font-sans text-xs md:text-sm text-neutral-600 leading-relaxed">
-                    Увага! Дана модель інструменту постачається <strong>без акумуляторної батареї та зарядного пристрою</strong>. 
-                    Ви можете використовувати сумісні АКБ INGCO серії <strong>P20S</strong>, які є у вашому арсеналі, або придбати їх окремо.
+
+                  <p className="font-sans text-xs leading-relaxed text-neutral-600 md:text-sm">
+                    Увага! Дана модель інструменту постачається{' '}
+                    <strong>без акумуляторної батареї та зарядного пристрою</strong>. Ви можете
+                    використовувати сумісні АКБ INGCO серії <strong>P20S</strong>, які є у вашому
+                    арсеналі, або придбати їх окремо.
                   </p>
 
                   <button
                     onClick={() => router.push(batteryLink)}
-                    className="w-fit text-primary font-display font-bold text-xs md:text-sm flex items-center gap-1.5 hover:underline cursor-pointer transition-all uppercase tracking-wider"
+                    className="text-primary font-display flex w-fit cursor-pointer items-center gap-1.5 text-xs font-bold tracking-wider uppercase transition-all hover:underline md:text-sm"
                   >
                     <span>Переглянути сумісні акумулятори</span>
                     <ChevronRight size={14} className="stroke-[2.5]" />
@@ -709,43 +792,44 @@ export default function Page({ params }: PageProps) {
 
             {/* Section 3: Description */}
             <section id="description" className="scroll-mt-24">
-              <h2 className="text-xl md:text-2xl font-bold font-display text-neutral-900 mb-6 pb-2 border-b border-neutral-200">
+              <h2 className="font-display mb-6 border-b border-neutral-200 pb-2 text-xl font-bold text-neutral-900 md:text-2xl">
                 Опис
               </h2>
-              <div className="bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+              <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
                 {product.description ? (
                   parseDescription(product.description)
                 ) : (
-                  <p className="text-neutral-400 text-center py-4">Опис відсутній</p>
+                  <p className="py-4 text-center text-neutral-400">Опис відсутній</p>
                 )}
               </div>
             </section>
 
             {/* Section 4: Reviews Section */}
             <section id="reviews" className="scroll-mt-24">
-              <div className="flex justify-between items-center mb-6 pb-2 border-b border-neutral-200">
-                <h2 className="text-xl md:text-2xl font-bold font-display text-neutral-900">
+              <div className="mb-6 flex items-center justify-between border-b border-neutral-200 pb-2">
+                <h2 className="font-display text-xl font-bold text-neutral-900 md:text-2xl">
                   Відгуки та питання
                 </h2>
-                <button 
+                <button
                   onClick={() => toast.info('Напишіть нам у підтримку, щоб залишити відгук!')}
-                  className="border border-neutral-300 hover:border-neutral-500 hover:bg-neutral-50 text-neutral-700 font-sans font-semibold text-xs md:text-sm py-2 px-3 md:px-4 rounded-lg transition-all cursor-pointer bg-white"
+                  className="cursor-pointer rounded-lg border border-neutral-300 bg-white px-3 py-2 font-sans text-xs font-semibold text-neutral-700 transition-all hover:border-neutral-500 hover:bg-neutral-50 md:px-4 md:text-sm"
                 >
                   Залишити відгук
                 </button>
               </div>
 
               {/* Empty state reviews layout */}
-              <div className="bg-neutral-50/60 border border-neutral-200/60 rounded-2xl p-10 md:p-14 flex flex-col items-center justify-center text-center gap-4 shadow-inner">
-                <div className="w-14 h-14 bg-neutral-200/50 rounded-full flex items-center justify-center text-neutral-400 border border-neutral-200 shadow-sm">
+              <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-neutral-200/60 bg-neutral-50/60 p-10 text-center shadow-inner md:p-14">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-neutral-200/50 text-neutral-400 shadow-sm">
                   <MessageSquare size={24} />
                 </div>
                 <div>
-                  <h3 className="font-display font-semibold text-base md:text-lg text-neutral-800 mb-1">
+                  <h3 className="font-display mb-1 text-base font-semibold text-neutral-800 md:text-lg">
                     Поки що немає відгуків про цей товар
                   </h3>
-                  <p className="font-sans text-xs md:text-sm text-neutral-500 max-w-sm mx-auto leading-relaxed">
-                    Будьте першим, хто залишить відгук або запитання! Ваша думка допоможе іншим покупцям зробити правильний вибір.
+                  <p className="mx-auto max-w-sm font-sans text-xs leading-relaxed text-neutral-500 md:text-sm">
+                    Будьте першим, хто залишить відгук або запитання! Ваша думка допоможе іншим
+                    покупцям зробити правильний вибір.
                   </p>
                 </div>
               </div>
@@ -753,43 +837,43 @@ export default function Page({ params }: PageProps) {
 
             {/* Section 5: Cross-sell Recommendations */}
             <section id="cross-sell" className="scroll-mt-24 pb-12">
-              <h2 className="text-xl md:text-2xl font-bold font-display text-neutral-900 mb-6 pb-2 border-b border-neutral-200">
+              <h2 className="font-display mb-6 border-b border-neutral-200 pb-2 text-xl font-bold text-neutral-900 md:text-2xl">
                 Купують разом
               </h2>
 
               {relatedProducts.length === 0 ? (
                 /* 4 skeletons horizontal block */
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                   {[1, 2, 3, 4].map((idx) => (
-                    <div 
-                      key={idx} 
-                      className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between"
+                    <div
+                      key={idx}
+                      className="flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm"
                     >
                       <div className="flex flex-col gap-3">
                         {/* Image placeholder */}
-                        <div className="w-full aspect-square bg-neutral-100 rounded-xl animate-pulse flex items-center justify-center">
-                          <div className="w-8 h-8 rounded-full border-2 border-neutral-200/60 border-t-neutral-400 animate-spin"></div>
+                        <div className="flex aspect-square w-full animate-pulse items-center justify-center rounded-xl bg-neutral-100">
+                          <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200/60 border-t-neutral-400"></div>
                         </div>
-                        
+
                         {/* Title block */}
                         <div className="flex flex-col gap-1.5 py-1">
-                          <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-11/12"></div>
-                          <div className="h-3.5 bg-neutral-200 rounded-md animate-pulse w-3/4"></div>
+                          <div className="h-3.5 w-11/12 animate-pulse rounded-md bg-neutral-200"></div>
+                          <div className="h-3.5 w-3/4 animate-pulse rounded-md bg-neutral-200"></div>
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-neutral-100">
+                      <div className="mt-4 flex flex-col gap-3 border-t border-neutral-100 pt-3">
                         {/* Price block */}
-                        <div className="h-4 bg-neutral-200 rounded-md animate-pulse w-1/2"></div>
-                        
+                        <div className="h-4 w-1/2 animate-pulse rounded-md bg-neutral-200"></div>
+
                         {/* Button CTA */}
-                        <div className="h-9 bg-neutral-200/80 rounded-lg animate-pulse w-full"></div>
+                        <div className="h-9 w-full animate-pulse rounded-lg bg-neutral-200/80"></div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 list-none p-0 m-0">
+                <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 md:grid-cols-4">
                   {relatedProducts.map((item) => (
                     <ProductCard
                       key={item.id}
@@ -837,13 +921,13 @@ export default function Page({ params }: PageProps) {
             border: 'none',
             borderRadius: '16px',
             overflow: 'hidden',
-          }
+          },
         }}
         ariaHideApp={false}
       >
         <button
           onClick={() => setIsVideoModalOpen(false)}
-          className="absolute top-3 right-3 text-white/70 hover:text-white transition-colors cursor-pointer bg-black/40 p-2 rounded-full z-50 hover:bg-black/60 shadow"
+          className="absolute top-3 right-3 z-50 cursor-pointer rounded-full bg-black/40 p-2 text-white/70 shadow transition-colors hover:bg-black/60 hover:text-white"
           aria-label="Закрити відео"
         >
           <X size={18} />
@@ -856,10 +940,9 @@ export default function Page({ params }: PageProps) {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          className="w-full h-full"
+          className="h-full w-full"
         ></iframe>
       </Modal>
-
     </>
   );
 }
