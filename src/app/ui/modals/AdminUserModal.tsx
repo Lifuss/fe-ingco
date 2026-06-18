@@ -106,7 +106,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
 
   return (
     <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
-      <div className="animate-fade-in relative max-h-[95vh] w-full max-w-[850px] overflow-y-auto rounded-2xl border border-neutral-100 bg-white p-5 text-neutral-800 shadow-2xl md:w-[800px]">
+      <div className="animate-fade-in relative max-h-[95vh] w-full max-w-[850px] overflow-y-auto rounded-2xl border border-neutral-100 bg-white p-5 text-neutral-800 shadow-2xl md:p-6 lg:max-w-[1000px] xl:max-w-[1200px]">
         {/* Header bar */}
         <div className="mb-4 flex items-center justify-between border-b border-neutral-100 pb-4">
           <div>
