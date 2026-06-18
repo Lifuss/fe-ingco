@@ -1,6 +1,5 @@
 'use client';
 import Modal from 'react-modal';
-import { customModalStyles } from './CategoryModal';
 import { User } from '@/lib/types';
 import { useAppDispatch } from '@/lib/hooks';
 import { useEffect, useState } from 'react';
@@ -11,7 +10,7 @@ import {
   updateUserThunk,
 } from '@/lib/appState/dashboard/operations';
 import { toast } from 'react-toastify';
-import { X } from 'lucide-react';
+import { X, UserRound, KeyRound, MapPin, ClipboardList } from 'lucide-react';
 import { generatePassword } from '@/lib/utils';
 
 type AdminUserModalProps = {
@@ -21,12 +20,22 @@ type AdminUserModalProps = {
 };
 
 const modifiedStyles = {
-  ...customModalStyles,
+  overlay: {
+    backgroundColor: 'rgba(15, 15, 14, 0.4)',
+    backdropFilter: 'blur(8px)',
+    zIndex: 9999,
+  },
   content: {
-    ...customModalStyles.content,
-    width: '768px',
-    overflow: 'auto',
-    maxHeight: '95vh',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    border: 'none',
+    background: 'transparent',
+    padding: 0,
+    overflow: 'visible',
   },
 };
 
@@ -71,7 +80,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
 
     if (!selectedUser.isVerified && userValidate.isVerified && !userValidate.password) {
       toast.error(
-        'Поле пароль обовязкове для заповнення, якщо ви хочете змінити статус верифікації',
+        'Поле пароль обовʼязкове для заповнення, якщо ви хочете змінити статус верифікації',
       );
       return;
     }
@@ -95,226 +104,404 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
     setSelectedUser(user);
   };
 
-  const dataToRender = [
-    {
-      label: 'E-mail',
-      type: 'email',
-      value: email,
-      name: 'email',
-      required: true,
-    },
-    {
-      label: 'Логін',
-      type: 'text',
-      value: login,
-      name: 'login',
-      required: true,
-    },
-    {
-      label: "Ім'я",
-      type: 'text',
-      value: firstName,
-      name: 'firstName',
-      required: true,
-    },
-    {
-      label: 'Прізвище',
-      type: 'text',
-      value: lastName,
-      name: 'lastName',
-      required: true,
-    },
-    {
-      label: 'По-батькові',
-      type: 'text',
-      value: surName,
-      name: 'surName',
-      required: true,
-    },
-    {
-      label: 'Телефон',
-      type: 'tel',
-      value: phone,
-      name: 'phone',
-      required: true,
-    },
-    {
-      label: 'ЄДРПОУ',
-      type: 'text',
-      value: edrpou,
-      name: 'edrpou',
-      required: true,
-    },
-    {
-      label: 'Статус верифікації',
-      value: isVerified ? '✅' : '',
-      name: 'isVerified',
-      type: 'checkbox',
-    },
-    {
-      label: 'Новий пароль',
-      value: selectedUser.password,
-      name: 'password',
-      type: 'text',
-      renderExtras: () => (
-        <Button
-          className="ml-2"
-          onClick={(e) => {
-            e.preventDefault();
-            const newPassword = generatePassword();
-            setSelectedUser({
-              ...selectedUser,
-              password: newPassword,
-            });
-          }}
-        >
-          Згенерувати
-        </Button>
-      ),
-    },
-  ];
-
   return (
     <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
-      <div onClick={closeModal} className="absolute top-2 right-2">
-        <X size={24} absoluteStrokeWidth className="cursor-pointer" />
-      </div>
-      <h2 className="font-lg mb-4 font-medium">Редагування користувача</h2>
-      <form onSubmit={handleSubmit} className="mb-2 text-lg">
-        {dataToRender.map(({ label, value, name, type, renderExtras, required }) => (
-          <div key={label} className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
-            {name === 'isVerified' ? (
-              <div className="flex items-center gap-2">
-                <label htmlFor={name}>{label}</label>
-                <input
-                  id={name}
-                  type={type}
-                  name={name}
-                  defaultChecked={!!value}
-                  onChange={(e) => {
-                    setSelectedUser({
-                      ...selectedUser,
-                      [name]: e.target.checked,
-                    });
-                  }}
-                />
-                <span>{!!value ? '✅' : '❌'}</span>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <label className="block w-[100px]" htmlFor={name}>
-                  {label}
+      <div className="animate-fade-in relative max-h-[95vh] w-full max-w-[850px] overflow-y-auto rounded-2xl border border-neutral-100 bg-white p-5 text-neutral-800 shadow-2xl md:w-[800px]">
+        {/* Header bar */}
+        <div className="mb-4 flex items-center justify-between border-b border-neutral-100 pb-4">
+          <div>
+            <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+              Клієнти
+            </span>
+            <h2 className="text-lg font-bold text-neutral-900 md:text-xl">
+              Редагування користувача
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={closeModal}
+            className="cursor-pointer rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
+            aria-label="Закрити"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="text-sm">
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Card 1: Personal Data */}
+            <div className="flex flex-col gap-3 rounded-xl border border-neutral-100 bg-neutral-50 p-4">
+              <h3 className="flex items-center gap-1.5 border-b border-neutral-200/50 pb-2 text-xs font-bold tracking-wider text-neutral-400 uppercase">
+                <UserRound size={14} />
+                Персональні дані
+              </h3>
+
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="lastName"
+                  className="text-[11px] font-bold text-neutral-500 uppercase"
+                >
+                  Прізвище
                 </label>
                 <input
-                  required={required}
-                  id={name}
-                  type={type}
-                  name={name}
-                  defaultValue={value}
-                  className="min-w-[250px] rounded-md border-gray-200"
+                  required
+                  id="lastName"
+                  type="text"
+                  name="lastName"
+                  value={lastName || ''}
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
                   onChange={(e) => {
                     setSelectedUser({
                       ...selectedUser,
-                      [name]: e.target.value,
+                      lastName: e.target.value,
                     });
                   }}
                 />
-                {renderExtras && renderExtras()}
               </div>
-            )}
-          </div>
-        ))}
-        <div className="mb-2 flex">
-          <label className="block w-[100px]" htmlFor={address}>
-            Адреса
-          </label>
-          <textarea
-            id={address}
-            name="address"
-            defaultValue={address}
-            className="min-h-[100px] min-w-[250px] resize-none rounded-md border-gray-200"
-            onChange={(e) => {
-              setSelectedUser({
-                ...selectedUser,
-                address: e.target.value,
-              });
-            }}
-          />
-        </div>
-        <div key={updatedAt} className="mb-2 flex gap-5 border-b border-gray-400 pb-2 text-base">
-          <p>Дата активності</p>
-          <p>{new Date(updatedAt).toLocaleDateString('uk-UA')}</p>
-        </div>
-        <div className="mt-5 flex justify-between">
-          <div className="flex gap-4">
-            <Button
-              type="reset"
-              onClick={handleReset}
-              className="bg-slate-300 hover:bg-slate-400"
-              title="Відновити дані до початкового стану"
-            >
-              Скинути
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                if (confirm('Ви впевнені, що хочете видалити користувача?')) {
-                  dispatch(deleteUserThunk(selectedUser.id))
-                    .unwrap()
-                    .then(() => {
-                      closeModal();
-                    })
-                    .catch(() => {
-                      toast.error('Помилка при видаленні користувача');
+
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="firstName"
+                  className="text-[11px] font-bold text-neutral-500 uppercase"
+                >
+                  Ім&apos;я
+                </label>
+                <input
+                  required
+                  id="firstName"
+                  type="text"
+                  name="firstName"
+                  value={firstName || ''}
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      firstName: e.target.value,
                     });
-                }
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="surName"
+                  className="text-[11px] font-bold text-neutral-500 uppercase"
+                >
+                  По-батькові
+                </label>
+                <input
+                  required
+                  id="surName"
+                  type="text"
+                  name="surName"
+                  value={surName || ''}
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      surName: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label htmlFor="phone" className="text-[11px] font-bold text-neutral-500 uppercase">
+                  Телефон
+                </label>
+                <input
+                  required
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  value={phone || ''}
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      phone: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="edrpou"
+                  className="text-[11px] font-bold text-neutral-500 uppercase"
+                >
+                  ЄДРПОУ
+                </label>
+                <input
+                  required
+                  id="edrpou"
+                  type="text"
+                  name="edrpou"
+                  value={edrpou || ''}
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                  onChange={(e) => {
+                    setSelectedUser({
+                      ...selectedUser,
+                      edrpou: e.target.value,
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Card 2: Account & Security */}
+            <div className="flex flex-col justify-between gap-3 rounded-xl border border-neutral-100 bg-neutral-50 p-4">
+              <div className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-1.5 border-b border-neutral-200/50 pb-2 text-xs font-bold tracking-wider text-neutral-400 uppercase">
+                  <KeyRound size={14} />
+                  Акаунт та безпека
+                </h3>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="email"
+                    className="text-[11px] font-bold text-neutral-500 uppercase"
+                  >
+                    E-mail
+                  </label>
+                  <input
+                    required
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={email || ''}
+                    className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                    onChange={(e) => {
+                      setSelectedUser({
+                        ...selectedUser,
+                        email: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="login"
+                    className="text-[11px] font-bold text-neutral-500 uppercase"
+                  >
+                    Логін
+                  </label>
+                  <input
+                    required
+                    id="login"
+                    type="text"
+                    name="login"
+                    value={login || ''}
+                    className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                    onChange={(e) => {
+                      setSelectedUser({
+                        ...selectedUser,
+                        login: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-bold text-neutral-500 uppercase">
+                    Статус верифікації
+                  </span>
+                  <div className="flex w-fit items-center gap-2.5 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 select-none">
+                    <input
+                      id="isVerified"
+                      type="checkbox"
+                      name="isVerified"
+                      defaultChecked={isVerified}
+                      className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
+                      onChange={(e) => {
+                        setSelectedUser({
+                          ...selectedUser,
+                          isVerified: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label
+                      htmlFor="isVerified"
+                      className="cursor-pointer text-sm font-semibold text-neutral-700"
+                    >
+                      {isVerified ? 'Верифікований ✅' : 'Неверифікований ❌'}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="password"
+                    className="text-[11px] font-bold text-neutral-500 uppercase"
+                  >
+                    Новий пароль
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="password"
+                      type="text"
+                      name="password"
+                      value={selectedUser.password || ''}
+                      placeholder="Введіть або згенеруйте..."
+                      className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+                      onChange={(e) => {
+                        setSelectedUser({
+                          ...selectedUser,
+                          password: e.target.value,
+                        });
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 h-9 shrink-0 cursor-pointer rounded-xl border-none px-3.5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:shadow"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const newPassword = generatePassword();
+                        setSelectedUser({
+                          ...selectedUser,
+                          password: newPassword,
+                        });
+                      }}
+                    >
+                      Згенерувати
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity date */}
+              <div className="mt-3 flex items-center justify-between rounded-lg border border-neutral-200/50 bg-neutral-200/40 p-2.5 text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                <span>Остання активність</span>
+                <span className="font-extrabold text-neutral-700">
+                  {new Date(updatedAt).toLocaleDateString('uk-UA')}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Address card */}
+          <div className="mt-4 flex flex-col gap-2 rounded-xl border border-neutral-100 bg-neutral-50 p-4">
+            <h3 className="flex items-center gap-1.5 border-b border-neutral-200/50 pb-2 text-xs font-bold tracking-wider text-neutral-400 uppercase">
+              <MapPin size={14} />
+              Адреса доставки
+            </h3>
+            <textarea
+              id="address"
+              name="address"
+              value={address || ''}
+              placeholder="Вкажіть область, місто, № відділення Нової Пошти або адресу..."
+              className="focus:border-primary-500 focus:ring-primary-500 min-h-[60px] w-full resize-none rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-800 transition-colors focus:ring-1 focus:outline-none"
+              onChange={(e) => {
+                setSelectedUser({
+                  ...selectedUser,
+                  address: e.target.value,
+                });
               }}
-              title="Видалити користувача"
-              className="bg-red-300 hover:bg-red-400"
-            >
-              Видалити
-            </Button>
+            />
           </div>
-          <Button
-            className="bg-green-200 hover:bg-green-400 focus:bg-green-400 active:bg-green-400"
-            onClick={() => {
-              if (confirm('Відновити користувача?')) dispatch(restoreUserThunk(selectedUser.id));
-            }}
-            type="button"
-          >
-            Відновити
-          </Button>
-          <Button
-            className="bg-green-300 hover:bg-green-500 focus:bg-green-500 active:bg-green-500"
-            type="submit"
-          >
-            Зберегти
-          </Button>
-        </div>
-      </form>
-      {orders.length > 0 ? (
-        <div>
-          <div>
-            <h3 className="w-full text-lg font-medium">Замовлення:</h3>
+
+          {/* Orders list card */}
+          {orders.length > 0 ? (
+            <div className="mt-4">
+              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-bold tracking-wider text-neutral-400 uppercase">
+                <ClipboardList size={14} />
+                Історія замовлень ({orders.length})
+              </h3>
+              <div className="overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50/50 shadow-sm">
+                <div className="max-h-[160px] overflow-y-auto">
+                  <table className="w-full border-collapse text-left">
+                    <thead>
+                      <tr className="border-b border-neutral-200 bg-neutral-100/80 text-xs font-bold tracking-wider text-neutral-600 uppercase">
+                        <th className="px-4 py-2.5">Код замовлення</th>
+                        <th className="px-4 py-2.5">Статус</th>
+                        <th className="px-4 py-2.5 text-right">Сума</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-200/60 bg-white">
+                      {orders.map((order) => (
+                        <tr
+                          key={order.id}
+                          className="text-xs text-neutral-800 transition-colors hover:bg-neutral-50"
+                        >
+                          <td className="px-4 py-2.5 font-bold text-neutral-900">
+                            {order.orderCode}
+                          </td>
+                          <td className="px-4 py-2.5 font-medium text-neutral-700">
+                            {order.status}
+                          </td>
+                          <td className="px-4 py-2.5 text-right font-extrabold text-neutral-900">
+                            ${order.totalPrice.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-xl border border-neutral-100 bg-neutral-50 p-4 text-center">
+              <h3 className="text-xs font-bold tracking-wider text-neutral-400 uppercase">
+                Клієнт ще не здійснив жодного замовлення
+              </h3>
+            </div>
+          )}
+
+          {/* Bottom Action buttons */}
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-neutral-100 pt-4 sm:flex-row">
+            <div className="flex w-full items-center gap-2.5 sm:w-auto">
+              <Button
+                type="reset"
+                onClick={handleReset}
+                className="h-10 cursor-pointer rounded-xl border-none bg-neutral-200 px-4 text-xs font-semibold text-neutral-700 shadow-sm transition-all duration-150 hover:bg-neutral-300 hover:shadow active:bg-neutral-400"
+                title="Відновити дані до початкового стану"
+              >
+                Скинути
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  if (confirm('Ви впевнені, що хочете видалити користувача?')) {
+                    dispatch(deleteUserThunk(selectedUser.id))
+                      .unwrap()
+                      .then(() => {
+                        closeModal();
+                      })
+                      .catch(() => {
+                        toast.error('Помилка при видаленні користувача');
+                      });
+                  }
+                }}
+                title="Видалити користувача"
+                className="h-10 cursor-pointer rounded-xl border-none bg-red-100 px-4 text-xs font-semibold text-red-700 shadow-sm transition-all duration-150 hover:bg-red-200 hover:shadow"
+              >
+                Видалити
+              </Button>
+            </div>
+
+            <div className="flex w-full items-center justify-end gap-2.5 sm:w-auto">
+              <Button
+                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-100 px-4 text-xs font-semibold text-emerald-700 shadow-sm transition-all duration-150 hover:bg-emerald-200 hover:shadow"
+                onClick={() => {
+                  if (confirm('Відновити користувача?'))
+                    dispatch(restoreUserThunk(selectedUser.id));
+                }}
+                type="button"
+              >
+                Відновити
+              </Button>
+              <Button
+                type="submit"
+                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-600 px-5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 hover:shadow active:bg-emerald-800"
+              >
+                Зберегти
+              </Button>
+            </div>
           </div>
-          <ul>
-            <li className="grid grid-cols-3 border-b border-gray-200">
-              <p className="font-medium">Номер</p>
-              <p className="font-medium">Статус</p>
-              <p className="font-medium">Сума $</p>
-            </li>
-            {orders.map((order) => (
-              <li key={order.id} className="grid grid-cols-3 border-b border-gray-200">
-                <p>{order.orderCode}</p>
-                <p>{order.status}</p>
-                <p>{order.totalPrice.toFixed(2)}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <h3 className="w-full text-lg font-medium">Клієнт ще не здійснив жодного замовлення</h3>
-      )}
+        </form>
+      </div>
     </Modal>
   );
 };

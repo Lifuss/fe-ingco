@@ -74,7 +74,11 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     return orders.map((order) => ({
       numberCol: order.orderCode,
       dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
-      loginCol: 'login' in order.user ? order.user.login : order.user.email,
+      loginCol: order.user
+        ? 'login' in order.user
+          ? order.user.login
+          : order.user.email
+        : order.guestEmail || order.guestPhone || 'Гість',
       statusCol: `${order.status} ${statusEmoji[order.status]}`,
       commentCol: order.comment,
       totalPrice: !isRetail ? Math.ceil(order.totalPrice * usdRate) : order.totalPrice,

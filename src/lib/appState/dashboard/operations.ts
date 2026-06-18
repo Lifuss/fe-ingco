@@ -64,7 +64,15 @@ export const fetchUsersThunk = createAsyncThunk(
   ) => {
     try {
       const { data } = await apiIngco.get('/users', {
-        params: { q, role: role.toUpperCase(), isB2B, isUserVerified, isDeleted, page, limit },
+        params: {
+          q,
+          role: role.toUpperCase(),
+          isB2b: isB2B,
+          isUserVerified,
+          isDeleted,
+          page,
+          limit,
+        },
         signal,
       });
       return {
@@ -97,10 +105,28 @@ export const createUserThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const payload = {
-        ...credentials,
+      const payload: Record<string, any> = {
+        firstName: credentials.firstName,
+        lastName: credentials.lastName,
+        surName: credentials.surName,
+        email: credentials.email,
+        login: credentials.login,
+        password: credentials.password,
+        phone: credentials.phone,
         role: credentials.role ? credentials.role.toUpperCase() : undefined,
+        isB2b: credentials.isB2B === 'true',
       };
+
+      if (credentials.edrpou !== undefined) {
+        payload.edrpou = credentials.edrpou;
+      }
+      if (credentials.about !== undefined) {
+        payload.about = credentials.about;
+      }
+      if (credentials.address !== undefined) {
+        payload.address = credentials.address;
+      }
+
       const { data } = await apiIngco.post('/users', payload);
       return normalizeUser(data);
     } catch (error) {
@@ -111,12 +137,38 @@ export const createUserThunk = createAsyncThunk(
 
 export const updateUserThunk = createAsyncThunk(
   'updateUser',
-  async (user: Omit<User, 'token' | 'createdAt' | 'updatedAt'>, { rejectWithValue }) => {
+  async (
+    user: Omit<User, 'token' | 'createdAt' | 'updatedAt'> & { password?: string; about?: string },
+    { rejectWithValue },
+  ) => {
     try {
-      const payload = {
-        ...user,
-        role: user.role ? user.role.toUpperCase() : undefined,
+      const payload: Record<string, any> = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        surName: user.surName,
+        email: user.email,
+        login: user.login,
+        phone: user.phone,
+        isVerified: user.isVerified,
+        isB2b: user.isB2B,
       };
+
+      if (user.role) {
+        payload.role = user.role.toUpperCase();
+      }
+      if (user.password) {
+        payload.password = user.password;
+      }
+      if (user.edrpou !== undefined) {
+        payload.edrpou = user.edrpou;
+      }
+      if (user.about !== undefined) {
+        payload.about = user.about;
+      }
+      if (user.address !== undefined) {
+        payload.address = user.address;
+      }
+
       const { data } = await apiIngco.put(`/users/${user.id}`, payload);
 
       return normalizeUser(data);

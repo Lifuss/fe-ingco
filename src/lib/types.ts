@@ -91,7 +91,12 @@ export type UserWithAuth = {
 export interface Order {
   id: number;
   orderCode: string;
-  user: UserWithoutAuth | UserWithAuth;
+  user: UserWithoutAuth | UserWithAuth | null;
+  guestEmail?: string | null;
+  guestFirstName?: string | null;
+  guestLastName?: string | null;
+  guestSurName?: string | null;
+  guestPhone?: string | null;
   products: {
     product: {
       id: number;

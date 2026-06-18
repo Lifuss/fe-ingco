@@ -140,16 +140,29 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
     }
   };
 
-  const clientName =
-    'userId' in user
+  const clientName = user
+    ? 'userId' in user
       ? user.userId
         ? formatUserName(user.userId)
         : 'Користувач видалений'
       : user
         ? formatUserName(user)
-        : 'Користувач видалений';
-  const clientEmail = 'userId' in user ? user.userId?.email || '—' : user?.email || '—';
-  const clientPhone = 'userId' in user ? user.userId?.phone || '—' : user?.phone || '—';
+        : 'Користувач видалений'
+    : formatUserName({
+        firstName: selectedOrder.guestFirstName || undefined,
+        lastName: selectedOrder.guestLastName || undefined,
+        surName: selectedOrder.guestSurName || undefined,
+      });
+  const clientEmail = user
+    ? 'userId' in user
+      ? user.userId?.email || '—'
+      : user?.email || '—'
+    : selectedOrder.guestEmail || '—';
+  const clientPhone = user
+    ? 'userId' in user
+      ? user.userId?.phone || '—'
+      : user?.phone || '—'
+    : selectedOrder.guestPhone || '—';
 
   return (
     <Modal isOpen={isOpen} onRequestClose={closeModal} style={modifiedStyles} ariaHideApp={false}>
