@@ -8,8 +8,9 @@ import { deleteProductThunk, fetchMainTableDataThunk } from '@/lib/appState/main
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
+import ConfirmModal from '@/app/ui/modals/ConfirmModal';
 
 type ProductTableRow = {
   articleCol: string;
@@ -19,13 +20,22 @@ type ProductTableRow = {
   rrcCol: string;
   availabilityCol: number;
   editCol: number;
-  sortCol: number;
 };
 
 const ProductTable = () => {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const { products, totalPages } = useAppSelector((state) => state.persistedMainReducer);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<{ id: number; name: string } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (productToDelete) {
+      dispatch(deleteProductThunk(productToDelete.id));
+      setProductToDelete(null);
+    }
+  };
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
@@ -58,7 +68,6 @@ const ProductTable = () => {
         : product.priceRetailRecommendation.toString(),
       availabilityCol: product.countInStock,
       editCol: product.id,
-      sortCol: product.sort,
     }));
   }, [products]);
 
@@ -67,10 +76,26 @@ const ProductTable = () => {
       {
         header: 'Артикль',
         accessorKey: 'articleCol',
+        cell: ({ row }) => (
+          <Link
+            href={`/dashboard/product/edit/${row.original.editCol}`}
+            className="block w-full text-left transition-colors hover:text-blue-500"
+          >
+            {row.original.articleCol}
+          </Link>
+        ),
       },
       {
         header: 'Найменування',
         accessorKey: 'nameCol',
+        cell: ({ row }) => (
+          <Link
+            href={`/dashboard/product/edit/${row.original.editCol}`}
+            className="block w-full text-left transition-colors hover:text-blue-500"
+          >
+            {row.original.nameCol}
+          </Link>
+        ),
       },
       {
         header: 'Категорія',
@@ -89,29 +114,14 @@ const ProductTable = () => {
         accessorKey: 'availabilityCol',
       },
       {
-        header: 'Сортування',
-        accessorKey: 'sortCol',
-      },
-      {
-        header: 'Ред|Вид',
+        header: 'Вид',
         accessorKey: 'editCol',
         cell: ({ row }) => (
-          <div className="flex justify-center gap-4">
-            <Link
-              href={`/dashboard/product/edit/${row.original.editCol}`}
-              className="flex justify-center"
-            >
-              <Icon
-                icon="edit"
-                className="fill-inactive h-[25px] w-[25px] cursor-pointer transition-colors hover:fill-black"
-              />
-            </Link>
+          <div className="flex justify-center">
             <button
               onClick={() => {
-                const productName = row.original.nameCol as string;
-                if (confirm(`Ви впевнені, що хочете видалити "${productName}"?`)) {
-                  dispatch(deleteProductThunk(row.original.editCol));
-                }
+                setProductToDelete({ id: row.original.editCol, name: row.original.nameCol });
+                setIsConfirmOpen(true);
               }}
             >
               <Icon
@@ -123,7 +133,7 @@ const ProductTable = () => {
         ),
       },
     ],
-    [dispatch],
+    [],
   );
 
   return (
@@ -138,6 +148,20 @@ const ProductTable = () => {
       <div className="mx-auto mt-5 w-fit">
         <Pagination totalPages={totalPages} />
       </div>
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setProductToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Видалення товару"
+        message={`Ви впевнені, що хочете видалити товар "${productToDelete?.name}"?`}
+        confirmText="Видалити"
+        cancelText="Скасувати"
+        type="danger"
+      />
     </div>
   );
 };
