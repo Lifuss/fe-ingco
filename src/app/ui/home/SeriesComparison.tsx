@@ -390,7 +390,7 @@ function ProductCarouselCard({
           alt={product.name}
           width={150}
           height={150}
-          className="max-h-[140px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          className="h-auto max-h-[140px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
         />
         {/* Sale Tag */}
         {isSale && (

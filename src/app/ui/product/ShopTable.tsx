@@ -39,7 +39,14 @@ type ShopTableRow = {
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state);
+  const {
+    products,
+    total,
+    totalPages,
+    currencyRates: { USD = 0 },
+    shopView,
+  } = useAppSelector((state) => state.persistedMainReducer);
+  const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -62,13 +69,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     setPreviewImage(null);
   };
 
-  const {
-    products,
-    total,
-    totalPages,
-    currencyRates: { USD = 0 },
-  } = state.persistedMainReducer;
-  const favorites: Product[] = state.persistedAuthReducer.user?.favorites || [];
+  const favorites: Product[] = user?.favorites || [];
   const favoritesList = favorites.map((product) => product.id);
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
@@ -329,7 +330,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <div className="relative">
             <FiltersBlock listType="partner" />
             <div>
-              {state.persistedMainReducer.shopView === 'table' ? (
+              {shopView === 'table' ? (
                 <Table<ShopTableRow> columns={columns} data={data} scrollTrigger={page} />
               ) : (
                 <ShopList

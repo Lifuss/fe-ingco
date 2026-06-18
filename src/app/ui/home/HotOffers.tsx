@@ -335,7 +335,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
           alt={product.name}
           width={180}
           height={180}
-          className="max-h-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          className="h-auto max-h-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 

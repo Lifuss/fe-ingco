@@ -194,7 +194,7 @@ const ProductCard = ({
               <Image
                 src={image ? NEXT_PUBLIC_API + image : '/placeholder.webp'}
                 alt={name}
-                className="max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                className="object-contain transition-transform duration-500 group-hover:scale-105"
                 fill={true}
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 loading="lazy"

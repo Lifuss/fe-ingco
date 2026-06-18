@@ -518,7 +518,7 @@ const AdminProductForm = ({
               <div className="flex h-[180px] w-[180px] items-center justify-center overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-sm select-none">
                 <Image
                   src={imageUrl || '/placeholder.webp'}
-                  className="max-h-full w-auto rounded-lg object-contain"
+                  className="h-auto max-h-full w-auto rounded-lg object-contain"
                   alt={product?.name || 'Фото товару'}
                   width={180}
                   height={180}
