@@ -177,8 +177,16 @@ const authStateSlice = createSlice({
           state.user.login = normalizedUser.login;
           state.user.role = normalizedUser.role;
           state.user.favorites = normalizedUser.favorites as unknown as Product[];
-          state.user.cart = normalizedUser.cart as unknown as { quantity: number; id: number; productId: Product }[];
-          state.user.retailCart = (normalizedUser.cartRetail || []) as unknown as { quantity: number; id: number; productId: Product }[];
+          state.user.cart = normalizedUser.cart as unknown as {
+            quantity: number;
+            id: number;
+            productId: Product;
+          }[];
+          state.user.retailCart = (normalizedUser.cartRetail || []) as unknown as {
+            quantity: number;
+            id: number;
+            productId: Product;
+          }[];
           state.user.firstName = normalizedUser.firstName;
           state.user.lastName = normalizedUser.lastName;
           state.user.email = normalizedUser.email;

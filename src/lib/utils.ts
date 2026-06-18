@@ -7,7 +7,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface RawProduct extends Omit<Product, 'price' | 'priceBulk' | 'rrcSale' | 'enterPrice' | 'priceRetailRecommendation' | 'warranty' | 'sort' | 'countInStock' | 'category'> {
+interface RawProduct extends Omit<
+  Product,
+  | 'price'
+  | 'priceBulk'
+  | 'rrcSale'
+  | 'enterPrice'
+  | 'priceRetailRecommendation'
+  | 'warranty'
+  | 'sort'
+  | 'countInStock'
+  | 'category'
+> {
   price: string | number;
   priceBulk?: string | number | null;
   rrcSale?: string | number | null;
@@ -91,7 +102,7 @@ export function normalizeUser(user: unknown): NormalizedUserResult {
   return {
     ...raw,
     role: typeof raw.role === 'string' ? raw.role.toLowerCase() : 'user',
-    orders: (((raw.orders as RawUserOrder[]) || [])).map((o) => ({
+    orders: ((raw.orders as RawUserOrder[]) || []).map((o) => ({
       ...o,
       orderCode: String(o.orderCode),
       totalPrice: Number(o.totalPrice),

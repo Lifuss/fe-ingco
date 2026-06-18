@@ -15,8 +15,7 @@ const CatalogSidebar = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const rawProductsCategories =
-    useAppSelector((state) => state.persistedMainReducer.categories);
+  const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
   const productsCategories = useMemo(() => {
     const categories = rawProductsCategories || [];
     const explicitlyHiddenIds = new Set(
@@ -366,7 +365,7 @@ const CatalogSidebar = () => {
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
-              className="text-primary-500 hover:text-primary-600 text-xs font-medium hover:underline cursor-pointer"
+              className="text-primary-500 hover:text-primary-600 cursor-pointer text-xs font-medium hover:underline"
             >
               Скинути
             </button>

@@ -1,27 +1,29 @@
 # AGENTS.md — INGCO Ukraine E-Commerce Frontend
 
-This file serves as the single centralized source of truth for AI instructions, conventions, and developer guidelines for the INGCO Frontend project.
+> **Stack**: Next.js 16.2.3 · React 19 · Redux Toolkit 2.11 · Tailwind CSS 4 · shadcn v4 · TypeScript 5  
+> **Deploy target**: Vercel  
+> **Language**: TypeScript (strict)
 
 ---
 
-## Project Overview
+## 1. Project Overview
 
 E-commerce platform for INGCO Ukraine (official tool importer). Supports three user segments:
 
-- **B2C Retail** (guest + registered) - consumer product catalog at `/` and `/retail`
-- **B2B Wholesale** (verified businesses) - wholesale catalog at `/` (for authenticated B2B users) with table views and bulk export
-- **Admin Dashboard** - full CRM at `/dashboard` (product/order/user/category management, analytics)
+- **B2C Retail** (guest + registered) — consumer product catalog at `/` and `/retail`
+- **B2B Wholesale** (verified businesses) — wholesale catalog at `/` (for authenticated B2B users) with table views and bulk export
+- **Admin Dashboard** — full CRM at `/dashboard` (product/order/user/category management, analytics)
 
-- **Live Site:** https://ingco-service.win
-- **Backend API:** https://api-ingco-service.win/api (NestJS + PostgreSQL)
-- **UI Language:** Ukrainian (all UI text, badges, and alerts are hardcoded in Ukrainian; no i18n library)
-- **Currency:** UAH (Ukrainian Hryvnia)
+| Resource        | URL                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------- |
+| **Live Site**   | https://ingco-service.win                                                               |
+| **Backend API** | https://api-ingco-service.win/api (NestJS + PostgreSQL)                                 |
+| **UI Language** | Ukrainian (all UI text, badges, and alerts are hardcoded in Ukrainian; no i18n library) |
+| **Currency**    | UAH (Ukrainian Hryvnia)                                                                 |
 
 ---
 
-## Quick Commands
-
-Run these commands in the workspace root:
+## 2. Quick Commands
 
 ```bash
 npm run dev          # Start development server
@@ -35,7 +37,7 @@ npm run prettier:check # Verify formatting
 
 ---
 
-## Project Structure
+## 3. Project Structure
 
 ```
 src/
@@ -49,7 +51,7 @@ src/
       layout.tsx                # Shared catalog layout
       page.tsx                  # Main catalog page (root /)
     about-us/                   # About us pages (contacts, partnership, support)
-    api/                        # Next.js API routes
+    api/                        # Next.js API routes (currency, feed)
     auth/                       # Authentication pages (login, register, forgot)
     dashboard/                  # Admin dashboard CRM
       tables/                   # Data table views (ProductTable, CategoryTable, etc.)
@@ -57,7 +59,7 @@ src/
       layout.tsx                # Dashboard layout with sidebar
     legal/                      # Legal pages (cookies, offer, privacy, returns, shipping, terms)
     service/                    # StoreProvider, PrivateRouting/withAuth HOC
-    ui/                         # Shared UI components
+    ui/                         # Shared UI components (NOT for pages)
       buttons/                  # Button components
       catalog/                  # Catalog-specific components (CatalogSidebar, FiltersBlock)
       dashboard/                # Dashboard-specific components
@@ -68,7 +70,7 @@ src/
       product/                  # Product display components (ProductCard, CartTable, etc.)
       skeletons/                # Loading skeleton components
     globals.css                 # Global styles (Tailwind + custom CSS variables)
-    layout.tsx                  # Root layout with providers
+    layout.tsx                  # Root layout with providers, SEO, JSON-LD schemas
   lib/                          # Shared utilities and logic
     appState/                   # Redux store, slices, operations
       store.ts                  # Redux store configuration
@@ -81,17 +83,16 @@ src/
     constants.ts                # App-wide constants (contacts, config)
     utils.ts                    # Utility functions
     hooks.tsx                   # Custom React hooks
-    metadata.ts                 # Next.js metadata helpers
+    metadata.ts                 # Next.js metadata helpers (SITE_URL, SITE_NAME)
     novaPoshta.ts               # Nova Poshta delivery API integration
-  proxy.ts                      # Next.js middleware — protects /dashboard (admin-only) and
-                                # injects auth state into request headers for SSR
+  proxy.ts                      # Next.js middleware — route protection (see section 8)
 ```
 
 ---
 
-## Tech Stack
+## 4. Tech Stack
 
-- **Framework:** Next.js 16 (App Router), React 19, TypeScript 5.x
+- **Framework:** Next.js 16.2.3 (App Router), React 19, TypeScript 5
 - **State:** Redux Toolkit 2.11 + Redux Persist 6.0 + Redux Thunk 3.1
 - **Styling:** Tailwind CSS 4 with custom theme; `prettier-plugin-tailwindcss` **auto-sorts Tailwind class order** on every format run
 - **UI Components:** shadcn v4 (Radix UI primitives); `class-variance-authority` for component variants
@@ -110,7 +111,56 @@ src/
 
 ---
 
-## Coding Style & Conventions
+## 5. Next.js 16 — Directives & Best Practices
+
+### Server vs Client Components
+
+- **Default is Server Component.** Every `.tsx` file under `src/app/` is a Server Component unless explicitly marked.
+- Add `'use client'` **only** when the component requires React hooks, browser APIs, or event handlers.
+- **Keep `'use client'` at the leaf level.** Push it down to the smallest component that needs interactivity.
+
+### Async Dynamic APIs (CRITICAL)
+
+In Next.js 16, the following APIs return **Promises** and **must be awaited**:
+
+```tsx
+// ✅ Correct — params are async
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ productSlug: string }>;
+}) {
+  const { productSlug } = await params;
+}
+
+// ✅ Correct — searchParams are async
+export default async function CatalogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string; page?: string; category?: string }>;
+}) {
+  const { query, page, category } = await searchParams;
+}
+```
+
+This also applies to: `cookies()`, `headers()`, `draftMode()`.
+
+### Metadata & SEO
+
+- Export `metadata` from `layout.tsx` or `page.tsx` using the `Metadata` type from `next`.
+- Never set `<title>` or `<meta>` tags manually in JSX.
+- JSON-LD structured data (LocalBusiness, WebSite, Product) is implemented in `layout.tsx` via `dangerouslySetInnerHTML`.
+- Use helpers from `lib/metadata.ts` (`SITE_URL`, `SITE_NAME`) for consistency.
+
+### Image Handling
+
+- Use Next.js `Image` component — WebP and AVIF formats are configured in `next.config.ts`.
+- Remote patterns are configured for `localhost:8080` and `api-ingco-service.win`.
+- Use `next/dynamic` for code splitting when loading heavy client components.
+
+---
+
+## 6. Coding Style & Conventions
 
 ### TypeScript & Naming
 
@@ -120,6 +170,12 @@ src/
 - **Helper/Utility Names:** camelCase (e.g., `utils.ts`, `novaPoshta.ts`).
 - **Pages & Layouts:** Next.js conventions (e.g., `page.tsx`, `layout.tsx`).
 
+### Path Aliases
+
+- `@/*` maps to the project root (e.g., `@/lib/utils`, `@/public/images`).
+- `~/*` maps to the `app/` directory (e.g., `~/ui/buttons/Button`, `~/ui/product/ShopTable`).
+- Prefer `~/` when importing from `app/` in route groups like `(retail-catalog)`.
+
 ### Component Structure
 
 - Use functional components with TypeScript.
@@ -128,20 +184,13 @@ src/
 - Export default for page components, and named exports for reusable UI components.
 - Keep components small and focused. Extract business logic into custom hooks (`lib/hooks.tsx`) or Redux slices.
 
-### Path Aliases
-
-- `@/*` maps to the project root (e.g., `@/lib/utils`, `@/public/images`).
-- `~/*` maps to the `app/` directory (e.g., `~/ui/buttons/Button`, `~/ui/product/ShopTable`).
-- Prefer `~/` when importing from `app/` in route groups like `(retail-catalog)`.
-
 ---
 
-## Styling Guidelines
+## 7. Styling Guidelines
 
 ### Tailwind CSS & Colors
 
 - Use Tailwind CSS utility classes. Avoid inline styles.
-- Use `@tailwindcss/forms` for form styling.
 - **Theme Colors:**
   - `primary`: `#f59e0b` (Orange/Gold theme)
   - `secondary`: `#9ca3af`
@@ -150,6 +199,7 @@ src/
   - `orangeLight`: `#fbbf24`
 - Use `clsx` or `tailwind-merge` for conditional classes.
 - Use Lucide icons (`lucide-react`).
+- Class order is auto-sorted by `prettier-plugin-tailwindcss` — do not manually reorder.
 
 ### Redesign & UI Constraints
 
@@ -161,7 +211,15 @@ src/
 
 ---
 
-## Architecture Patterns
+## 8. Architecture Patterns
+
+### Route Protection — `proxy.ts` Middleware
+
+The file `src/proxy.ts` is a Next.js middleware that:
+
+1. **Protects `/dashboard`** — redirects to `/` if no `token` cookie or `role` cookie is not `admin`.
+2. **Protects `/export`** — redirects to `/auth/login` if no `token` cookie (authenticated users only).
+3. **Matcher**: Only runs for `/dashboard/:path*` and `/export/:path*`.
 
 ### Next.js App Router
 
@@ -177,8 +235,9 @@ src/
 - **Async operations:** `lib/appState/{feature}/operations.ts` using `createAsyncThunk`.
 - **Redux Persist Configuration:**
   - Main slice persists: `currencyRates`, `shopView`.
-  - Auth slice persists: `token`, `localStorageCart`.
+  - Auth slice persists: `token`, `localStorageCart`, `user`, `isAuthenticated`, `isB2b`.
 - **Thunk Pattern:** Always use `serializeAxiosError()` in `rejectWithValue` to avoid Redux non-serializable value warnings.
+
   ```typescript
   import { serializeAxiosError } from '@/lib/appState/user/operation';
 
@@ -227,36 +286,53 @@ src/
 
 ---
 
-## Best Practices
+## 9. Environment Variables
 
-- **Performance:**
-  - Use Next.js `Image` component (handles lazy loading, sizing, and formats by default).
-  - WebP and AVIF formats are preferred.
-  - Use `next/dynamic` for code splitting when loading heavy client components.
-- **Security:**
-  - Never expose sensitive API keys or credentials in client components.
-  - Use environment variables for secrets.
-- **Error Handling:**
-  - Always use try-catch block around asynchronous operations.
-  - Inform users of errors using toast notifications via `react-toastify`.
-
----
-
-## Common Mistakes to Avoid
-
-- **Never use inline styles** — always use Tailwind CSS utility classes.
-- **Never use the `pages/` router** — this project uses App Router exclusively.
-- **Never add new state management solutions** — use Redux Toolkit only.
-- **Never translate UI text to English** — all labels, badges, toasts, and messages must be in Ukrainian.
-- **Never call the backend API directly in components** — always dispatch a Redux thunk.
-- **Never use raw `error.response?.data?.message` in `rejectWithValue`** — use `serializeAxiosError(error)` to prevent non-serializable Redux state warnings.
-- **Do not remove the `'use no memo'` directive** from files using `@tanstack/react-table` — it disables React Compiler memoization which breaks TanStack Table's internal state.
-- **Do not create pages inside `app/ui/`** — `ui/` is for reusable components only; pages go in their route directories.
-- **Do not manually sort Tailwind classes** — `prettier-plugin-tailwindcss` handles class order automatically on every `npm run prettier` run.
+| Variable                   | Required | Exposed to Client | Description                                          |
+| -------------------------- | -------- | ----------------- | ---------------------------------------------------- |
+| `NEXT_PUBLIC_API`          | ✅       | ✅                | Backend API base URL (e.g., `http://localhost:8080`) |
+| `NEXT_PUBLIC_VIBER_URL`    | ❌       | ✅                | Viber community link                                 |
+| `NEXT_PUBLIC_TIKTOK_URL`   | ❌       | ✅                | TikTok profile link                                  |
+| `NEXT_PUBLIC_TELEGRAM_URL` | ❌       | ✅                | Telegram group link                                  |
+| `NEXT_PUBLIC_FACEBOOK_URL` | ❌       | ✅                | Facebook page link                                   |
+| `NP_API_URL`               | ❌       | ❌                | Nova Poshta API endpoint                             |
+| `NP_API_KEY`               | ❌       | ❌                | Nova Poshta API key                                  |
+| `POSTGRES_URL`             | ❌       | ❌                | Vercel Postgres URL (for Nova Poshta data)           |
 
 ---
 
-## AI Browser Testing Credentials
+## 10. Anti-Patterns — What NOT To Do
+
+### ❌ Next.js Anti-Patterns
+
+| Anti-Pattern                                                             | Why It's Wrong                                                                         | Do This Instead                                                                 |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Forgetting `await` on `params`, `searchParams`, `cookies()`, `headers()` | Next.js 16 made these async — unawaited access returns a Promise object, not the value | Always `const { slug } = await params`                                          |
+| Putting `'use client'` on layout or page that only fetches data          | Disables server rendering, inflates client bundle                                      | Keep layouts/pages as Server Components; push `'use client'` to leaf components |
+| Using the `pages/` router                                                | This project uses App Router exclusively — Pages Router APIs don't exist               | Use `page.tsx`, `layout.tsx`, `route.ts` under `app/`                           |
+| Creating pages inside `app/ui/`                                          | `ui/` is for reusable components only — Next.js will treat files there as routes       | Put pages in their proper route directories                                     |
+
+### ❌ React / Redux Anti-Patterns
+
+| Anti-Pattern                                                     | Why It's Wrong                                                    | Do This Instead                                                        |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Calling the backend API directly in components                   | Bypasses token interceptors, breaks consistency                   | Always dispatch a Redux thunk using the `apiIngco` instance            |
+| Using raw `error.response?.data?.message` in `rejectWithValue`   | Non-serializable values cause Redux warnings and break DevTools   | Use `serializeAxiosError(error)`                                       |
+| Adding new state management solutions                            | Multiple state libs create sync bugs and confusion                | Use Redux Toolkit only                                                 |
+| Removing the `'use no memo'` directive from TanStack Table files | React Compiler memoization breaks TanStack Table's internal state | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
+| Using `index` as `key` for dynamic lists with mutations          | Causes incorrect DOM diffing, ghost elements, state leaking       | Use a stable unique ID (`item.id`, `item.article`)                     |
+
+### ❌ Styling Anti-Patterns
+
+| Anti-Pattern                      | Why It's Wrong                                                  | Do This Instead                              |
+| --------------------------------- | --------------------------------------------------------------- | -------------------------------------------- |
+| Using inline styles               | Not cacheable, hard to override, no hover/media support         | Use Tailwind CSS utility classes             |
+| Manually sorting Tailwind classes | `prettier-plugin-tailwindcss` handles class order automatically | Let Prettier auto-sort on `npm run prettier` |
+| Translating UI text to English    | All labels, badges, toasts, and messages must be in Ukrainian   | Hardcode Ukrainian strings everywhere        |
+
+---
+
+## 11. AI Browser Testing Credentials
 
 Use the following credentials when running browser-based tests, automated flows, or navigating secure parts of the site:
 
