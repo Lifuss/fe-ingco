@@ -106,7 +106,7 @@ const RetailCartTable = () => {
         cell: ({ row }) => {
           return (
             <button
-              className="min-w-[150px] text-left transition-colors hover:text-blue-500"
+              className="w-full min-w-[150px] text-left transition-colors hover:text-blue-500"
               onClick={() => {
                 openProductModal(row.original.product);
               }}
@@ -124,9 +124,9 @@ const RetailCartTable = () => {
             <Image
               src={`${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`}
               alt={row.original.nameCol}
-              width={40}
-              height={40}
-              className="mx-auto h-11 w-11"
+              width={64}
+              height={64}
+              className="mx-auto block h-11 w-11 cursor-pointer object-contain transition-transform hover:scale-105 min-[1440px]:h-16 min-[1440px]:w-16"
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
                 img.innerHTML = `<img src="${process.env.NEXT_PUBLIC_API}${row.original.photoCol}" alt="${row.original.nameCol}" />`;

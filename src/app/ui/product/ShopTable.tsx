@@ -17,7 +17,8 @@ import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
-import { Heart, MousePointerClick, SquareMousePointer } from 'lucide-react';
+import { Heart, MousePointerClick, SquareMousePointer, X } from 'lucide-react';
+import Modal from 'react-modal';
 import ShopList from './ShopList';
 import FiltersBlock, { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -41,7 +42,8 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const state = useAppSelector((state) => state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{ src: string; alt: string } | null>(null);
   const { logProductClick } = useProductStats();
 
   const openModal = () => {
@@ -49,6 +51,15 @@ const ShopTable = ({ isFavoritePage = false }) => {
   };
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const openPreviewModal = (src: string, alt: string) => {
+    setPreviewImage({ src, alt });
+    setIsPreviewModalOpen(true);
+  };
+  const closePreviewModal = () => {
+    setIsPreviewModalOpen(false);
+    setPreviewImage(null);
   };
 
   const {
@@ -108,25 +119,23 @@ const ShopTable = ({ isFavoritePage = false }) => {
     [dispatch, favoritesList],
   );
 
-  // ref to store quantities
-  const handleQuantityChange = (id: number, value: number) => {
-    setQuantities((prev) => ({ ...prev, [id]: value }));
-  };
-
   const handleCartClick = useCallback(
     (id: number, productName: string) => {
-      if (quantities[id] > 0) {
+      const input = document.getElementsByName(String(id))[0] as HTMLInputElement | undefined;
+      const qty = input ? parseInt(input.value) || 0 : 0;
+
+      if (qty > 0) {
         dispatch(
           addProductToCartThunk({
             productId: id,
-            quantity: quantities[id],
+            quantity: qty,
           }),
         )
           .unwrap()
           .then(() => {
-            toast.success(`${quantities[id]} шт. - ${productName} додано в кошик`);
+            toast.success(`${qty} шт. - ${productName} додано в кошик`);
           });
-        setQuantities((prev) => ({ ...prev, [id]: 0 }));
+        if (input) input.value = '';
       } else {
         dispatch(
           addProductToCartThunk({
@@ -138,10 +147,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
           .then(() => {
             toast.success(`1 шт. - ${productName} додано в кошик`);
           });
-        setQuantities((prev) => ({ ...prev, [id]: 0 }));
+        if (input) input.value = '';
       }
     },
-    [dispatch, quantities, setQuantities],
+    [dispatch],
   );
 
   const data = useMemo<ShopTableRow[]>(() => {
@@ -174,7 +183,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         accessorKey: 'nameCol',
         cell: ({ row }) => (
           <button
-            className="min-w-[250px] text-left transition-colors hover:text-blue-500"
+            className="w-full min-w-[180px] text-left transition-colors hover:text-blue-500 lg:min-w-[220px] xl:min-w-[250px]"
             onClick={() => {
               setSelectedProduct(row.original.product);
               logProductClick(row.original.product.id);
@@ -193,25 +202,26 @@ const ShopTable = ({ isFavoritePage = false }) => {
         ),
         accessorKey: 'photoCol',
         cell: ({ row }) => {
+          const imgSrc = row.original.photoCol
+            ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
+            : '/placeholder.webp';
           return (
             <Image
-              src={
-                row.original.photoCol
-                  ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
-                  : '/placeholder.webp'
-              }
+              src={imgSrc}
               alt={row.original.nameCol || 'Зображення товару'}
-              width={40}
-              height={40}
-              className="mx-auto h-11 w-11"
+              width={64}
+              height={64}
+              className="mx-auto h-11 w-11 cursor-pointer object-contain transition-transform hover:scale-105 min-[1440px]:h-16 min-[1440px]:w-16"
               loading="lazy"
+              onClick={(e) => {
+                e.stopPropagation();
+                openPreviewModal(imgSrc, row.original.nameCol || 'Зображення товару');
+              }}
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
                 if (img) {
                   const imgTag = document.createElement('img');
-                  imgTag.src = row.original.photoCol
-                    ? `${process.env.NEXT_PUBLIC_API}${row.original.photoCol}`
-                    : '/placeholder.webp';
+                  imgTag.src = imgSrc;
                   imgTag.alt = row.original.nameCol || 'Зображення товару';
                   img.replaceChildren(imgTag);
                   img.style.top = `${e.clientY + 20}px`;
@@ -270,18 +280,12 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <input
             name={String(row.original.id)}
             type="number"
-            className="focus:border-primary-500 h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center font-sans text-xs font-semibold transition-colors focus:bg-white focus:outline-none"
-            onBlur={(e) => {
-              handleQuantityChange(row.original.id, parseInt(e.target.value));
-            }}
+            className="focus:border-primary-500 font-table h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center text-xs font-semibold transition-colors focus:bg-white focus:outline-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                const input = e.currentTarget;
-                handleQuantityChange(row.original.id, parseInt(input.value));
                 handleCartClick(row.original.id, row.original.nameCol);
               }
             }}
-            defaultValue={quantities[row.original.id] || 0}
             placeholder="0"
           />
         ),
@@ -300,7 +304,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       },
     ],
 
-    [favoritesList, handleCartClick, handleFavoriteClick, logProductClick, quantities],
+    [favoritesList, handleCartClick, handleFavoriteClick, logProductClick],
   );
 
   const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
@@ -324,9 +328,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         <>
           <div className="relative">
             <FiltersBlock listType="partner" />
-            <div
-              className={`${state.persistedMainReducer.shopView === 'table' && 'max-h-[75vh] overflow-auto'}`}
-            >
+            <div>
               {state.persistedMainReducer.shopView === 'table' ? (
                 <Table<ShopTableRow> columns={columns} data={data} scrollTrigger={page} />
               ) : (
@@ -347,6 +349,55 @@ const ShopTable = ({ isFavoritePage = false }) => {
           </div>
 
           <ModalProduct product={selectedProduct} closeModal={closeModal} isOpen={isModalOpen} />
+
+          <Modal
+            isOpen={isPreviewModalOpen}
+            onRequestClose={closePreviewModal}
+            style={{
+              overlay: {
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 99999,
+              },
+              content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
+                border: 'none',
+                background: 'transparent',
+                padding: 0,
+                overflow: 'visible',
+              },
+            }}
+            ariaHideApp={false}
+          >
+            {previewImage && (
+              <div className="animate-fade-in relative flex max-h-[90vh] max-w-[90vw] flex-col items-center overflow-hidden rounded-2xl bg-white p-2 shadow-2xl">
+                <button
+                  className="absolute top-4 right-4 z-50 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black"
+                  onClick={closePreviewModal}
+                >
+                  <X size={20} />
+                </button>
+                <div className="relative h-[80vh] max-h-[600px] w-[80vw] max-w-[600px]">
+                  <Image
+                    src={previewImage.src}
+                    alt={previewImage.alt}
+                    layout="fill"
+                    objectFit="contain"
+                    sizes="(max-width: 600px) 100vw, 600px"
+                    className="rounded-lg"
+                  />
+                </div>
+                <div className="w-full rounded-b-xl border-t border-gray-100 bg-gray-50 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                  {previewImage.alt}
+                </div>
+              </div>
+            )}
+          </Modal>
         </>
       )}
     </>

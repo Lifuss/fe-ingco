@@ -89,7 +89,7 @@ const CartTable = () => {
         cell: ({ row }) => {
           return (
             <button
-              className="min-w-[150px] text-left transition-colors hover:text-blue-500"
+              className="w-full min-w-[150px] text-left transition-colors hover:text-blue-500"
               onClick={() => {
                 openProductModal(row.original.product);
               }}
@@ -111,9 +111,9 @@ const CartTable = () => {
                   : '/placeholder.webp'
               }
               alt={row.original.nameCol || 'Зображення товару'}
-              width={40}
-              height={40}
-              className="mx-auto h-11 w-11"
+              width={64}
+              height={64}
+              className="mx-auto block h-11 w-11 cursor-pointer object-contain transition-transform hover:scale-105 min-[1440px]:h-16 min-[1440px]:w-16"
               onMouseEnter={(e) => {
                 const img = document.getElementById('image') as HTMLDivElement;
                 if (img) {
@@ -159,7 +159,7 @@ const CartTable = () => {
         accessorKey: 'quantityCol',
         cell: ({ row }) => {
           return (
-            <div className="mx-auto flex h-8 w-[100px] items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 font-sans text-xs shadow-inner select-none">
+            <div className="font-table mx-auto flex h-8 w-[100px] items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 text-xs shadow-inner select-none">
               <button
                 onClick={() => handleQuantityChange(row.original.id, 'decrement')}
                 className="flex h-full w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
