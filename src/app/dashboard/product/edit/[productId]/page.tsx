@@ -4,7 +4,7 @@ import AdminProductForm from '@/app/ui/forms/AdminProductForm';
 import { updateProductThunk } from '@/lib/appState/dashboard/operations';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { Product } from '@/lib/types';
+import { Product, ProductCharacteristic, CharacteristicState } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, use, useEffect, useState } from 'react';
 
@@ -23,10 +23,10 @@ const Page = ({ params }: PageProps) => {
   );
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const [characteristics, setCharacteristics] = useState<any[]>(
+  const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
     () => product?.characteristics || [],
   );
-  const [characteristic, setCharacteristic] = useState<any>({
+  const [characteristic, setCharacteristic] = useState<CharacteristicState>({
     code: '',
     name: '',
     value: '',
@@ -58,7 +58,7 @@ const Page = ({ params }: PageProps) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const characteristicsObj = characteristics.reduce((acc, c) => {
-      const key = (c as any).code || c.name;
+      const key = c.code || c.name;
       acc[key] = c.value;
       return acc;
     }, {} as Record<string, string>);

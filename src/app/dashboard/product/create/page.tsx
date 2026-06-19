@@ -6,14 +6,15 @@ import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ProductCharacteristic, CharacteristicState } from '@/lib/types';
 
 const Page = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const [imageUrl, setImageUrl] = useState('');
-  const [characteristics, setCharacteristics] = useState<any[]>([]);
-  const [characteristic, setCharacteristic] = useState<any>({
+  const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>([]);
+  const [characteristic, setCharacteristic] = useState<CharacteristicState>({
     code: '',
     name: '',
     value: '',
@@ -33,7 +34,7 @@ const Page = () => {
     const formData = new FormData(e.currentTarget as HTMLFormElement);
 
     const characteristicsObj = characteristics.reduce((acc, c) => {
-      const key = (c as any).code || c.name;
+      const key = c.code || c.name;
       acc[key] = c.value;
       return acc;
     }, {} as Record<string, string>);

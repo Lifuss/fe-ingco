@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import Table from '@/app/ui/Table';
 import { type ColumnDef } from '@tanstack/react-table';
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import Icon from '@/app/ui/assets/Icon';
 import { AttributeModalEdit } from '@/app/ui/modals/AttributeModal';
+import { ProductAttribute } from '@/lib/types';
 
 type AttributeTableRow = {
   id: number;
@@ -25,13 +26,13 @@ interface AttributesTableProps {
 }
 
 const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTableProps) => {
-  const [attributes, setAttributes] = useState<any[]>([]);
+  const [attributes, setAttributes] = useState<ProductAttribute[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedAttribute, setSelectedAttribute] = useState<any>(null);
+  const [selectedAttribute, setSelectedAttribute] = useState<ProductAttribute | null>(null);
 
-  const fetchAttributes = () => {
-    setLoading(true);
+  const fetchAttributes = useCallback(() => {
+    Promise.resolve().then(() => setLoading(true));
     apiIngco.get('/attributes')
       .then((res) => {
         if (Array.isArray(res.data)) {
@@ -43,13 +44,13 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         toast.error('Не вдалося завантажити список характеристик');
       })
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     fetchAttributes();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchAttributes]);
 
-  const handleDelete = (id: number, name: string) => {
+  const handleDelete = useCallback((id: number, name: string) => {
     if (confirm(`Ви дійсно хочете видалити характеристику "${name}"?`)) {
       apiIngco.delete(`/attributes/${id}`)
         .then(() => {
@@ -61,12 +62,12 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
           toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
         });
     }
-  };
+  }, [onRefresh]);
 
-  const openEditModal = (attr: any) => {
+  const openEditModal = useCallback((attr: ProductAttribute) => {
     setSelectedAttribute(attr);
     setIsEditOpen(true);
-  };
+  }, []);
 
   const data = useMemo<AttributeTableRow[]>(
     () =>
@@ -146,7 +147,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
           return (
             <button
               className="flex w-full justify-center cursor-pointer select-none"
-              onClick={() => openEditModal(rawAttr)}
+              onClick={() => rawAttr && openEditModal(rawAttr)}
             >
               <Icon
                 icon="edit"
@@ -172,7 +173,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         ),
       },
     ],
-    [attributes],
+    [attributes, handleDelete, openEditModal],
   );
 
   if (loading && attributes.length === 0) {

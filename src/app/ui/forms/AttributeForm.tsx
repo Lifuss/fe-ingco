@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface AttributeFormProps {
@@ -27,17 +27,13 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
   const [newOption, setNewOption] = useState('');
   const [isManualCode, setIsManualCode] = useState(!!defaultValue?.code);
 
-  // Auto-slugify name to code if not manually edited
-  useEffect(() => {
-    if (!isManualCode && !defaultValue?.code) {
-      const slugified = name
-        .toLowerCase()
-        .replace(/[^a-z0-9а-яіїєґ\s_]/g, '')
-        .trim()
-        .replace(/\s+/g, '_');
-      setCode(slugified);
-    }
-  }, [name, isManualCode, defaultValue?.code]);
+  const getSlugified = (val: string) => {
+    return val
+      .toLowerCase()
+      .replace(/[^a-z0-9а-яіїєґ\s_]/g, '')
+      .trim()
+      .replace(/\s+/g, '_');
+  };
 
   const handleAddOption = () => {
     const trimmed = newOption.trim();
@@ -75,7 +71,13 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
           required
           placeholder="Наприклад: Напруга акумулятора"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            const newName = e.target.value;
+            setName(newName);
+            if (!isManualCode && !defaultValue?.code) {
+              setCode(getSlugified(newName));
+            }
+          }}
           className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
         />
       </label>
@@ -100,7 +102,7 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
               type="button"
               onClick={() => {
                 setIsManualCode(false);
-                setName(name); // trigger effect
+                setCode(getSlugified(name));
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-primary-500 hover:underline font-bold"
             >

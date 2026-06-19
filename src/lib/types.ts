@@ -133,3 +133,27 @@ export interface SupportTicket {
   createdAt: Date;
   ticketNumber: number;
 }
+
+export interface ProductAttribute {
+  id: number;
+  code: string;
+  name: string;
+  unit?: string | null;
+  options?: string[] | null;
+}
+
+export interface ProductCharacteristic {
+  code: string;
+  name: string;
+  value: string;
+  unit?: string | null;
+}
+
+export interface CharacteristicState {
+  code: string;
+  name: string;
+  value: string;
+  unit: string;
+  options?: string[];
+}
+

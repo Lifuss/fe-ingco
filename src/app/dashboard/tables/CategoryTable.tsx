@@ -15,7 +15,7 @@ import { customModalStyles } from '../../ui/modals/CategoryModal';
 import CategoryForm from '../../ui/forms/CategoryForm';
 import { toast } from 'react-toastify';
 import Icon from '@/app/ui/assets/Icon';
-import { Category } from '@/lib/types';
+import { Category, ProductAttribute } from '@/lib/types';
 import CategorySortView from './CategorySortView';
 
 type CategoryTableRow = {
@@ -108,7 +108,7 @@ const CategoryTable = () => {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setSelectedAttributeIds(data.map((a: any) => a.id));
+          setSelectedAttributeIds(data.map((a: ProductAttribute) => a.id));
         }
       })
       .catch((err) => console.error('Failed to fetch category attributes:', err));

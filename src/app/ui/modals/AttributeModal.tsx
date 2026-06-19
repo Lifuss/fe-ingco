@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import AttributeForm from '../forms/AttributeForm';
 import { toast } from 'react-toastify';
 import { apiIngco } from '@/lib/appState/user/operation';
+import { ProductAttribute } from '@/lib/types';
 import { customModalStyles } from './CategoryModal';
 import { Plus } from 'lucide-react';
 
@@ -59,7 +60,7 @@ export const AttributeModalCreate = ({ onSuccess }: AttributeModalCreateProps) =
 interface AttributeModalEditProps {
   isOpen: boolean;
   closeModal: () => void;
-  defaultValue: any;
+  defaultValue: ProductAttribute | null;
   onSuccess: () => void;
 }
 
@@ -95,7 +96,7 @@ export const AttributeModalEdit = ({
       style={customModalStyles}
       ariaHideApp={false}
     >
-      <AttributeForm handleSubmit={handleSubmit} defaultValue={defaultValue} />
+      <AttributeForm handleSubmit={handleSubmit} defaultValue={defaultValue || undefined} />
     </Modal>
   );
 };

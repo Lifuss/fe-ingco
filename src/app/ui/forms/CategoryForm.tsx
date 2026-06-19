@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAppSelector } from '@/lib/hooks';
-import { Category } from '@/lib/types';
+import { Category, ProductAttribute } from '@/lib/types';
 
 interface CategoryNode extends Category {
   children: CategoryNode[];
@@ -86,7 +86,7 @@ const CategoryForm = ({
   const rawCategoriesList = useAppSelector((state) => state.persistedMainReducer.categories);
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
 
-  const [allAttributes, setAllAttributes] = useState<any[]>([]);
+  const [allAttributes, setAllAttributes] = useState<ProductAttribute[]>([]);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API}/api/attributes`)

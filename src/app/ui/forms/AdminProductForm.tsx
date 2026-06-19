@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { ChangeEvent, FormEvent, useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/lib/types';
+import { Category, Product, ProductCharacteristic, CharacteristicState, ProductAttribute } from '@/lib/types';
 import Icon from '../assets/Icon';
 import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
 
@@ -13,7 +13,6 @@ const questionSvg = (
   </span>
 );
 
-import { Category } from '@/lib/types';
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 
@@ -21,10 +20,10 @@ type AdminProductFormProps = {
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   handleImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
   imageUrl: string;
-  characteristics: any[];
-  setCharacteristics: React.Dispatch<React.SetStateAction<any[]>>;
-  characteristic: any;
-  setCharacteristic: React.Dispatch<React.SetStateAction<any>>;
+  characteristics: ProductCharacteristic[];
+  setCharacteristics: React.Dispatch<React.SetStateAction<ProductCharacteristic[]>>;
+  characteristic: CharacteristicState;
+  setCharacteristic: React.Dispatch<React.SetStateAction<CharacteristicState>>;
   categories: Category[];
   isEdit?: boolean;
   product?: Product;
@@ -97,10 +96,18 @@ const AdminProductForm = ({
   const [selectedMainCategoryId, setSelectedMainCategoryId] = useState<number | ''>(
     () => product?.mainCategory?.id || product?.category?.id || '',
   );
-  const [availableAttributes, setAvailableAttributes] = useState<any[]>([]);
+  const [prevMainCategoryId, setPrevMainCategoryId] = useState<number | ''>(selectedMainCategoryId);
+  const [availableAttributes, setAvailableAttributes] = useState<ProductAttribute[]>([]);
   const [selectedAttrCode, setSelectedAttrCode] = useState<string>('');
   const [isAddingNewOption, setIsAddingNewOption] = useState<boolean>(false);
   const [newOptionValue, setNewOptionValue] = useState<string>('');
+
+  if (selectedMainCategoryId !== prevMainCategoryId) {
+    setPrevMainCategoryId(selectedMainCategoryId);
+    if (!selectedMainCategoryId) {
+      setAvailableAttributes([]);
+    }
+  }
 
   useEffect(() => {
     if (selectedMainCategoryId) {
@@ -112,8 +119,6 @@ const AdminProductForm = ({
           }
         })
         .catch((err) => console.error('Failed to fetch category attributes:', err));
-    } else {
-      setAvailableAttributes([]);
     }
   }, [selectedMainCategoryId]);
 
@@ -427,7 +432,7 @@ const AdminProductForm = ({
                       className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
                       value={characteristic.name}
                       onChange={(e) =>
-                        setCharacteristic((prev: any) => ({
+                        setCharacteristic((prev: CharacteristicState) => ({
                           ...prev,
                           name: e.target.value,
                           code: e.target.value
@@ -541,7 +546,7 @@ const AdminProductForm = ({
                                   a.id === attr.id ? { ...a, options: updatedOptions } : a,
                                 ),
                               );
-                              setCharacteristic((prev: any) => ({
+                              setCharacteristic((prev: CharacteristicState) => ({
                                 ...prev,
                                 options: updatedOptions,
                                 value: val,
@@ -565,7 +570,7 @@ const AdminProductForm = ({
                         onClick={() => {
                           setIsAddingNewOption(false);
                           setNewOptionValue('');
-                          setCharacteristic((prev: any) => ({ ...prev, value: '' }));
+                          setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: '' }));
                         }}
                         className="bg-neutral-200 hover:bg-neutral-300 text-neutral-700 font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer shrink-0 text-xs"
                       >
@@ -582,7 +587,7 @@ const AdminProductForm = ({
                           setIsAddingNewOption(true);
                           setNewOptionValue('');
                         } else {
-                          setCharacteristic((prev: any) => ({ ...prev, value: val }));
+                          setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: val }));
                         }
                       }}
                     >
@@ -607,7 +612,7 @@ const AdminProductForm = ({
                       className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] pl-3.5 pr-12 py-2 text-sm transition-all focus:bg-white focus:outline-none"
                       value={characteristic.value}
                       onChange={(e) =>
-                        setCharacteristic((prev: any) => ({ ...prev, value: e.target.value }))
+                        setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: e.target.value }))
                       }
                     />
                     {characteristic.unit && (

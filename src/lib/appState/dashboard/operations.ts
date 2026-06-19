@@ -105,7 +105,7 @@ export const createUserThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const payload: Record<string, any> = {
+      const payload: Record<string, unknown> = {
         firstName: credentials.firstName,
         lastName: credentials.lastName,
         surName: credentials.surName,
@@ -142,7 +142,7 @@ export const updateUserThunk = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const payload: Record<string, any> = {
+      const payload: Record<string, unknown> = {
         firstName: user.firstName,
         lastName: user.lastName,
         surName: user.surName,

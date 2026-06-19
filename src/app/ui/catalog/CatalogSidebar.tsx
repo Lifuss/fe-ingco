@@ -4,10 +4,14 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
-import { ShieldCheck, Zap, Plug, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { ShieldCheck, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
-import { useDebounce } from 'use-debounce';
-import { Category } from '@/lib/types';
+import { Category, ProductAttribute } from '@/lib/types';
+
+interface FilterAttribute extends ProductAttribute {
+  activeValues: string[];
+}
+
 
 const CatalogSidebar = () => {
   const dispatch = useAppDispatch();
@@ -40,17 +44,16 @@ const CatalogSidebar = () => {
     children: SidebarCategoryNode[];
   }
 
+  // Read URL search params
+  const activeCategoryId = searchParams.get('category') || '';
+
   const [showAllSubcategories, setShowAllSubcategories] = useState(false);
+  const [prevCategoryId, setPrevCategoryId] = useState(activeCategoryId);
+  const [userToggledFilters, setUserToggledFilters] = useState<Record<string, boolean>>({});
 
   // Callback Modal State
   const [isCallbackOpen, setIsCallbackOpen] = useState(false);
 
-  // Read URL search params
-  const activeCategoryId = searchParams.get('category') || '';
-
-  useEffect(() => {
-    setShowAllSubcategories(false);
-  }, [activeCategoryId]);
 
   const categoryTree = useMemo(() => {
     const map = new Map<number, SidebarCategoryNode>();
@@ -84,7 +87,7 @@ const CatalogSidebar = () => {
     if (!activeCategoryId) return null;
     return categoryTree.map.get(Number(activeCategoryId)) || null;
   }, [activeCategoryId, categoryTree]);
-  const [dynamicFilters, setDynamicFilters] = useState<any[]>([]);
+  const [dynamicFilters, setDynamicFilters] = useState<FilterAttribute[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -101,26 +104,32 @@ const CatalogSidebar = () => {
     top: 0,
     left: 0,
   });
-  const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({});
 
-  // Initialize/update expanded filters
-  useEffect(() => {
-    if (dynamicFilters.length > 0) {
-      setExpandedFilters((prev) => {
-        const next = { ...prev };
-        dynamicFilters.forEach((filter, idx) => {
-          const hasSelections = (selectedFilters[filter.code] || []).length > 0;
-          if (hasSelections) {
-            next[filter.code] = true;
-          } else if (next[filter.code] === undefined) {
-            // Expands first 5 groups by default
-            next[filter.code] = idx < 5;
-          }
-        });
-        return next;
-      });
+  // Derived resets & syncing during render to avoid set-state-in-effect
+  if (activeCategoryId !== prevCategoryId) {
+    setPrevCategoryId(activeCategoryId);
+    setShowAllSubcategories(false);
+    setUserToggledFilters({});
+    if (!activeCategoryId) {
+      setDynamicFilters([]);
     }
-  }, [dynamicFilters, selectedFilters]);
+  }
+
+  const urlFilters = searchParams.get('filters');
+  const [prevUrlFilters, setPrevUrlFilters] = useState(urlFilters);
+  if (urlFilters !== prevUrlFilters) {
+    setPrevUrlFilters(urlFilters);
+    let nextFilters = {};
+    if (urlFilters) {
+      try {
+        nextFilters = JSON.parse(urlFilters);
+      } catch {
+        nextFilters = {};
+      }
+    }
+    setSelectedFilters(nextFilters);
+    setFloatingWidget((prev) => ({ ...prev, visible: false }));
+  }
 
   // Fetch filters dynamically when category changes
   useEffect(() => {
@@ -133,25 +142,8 @@ const CatalogSidebar = () => {
           }
         })
         .catch((err) => console.error('Failed to fetch category filters:', err));
-    } else {
-      setDynamicFilters([]);
     }
   }, [activeCategoryId]);
-
-  // Sync selected filters from URL
-  const urlFilters = searchParams.get('filters');
-  useEffect(() => {
-    if (urlFilters) {
-      try {
-        setSelectedFilters(JSON.parse(urlFilters));
-      } catch {
-        setSelectedFilters({});
-      }
-    } else {
-      setSelectedFilters({});
-    }
-    setFloatingWidget((prev) => ({ ...prev, visible: false }));
-  }, [urlFilters]);
 
   // Helper to update URL params
   const updateUrlParams = useCallback(
@@ -252,8 +244,14 @@ const CatalogSidebar = () => {
         loading: false,
         count: data.total || 0,
       }));
-    } catch (err: any) {
-      if (err.name !== 'AbortError') {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Failed to prefetch count:', err);
+        setFloatingWidget((prev) => ({
+          ...prev,
+          loading: false,
+        }));
+      } else if (typeof err === 'object' && err !== null && 'name' in err && (err as { name?: string }).name !== 'AbortError') {
         console.error('Failed to prefetch count:', err);
         setFloatingWidget((prev) => ({
           ...prev,
@@ -487,15 +485,18 @@ const CatalogSidebar = () => {
           </p>
         ) : (
           <div className="flex flex-col gap-5">
-            {dynamicFilters.map((filter) => {
+            {dynamicFilters.map((filter, idx) => {
               const selectedValues = selectedFilters[filter.code] || [];
               const isSelectedAny = selectedValues.length > 0;
-              const isExpanded = !!expandedFilters[filter.code];
+              const isDefaultExpanded = idx < 5 || isSelectedAny;
+              const isExpanded = userToggledFilters[filter.code] !== undefined
+                ? userToggledFilters[filter.code]
+                : isDefaultExpanded;
               return (
                 <div key={filter.code} className="flex flex-col border-b border-neutral-100/60 pb-3 last:border-b-0 last:pb-0">
                   <h3
                     onClick={() =>
-                      setExpandedFilters((prev) => ({ ...prev, [filter.code]: !prev[filter.code] }))
+                      setUserToggledFilters((prev) => ({ ...prev, [filter.code]: !isExpanded }))
                     }
                     className="group/filter-title text-gray-700 hover:text-primary-500 flex cursor-pointer select-none items-center justify-between mb-2 text-xs font-bold tracking-wider uppercase transition-colors"
                   >
