@@ -88,13 +88,14 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
             required
             placeholder="battery_voltage"
             value={code}
+            disabled={!!defaultValue}
             onChange={(e) => {
               setCode(e.target.value);
               setIsManualCode(true);
             }}
-            className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold"
+            className="w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          {isManualCode && (
+          {isManualCode && !defaultValue && (
             <button
               type="button"
               onClick={() => {

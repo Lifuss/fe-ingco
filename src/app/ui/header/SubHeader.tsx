@@ -83,7 +83,6 @@ export default function SubHeader() {
             </Link>
           </li>
         ))}
-        :{' '}
         <li>
           <CurrencyRate />
         </li>

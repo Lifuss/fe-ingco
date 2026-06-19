@@ -623,13 +623,12 @@ const AdminProductForm = ({
                 type="button"
                 onClick={() => {
                   if (characteristic.name.trim() && characteristic.value.trim()) {
-                    const suffix = characteristic.unit && !characteristic.value.endsWith(characteristic.unit) ? ` ${characteristic.unit}` : '';
                     setCharacteristics((prev) => [
                       ...prev,
                       {
                         code: characteristic.code || characteristic.name.toLowerCase().replace(/\s+/g, '_'),
                         name: characteristic.name.trim(),
-                        value: characteristic.value.trim() + suffix,
+                        value: characteristic.value.trim(),
                         unit: characteristic.unit || null,
                       }
                     ]);

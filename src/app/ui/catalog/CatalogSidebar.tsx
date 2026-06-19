@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
@@ -16,6 +16,7 @@ const CatalogSidebar = () => {
   const searchParams = useSearchParams();
 
   const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
   const productsCategories = useMemo(() => {
     const categories = rawProductsCategories || [];
     const explicitlyHiddenIds = new Set(
@@ -85,6 +86,21 @@ const CatalogSidebar = () => {
   }, [activeCategoryId, categoryTree]);
   const [dynamicFilters, setDynamicFilters] = useState<any[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [floatingWidget, setFloatingWidget] = useState<{
+    visible: boolean;
+    loading: boolean;
+    count: number;
+    top: number;
+    left: number;
+  }>({
+    visible: false,
+    loading: false,
+    count: 0,
+    top: 0,
+    left: 0,
+  });
   const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({});
 
   // Initialize/update expanded filters
@@ -134,6 +150,7 @@ const CatalogSidebar = () => {
     } else {
       setSelectedFilters({});
     }
+    setFloatingWidget((prev) => ({ ...prev, visible: false }));
   }, [urlFilters]);
 
   // Helper to update URL params
@@ -171,7 +188,12 @@ const CatalogSidebar = () => {
   };
 
   // Checkbox toggle handler
-  const handleCheckboxChange = (code: string, value: string, checked: boolean) => {
+  const handleCheckboxChange = async (
+    code: string,
+    value: string,
+    checked: boolean,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const nextFilters = { ...selectedFilters };
     if (checked) {
       nextFilters[code] = [...(nextFilters[code] || []), value];
@@ -183,14 +205,75 @@ const CatalogSidebar = () => {
     }
     setSelectedFilters(nextFilters);
 
-    const serialized = Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
+    // Calculate position relative to containerRef
+    const checkboxEl = e.target;
+    if (containerRef.current && checkboxEl) {
+      const rect = checkboxEl.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const top = rect.top - containerRect.top + rect.height / 2;
+      const left = rect.right - containerRect.left + 15;
+
+      setFloatingWidget({
+        visible: true,
+        loading: true,
+        count: 0,
+        top,
+        left,
+      });
+    }
+
+    // Fetch matching count
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    try {
+      const params = new URLSearchParams();
+      params.set('page', '1');
+      params.set('limit', '1');
+      if (activeCategoryId) params.set('category', activeCategoryId);
+      const searchQuery = searchParams.get('query') || '';
+      if (searchQuery) params.set('q', searchQuery);
+      params.set('isRetail', String(!isB2b));
+      if (Object.keys(nextFilters).length > 0) {
+        params.set('filters', JSON.stringify(nextFilters));
+      }
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API}/api/products?${params.toString()}`,
+        { signal: controller.signal },
+      );
+      const data = await res.json();
+
+      setFloatingWidget((prev) => ({
+        ...prev,
+        loading: false,
+        count: data.total || 0,
+      }));
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to prefetch count:', err);
+        setFloatingWidget((prev) => ({
+          ...prev,
+          loading: false,
+        }));
+      }
+    }
+  };
+
+  const handleApplyFilters = () => {
+    const serialized = Object.keys(selectedFilters).length > 0 ? JSON.stringify(selectedFilters) : null;
     updateUrlParams({ filters: serialized });
+    setFloatingWidget((prev) => ({ ...prev, visible: false }));
   };
 
   // Clear all filters
   const handleClearFilters = () => {
     setSelectedFilters({});
     updateUrlParams({ filters: null });
+    setFloatingWidget((prev) => ({ ...prev, visible: false }));
   };
 
   const hasActiveFilters = Object.keys(selectedFilters).length > 0;
@@ -380,7 +463,7 @@ const CatalogSidebar = () => {
       </div>
 
       {/* Technical Parameters block */}
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div ref={containerRef} className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
           <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
             <Filter size={14} className="text-primary-500" />
@@ -431,6 +514,7 @@ const CatalogSidebar = () => {
                             const serialized =
                               Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
                             updateUrlParams({ filters: serialized });
+                            setFloatingWidget((prev) => ({ ...prev, visible: false }));
                           }}
                           className="text-rose-500 hover:text-rose-600 text-[10px] font-semibold lowercase"
                         >
@@ -457,7 +541,7 @@ const CatalogSidebar = () => {
                             <input
                               type="checkbox"
                               checked={isChecked}
-                              onChange={(e) => handleCheckboxChange(filter.code, val, e.target.checked)}
+                              onChange={(e) => handleCheckboxChange(filter.code, val, e.target.checked, e)}
                               className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
                             />
                             <span className="text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950 truncate">
@@ -471,6 +555,40 @@ const CatalogSidebar = () => {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Floating Confirmation Widget */}
+        {floatingWidget.visible && (
+          <div
+            style={{
+              top: `${floatingWidget.top}px`,
+              left: `${floatingWidget.left}px`,
+            }}
+            className="absolute z-50 flex -translate-y-1/2 items-center gap-3 rounded-xl border border-neutral-200 bg-white px-3.5 py-2 shadow-xl transition-all duration-200"
+          >
+            {/* Arrow pointer */}
+            <div className="absolute left-[-6px] top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 bg-white"></div>
+            
+            <div className="relative flex items-center gap-2 text-xs font-semibold text-neutral-700">
+              {floatingWidget.loading ? (
+                <div className="flex items-center gap-1.5 text-neutral-400">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-neutral-300 border-t-primary-500"></span>
+                  <span>Шукаємо...</span>
+                </div>
+              ) : (
+                <span>Знайдено: <strong className="text-primary-600 font-bold">{floatingWidget.count}</strong></span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              disabled={floatingWidget.loading}
+              onClick={handleApplyFilters}
+              className="bg-primary-500 hover:bg-primary-600 text-white rounded-lg px-2.5 py-1.5 transition-colors cursor-pointer text-[10px] font-bold tracking-wide uppercase disabled:opacity-50 disabled:cursor-not-allowed select-none shrink-0"
+            >
+              Показати
+            </button>
           </div>
         )}
       </div>
