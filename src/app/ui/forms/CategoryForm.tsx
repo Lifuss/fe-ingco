@@ -105,7 +105,10 @@ const CategoryForm = ({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-sans min-w-[340px] md:min-w-[420px]">
+    <form
+      onSubmit={handleSubmit}
+      className="flex min-w-[340px] flex-col gap-4 font-sans md:min-w-[420px]"
+    >
       <label className="flex flex-col gap-1">
         <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
           Назва категорії
@@ -152,8 +155,8 @@ const CategoryForm = ({
         </span>
       </label>
 
-      <div className="flex flex-col gap-2.5 mt-2">
-        <span className="block text-sm font-bold text-neutral-700 uppercase tracking-wider">
+      <div className="mt-2 flex flex-col gap-2.5">
+        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
           Характеристики для фільтрації
         </span>
         {allAttributes.length === 0 ? (
@@ -161,11 +164,14 @@ const CategoryForm = ({
             Немає створених характеристик. Створіть їх спочатку в розділі «Характеристики».
           </span>
         ) : (
-          <div className="border border-neutral-200 rounded-lg p-3 bg-[#FAFAFF] max-h-40 overflow-y-auto flex flex-col gap-2">
+          <div className="flex max-h-40 flex-col gap-2 overflow-y-auto rounded-lg border border-neutral-200 bg-[#FAFAFF] p-3">
             {allAttributes.map((attr) => {
               const isChecked = selectedAttributeIds.includes(attr.id);
               return (
-                <label key={attr.id} className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none text-xs font-semibold text-neutral-700">
+                <label
+                  key={attr.id}
+                  className="group flex cursor-pointer items-center gap-2.5 py-0.5 text-xs font-semibold text-neutral-700 select-none"
+                >
                   <input
                     type="checkbox"
                     checked={isChecked}
@@ -173,13 +179,18 @@ const CategoryForm = ({
                       if (e.target.checked) {
                         setSelectedAttributeIds([...selectedAttributeIds, attr.id]);
                       } else {
-                        setSelectedAttributeIds(selectedAttributeIds.filter((id) => id !== attr.id));
+                        setSelectedAttributeIds(
+                          selectedAttributeIds.filter((id) => id !== attr.id),
+                        );
                       }
                     }}
-                    className="w-4 h-4 rounded text-primary-500 focus:ring-primary-500 border-gray-300 accent-primary-500 cursor-pointer"
+                    className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
                   />
-                  <span className="group-hover:text-neutral-950 transition-colors">
-                    {attr.name} <span className="text-[10px] text-neutral-400 font-mono font-bold">({attr.code})</span>
+                  <span className="transition-colors group-hover:text-neutral-950">
+                    {attr.name}{' '}
+                    <span className="font-mono text-[10px] font-bold text-neutral-400">
+                      ({attr.code})
+                    </span>
                   </span>
                 </label>
               );

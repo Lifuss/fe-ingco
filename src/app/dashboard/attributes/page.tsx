@@ -17,8 +17,10 @@ const AttributesPage = () => {
 
   return (
     <div className="w-4/5">
-      <h1 className="mb-10 text-4xl font-bold uppercase tracking-wider text-neutral-800">Характеристики</h1>
-      <div className="mb-10 flex justify-between items-center gap-4">
+      <h1 className="mb-10 text-4xl font-bold tracking-wider text-neutral-800 uppercase">
+        Характеристики
+      </h1>
+      <div className="mb-10 flex items-center justify-between gap-4">
         <div className="w-72">
           <Search placeholder="Назва характеристики..." />
         </div>

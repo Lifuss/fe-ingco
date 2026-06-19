@@ -57,11 +57,14 @@ const Page = ({ params }: PageProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const characteristicsObj = characteristics.reduce((acc, c) => {
-      const key = c.code || c.name;
-      acc[key] = c.value;
-      return acc;
-    }, {} as Record<string, string>);
+    const characteristicsObj = characteristics.reduce(
+      (acc, c) => {
+        const key = c.code || c.name;
+        acc[key] = c.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
     formData.append('characteristics', JSON.stringify(characteristicsObj));
     formData.append('categoryIds', JSON.stringify(selectedCategoryIds));

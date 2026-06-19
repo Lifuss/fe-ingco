@@ -2,7 +2,16 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Boxes, Inbox, Mails, PackageOpen, PieChart, ScanBarcode, Users, SlidersHorizontal } from 'lucide-react';
+import {
+  Boxes,
+  Inbox,
+  Mails,
+  PackageOpen,
+  PieChart,
+  ScanBarcode,
+  Users,
+  SlidersHorizontal,
+} from 'lucide-react';
 
 const listData = [
   {

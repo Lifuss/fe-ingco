@@ -33,7 +33,8 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
 
   const fetchAttributes = useCallback(() => {
     Promise.resolve().then(() => setLoading(true));
-    apiIngco.get('/attributes')
+    apiIngco
+      .get('/attributes')
       .then((res) => {
         if (Array.isArray(res.data)) {
           setAttributes(res.data);
@@ -50,19 +51,23 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
     fetchAttributes();
   }, [refreshTrigger, fetchAttributes]);
 
-  const handleDelete = useCallback((id: number, name: string) => {
-    if (confirm(`Ви дійсно хочете видалити характеристику "${name}"?`)) {
-      apiIngco.delete(`/attributes/${id}`)
-        .then(() => {
-          toast.success(`Характеристику "${name}" видалено`);
-          onRefresh();
-        })
-        .catch((err) => {
-          const msg = err.response?.data?.message || 'Помилка видалення характеристики';
-          toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-        });
-    }
-  }, [onRefresh]);
+  const handleDelete = useCallback(
+    (id: number, name: string) => {
+      if (confirm(`Ви дійсно хочете видалити характеристику "${name}"?`)) {
+        apiIngco
+          .delete(`/attributes/${id}`)
+          .then(() => {
+            toast.success(`Характеристику "${name}" видалено`);
+            onRefresh();
+          })
+          .catch((err) => {
+            const msg = err.response?.data?.message || 'Помилка видалення характеристики';
+            toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+          });
+      }
+    },
+    [onRefresh],
+  );
 
   const openEditModal = useCallback((attr: ProductAttribute) => {
     setSelectedAttribute(attr);
@@ -75,10 +80,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         .filter((attr) => {
           if (!query) return true;
           const q = query.toLowerCase();
-          return (
-            attr.name.toLowerCase().includes(q) ||
-            attr.code.toLowerCase().includes(q)
-          );
+          return attr.name.toLowerCase().includes(q) || attr.code.toLowerCase().includes(q);
         })
         .map((attr) => ({
           id: attr.id,
@@ -98,7 +100,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         header: 'Код (slug)',
         accessorKey: 'codeCol',
         cell: ({ row }) => (
-          <div className="font-mono text-xs font-bold text-neutral-600 bg-neutral-50 px-2 py-1 rounded border border-neutral-200/60 w-fit">
+          <div className="w-fit rounded border border-neutral-200/60 bg-neutral-50 px-2 py-1 font-mono text-xs font-bold text-neutral-600">
             {row.original.codeCol}
           </div>
         ),
@@ -122,16 +124,20 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         accessorKey: 'optionsCol',
         cell: ({ row }) => {
           const opts = row.original.optionsCol;
-          if (opts.length === 0) return <span className="text-neutral-400 italic text-xs">Текстове поле</span>;
+          if (opts.length === 0)
+            return <span className="text-xs text-neutral-400 italic">Текстове поле</span>;
           return (
-            <div className="flex flex-wrap gap-1 max-w-[320px]">
+            <div className="flex max-w-[320px] flex-wrap gap-1">
               {opts.slice(0, 3).map((o) => (
-                <span key={o} className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">
+                <span
+                  key={o}
+                  className="rounded border border-blue-100 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700"
+                >
                   {o}
                 </span>
               ))}
               {opts.length > 3 && (
-                <span className="text-neutral-400 text-[10px] font-bold self-center px-1">
+                <span className="self-center px-1 text-[10px] font-bold text-neutral-400">
                   +{opts.length - 3}
                 </span>
               )}
@@ -146,7 +152,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
           const rawAttr = attributes.find((a) => a.id === row.original.editCol);
           return (
             <button
-              className="flex w-full justify-center cursor-pointer select-none"
+              className="flex w-full cursor-pointer justify-center select-none"
               onClick={() => rawAttr && openEditModal(rawAttr)}
             >
               <Icon
@@ -162,7 +168,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         accessorKey: 'deleteCol',
         cell: ({ row }) => (
           <button
-            className="flex w-full justify-center cursor-pointer select-none"
+            className="flex w-full cursor-pointer justify-center select-none"
             onClick={() => handleDelete(row.original.deleteCol, row.original.nameCol)}
           >
             <Icon
@@ -177,7 +183,9 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
   );
 
   if (loading && attributes.length === 0) {
-    return <div className="text-center py-10 font-bold text-gray-500">Завантаження характеристик...</div>;
+    return (
+      <div className="py-10 text-center font-bold text-gray-500">Завантаження характеристик...</div>
+    );
   }
 
   return (

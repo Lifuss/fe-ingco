@@ -24,7 +24,8 @@ export const AttributeModalCreate = ({ onSuccess }: AttributeModalCreateProps) =
     unit?: string;
     options?: string[];
   }) => {
-    apiIngco.post('/attributes', data)
+    apiIngco
+      .post('/attributes', data)
       .then(() => {
         toast.success(`Характеристику "${data.name}" успішно створено`);
         closeModal();
@@ -39,7 +40,7 @@ export const AttributeModalCreate = ({ onSuccess }: AttributeModalCreateProps) =
   return (
     <>
       <button
-        className="rounded-xl bg-blue-400 p-3.5 text-sm font-bold text-white transition-colors hover:bg-blue-700 cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-400/10"
+        className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-400 p-3.5 text-sm font-bold text-white shadow-md shadow-blue-400/10 transition-colors hover:bg-blue-700"
         onClick={() => openModal()}
       >
         <Plus size={16} />
@@ -77,7 +78,8 @@ export const AttributeModalEdit = ({
     options?: string[];
   }) => {
     if (!defaultValue?.id) return;
-    apiIngco.patch(`/attributes/${defaultValue.id}`, data)
+    apiIngco
+      .patch(`/attributes/${defaultValue.id}`, data)
       .then(() => {
         toast.success(`Характеристику "${data.name}" оновлено`);
         closeModal();

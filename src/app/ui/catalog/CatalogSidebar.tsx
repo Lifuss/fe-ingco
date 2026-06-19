@@ -12,7 +12,6 @@ interface FilterAttribute extends ProductAttribute {
   activeValues: string[];
 }
 
-
 const CatalogSidebar = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -50,10 +49,10 @@ const CatalogSidebar = () => {
   const [showAllSubcategories, setShowAllSubcategories] = useState(false);
   const [prevCategoryId, setPrevCategoryId] = useState(activeCategoryId);
   const [userToggledFilters, setUserToggledFilters] = useState<Record<string, boolean>>({});
+  const [showAllFilters, setShowAllFilters] = useState(false);
 
   // Callback Modal State
   const [isCallbackOpen, setIsCallbackOpen] = useState(false);
-
 
   const categoryTree = useMemo(() => {
     const map = new Map<number, SidebarCategoryNode>();
@@ -89,6 +88,16 @@ const CatalogSidebar = () => {
   }, [activeCategoryId, categoryTree]);
   const [dynamicFilters, setDynamicFilters] = useState<FilterAttribute[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+
+  const visibleFilters = useMemo(() => {
+    if (showAllFilters) return dynamicFilters;
+
+    const LIMIT = 8;
+    return dynamicFilters.filter((filter, idx) => {
+      const isSelectedAny = (selectedFilters[filter.code] || []).length > 0;
+      return idx < LIMIT || isSelectedAny;
+    });
+  }, [dynamicFilters, selectedFilters, showAllFilters]);
   const containerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [floatingWidget, setFloatingWidget] = useState<{
@@ -110,6 +119,7 @@ const CatalogSidebar = () => {
     setPrevCategoryId(activeCategoryId);
     setShowAllSubcategories(false);
     setUserToggledFilters({});
+    setShowAllFilters(false);
     if (!activeCategoryId) {
       setDynamicFilters([]);
     }
@@ -233,10 +243,9 @@ const CatalogSidebar = () => {
         params.set('filters', JSON.stringify(nextFilters));
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API}/api/products?${params.toString()}`,
-        { signal: controller.signal },
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/products?${params.toString()}`, {
+        signal: controller.signal,
+      });
       const data = await res.json();
 
       setFloatingWidget((prev) => ({
@@ -251,7 +260,12 @@ const CatalogSidebar = () => {
           ...prev,
           loading: false,
         }));
-      } else if (typeof err === 'object' && err !== null && 'name' in err && (err as { name?: string }).name !== 'AbortError') {
+      } else if (
+        typeof err === 'object' &&
+        err !== null &&
+        'name' in err &&
+        (err as { name?: string }).name !== 'AbortError'
+      ) {
         console.error('Failed to prefetch count:', err);
         setFloatingWidget((prev) => ({
           ...prev,
@@ -262,7 +276,8 @@ const CatalogSidebar = () => {
   };
 
   const handleApplyFilters = () => {
-    const serialized = Object.keys(selectedFilters).length > 0 ? JSON.stringify(selectedFilters) : null;
+    const serialized =
+      Object.keys(selectedFilters).length > 0 ? JSON.stringify(selectedFilters) : null;
     updateUrlParams({ filters: serialized });
     setFloatingWidget((prev) => ({ ...prev, visible: false }));
   };
@@ -461,7 +476,10 @@ const CatalogSidebar = () => {
       </div>
 
       {/* Technical Parameters block */}
-      <div ref={containerRef} className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div
+        ref={containerRef}
+        className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+      >
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
           <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
             <Filter size={14} className="text-primary-500" />
@@ -478,32 +496,36 @@ const CatalogSidebar = () => {
         </div>
 
         {dynamicFilters.length === 0 ? (
-          <p className="text-xs text-neutral-400 font-semibold text-center py-4">
+          <p className="py-4 text-center text-xs font-semibold text-neutral-400">
             {activeCategoryId
               ? 'Немає активних фільтрів для цієї категорії'
               : 'Оберіть категорію для фільтрації товарів'}
           </p>
         ) : (
           <div className="flex flex-col gap-5">
-            {dynamicFilters.map((filter, idx) => {
+            {visibleFilters.map((filter, idx) => {
               const selectedValues = selectedFilters[filter.code] || [];
               const isSelectedAny = selectedValues.length > 0;
               const isDefaultExpanded = idx < 5 || isSelectedAny;
-              const isExpanded = userToggledFilters[filter.code] !== undefined
-                ? userToggledFilters[filter.code]
-                : isDefaultExpanded;
+              const isExpanded =
+                userToggledFilters[filter.code] !== undefined
+                  ? userToggledFilters[filter.code]
+                  : isDefaultExpanded;
               return (
-                <div key={filter.code} className="flex flex-col border-b border-neutral-100/60 pb-3 last:border-b-0 last:pb-0">
+                <div
+                  key={filter.code}
+                  className="flex flex-col border-b border-neutral-100/60 pb-3 last:border-b-0 last:pb-0"
+                >
                   <h3
                     onClick={() =>
                       setUserToggledFilters((prev) => ({ ...prev, [filter.code]: !isExpanded }))
                     }
-                    className="group/filter-title text-gray-700 hover:text-primary-500 flex cursor-pointer select-none items-center justify-between mb-2 text-xs font-bold tracking-wider uppercase transition-colors"
+                    className="group/filter-title hover:text-primary-500 mb-2 flex cursor-pointer items-center justify-between text-xs font-bold tracking-wider text-gray-700 uppercase transition-colors select-none"
                   >
                     <span className="truncate pr-1">
                       {filter.name} {filter.unit ? `(${filter.unit})` : ''}
                     </span>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex shrink-0 items-center gap-1.5">
                       {isSelectedAny && (
                         <button
                           type="button"
@@ -513,39 +535,43 @@ const CatalogSidebar = () => {
                             delete nextFilters[filter.code];
                             setSelectedFilters(nextFilters);
                             const serialized =
-                              Object.keys(nextFilters).length > 0 ? JSON.stringify(nextFilters) : null;
+                              Object.keys(nextFilters).length > 0
+                                ? JSON.stringify(nextFilters)
+                                : null;
                             updateUrlParams({ filters: serialized });
                             setFloatingWidget((prev) => ({ ...prev, visible: false }));
                           }}
-                          className="text-rose-500 hover:text-rose-600 text-[10px] font-semibold lowercase"
+                          className="text-[10px] font-semibold text-rose-500 lowercase hover:text-rose-600"
                         >
                           скинути
                         </button>
                       )}
                       <ChevronDown
                         size={14}
-                        className={`text-gray-400 group-hover/filter-title:text-primary-500 transition-transform duration-200 ${
-                          isExpanded ? 'rotate-180 text-primary-500' : ''
+                        className={`group-hover/filter-title:text-primary-500 text-gray-400 transition-transform duration-200 ${
+                          isExpanded ? 'text-primary-500 rotate-180' : ''
                         }`}
                       />
                     </div>
                   </h3>
                   {isExpanded && (
-                    <div className="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1 transition-all duration-200">
+                    <div className="flex max-h-40 flex-col gap-2 overflow-y-auto pr-1 transition-all duration-200">
                       {filter.activeValues.map((val: string) => {
                         const isChecked = selectedValues.includes(val);
                         return (
                           <label
                             key={val}
-                            className="flex items-center gap-2.5 cursor-pointer group py-0.5 select-none"
+                            className="group flex cursor-pointer items-center gap-2.5 py-0.5 select-none"
                           >
                             <input
                               type="checkbox"
                               checked={isChecked}
-                              onChange={(e) => handleCheckboxChange(filter.code, val, e.target.checked, e)}
+                              onChange={(e) =>
+                                handleCheckboxChange(filter.code, val, e.target.checked, e)
+                              }
                               className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
                             />
-                            <span className="text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950 truncate">
+                            <span className="truncate text-xs font-semibold text-gray-600 transition-colors group-hover:text-gray-950">
                               {val}
                             </span>
                           </label>
@@ -556,6 +582,25 @@ const CatalogSidebar = () => {
                 </div>
               );
             })}
+
+            {dynamicFilters.length > visibleFilters.length && (
+              <button
+                type="button"
+                onClick={() => setShowAllFilters(true)}
+                className="text-primary-500 hover:text-primary-600 mt-1 flex w-full cursor-pointer items-center justify-center gap-1 py-1.5 text-center text-xs font-bold transition-colors select-none"
+              >
+                Показати всі характеристики (+{dynamicFilters.length - visibleFilters.length})
+              </button>
+            )}
+            {showAllFilters && dynamicFilters.length > 8 && (
+              <button
+                type="button"
+                onClick={() => setShowAllFilters(false)}
+                className="text-primary-500 hover:text-primary-600 mt-1 flex w-full cursor-pointer items-center justify-center gap-1 py-1.5 text-center text-xs font-bold transition-colors select-none"
+              >
+                Приховати характеристики
+              </button>
+            )}
           </div>
         )}
 
@@ -569,16 +614,19 @@ const CatalogSidebar = () => {
             className="absolute z-50 flex -translate-y-1/2 items-center gap-3 rounded-xl border border-neutral-200 bg-white px-3.5 py-2 shadow-xl transition-all duration-200"
           >
             {/* Arrow pointer */}
-            <div className="absolute left-[-6px] top-1/2 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 bg-white"></div>
-            
+            <div className="absolute top-1/2 left-[-6px] h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-neutral-200 bg-white"></div>
+
             <div className="relative flex items-center gap-2 text-xs font-semibold text-neutral-700">
               {floatingWidget.loading ? (
                 <div className="flex items-center gap-1.5 text-neutral-400">
-                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-neutral-300 border-t-primary-500"></span>
+                  <span className="border-t-primary-500 h-3 w-3 animate-spin rounded-full border-2 border-neutral-300"></span>
                   <span>Шукаємо...</span>
                 </div>
               ) : (
-                <span>Знайдено: <strong className="text-primary-600 font-bold">{floatingWidget.count}</strong></span>
+                <span>
+                  Знайдено:{' '}
+                  <strong className="text-primary-600 font-bold">{floatingWidget.count}</strong>
+                </span>
               )}
             </div>
 
@@ -586,7 +634,7 @@ const CatalogSidebar = () => {
               type="button"
               disabled={floatingWidget.loading}
               onClick={handleApplyFilters}
-              className="bg-primary-500 hover:bg-primary-600 text-white rounded-lg px-2.5 py-1.5 transition-colors cursor-pointer text-[10px] font-bold tracking-wide uppercase disabled:opacity-50 disabled:cursor-not-allowed select-none shrink-0"
+              className="bg-primary-500 hover:bg-primary-600 shrink-0 cursor-pointer rounded-lg px-2.5 py-1.5 text-[10px] font-bold tracking-wide text-white uppercase transition-colors select-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               Показати
             </button>

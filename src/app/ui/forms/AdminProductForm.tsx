@@ -3,7 +3,13 @@
 import Image from 'next/image';
 import { ChangeEvent, FormEvent, useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Category, Product, ProductCharacteristic, CharacteristicState, ProductAttribute } from '@/lib/types';
+import {
+  Category,
+  Product,
+  ProductCharacteristic,
+  CharacteristicState,
+  ProductAttribute,
+} from '@/lib/types';
 import Icon from '../assets/Icon';
 import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
 
@@ -195,7 +201,9 @@ const AdminProductForm = ({
                   name="mainCategoryId"
                   className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
                   value={selectedMainCategoryId}
-                  onChange={(e) => setSelectedMainCategoryId(e.target.value ? Number(e.target.value) : '')}
+                  onChange={(e) =>
+                    setSelectedMainCategoryId(e.target.value ? Number(e.target.value) : '')
+                  }
                 >
                   <option value="">Не обрано</option>
                   {sortedCategories.map((category) => (
@@ -420,7 +428,7 @@ const AdminProductForm = ({
 
             {/* Inputs inline */}
             <div className="flex flex-col items-end gap-3 md:flex-row">
-              <div className="flex flex-grow flex-col min-w-[200px]">
+              <div className="flex min-w-[200px] flex-grow flex-col">
                 <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
                   Назва характеристики
                 </label>
@@ -447,7 +455,7 @@ const AdminProductForm = ({
                         setSelectedAttrCode('');
                         setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
                       }}
-                      className="text-rose-500 hover:text-rose-700 shrink-0 cursor-pointer text-xs font-semibold underline"
+                      className="shrink-0 cursor-pointer text-xs font-semibold text-rose-500 underline hover:text-rose-700"
                     >
                       Скасувати
                     </button>
@@ -504,13 +512,13 @@ const AdminProductForm = ({
                 )}
               </div>
 
-              <div className="flex flex-grow flex-col min-w-[200px]">
+              <div className="flex min-w-[200px] flex-grow flex-col">
                 <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
                   Значення характеристики
                 </label>
                 {characteristic.options && characteristic.options.length > 0 ? (
                   isAddingNewOption ? (
-                    <div className="flex items-center gap-2 w-full">
+                    <div className="flex w-full items-center gap-2">
                       <input
                         type="text"
                         placeholder="Введіть нове значення..."
@@ -561,7 +569,7 @@ const AdminProductForm = ({
                               toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
                             });
                         }}
-                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer shrink-0 text-xs"
+                        className="shrink-0 cursor-pointer rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-green-600"
                       >
                         Зберегти
                       </button>
@@ -570,9 +578,12 @@ const AdminProductForm = ({
                         onClick={() => {
                           setIsAddingNewOption(false);
                           setNewOptionValue('');
-                          setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: '' }));
+                          setCharacteristic((prev: CharacteristicState) => ({
+                            ...prev,
+                            value: '',
+                          }));
                         }}
-                        className="bg-neutral-200 hover:bg-neutral-300 text-neutral-700 font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer shrink-0 text-xs"
+                        className="shrink-0 cursor-pointer rounded-lg bg-neutral-200 px-3 py-2 text-xs font-bold text-neutral-700 transition-colors hover:bg-neutral-300"
                       >
                         Скасувати
                       </button>
@@ -587,7 +598,10 @@ const AdminProductForm = ({
                           setIsAddingNewOption(true);
                           setNewOptionValue('');
                         } else {
-                          setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: val }));
+                          setCharacteristic((prev: CharacteristicState) => ({
+                            ...prev,
+                            value: val,
+                          }));
                         }
                       }}
                     >
@@ -606,17 +620,18 @@ const AdminProductForm = ({
                   <div className="relative flex items-center">
                     <input
                       type="text"
-                      placeholder={
-                        characteristic.unit ? `Наприклад: 20` : `20V, 1.5кг, 1400Вт...`
-                      }
-                      className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] pl-3.5 pr-12 py-2 text-sm transition-all focus:bg-white focus:outline-none"
+                      placeholder={characteristic.unit ? `Наприклад: 20` : `20V, 1.5кг, 1400Вт...`}
+                      className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] py-2 pr-12 pl-3.5 text-sm transition-all focus:bg-white focus:outline-none"
                       value={characteristic.value}
                       onChange={(e) =>
-                        setCharacteristic((prev: CharacteristicState) => ({ ...prev, value: e.target.value }))
+                        setCharacteristic((prev: CharacteristicState) => ({
+                          ...prev,
+                          value: e.target.value,
+                        }))
                       }
                     />
                     {characteristic.unit && (
-                      <span className="absolute right-3 pointer-events-none select-none bg-[#FAFAFF] px-1 font-bold text-xs text-neutral-400">
+                      <span className="pointer-events-none absolute right-3 bg-[#FAFAFF] px-1 text-xs font-bold text-neutral-400 select-none">
                         {characteristic.unit}
                       </span>
                     )}
@@ -631,11 +646,13 @@ const AdminProductForm = ({
                     setCharacteristics((prev) => [
                       ...prev,
                       {
-                        code: characteristic.code || characteristic.name.toLowerCase().replace(/\s+/g, '_'),
+                        code:
+                          characteristic.code ||
+                          characteristic.name.toLowerCase().replace(/\s+/g, '_'),
                         name: characteristic.name.trim(),
                         value: characteristic.value.trim(),
                         unit: characteristic.unit || null,
-                      }
+                      },
                     ]);
                     setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
                     setSelectedAttrCode('');
@@ -660,7 +677,8 @@ const AdminProductForm = ({
                       <div className="flex gap-2">
                         <span className="font-semibold text-neutral-500">{char.name}:</span>
                         <span className="font-semibold text-neutral-800">
-                          {char.value} {char.unit && !char.value.endsWith(char.unit) ? char.unit : ''}
+                          {char.value}{' '}
+                          {char.unit && !char.value.endsWith(char.unit) ? char.unit : ''}
                         </span>
                       </div>
                       <button

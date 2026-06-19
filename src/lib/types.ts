@@ -156,4 +156,3 @@ export interface CharacteristicState {
   unit: string;
   options?: string[];
 }
-

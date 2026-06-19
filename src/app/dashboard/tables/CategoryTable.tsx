@@ -138,7 +138,15 @@ const CategoryTable = () => {
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(updateCategoryThunk({ id: selectedId, name, parentId, showInMenu, attributeIds: selectedAttributeIds }))
+      dispatch(
+        updateCategoryThunk({
+          id: selectedId,
+          name,
+          parentId,
+          showInMenu,
+          attributeIds: selectedAttributeIds,
+        }),
+      )
         .unwrap()
         .then(() => closeModal())
         .catch(
