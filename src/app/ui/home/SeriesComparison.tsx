@@ -309,7 +309,7 @@ function ProductCarouselCard({
   onCartClick,
 }: ProductCardProps) {
   const router = useRouter();
-  const apiBaseUrl = 'https://api-ingco-service.win';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API || 'https://api-ingco-service.win';
   const imageUrl = product.image
     ? product.image.startsWith('http')
       ? product.image

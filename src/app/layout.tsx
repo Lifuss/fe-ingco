@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
     image: `${SITE_URL}/logo.png`,
     telephone: '+380988392107',
-    email: 'info@ingco-service.win',
+    email: 'info@ingcoua.com.ua',
     priceRange: '$$',
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer'],
     currenciesAccepted: 'UAH',

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Product } from './types';
 
-export const SITE_URL = 'https://ingco-service.win';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ingcoua.com.ua';
 export const SITE_NAME = 'INGCO Ukraine';
 export const DEFAULT_DESCRIPTION =
   'INGCO – професійні інструменти для будівництва та ремонту. Купуйте якісні електроінструменти гуртом та в роздріб в Україні. Доставка по всій країні!';

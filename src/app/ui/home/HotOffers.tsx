@@ -234,7 +234,7 @@ interface HotOfferCardProps {
 
 function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: HotOfferCardProps) {
   const router = useRouter();
-  const apiBaseUrl = 'https://api-ingco-service.win';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API || 'https://api-ingco-service.win';
   const imageUrl = product.image
     ? product.image.startsWith('http')
       ? product.image

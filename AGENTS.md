@@ -16,7 +16,7 @@ E-commerce platform for INGCO Ukraine (official tool importer). Supports three u
 
 | Resource        | URL                                                                                     |
 | --------------- | --------------------------------------------------------------------------------------- |
-| **Live Site**   | https://ingco-service.win                                                               |
+| **Live Site**   | https://ingcoua.com.ua                                                                  |
 | **Backend API** | https://api-ingco-service.win/api (NestJS + PostgreSQL)                                 |
 | **UI Language** | Ukrainian (all UI text, badges, and alerts are hardcoded in Ukrainian; no i18n library) |
 | **Currency**    | UAH (Ukrainian Hryvnia)                                                                 |

@@ -31,7 +31,7 @@ Disallow: /private/
 Disallow: /shop/
 
 # Host
-Host: https://ingco-service.win
+Host: https://ingcoua.com.ua
 
 # Sitemaps
-Sitemap: https://ingco-service.win/sitemap.xml
+Sitemap: https://ingcoua.com.ua/sitemap.xml

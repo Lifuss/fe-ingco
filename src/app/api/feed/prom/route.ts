@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const DOMAIN = 'https://ingco-service.win';
+const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://ingcoua.com.ua';
 const BACKEND_API = `${process.env.NEXT_PUBLIC_API}/api/products`;
 
 interface Category {
