@@ -176,7 +176,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       itemOffered: {
         '@type': 'Product',
         name: 'Професійні інструменти INGCO',
-        category: 'Електроінструменти',
+        category: 'Будівельні інструменти',
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'UAH',
