@@ -180,6 +180,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'UAH',
+          lowPrice: '27',
+          highPrice: '50000',
+          offerCount: '250',
           availability: 'https://schema.org/InStock',
           seller: {
             '@type': 'Organization',
