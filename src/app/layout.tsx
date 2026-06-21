@@ -90,9 +90,6 @@ export const metadata: Metadata = {
       'uk-UA': SITE_URL,
     },
   },
-  verification: {
-    google: 'yd6FgNFGbN9s2OJB1udZrzSxHIqSYY8f5JZ_r0-qLLI',
-  },
   other: {
     'theme-color': '#f97316',
   },
