@@ -4,11 +4,8 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /api/
 Disallow: /_next/
-Disallow: /admin/
-Disallow: /private/
 Disallow: *.json
 Disallow: /service/
-Disallow: /shop/
 
 # Googlebot
 User-agent: Googlebot
@@ -16,9 +13,6 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /api/
 Disallow: /_next/
-Disallow: /admin/
-Disallow: /private/
-Disallow: /shop/
 
 # Bingbot
 User-agent: Bingbot
@@ -26,9 +20,6 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /api/
 Disallow: /_next/
-Disallow: /admin/
-Disallow: /private/
-Disallow: /shop/
 
 # Host
 Host: https://ingcoua.com.ua

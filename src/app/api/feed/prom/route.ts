@@ -56,10 +56,28 @@ function formatPromDate(date: Date): string {
 
 export async function GET() {
   try {
-    const response = await fetch(`${BACKEND_API}?limit=10000&isRetail=true`, {
-      next: { revalidate: 86400 },
-    });
-    const { products } = (await response.json()) as { products: Product[] };
+    const limit = 100;
+    let page = 1;
+    let products: Product[] = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const response = await fetch(`${BACKEND_API}?page=${page}&limit=${limit}&isRetail=true`, {
+        next: { revalidate: 86400 },
+      });
+      if (!response.ok) {
+        throw new Error(`Backend returned status ${response.status}`);
+      }
+      const data = (await response.json()) as { products: Product[]; total: number };
+      const fetchedProducts = data.products || [];
+      products = products.concat(fetchedProducts);
+
+      if (fetchedProducts.length < limit || products.length >= data.total) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
 
     const offers = products
       .map((product) => {
