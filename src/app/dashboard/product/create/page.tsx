@@ -33,16 +33,12 @@ const Page = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
 
-    const characteristicsObj = characteristics.reduce(
-      (acc, c) => {
-        const key = c.code || c.name;
-        acc[key] = c.value;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+    const characteristicsArr = characteristics.map((c) => ({
+      code: c.code || c.name.toLowerCase().replace(/\s+/g, '_'),
+      value: c.value,
+    }));
 
-    formData.append('characteristics', JSON.stringify(characteristicsObj));
+    formData.append('characteristics', JSON.stringify(characteristicsArr));
     formData.append('categoryIds', JSON.stringify(selectedCategoryIds));
     formData.delete('characteristicName');
     formData.delete('characteristicDesc');
