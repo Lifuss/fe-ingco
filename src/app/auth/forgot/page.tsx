@@ -3,6 +3,7 @@ import { Button } from '@/app/ui/buttons/button';
 import { forgotPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
 import React from 'react';
+import { toast } from 'react-toastify';
 
 const Page = () => {
   const dispatch = useAppDispatch();
@@ -10,11 +11,23 @@ const Page = () => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const resetData = form.get('resetPassword') as string;
-    dispatch(forgotPasswordThunk({ resetData }));
-    const resetPasswordInput = e.currentTarget.elements.namedItem('resetPassword');
-    if (resetPasswordInput instanceof HTMLInputElement) {
-      resetPasswordInput.value = '';
-    }
+    const formElement = e.currentTarget;
+    dispatch(forgotPasswordThunk({ resetData }))
+      .unwrap()
+      .then(() => {
+        const resetPasswordInput = formElement.elements.namedItem('resetPassword');
+        if (resetPasswordInput instanceof HTMLInputElement) {
+          resetPasswordInput.value = '';
+        }
+      })
+      .catch((error) => {
+        console.error('Error in forgot password:', error);
+        if (error?.status === 429) {
+          toast.error('Занадто багато спроб. Спробуйте пізніше');
+        } else {
+          toast.error('Помилка при відправленні запиту');
+        }
+      });
   };
 
   return (

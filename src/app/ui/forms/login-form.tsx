@@ -34,7 +34,17 @@ function LoginForm() {
       })
       .catch((error) => {
         console.error('Error in login:', error);
-        toast.error('Помилка авторизації');
+        if (error?.message === 'Account is not verified') {
+          toast.error('Ваш акаунт ще не підтверджено адміністратором');
+        } else if (error?.message === 'Account has been deleted') {
+          toast.error('Ваш акаунт було видалено');
+        } else if (error?.status === 429) {
+          toast.error('Занадто багато спроб входу. Будь ласка, спробуйте пізніше');
+        } else if (error?.status === 401 || error?.message?.includes('credentials')) {
+          toast.error('Невірний логін або пароль');
+        } else {
+          toast.error('Помилка авторизації');
+        }
       });
   };
 

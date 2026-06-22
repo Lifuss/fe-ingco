@@ -169,6 +169,7 @@ This also applies to: `cookies()`, `headers()`, `draftMode()`.
 - **Component Names:** PascalCase (e.g., `ProductCard.tsx`).
 - **Helper/Utility Names:** camelCase (e.g., `utils.ts`, `novaPoshta.ts`).
 - **Pages & Layouts:** Next.js conventions (e.g., `page.tsx`, `layout.tsx`).
+- **Comments & JSDoc Language:** All code comments and JSDoc documentation must be written in English. Illustrative examples in quotes (e.g., Ukrainian search terms like `'акумулятор'`) may remain in Ukrainian.
 
 ### Path Aliases
 

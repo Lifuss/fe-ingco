@@ -45,8 +45,9 @@ export default function RegisterClientForm() {
       const registerResponse = await dispatch(registerClientThunk(registerData));
 
       if (registerResponse.meta.requestStatus === 'rejected') {
-        if (registerResponse.payload.message.includes('409')) {
-          toast.error('Такий email вже зайнятий');
+        const payload = registerResponse.payload as any;
+        if (payload?.status === 409 || payload?.message?.includes('already exists')) {
+          toast.error('Користувач з таким email або номером телефону вже існує');
         } else {
           toast.error('Помилка авторизації');
         }

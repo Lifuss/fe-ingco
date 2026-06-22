@@ -11,7 +11,7 @@ import {
   ProductAttribute,
 } from '@/lib/types';
 import Icon from '../assets/Icon';
-import { CircleHelp, ArrowLeft, Plus } from 'lucide-react';
+import { CircleHelp, ArrowLeft, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 
 const questionSvg = (
   <span>
@@ -127,6 +127,18 @@ const AdminProductForm = ({
         .catch((err) => console.error('Failed to fetch category attributes:', err));
     }
   }, [selectedMainCategoryId]);
+
+  const moveCharacteristic = (index: number, direction: 'up' | 'down') => {
+    setCharacteristics((prev) => {
+      const newChars = [...prev];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= newChars.length) return prev;
+      const temp = newChars[index];
+      newChars[index] = newChars[targetIndex];
+      newChars[targetIndex] = temp;
+      return newChars;
+    });
+  };
 
   const sortedCategories = useMemo(() => getSortedHierarchy(categories), [categories]);
 
@@ -681,16 +693,36 @@ const AdminProductForm = ({
                           {char.unit && !char.value.endsWith(char.unit) ? char.unit : ''}
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCharacteristics((prev) => prev.filter((_, index) => index !== i));
-                        }}
-                        className="cursor-pointer rounded-md p-1 text-neutral-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
-                        title="Видалити"
-                      >
-                        <Icon icon="delete" className="h-4 w-4 fill-current" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          disabled={i === 0}
+                          onClick={() => moveCharacteristic(i, 'up')}
+                          className="cursor-pointer rounded-md p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-30"
+                          title="Перемістити вгору"
+                        >
+                          <ChevronUp size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={i === characteristics.length - 1}
+                          onClick={() => moveCharacteristic(i, 'down')}
+                          className="cursor-pointer rounded-md p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-30"
+                          title="Перемістити вниз"
+                        >
+                          <ChevronDown size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCharacteristics((prev) => prev.filter((_, index) => index !== i));
+                          }}
+                          className="cursor-pointer rounded-md p-1 text-neutral-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                          title="Видалити"
+                        >
+                          <Icon icon="delete" className="h-4 w-4 fill-current" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

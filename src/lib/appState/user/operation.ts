@@ -161,7 +161,6 @@ export const registerThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -178,7 +177,6 @@ export const registerClientThunk = createAsyncThunk(
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setToken(response.data.token, response.data.role);
       return response.data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));

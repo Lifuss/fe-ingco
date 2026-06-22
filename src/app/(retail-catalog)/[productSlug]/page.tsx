@@ -19,12 +19,10 @@ import {
   Info,
   ChevronRight,
   MessageSquare,
-  Sparkles,
-  Zap,
-  RotateCw,
   Plus,
   Minus,
 } from 'lucide-react';
+import { getSpecIcon, shouldShowBatteryWarning, parseDescription } from '@/lib/productUtils';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -273,38 +271,7 @@ export default function Page({ params }: PageProps) {
     { type: 'video', url: '/icons/video-play-mock', isPlay: true },
   ];
 
-  // Specific badges parser
-  const getSpecValue = (names: string[], defaultValue: string) => {
-    const found = product.characteristics?.find((char) =>
-      names.some((name) => char.name?.toLowerCase().includes(name)),
-    );
-    return found ? found.value : defaultValue;
-  };
-  const voltage = getSpecValue(['напруга', 'вольт', 'акб'], '20V');
-  const speed = getSpecValue(['оберт', 'обор', 'холодний', 'швидкість'], '1350 об/хв');
-  const impactForce = getSpecValue(['сила удару', 'енергія удару', 'джоул'], '2.0 Дж');
 
-  // Bold brand keywords parser
-  const parseDescription = (text: string) => {
-    if (!text) return '';
-    const parsed = text.split('\n').map((paragraph, i) => {
-      // Bold "INGCO" and article codes
-      let html = paragraph;
-      html = html.replace(/(ingco)/gi, '<strong>INGCO</strong>');
-      if (product.article) {
-        const regex = new RegExp(`(${product.article})`, 'gi');
-        html = html.replace(regex, '<strong>$1</strong>');
-      }
-      return (
-        <p
-          key={i}
-          className="mb-4 font-sans text-base leading-relaxed text-neutral-700"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      );
-    });
-    return parsed;
-  };
 
   // Battery link resolver
   const batteryCategory = categories?.find(
@@ -465,33 +432,38 @@ export default function Page({ params }: PageProps) {
                 </div>
 
                 {/* Specific layout short badges */}
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
-                    <Zap className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
-                      Напруга
-                    </span>
-                    <span className="font-display text-sm font-bold text-neutral-900">
-                      {voltage}
-                    </span>
+                {product.characteristics && product.characteristics.length > 0 && (
+                  <div
+                    className={`grid gap-3 text-center ${
+                      product.characteristics.slice(0, 3).length === 1
+                        ? 'mx-auto max-w-[180px] grid-cols-1'
+                        : product.characteristics.slice(0, 3).length === 2
+                          ? 'mx-auto max-w-[360px] grid-cols-2'
+                          : 'grid-cols-3'
+                    }`}
+                  >
+                    {product.characteristics.slice(0, 3).map((char, index) => (
+                      <div
+                        key={char.code || index}
+                        className="bg-primary-50/40 border-primary-100/60 flex min-h-[90px] flex-col items-center justify-center gap-1.5 rounded-xl border p-3 shadow-sm"
+                      >
+                        {getSpecIcon(char.name, char.code)}
+                        <span
+                          className="max-w-full truncate text-[10px] font-semibold text-neutral-500 uppercase"
+                          title={char.name}
+                        >
+                          {char.name}
+                        </span>
+                        <span
+                          className="font-display max-w-full truncate text-xs font-bold text-neutral-900 md:text-sm"
+                          title={char.value}
+                        >
+                          {char.value}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
-                    <RotateCw className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
-                      Обороти
-                    </span>
-                    <span className="font-display text-sm font-bold text-neutral-900">{speed}</span>
-                  </div>
-                  <div className="bg-primary-50/40 border-primary-100/60 flex flex-col items-center gap-1.5 rounded-xl border p-3 shadow-sm">
-                    <Sparkles className="text-primary-500 stroke-[2.5]" size={20} />
-                    <span className="text-[10px] font-semibold text-neutral-500 uppercase">
-                      Сила удару
-                    </span>
-                    <span className="font-display text-sm font-bold text-neutral-900">
-                      {impactForce}
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Right Column: Buy Box Card */}
@@ -762,31 +734,33 @@ export default function Page({ params }: PageProps) {
                 </div>
 
                 {/* Configuration Alert Banner Right */}
-                <div className="flex flex-col gap-4 rounded-2xl border border-amber-200/50 bg-amber-50/60 p-6 shadow-sm lg:col-span-5">
-                  <div className="flex items-center gap-3">
-                    <div className="shrink-0 rounded-full border border-amber-200 bg-amber-100 p-2 text-amber-600">
-                      <Info size={20} className="stroke-[2.5]" />
+                {shouldShowBatteryWarning(product) && (
+                  <div className="flex flex-col gap-4 rounded-2xl border border-amber-200/50 bg-amber-50/60 p-6 shadow-sm lg:col-span-5">
+                    <div className="flex items-center gap-3">
+                      <div className="shrink-0 rounded-full border border-amber-200 bg-amber-100 p-2 text-amber-600">
+                        <Info size={20} className="stroke-[2.5]" />
+                      </div>
+                      <h3 className="font-display text-base leading-tight font-bold text-neutral-900">
+                        Комплектація (Без АКБ та ЗП)
+                      </h3>
                     </div>
-                    <h3 className="font-display text-base leading-tight font-bold text-neutral-900">
-                      Комплектація (Без АКБ та ЗП)
-                    </h3>
+
+                    <p className="font-sans text-xs leading-relaxed text-neutral-600 md:text-sm">
+                      Увага! Дана модель інструменту постачається{' '}
+                      <strong>без акумуляторної батареї та зарядного пристрою</strong>. Ви можете
+                      використовувати сумісні АКБ INGCO серії <strong>P20S</strong>, які є у вашому
+                      арсеналі, або придбати їх окремо.
+                    </p>
+
+                    <button
+                      onClick={() => router.push(batteryLink)}
+                      className="text-primary font-display flex w-fit cursor-pointer items-center gap-1.5 text-xs font-bold tracking-wider uppercase transition-all hover:underline md:text-sm"
+                    >
+                      <span>Переглянути сумісні акумулятори</span>
+                      <ChevronRight size={14} className="stroke-[2.5]" />
+                    </button>
                   </div>
-
-                  <p className="font-sans text-xs leading-relaxed text-neutral-600 md:text-sm">
-                    Увага! Дана модель інструменту постачається{' '}
-                    <strong>без акумуляторної батареї та зарядного пристрою</strong>. Ви можете
-                    використовувати сумісні АКБ INGCO серії <strong>P20S</strong>, які є у вашому
-                    арсеналі, або придбати їх окремо.
-                  </p>
-
-                  <button
-                    onClick={() => router.push(batteryLink)}
-                    className="text-primary font-display flex w-fit cursor-pointer items-center gap-1.5 text-xs font-bold tracking-wider uppercase transition-all hover:underline md:text-sm"
-                  >
-                    <span>Переглянути сумісні акумулятори</span>
-                    <ChevronRight size={14} className="stroke-[2.5]" />
-                  </button>
-                </div>
+                )}
               </div>
             </section>
 
@@ -797,7 +771,7 @@ export default function Page({ params }: PageProps) {
               </h2>
               <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
                 {product.description ? (
-                  parseDescription(product.description)
+                  parseDescription(product.description, product.article)
                 ) : (
                   <p className="py-4 text-center text-neutral-400">Опис відсутній</p>
                 )}
