@@ -22,6 +22,8 @@ export interface Product {
   characteristics: { code: string; name: string; value: string; unit?: string | null }[];
   countInStock: number;
   image: string;
+  images?: string[];
+  videoUrl?: string | null;
   warranty: number;
   sort: number;
   seoKeywords: string;

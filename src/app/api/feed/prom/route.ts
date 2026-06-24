@@ -24,6 +24,7 @@ interface Product {
   rrcSale?: number;
   countInStock: number;
   image: string;
+  images?: string[];
   category: Category | null;
   characteristics?: Characteristic[];
   warranty?: number;
@@ -83,11 +84,19 @@ export async function GET() {
       .map((product) => {
         const inStock = product.countInStock > 0;
         const available = inStock ? 'true' : 'false';
-        const imageUrl = product.image
-          ? product.image.startsWith('http')
-            ? product.image
-            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
-          : `${DOMAIN}/placeholder.webp`;
+        const pictures: string[] = [];
+        if (product.images && product.images.length > 0) {
+          product.images.forEach((img) => {
+            const url = img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API || ''}${img}`;
+            pictures.push(`      <picture>${escapeXml(url)}</picture>`);
+          });
+        } else if (product.image) {
+          const url = product.image.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+          pictures.push(`      <picture>${escapeXml(url)}</picture>`);
+        } else {
+          pictures.push(`      <picture>${escapeXml(`${DOMAIN}/placeholder.webp`)}</picture>`);
+        }
+        const picturesXml = pictures.join('\n');
 
         const params: string[] = [];
         if (product.characteristics?.length) {
@@ -132,7 +141,7 @@ export async function GET() {
       <price>${displayPrice}</price>${oldPriceXml}
       <currencyId>UAH</currencyId>
       <categoryId>${escapeXml(product.category ? String(product.category.id) : 'uncategorized')}</categoryId>
-      <picture>${escapeXml(imageUrl)}</picture>
+${picturesXml}
       <vendor>INGCO</vendor>
       <vendorCode>${escapeXml(article)}</vendorCode>
       <mpn>${escapeXml(article)}</mpn>${barcodeXml}

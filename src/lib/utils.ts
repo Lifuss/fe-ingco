@@ -168,3 +168,24 @@ export const printOrderExcel = async (order: Order) => {
     console.error('Помилка при завантаженні Excel-файлу:', error);
   }
 };
+
+export function getYoutubeEmbedUrl(url: string): string {
+  if (!url) return '';
+  let videoId = '';
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.hostname === 'youtu.be') {
+      videoId = parsedUrl.pathname.slice(1);
+    } else if (parsedUrl.pathname.includes('/embed/')) {
+      videoId = parsedUrl.pathname.split('/embed/')[1];
+    } else {
+      videoId = parsedUrl.searchParams.get('v') || '';
+    }
+  } catch {
+    const match = url.match(
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i,
+    );
+    if (match) videoId = match[1];
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+}

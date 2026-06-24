@@ -11,7 +11,7 @@ import {
   ProductAttribute,
 } from '@/lib/types';
 import Icon from '../assets/Icon';
-import { CircleHelp, ArrowLeft, Plus, ChevronUp, ChevronDown } from 'lucide-react';
+import { CircleHelp, ArrowLeft, Plus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const questionSvg = (
   <span>
@@ -21,21 +21,22 @@ const questionSvg = (
 
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
+import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
 
 type AdminProductFormProps = {
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  handleImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  imageUrl: string;
-  characteristics: ProductCharacteristic[];
-  setCharacteristics: React.Dispatch<React.SetStateAction<ProductCharacteristic[]>>;
-  characteristic: CharacteristicState;
-  setCharacteristic: React.Dispatch<React.SetStateAction<CharacteristicState>>;
-  categories: Category[];
   isEdit?: boolean;
   product?: Product;
-  selectedCategoryIds: number[];
-  setSelectedCategoryIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
+
+interface MediaItem {
+  id: string;
+  file?: File;
+  previewUrl: string;
+  isExisting: boolean;
+  path?: string;
+}
 
 interface CategoryNode extends Category {
   children: CategoryNode[];
@@ -84,20 +85,26 @@ function getSortedHierarchy(categories: Category[]): (Category & { depth: number
 }
 
 const AdminProductForm = ({
-  handleSubmit,
-  handleImageChange,
-  imageUrl,
-  characteristics,
-  setCharacteristics,
-  characteristic,
-  setCharacteristic,
-  categories,
   product,
   isEdit = false,
-  selectedCategoryIds,
-  setSelectedCategoryIds,
 }: AdminProductFormProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+
+  const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
+    () => product?.characteristics || [],
+  );
+  const [characteristic, setCharacteristic] = useState<CharacteristicState>({
+    code: '',
+    name: '',
+    value: '',
+    unit: '',
+  });
+
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>(
+    () => product?.categories?.map((c) => c.id) || [],
+  );
 
   const [selectedMainCategoryId, setSelectedMainCategoryId] = useState<number | ''>(
     () => product?.mainCategory?.id || product?.category?.id || '',
@@ -107,6 +114,85 @@ const AdminProductForm = ({
   const [selectedAttrCode, setSelectedAttrCode] = useState<string>('');
   const [isAddingNewOption, setIsAddingNewOption] = useState<boolean>(false);
   const [newOptionValue, setNewOptionValue] = useState<string>('');
+
+  // Media files state
+  const [mediaFiles, setMediaFiles] = useState<MediaItem[]>([]);
+
+  useEffect(() => {
+    if (!categories.length) {
+      dispatch(fetchCategoriesThunk(''));
+    }
+  }, [dispatch, categories.length]);
+
+  useEffect(() => {
+    if (product) {
+      const initialImages = product.images && product.images.length > 0
+        ? product.images
+        : product.image ? [product.image] : [];
+      setMediaFiles(
+        initialImages.map((path, idx) => ({
+          id: `existing-${idx}-${path}`,
+          previewUrl: path.startsWith('http') ? path : process.env.NEXT_PUBLIC_API + path,
+          isExisting: true,
+          path: path,
+        })),
+      );
+      setCharacteristics(product.characteristics || []);
+      setSelectedCategoryIds(product.categories?.map((c) => c.id) || []);
+      setSelectedMainCategoryId(product.mainCategory?.id || product.category?.id || '');
+    }
+  }, [product]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const characteristicsArr = characteristics.map((c) => ({
+      code: c.code || c.name.toLowerCase().replace(/\s+/g, '_'),
+      value: c.value,
+    }));
+
+    formData.append('characteristics', JSON.stringify(characteristicsArr));
+    formData.append('categoryIds', JSON.stringify(selectedCategoryIds));
+    formData.delete('characteristicName');
+    formData.delete('characteristicDesc');
+    formData.delete('image'); // Delete standard file field to avoid duplicates
+
+    // Append images
+    const existingPaths: string[] = [];
+    mediaFiles.forEach((item) => {
+      if (item.isExisting && item.path) {
+        existingPaths.push(item.path);
+      } else if (item.file) {
+        formData.append('images', item.file);
+      }
+    });
+
+    if (isEdit) {
+      formData.append('existingImages', JSON.stringify(existingPaths));
+    }
+
+    try {
+      if (isEdit && product) {
+        await dispatch(updateProductThunk({ formData, productId: String(product.id) })).unwrap();
+        toast.success('Продукт успішно оновлено');
+      } else {
+        const hasFiles = mediaFiles.length > 0;
+        if (!hasFiles) {
+          toast.error('Будь ласка, завантажте хоча б одне зображення');
+          return;
+        }
+        await dispatch(createProductThunk(formData)).unwrap();
+        toast.success('Продукт успішно створено');
+      }
+      router.back();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Помилка збереження';
+      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    }
+  };
+
 
   if (selectedMainCategoryId !== prevMainCategoryId) {
     setPrevMainCategoryId(selectedMainCategoryId);
@@ -737,29 +823,53 @@ const AdminProductForm = ({
 
         {/* Right column: Image upload, SEO, Actions */}
         <div className="flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-4">
-          {/* Card 4: Product Image */}
+          {/* Card 4: Product Media */}
           <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
               <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-neutral-800 uppercase">
-                Зображення товару
+                Медіафайли товару
               </h2>
               <span
                 className="cursor-help"
-                title="Рекомендований формат: WebP (для кращого стиснення) з якістю 80-90%."
+                title="Зображення зберігаються на сервері, відеоогляд додається як посилання на YouTube."
               >
                 {questionSvg}
               </span>
             </div>
 
+            {/* Video Url Field */}
+            <div className="flex flex-col mb-2">
+              <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
+                Посилання на відеоогляд (YouTube)
+              </label>
+              <input
+                type="url"
+                name="videoUrl"
+                defaultValue={product?.videoUrl || ''}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
+              />
+            </div>
+
             {/* Premium Uploader Dropzone */}
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col gap-4">
               <div className="group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-200 bg-[#FAFAFF] p-4 transition-colors hover:border-neutral-300 hover:bg-neutral-50">
                 <input
                   type="file"
-                  name="image"
+                  multiple
                   accept="image/*"
                   className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
-                  onChange={handleImageChange}
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    const newItems = files.map((file) => ({
+                      id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                      file,
+                      previewUrl: URL.createObjectURL(file),
+                      isExisting: false,
+                    }));
+                    setMediaFiles((prev) => [...prev, ...newItems]);
+                    e.target.value = ''; // Reset file input so same files can be re-selected
+                  }}
                 />
                 <div className="pointer-events-none flex flex-col items-center justify-center gap-1.5 text-center select-none">
                   <Icon
@@ -767,22 +877,105 @@ const AdminProductForm = ({
                     className="h-6 w-6 fill-none stroke-current text-neutral-400 group-hover:text-neutral-500"
                   />
                   <span className="text-xs font-semibold text-neutral-600 group-hover:text-neutral-700">
-                    Оберіть файл зображення
+                    Оберіть зображення для галереї
                   </span>
-                  <span className="text-[10px] text-neutral-400">Формат WEBP або PNG, до 2MB</span>
+                  <span className="text-[10px] text-neutral-400">Можна обрати декілька файлів. До 5MB кожен.</span>
                 </div>
               </div>
 
-              {/* Preview Frame */}
-              <div className="flex h-[180px] w-[180px] items-center justify-center overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-sm select-none">
-                <Image
-                  src={imageUrl || '/placeholder.webp'}
-                  className="h-auto max-h-full w-auto rounded-lg object-contain"
-                  alt={product?.name || 'Фото товару'}
-                  width={180}
-                  height={180}
-                />
-              </div>
+              {/* Gallery Preview & Management Grid */}
+              {mediaFiles.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2">
+                  {mediaFiles.map((item, idx) => {
+                    const isFirst = idx === 0;
+                    return (
+                      <div
+                        key={item.id}
+                        className={`group relative flex flex-col items-center justify-between rounded-xl border p-2 bg-white transition-all shadow-sm ${
+                          isFirst ? 'border-primary ring-1 ring-primary/30' : 'border-neutral-100'
+                        }`}
+                      >
+                        {/* Image Wrapper */}
+                        <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-neutral-50 p-1">
+                          <img
+                            src={item.previewUrl}
+                            className="h-auto max-h-full w-auto object-contain rounded-md"
+                            alt="Preview"
+                          />
+                        </div>
+
+                        {/* Badges */}
+                        {isFirst && (
+                          <span className="absolute top-3 left-3 bg-primary text-[8px] font-bold text-white px-1.5 py-0.5 rounded shadow">
+                            Головна
+                          </span>
+                        )}
+
+                        {/* Controls */}
+                        <div className="mt-2 flex w-full items-center justify-between gap-1 select-none">
+                          <div className="flex gap-0.5">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => {
+                                setMediaFiles((prev) => {
+                                  const newList = [...prev];
+                                  const temp = newList[idx];
+                                  newList[idx] = newList[idx - 1];
+                                  newList[idx - 1] = temp;
+                                  return newList;
+                                });
+                              }}
+                              className="rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                              title="Вліво"
+                            >
+                              <ChevronLeft size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === mediaFiles.length - 1}
+                              onClick={() => {
+                                setMediaFiles((prev) => {
+                                  const newList = [...prev];
+                                  const temp = newList[idx];
+                                  newList[idx] = newList[idx + 1];
+                                  newList[idx + 1] = temp;
+                                  return newList;
+                                });
+                              }}
+                              className="rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                              title="Вправо"
+                            >
+                              <ChevronRight size={12} />
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMediaFiles((prev) => {
+                                const target = prev[idx];
+                                if (!target.isExisting) {
+                                  URL.revokeObjectURL(target.previewUrl);
+                                }
+                                return prev.filter((_, i) => i !== idx);
+                              });
+                            }}
+                            className="rounded border border-rose-100 bg-white p-1 text-rose-500 hover:bg-rose-50 hover:text-rose-700 cursor-pointer"
+                            title="Видалити"
+                          >
+                            <Icon icon="delete" className="h-3.5 w-3.5 fill-current" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex h-32 flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50/50 p-4 text-center">
+                  <span className="text-xs font-semibold text-neutral-400">Галерея зображень порожня</span>
+                </div>
+              )}
             </div>
           </div>
 

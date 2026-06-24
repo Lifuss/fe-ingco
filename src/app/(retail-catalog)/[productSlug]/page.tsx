@@ -23,6 +23,7 @@ import {
   Minus,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning, parseDescription } from '@/lib/productUtils';
+import { getYoutubeEmbedUrl } from '@/lib/utils';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -263,13 +264,38 @@ export default function Page({ params }: PageProps) {
   const primaryImageUrl = product.image
     ? process.env.NEXT_PUBLIC_API + product.image
     : '/placeholder.webp';
-  // Mock alternative angles
-  const galleryImages = [
-    { type: 'image', url: primaryImageUrl, className: 'object-contain' },
-    { type: 'image', url: primaryImageUrl, className: 'object-contain scale-125' }, // Zoom view
-    { type: 'image', url: primaryImageUrl, className: 'object-contain scale-95 rotate-3' }, // Angle view
-    { type: 'video', url: '/icons/video-play-mock', isPlay: true },
-  ];
+
+  const galleryImages: { type: 'image' | 'video'; url: string; className: string }[] = [];
+
+  if (product.images && product.images.length > 0) {
+    product.images.forEach((img) => {
+      galleryImages.push({
+        type: 'image',
+        url: img.startsWith('http') ? img : process.env.NEXT_PUBLIC_API + img,
+        className: 'object-contain',
+      });
+    });
+  } else if (product.image) {
+    galleryImages.push({
+      type: 'image',
+      url: product.image.startsWith('http') ? product.image : process.env.NEXT_PUBLIC_API + product.image,
+      className: 'object-contain',
+    });
+  } else {
+    galleryImages.push({
+      type: 'image',
+      url: '/placeholder.webp',
+      className: 'object-contain',
+    });
+  }
+
+  if (product.videoUrl) {
+    galleryImages.push({
+      type: 'video',
+      url: product.videoUrl,
+      className: '',
+    });
+  }
 
 
 
@@ -909,8 +935,8 @@ export default function Page({ params }: PageProps) {
         <iframe
           width="100%"
           height="100%"
-          src="https://www.youtube.com/embed/y918y-PqKLI?autoplay=1"
-          title="INGCO Power Tools Presentation"
+          src={getYoutubeEmbedUrl(product.videoUrl || '')}
+          title={product.name}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
