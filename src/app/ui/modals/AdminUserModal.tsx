@@ -432,7 +432,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
                             {order.status}
                           </td>
                           <td className="px-4 py-2.5 text-right font-extrabold text-neutral-900">
-                            ${order.totalPrice.toFixed(2)}
+                            ${Number(order.totalPrice).toFixed(2)}
                           </td>
                         </tr>
                       ))}

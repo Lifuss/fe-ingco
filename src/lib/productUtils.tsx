@@ -1,20 +1,11 @@
 import React from 'react';
-import {
-  Zap,
-  RotateCw,
-  Sparkles,
-  Scale,
-  Cpu,
-  Battery,
-  Ruler,
-  Layers,
-} from 'lucide-react';
+import { Zap, RotateCw, Sparkles, Scale, Cpu, Battery, Ruler, Layers } from 'lucide-react';
 import { Product } from './types';
 
 /**
  * Dynamic specification icon resolver.
  * Determines the appropriate Lucide icon component based on the characteristic name or code.
- * 
+ *
  * @param name - The name of the specification (e.g., "Напруга", "Вага")
  * @param code - The specification code
  * @returns React node containing the Lucide icon with predefined styling classes
@@ -88,7 +79,7 @@ export const getSpecIcon = (name: string, code: string): React.ReactNode => {
  * Checks whether to display a warning message about the lack of battery/charger.
  * Returns true if the product is a cordless tool (P20S) and is supplied as a carcass (solo)
  * without a battery or charger.
- * 
+ *
  * @param prod - The product object
  * @returns Boolean flag indicating if the battery warning should be shown
  */
@@ -141,7 +132,7 @@ export const shouldShowBatteryWarning = (prod: Product): boolean => {
 /**
  * Product description parser. Splits the text into paragraphs, wraps each in a <p> tag,
  * and highlights the "INGCO" brand name and the product article code in bold.
- * 
+ *
  * @param text - The raw product description text
  * @param article - Optional product article code to highlight in the text
  * @returns An array of paragraph React nodes or an empty string

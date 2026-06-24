@@ -52,7 +52,9 @@ export default async function ProductLayout({
       '@type': 'Product',
       name: product.name,
       image: imageUrl,
-      description: product.description || `Купити ${product.name} за вигідною ціною в інтернет-магазині INGCO Ukraine.`,
+      description:
+        product.description ||
+        `Купити ${product.name} за вигідною ціною в інтернет-магазині INGCO Ukraine.`,
       sku: product.article,
       mpn: product.article,
       brand: {
@@ -66,7 +68,8 @@ export default async function ProductLayout({
         price: price,
         priceValidUntil: '2028-12-31',
         itemCondition: 'https://schema.org/NewCondition',
-        availability: product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        availability:
+          product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
           name: 'INGCO Ukraine',
@@ -90,4 +93,3 @@ export default async function ProductLayout({
     </>
   );
 }
-

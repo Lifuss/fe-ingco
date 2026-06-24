@@ -228,7 +228,7 @@ const CartTable = () => {
       products: selectedCart.map((item) => ({
         productId: item.productId.id,
         quantity: item.quantity,
-        price: Number(item.productId.price.toFixed(2)),
+        price: Number(Number(item.productId.price).toFixed(2)),
         totalPriceByOneProduct: Number((item.productId.price * item.quantity).toFixed(2)),
       })),
       shippingAddress: address,

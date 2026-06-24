@@ -91,7 +91,9 @@ export async function GET() {
             pictures.push(`      <picture>${escapeXml(url)}</picture>`);
           });
         } else if (product.image) {
-          const url = product.image.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+          const url = product.image.startsWith('http')
+            ? product.image
+            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
           pictures.push(`      <picture>${escapeXml(url)}</picture>`);
         } else {
           pictures.push(`      <picture>${escapeXml(`${DOMAIN}/placeholder.webp`)}</picture>`);

@@ -164,15 +164,9 @@ const ProductCard = ({
           )}
         >
           {/* Absolute link overlay for SEO and clickability */}
-          <Link
-            href={`/${slug}`}
-            className="absolute inset-0 z-0 rounded-2xl"
-            aria-label={name}
-          />
+          <Link href={`/${slug}`} className="absolute inset-0 z-0 rounded-2xl" aria-label={name} />
 
-          <div
-            className="relative z-10 flex grow flex-col pointer-events-none"
-          >
+          <div className="pointer-events-none relative z-10 flex grow flex-col">
             {/* Image container */}
             <div className="relative mb-2 flex h-[180px] w-full shrink-0 items-center justify-center bg-white">
               {/* Top Left Badges */}
@@ -219,7 +213,7 @@ const ProductCard = ({
                 onClick={handleFavClick}
                 aria-label={`Додати ${name} до обраних`}
                 className={clsx(
-                  'relative z-20 cursor-pointer rounded-full p-1 transition-all hover:scale-110 pointer-events-auto',
+                  'pointer-events-auto relative z-20 cursor-pointer rounded-full p-1 transition-all hover:scale-110',
                   isFavorite ? 'text-primary-500' : 'hover:text-primary-500 text-gray-400',
                 )}
               >
@@ -270,7 +264,7 @@ const ProductCard = ({
           </div>
 
           {/* Pricing & Cart controls - sticky at bottom */}
-          <div className="relative z-20 mt-auto shrink-0 border-t border-gray-100 pointer-events-auto">
+          <div className="pointer-events-auto relative z-20 mt-auto shrink-0 border-t border-gray-100">
             {countInStock > 0 ? (
               <div className="flex flex-col gap-2">
                 {/* Price block */}
@@ -309,7 +303,7 @@ const ProductCard = ({
                         </span>
                       </div>
                       <span className="text-xs font-bold tracking-wide text-gray-400">
-                        ${price.toFixed(2)} / од.
+                        ${Number(price).toFixed(2)} / од.
                       </span>
                     </div>
                   ) : (

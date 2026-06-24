@@ -39,7 +39,10 @@ export default function RegisterPartnerForm() {
       const registerResponse = await dispatch(registerThunk(data));
 
       if (registerResponse.meta.requestStatus === 'rejected') {
-        const payload = registerResponse.payload as { status?: number; message?: string } | null | undefined;
+        const payload = registerResponse.payload as
+          | { status?: number; message?: string }
+          | null
+          | undefined;
         if (payload?.status === 409 || payload?.message?.includes('already exists')) {
           toast.error('Користувач з таким email або номером телефону вже існує');
         } else {

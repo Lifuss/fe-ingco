@@ -469,16 +469,16 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                 {!isRetail ? (
                   <>
                     <span className="text-base font-extrabold text-neutral-900">
-                      ${totalPrice.toFixed(2)}
+                      ${Number(totalPrice).toFixed(2)}
                     </span>
                     <span className="text-xs text-neutral-400">/</span>
                     <span className="text-sm font-bold text-neutral-700">
-                      {Math.ceil(totalPrice * USD)} ₴
+                      {Math.ceil(Number(totalPrice) * USD)} ₴
                     </span>
                   </>
                 ) : (
                   <span className="text-base font-extrabold text-neutral-900">
-                    {Math.ceil(totalPrice)} грн
+                    {Math.ceil(Number(totalPrice))} грн
                   </span>
                 )}
               </div>

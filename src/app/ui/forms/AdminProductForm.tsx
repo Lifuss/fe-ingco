@@ -10,7 +10,15 @@ import {
   ProductAttribute,
 } from '@/lib/types';
 import Icon from '../assets/Icon';
-import { CircleHelp, ArrowLeft, Plus, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CircleHelp,
+  ArrowLeft,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 const questionSvg = (
   <span>
@@ -83,10 +91,7 @@ function getSortedHierarchy(categories: Category[]): (Category & { depth: number
   return flatten(roots);
 }
 
-const AdminProductForm = ({
-  product,
-  isEdit = false,
-}: AdminProductFormProps) => {
+const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
@@ -125,9 +130,12 @@ const AdminProductForm = ({
 
   useEffect(() => {
     if (product) {
-      const initialImages = product.images && product.images.length > 0
-        ? product.images
-        : product.image ? [product.image] : [];
+      const initialImages =
+        product.images && product.images.length > 0
+          ? product.images
+          : product.image
+            ? [product.image]
+            : [];
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setMediaFiles(
         initialImages.map((path, idx) => ({
@@ -193,7 +201,6 @@ const AdminProductForm = ({
       toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     }
   };
-
 
   if (selectedMainCategoryId !== prevMainCategoryId) {
     setPrevMainCategoryId(selectedMainCategoryId);
@@ -839,7 +846,7 @@ const AdminProductForm = ({
             </div>
 
             {/* Video Url Field */}
-            <div className="flex flex-col mb-2">
+            <div className="mb-2 flex flex-col">
               <label className="mb-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                 Посилання на відеоогляд (YouTube)
               </label>
@@ -880,7 +887,9 @@ const AdminProductForm = ({
                   <span className="text-xs font-semibold text-neutral-600 group-hover:text-neutral-700">
                     Оберіть зображення для галереї
                   </span>
-                  <span className="text-[10px] text-neutral-400">Можна обрати декілька файлів. До 5MB кожен.</span>
+                  <span className="text-[10px] text-neutral-400">
+                    Можна обрати декілька файлів. До 5MB кожен.
+                  </span>
                 </div>
               </div>
 
@@ -892,8 +901,8 @@ const AdminProductForm = ({
                     return (
                       <div
                         key={item.id}
-                        className={`group relative flex flex-col items-center justify-between rounded-xl border p-2 bg-white transition-all shadow-sm ${
-                          isFirst ? 'border-primary ring-1 ring-primary/30' : 'border-neutral-100'
+                        className={`group relative flex flex-col items-center justify-between rounded-xl border bg-white p-2 shadow-sm transition-all ${
+                          isFirst ? 'border-primary ring-primary/30 ring-1' : 'border-neutral-100'
                         }`}
                       >
                         {/* Image Wrapper */}
@@ -901,14 +910,14 @@ const AdminProductForm = ({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.previewUrl}
-                            className="h-auto max-h-full w-auto object-contain rounded-md"
+                            className="h-auto max-h-full w-auto rounded-md object-contain"
                             alt="Preview"
                           />
                         </div>
 
                         {/* Badges */}
                         {isFirst && (
-                          <span className="absolute top-3 left-3 bg-primary text-[8px] font-bold text-white px-1.5 py-0.5 rounded shadow">
+                          <span className="bg-primary absolute top-3 left-3 rounded px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
                             Головна
                           </span>
                         )}
@@ -928,7 +937,7 @@ const AdminProductForm = ({
                                   return newList;
                                 });
                               }}
-                              className="rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                              className="cursor-pointer rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
                               title="Вліво"
                             >
                               <ChevronLeft size={12} />
@@ -945,7 +954,7 @@ const AdminProductForm = ({
                                   return newList;
                                 });
                               }}
-                              className="rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                              className="cursor-pointer rounded border border-neutral-200 bg-white p-1 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
                               title="Вправо"
                             >
                               <ChevronRight size={12} />
@@ -963,7 +972,7 @@ const AdminProductForm = ({
                                 return prev.filter((_, i) => i !== idx);
                               });
                             }}
-                            className="rounded border border-rose-100 bg-white p-1 text-rose-500 hover:bg-rose-50 hover:text-rose-700 cursor-pointer"
+                            className="cursor-pointer rounded border border-rose-100 bg-white p-1 text-rose-500 hover:bg-rose-50 hover:text-rose-700"
                             title="Видалити"
                           >
                             <Icon icon="delete" className="h-3.5 w-3.5 fill-current" />
@@ -975,7 +984,9 @@ const AdminProductForm = ({
                 </div>
               ) : (
                 <div className="flex h-32 flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50/50 p-4 text-center">
-                  <span className="text-xs font-semibold text-neutral-400">Галерея зображень порожня</span>
+                  <span className="text-xs font-semibold text-neutral-400">
+                    Галерея зображень порожня
+                  </span>
                 </div>
               )}
             </div>
