@@ -10,14 +10,16 @@ const apiIngco = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
 });
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
+import { cache } from 'react';
+
+export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
   try {
     const { data } = await apiIngco.get(`/products/${slug}`);
     return data;
   } catch (_error) {
     return null;
   }
-}
+});
 
 export type State = {
   errors?: {

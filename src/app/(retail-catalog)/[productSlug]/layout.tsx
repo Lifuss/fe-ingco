@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
-import React, { cache } from 'react';
+import React from 'react';
 import { generateProductMetadata, SITE_URL } from '@/lib/metadata';
-import { getProductBySlug as getProductBySlugRaw } from '@/lib/actions';
-
-const getProductBySlug = cache(getProductBySlugRaw);
+import { getProductBySlug } from '@/lib/actions';
 
 export async function generateMetadata({
   params,
