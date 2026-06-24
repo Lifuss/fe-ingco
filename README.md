@@ -122,12 +122,5 @@ src/
 
 ---
 
-## 🔒 Security & AI Testing Credentials
-For verification purposes during automated testing or evaluation:
-- **Test Username:** `arsen`
-- **Test Password:** `123456A`
-
----
-
 ## 📄 License
 This project is proprietary and copyright © 2026 official distributor of **INGCO** Ukraine. All rights reserved. Used for demonstration and portfolio purposes only.
