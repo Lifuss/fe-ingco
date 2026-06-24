@@ -3,6 +3,7 @@
 import { Product } from '@/lib/types';
 import clsx from 'clsx';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -32,7 +33,7 @@ const ProductCard = ({
   product,
   listType: _listType,
   favoritesIdList,
-  handleDirectToProduct,
+  handleDirectToProduct: _handleDirectToProduct,
   USDCurrency,
 }: ProductCardProps) => {
   const dispatch = useAppDispatch();
@@ -162,9 +163,15 @@ const ProductCard = ({
             isB2BUser ? 'min-h-[430px]' : 'min-h-[380px]',
           )}
         >
+          {/* Absolute link overlay for SEO and clickability */}
+          <Link
+            href={`/${slug}`}
+            className="absolute inset-0 z-0 rounded-2xl"
+            aria-label={name}
+          />
+
           <div
-            className="flex grow cursor-pointer flex-col"
-            onClick={() => handleDirectToProduct(id, slug)}
+            className="relative z-10 flex grow flex-col pointer-events-none"
           >
             {/* Image container */}
             <div className="relative mb-2 flex h-[180px] w-full shrink-0 items-center justify-center bg-white">
@@ -212,7 +219,7 @@ const ProductCard = ({
                 onClick={handleFavClick}
                 aria-label={`Додати ${name} до обраних`}
                 className={clsx(
-                  'cursor-pointer rounded-full p-1 transition-all hover:scale-110',
+                  'relative z-20 cursor-pointer rounded-full p-1 transition-all hover:scale-110 pointer-events-auto',
                   isFavorite ? 'text-primary-500' : 'hover:text-primary-500 text-gray-400',
                 )}
               >
@@ -263,7 +270,7 @@ const ProductCard = ({
           </div>
 
           {/* Pricing & Cart controls - sticky at bottom */}
-          <div className="mt-auto shrink-0 border-t border-gray-100">
+          <div className="relative z-20 mt-auto shrink-0 border-t border-gray-100 pointer-events-auto">
             {countInStock > 0 ? (
               <div className="flex flex-col gap-2">
                 {/* Price block */}

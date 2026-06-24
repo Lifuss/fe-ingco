@@ -261,9 +261,6 @@ export default function Page({ params }: PageProps) {
     });
   }
   breadcrumbsItems.push({ label: product.article || product.name });
-  const primaryImageUrl = product.image
-    ? process.env.NEXT_PUBLIC_API + product.image
-    : '/placeholder.webp';
 
   const galleryImages: { type: 'image' | 'video'; url: string; className: string }[] = [];
 
@@ -370,18 +367,16 @@ export default function Page({ params }: PageProps) {
               {/* Left Column: Gallery & Micro Features */}
               <div className="flex flex-col gap-6 lg:col-span-7">
                 {/* Product Name Title on Mobile */}
-                {!isTablet && (
-                  <div>
-                    <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
-                      {product.name}
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <span className="rounded bg-neutral-200 px-2 py-0.5 font-mono text-[11px] text-neutral-700">
-                        Артикул: {product.article}
-                      </span>
-                    </div>
+                <div className="block lg:hidden">
+                  <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
+                    {product.name}
+                  </h1>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded bg-neutral-200 px-2 py-0.5 font-mono text-[11px] text-neutral-700">
+                      Артикул: {product.article}
+                    </span>
                   </div>
-                )}
+                </div>
 
                 {/* Main Media Box */}
                 <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm select-none">
@@ -496,30 +491,28 @@ export default function Page({ params }: PageProps) {
               <div className="relative lg:col-span-5">
                 <div className="flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:sticky lg:top-[128px]">
                   {/* Name Header and Wishlist on Desktop */}
-                  {isTablet && (
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <h1 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
-                          {product.name}
-                        </h1>
-                        <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
-                          Артикул: {product.article}
-                        </div>
+                  <div className="hidden lg:flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <h2 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
+                        {product.name}
+                      </h2>
+                      <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
+                        Артикул: {product.article}
                       </div>
-
-                      <button
-                        onClick={handleFavoriteClick}
-                        className={`cursor-pointer rounded-full border p-2.5 transition-all ${
-                          isFavorite
-                            ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
-                            : 'border-neutral-200 bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700'
-                        }`}
-                        title={isFavorite ? 'Вилучити з обраного' : 'Додати в обране'}
-                      >
-                        <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
-                      </button>
                     </div>
-                  )}
+
+                    <button
+                      onClick={handleFavoriteClick}
+                      className={`cursor-pointer rounded-full border p-2.5 transition-all ${
+                        isFavorite
+                          ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
+                          : 'border-neutral-200 bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700'
+                      }`}
+                      title={isFavorite ? 'Вилучити з обраного' : 'Додати в обране'}
+                    >
+                      <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
+                    </button>
+                  </div>
 
                   {/* Stock Availability */}
                   <div className="flex items-center gap-2 border-b border-neutral-100 pb-3">

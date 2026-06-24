@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import { ChangeEvent, FormEvent, useState, useEffect, useMemo } from 'react';
+import { FormEvent, useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Category,
@@ -129,6 +128,7 @@ const AdminProductForm = ({
       const initialImages = product.images && product.images.length > 0
         ? product.images
         : product.image ? [product.image] : [];
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMediaFiles(
         initialImages.map((path, idx) => ({
           id: `existing-${idx}-${path}`,
@@ -187,8 +187,9 @@ const AdminProductForm = ({
         toast.success('Продукт успішно створено');
       }
       router.back();
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || 'Помилка збереження';
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg = error.response?.data?.message || error.message || 'Помилка збереження';
       toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     }
   };
@@ -897,6 +898,7 @@ const AdminProductForm = ({
                       >
                         {/* Image Wrapper */}
                         <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-neutral-50 p-1">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.previewUrl}
                             className="h-auto max-h-full w-auto object-contain rounded-md"
