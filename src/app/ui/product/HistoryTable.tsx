@@ -93,7 +93,11 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
     return history.map((item) => ({
       orderCodeCol: item.orderCode,
       createdAtCol: new Date(item.createdAt).toLocaleDateString('uk-UA'),
-      totalPriceCol: !isRetail ? Math.ceil(item.totalPrice * usdCurrency) : item.totalPrice,
+      totalPriceCol: !isRetail
+        ? item.usdRate && Number(item.usdRate) > 1
+          ? Math.ceil(item.totalPrice * Number(item.usdRate))
+          : Math.ceil(item.totalPrice * usdCurrency)
+        : item.totalPrice,
       statusCol: item.status,
       declarationNumberCol: item.declarationNumber,
       order: item,

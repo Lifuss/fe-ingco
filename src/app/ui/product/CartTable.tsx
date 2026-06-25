@@ -240,6 +240,7 @@ const CartTable = () => {
           .toFixed(2),
       ),
       comment,
+      usdRate: selectedCurrency.USD,
     };
 
     dispatch(createOrderThunk(order))

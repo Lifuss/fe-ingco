@@ -63,7 +63,18 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
 
   if (selectedOrder === null) return null;
 
-  const { products, totalPrice, status, user } = selectedOrder;
+  const { products, totalPrice, status, user, usdRate } = selectedOrder;
+  const orderRate = usdRate && Number(usdRate) > 1 ? Number(usdRate) : USD;
+
+  const totalUah = !isRetail
+    ? (products || []).reduce((sum, p) => {
+        const pUah =
+          p.priceUah && Number(p.priceUah) > 0
+            ? Number(p.priceUah) * (p.quantity || 0)
+            : Math.ceil((p.price || 0) * orderRate) * (p.quantity || 0);
+        return sum + pUah;
+      }, 0)
+    : Math.ceil(Number(totalPrice));
 
   const handleSubmitAttempt = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -326,11 +337,20 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                         const productKey = product?.id ?? `product-${index}`;
                         const productName =
                           product?.product?.name || 'Продукт застарів та видалений з бази';
+                        const itemPriceUah =
+                          product.priceUah && Number(product.priceUah) > 0
+                            ? Number(product.priceUah)
+                            : Math.ceil((product?.price || 0) * orderRate);
+                        const itemTotalUah =
+                          product.priceUah && Number(product.priceUah) > 0
+                            ? Number(product.priceUah) * (product.quantity || 0)
+                            : Math.ceil((product?.totalPriceByOneProduct || 0) * orderRate);
+
                         const unitPriceText = !isRetail
-                          ? `$${product?.price || 0} / ${Math.ceil((product?.price || 0) * USD)} ₴`
+                          ? `$${product?.price || 0} / ${itemPriceUah} ₴`
                           : `${product?.price || 0} грн`;
                         const sumPriceText = !isRetail
-                          ? `$${product?.totalPriceByOneProduct || 0} / ${Math.ceil((product?.totalPriceByOneProduct || 0) * USD)} ₴`
+                          ? `$${product?.totalPriceByOneProduct || 0} / ${itemTotalUah} ₴`
                           : `${product?.totalPriceByOneProduct || 0} грн`;
 
                         return (
@@ -472,9 +492,7 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
                       ${Number(totalPrice).toFixed(2)}
                     </span>
                     <span className="text-xs text-neutral-400">/</span>
-                    <span className="text-sm font-bold text-neutral-700">
-                      {Math.ceil(Number(totalPrice) * USD)} ₴
-                    </span>
+                    <span className="text-sm font-bold text-neutral-700">{totalUah} ₴</span>
                   </>
                 ) : (
                   <span className="text-base font-extrabold text-neutral-900">

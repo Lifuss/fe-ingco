@@ -99,6 +99,7 @@ export interface Order {
   guestLastName?: string | null;
   guestSurName?: string | null;
   guestPhone?: string | null;
+  usdRate?: number | string;
   products: {
     product: {
       id: number;
@@ -107,6 +108,9 @@ export interface Order {
     quantity: number;
     price: number;
     totalPriceByOneProduct: number;
+    priceUsd?: number;
+    priceUah?: number;
+    priceRrc?: number;
     id: number;
   }[];
   totalPrice: number;

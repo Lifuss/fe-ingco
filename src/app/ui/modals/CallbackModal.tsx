@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import React, { useState } from 'react';
 import { X, PhoneCall } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { supportTicketThunk } from '@/lib/appState/main/operations';
+import { useAppDispatch } from '@/lib/hooks';
 
 const customModalStyles = {
   content: {
@@ -31,6 +33,7 @@ interface CallbackModalProps {
 }
 
 const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
+  const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,14 +46,26 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
     }
 
     setIsSubmitting(true);
-    // Simulate API request
-    setTimeout(() => {
-      toast.success("Запит надіслано! Менеджер зв'яжеться з вами найближчим часом.");
-      setName('');
-      setPhone('');
-      setIsSubmitting(false);
-      closeModal();
-    }, 1000);
+    dispatch(
+      supportTicketThunk({
+        name,
+        phone,
+        email: 'callback@ingcoua.com.ua',
+        message: 'Запит на персонального менеджера / Зворотній дзвінок',
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        toast.success("Запит надіслано! Менеджер зв'яжеться з вами найближчим часом.");
+        setName('');
+        setPhone('');
+        setIsSubmitting(false);
+        closeModal();
+      })
+      .catch(() => {
+        toast.error('Виникла помилка зі сторони серверу, спробуйте пізніше.');
+        setIsSubmitting(false);
+      });
   };
 
   return (
@@ -90,7 +105,7 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3.5 py-2 text-sm focus:outline-none"
-              placeholder="Іван Іванов"
+              placeholder="Дмитро Гуцуляк"
             />
           </div>
           <div>

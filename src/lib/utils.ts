@@ -55,11 +55,15 @@ interface RawOrderItem {
   productId: number;
   productName?: string | null;
   product?: { name?: string | null } | null;
+  priceUsd?: string | number | null;
+  priceUah?: string | number | null;
+  priceRrc?: string | number | null;
 }
 
-interface RawOrder extends Omit<Order, 'products' | 'totalPrice'> {
+interface RawOrder extends Omit<Order, 'products' | 'totalPrice' | 'usdRate'> {
   totalPrice: string | number;
   items?: RawOrderItem[] | null;
+  usdRate?: string | number | null;
 }
 
 export function normalizeOrder(order: unknown): Order {
@@ -69,11 +73,15 @@ export function normalizeOrder(order: unknown): Order {
     ...raw,
     orderCode: String(raw.orderCode),
     totalPrice: Number(raw.totalPrice),
+    usdRate: raw.usdRate ? Number(raw.usdRate) : undefined,
     products: (raw.items || []).map((item) => ({
       id: item.id,
       quantity: item.quantity,
       price: Number(item.unitPrice),
       totalPriceByOneProduct: Number(item.totalPrice),
+      priceUsd: item.priceUsd ? Number(item.priceUsd) : undefined,
+      priceUah: item.priceUah ? Number(item.priceUah) : undefined,
+      priceRrc: item.priceRrc ? Number(item.priceRrc) : undefined,
       product: {
         id: item.productId,
         name:

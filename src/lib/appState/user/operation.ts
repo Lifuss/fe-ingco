@@ -319,6 +319,7 @@ export const createOrderThunk = createAsyncThunk(
       shippingAddress: string;
       totalPrice: number;
       comment: string;
+      usdRate?: number;
     },
     { rejectWithValue },
   ) => {
@@ -330,6 +331,7 @@ export const createOrderThunk = createAsyncThunk(
         })),
         shippingAddress: order.shippingAddress,
         comment: order.comment,
+        usdRate: order.usdRate,
       };
       const { data } = await apiIngco.post('orders', payload);
       return normalizeOrder(data);
