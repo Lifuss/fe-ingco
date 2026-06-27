@@ -1,18 +1,15 @@
-'use client';
+import CartClient from './CartClient';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
 
-import RetailCartTable from '@/app/ui/product/RetailCartTable';
-import CartTable from '@/app/ui/product/CartTable';
-import { useAppSelector } from '@/lib/hooks';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Кошик покупок',
+  description: 'Оформлення замовлення та перегляд товарів у кошику інтернет-магазину INGCO Україна.',
+  path: '/cart',
+  noindex: true,
+  nofollow: true,
+});
 
-const Page = () => {
-  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
-
-  return (
-    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8">
-      {isAuthenticated && isB2b ? <CartTable /> : <RetailCartTable />}
-      <div id="image" className="absolute z-50 hidden h-[200px] w-[200px]"></div>
-    </main>
-  );
-};
-
-export default Page;
+export default function Page() {
+  return <CartClient />;
+}

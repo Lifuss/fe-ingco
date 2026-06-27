@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import axios from 'axios';
 import { Product } from './types';
+import { normalizeProduct } from '@/lib/utils';
 
 const apiIngco = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API}/api`,
@@ -15,7 +16,7 @@ import { cache } from 'react';
 export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
   try {
     const { data } = await apiIngco.get(`/products/${slug}`);
-    return data;
+    return normalizeProduct(data);
   } catch (_error) {
     return null;
   }

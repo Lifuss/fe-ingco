@@ -126,13 +126,14 @@ export async function GET() {
         const name = product.name.trim();
         const article = product.article.trim();
 
+        const rrcSaleNum = product.rrcSale != null ? Number(product.rrcSale) : 0;
+        const priceRetailRecNum = Number(product.priceRetailRecommendation);
         const hasSale =
-          product.rrcSale != null &&
-          product.rrcSale > 0 &&
-          product.rrcSale < product.priceRetailRecommendation;
-        const displayPrice = hasSale ? product.rrcSale! : product.priceRetailRecommendation;
+          rrcSaleNum > 0 &&
+          rrcSaleNum < priceRetailRecNum;
+        const displayPrice = hasSale ? rrcSaleNum : priceRetailRecNum;
         const oldPriceXml = hasSale
-          ? `\n      <oldprice>${product.priceRetailRecommendation}</oldprice>`
+          ? `\n      <oldprice>${priceRetailRecNum}</oldprice>`
           : '';
 
         return `

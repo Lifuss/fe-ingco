@@ -1,27 +1,15 @@
-'use client';
+import FavoritesClient from './FavoritesClient';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
 
-import ProductList from '@/app/ui/product/ProductList';
-import ShopTable from '@/app/ui/product/ShopTable';
-import { useAppSelector } from '@/lib/hooks';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Обрані товари',
+  description: 'Ваш список бажаних товарів та інструментів на сайті INGCO Україна.',
+  path: '/favorites',
+  noindex: true,
+  nofollow: true,
+});
 
-const Page = () => {
-  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
-
-  return (
-    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8">
-      {isAuthenticated && isB2b ? (
-        <>
-          <ShopTable isFavoritePage={true} />
-          <div
-            id="image"
-            className="absolute z-50 hidden h-[200px] w-[200px] 2xl:h-[250px] 2xl:w-[250px]"
-          ></div>
-        </>
-      ) : (
-        <ProductList isFavoritePage={true} />
-      )}
-    </main>
-  );
-};
-
-export default Page;
+export default function Page() {
+  return <FavoritesClient />;
+}

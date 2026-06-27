@@ -1,16 +1,15 @@
-'use client';
+import HistoryClient from './HistoryClient';
+import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
 
-import HistoryTable from '@/app/ui/product/HistoryTable';
-import { useAppSelector } from '@/lib/hooks';
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Історія замовлень',
+  description: 'Історія покупок та замовлень користувача в магазині INGCO Україна.',
+  path: '/history',
+  noindex: true,
+  nofollow: true,
+});
 
-const Page = () => {
-  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
-
-  return (
-    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8">
-      <HistoryTable isRetail={!isB2b} />
-    </main>
-  );
-};
-
-export default Page;
+export default function Page() {
+  return <HistoryClient />;
+}
