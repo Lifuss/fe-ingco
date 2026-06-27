@@ -128,13 +128,9 @@ export async function GET() {
 
         const rrcSaleNum = product.rrcSale != null ? Number(product.rrcSale) : 0;
         const priceRetailRecNum = Number(product.priceRetailRecommendation);
-        const hasSale =
-          rrcSaleNum > 0 &&
-          rrcSaleNum < priceRetailRecNum;
+        const hasSale = rrcSaleNum > 0 && rrcSaleNum < priceRetailRecNum;
         const displayPrice = hasSale ? rrcSaleNum : priceRetailRecNum;
-        const oldPriceXml = hasSale
-          ? `\n      <oldprice>${priceRetailRecNum}</oldprice>`
-          : '';
+        const oldPriceXml = hasSale ? `\n      <oldprice>${priceRetailRecNum}</oldprice>` : '';
 
         return `
     <offer id="${escapeXml(String(product.id))}" available="${available}" in_stock="${available}" selling_type="r">

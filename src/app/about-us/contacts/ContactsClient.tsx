@@ -42,8 +42,8 @@ const ContactsClient = () => {
             {socialArray.map((social) => (
               <Link href={social.url} key={social.name} target="_blank" rel="noopener noreferrer">
                 <Icon
-                   icon={social.name}
-                   className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
+                  icon={social.name}
+                  className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
                 />
               </Link>
             ))}
@@ -121,8 +121,8 @@ const ContactsClient = () => {
             {socialArray.map((social) => (
               <Link href={social.url} key={social.name} target="_blank" rel="noopener noreferrer">
                 <Icon
-                   icon={social.name}
-                   className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
+                  icon={social.name}
+                  className="stroke h-8 w-8 transform border-white transition-all duration-300 hover:scale-[1.5] hover:stroke-slate-300"
                 />
               </Link>
             ))}

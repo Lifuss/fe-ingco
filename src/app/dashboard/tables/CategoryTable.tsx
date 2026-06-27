@@ -21,6 +21,7 @@ import CategorySortView from './CategorySortView';
 type CategoryTableRow = {
   id: number;
   nameCol: string;
+  slugCol?: string | null;
   productsCountCol: number;
   editCol: number;
   deleteCol: number;
@@ -84,6 +85,7 @@ const CategoryTable = () => {
   const [selectedCategory, setSelectedCategory] = useState<{
     id?: number;
     name: string;
+    slug?: string | null;
     renderSort: number;
     parentId?: number | null;
     showInMenu?: boolean;
@@ -95,12 +97,13 @@ const CategoryTable = () => {
   const openModal = (
     id: number,
     name: string,
+    slug: string | null | undefined,
     renderSort: number,
     parentId: number | null,
     showInMenu: boolean,
   ) => {
     setSelectedId(id);
-    setSelectedCategory({ id, name, renderSort, parentId, showInMenu });
+    setSelectedCategory({ id, name, slug, renderSort, parentId, showInMenu });
     setSelectedAttributeIds([]);
 
     // Fetch linked attributes for this category
@@ -130,11 +133,13 @@ const CategoryTable = () => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const slugInput = form.elements.namedItem('slug') as HTMLInputElement;
     const parentIdSelect = form.elements.namedItem('parentId') as HTMLSelectElement;
     const showInMenuInput = form.elements.namedItem('showInMenu') as HTMLInputElement;
 
     if (nameInput) {
       const name = nameInput.value.trim();
+      const slug = slugInput ? slugInput.value.trim() : '';
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
@@ -142,6 +147,7 @@ const CategoryTable = () => {
         updateCategoryThunk({
           id: selectedId,
           name,
+          slug,
           parentId,
           showInMenu,
           attributeIds: selectedAttributeIds,
@@ -167,6 +173,7 @@ const CategoryTable = () => {
       sortedCategories.map((category) => ({
         id: category.id,
         nameCol: category.name,
+        slugCol: category.slug,
         productsCountCol: category.count,
         editCol: category.id,
         deleteCol: category.id,
@@ -233,6 +240,7 @@ const CategoryTable = () => {
               openModal(
                 row.original.editCol,
                 row.original.nameCol,
+                row.original.slugCol,
                 row.original.renderSortCol,
                 row.original.parentIdCol,
                 row.original.showInMenuCol,

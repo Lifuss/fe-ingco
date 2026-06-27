@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { ShieldCheck, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
@@ -43,8 +43,17 @@ const CatalogSidebar = () => {
     children: SidebarCategoryNode[];
   }
 
-  // Read URL search params
-  const activeCategoryId = searchParams.get('category') || '';
+  // Read URL search params & route params
+  const params = useParams<{ categorySlug?: string }>();
+  const categorySlug = params?.categorySlug;
+
+  const activeCategoryId = useMemo(() => {
+    if (categorySlug && rawProductsCategories) {
+      const cat = rawProductsCategories.find((c) => c.slug === categorySlug);
+      return cat ? String(cat.id) : '';
+    }
+    return searchParams.get('category') || '';
+  }, [categorySlug, rawProductsCategories, searchParams]);
 
   const [showAllSubcategories, setShowAllSubcategories] = useState(false);
   const [prevCategoryId, setPrevCategoryId] = useState(activeCategoryId);
@@ -169,7 +178,7 @@ const CatalogSidebar = () => {
         }
       });
 
-      const targetPath = pathname === '/favorites' ? '/favorites' : '/';
+      const targetPath = pathname === '/favorites' ? '/favorites' : pathname;
       router.replace(`${targetPath}?${params.toString()}`);
     },
     [searchParams, pathname, router],
@@ -182,10 +191,25 @@ const CatalogSidebar = () => {
 
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {
+    const selectedCat = rawProductsCategories?.find((c) => String(c.id) === categoryId);
+
+    if (pathname === '/favorites') {
+      if (activeCategoryId === categoryId) {
+        updateUrlParams({ category: null, filters: null });
+      } else {
+        updateUrlParams({ category: categoryId, filters: null });
+      }
+      return;
+    }
+
     if (activeCategoryId === categoryId) {
-      updateUrlParams({ category: null, filters: null });
+      router.push('/');
     } else {
-      updateUrlParams({ category: categoryId, filters: null });
+      if (selectedCat?.slug) {
+        router.push(`/categories/${selectedCat.slug}`);
+      } else {
+        router.push(`/?category=${categoryId}`);
+      }
     }
   };
 
@@ -289,6 +313,18 @@ const CatalogSidebar = () => {
     setFloatingWidget((prev) => ({ ...prev, visible: false }));
   };
 
+  const handleResetCategory = () => {
+    if (pathname === '/favorites') {
+      updateUrlParams({ category: null, filters: null });
+      return;
+    }
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('category');
+    params.delete('filters'); // Filters are category-specific
+    params.set('page', '1');
+    router.push(`/?${params.toString()}`);
+  };
+
   const hasActiveFilters = Object.keys(selectedFilters).length > 0;
 
   return (
@@ -299,7 +335,7 @@ const CatalogSidebar = () => {
           <h2 className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</h2>
           {activeCategoryId && (
             <button
-              onClick={() => updateUrlParams({ category: null })}
+              onClick={handleResetCategory}
               className="text-primary-500 hover:text-primary-600 text-xs font-medium hover:underline"
             >
               Скинути
@@ -330,7 +366,7 @@ const CatalogSidebar = () => {
                     })()
                   ) : (
                     <button
-                      onClick={() => updateUrlParams({ category: null })}
+                      onClick={handleResetCategory}
                       className="hover:text-primary-500 mb-1 flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gray-500 transition-colors"
                     >
                       <ChevronLeft size={14} className="stroke-[2.5]" />

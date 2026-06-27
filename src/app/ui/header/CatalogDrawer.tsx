@@ -95,7 +95,9 @@ export default function CatalogDrawer({
   const baseUrl = '/';
 
   // Helper to generate search link URLs
-  const getSearchUrl = (categoryId: string) => {
+  // Helper to generate search link URLs
+  const getSearchUrl = (categoryId: string, slug?: string | null) => {
+    if (slug) return `/categories/${slug}`;
     const params = new URLSearchParams();
     params.set('page', '1');
     if (categoryId) params.set('category', categoryId);
@@ -197,7 +199,7 @@ export default function CatalogDrawer({
                   {isExpanded && (
                     <div className="flex flex-col gap-4 pt-2 pr-2 pb-1 pl-9">
                       <Link
-                        href={getSearchUrl(String(cat.id))}
+                        href={getSearchUrl(String(cat.id), cat.slug)}
                         onClick={onClose}
                         className="text-primary-500 flex cursor-pointer items-center gap-1 text-xs font-bold hover:underline"
                       >
@@ -207,7 +209,7 @@ export default function CatalogDrawer({
                       {subGroups.map((group) => (
                         <div key={group.id} className="flex flex-col gap-1.5">
                           <Link
-                            href={getSearchUrl(String(group.id))}
+                            href={getSearchUrl(String(group.id), group.slug)}
                             onClick={onClose}
                             className="hover:text-primary-500 text-[10px] font-extrabold tracking-wider text-neutral-800 uppercase"
                           >
@@ -217,7 +219,7 @@ export default function CatalogDrawer({
                             {group.children.map((item) => (
                               <li key={item.id}>
                                 <Link
-                                  href={getSearchUrl(String(item.id))}
+                                  href={getSearchUrl(String(item.id), item.slug)}
                                   onClick={onClose}
                                   className="hover:text-primary-500 block cursor-pointer py-0.5 text-xs font-semibold text-neutral-600"
                                 >
@@ -270,7 +272,7 @@ export default function CatalogDrawer({
                   return (
                     <li key={cat.id}>
                       <Link
-                        href={getSearchUrl(String(cat.id))}
+                        href={getSearchUrl(String(cat.id), cat.slug)}
                         onMouseEnter={() => setActiveCategoryId(cat.id)}
                         onClick={onClose}
                         className={cn(
@@ -318,7 +320,7 @@ export default function CatalogDrawer({
                   </h2>
                   {activeCategory && (
                     <Link
-                      href={getSearchUrl(String(activeCategory.id))}
+                      href={getSearchUrl(String(activeCategory.id), activeCategory.slug)}
                       onClick={onClose}
                       className="text-primary-500 flex cursor-pointer items-center gap-1 text-xs font-bold hover:underline"
                     >
@@ -331,7 +333,7 @@ export default function CatalogDrawer({
                   {activeSubgroups.map((group) => (
                     <div key={group.id} className="flex flex-col gap-3">
                       <Link
-                        href={getSearchUrl(String(group.id))}
+                        href={getSearchUrl(String(group.id), group.slug)}
                         onClick={onClose}
                         className="font-display hover:text-primary-500 text-xs font-bold tracking-wider text-neutral-800 uppercase transition-colors select-none"
                       >
@@ -341,7 +343,7 @@ export default function CatalogDrawer({
                         {group.children.map((item) => (
                           <li key={item.id}>
                             <Link
-                              href={getSearchUrl(String(item.id))}
+                              href={getSearchUrl(String(item.id), item.slug)}
                               onClick={onClose}
                               className="hover:text-primary-500 cursor-pointer font-medium text-neutral-600 transition-colors"
                             >

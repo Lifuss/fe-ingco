@@ -76,6 +76,7 @@ const CategoryForm = ({
   defaultValue?: {
     id?: number;
     name: string;
+    slug?: string | null;
     renderSort?: number;
     parentId?: number | null;
     showInMenu?: boolean;
@@ -121,6 +122,22 @@ const CategoryForm = ({
           defaultValue={defaultValue && defaultValue.name}
           className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
         />
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
+          Slug (ЧПУ URL)
+        </span>
+        <input
+          type="text"
+          name="slug"
+          placeholder="Автогенерація"
+          defaultValue={defaultValue && defaultValue.slug ? defaultValue.slug : ''}
+          className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
+        />
+        <span className="text-xs text-neutral-400">
+          Залиште порожнім для автоматичної генерації на основі назви.
+        </span>
       </label>
 
       <label className="flex flex-col gap-1">

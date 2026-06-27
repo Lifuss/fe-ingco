@@ -13,6 +13,7 @@ export interface BaseMetadataOptions {
   image?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  keywords?: string;
 }
 
 export function generateBaseMetadata({
@@ -22,6 +23,7 @@ export function generateBaseMetadata({
   image = '/site-card.webp',
   noindex = false,
   nofollow = false,
+  keywords,
 }: BaseMetadataOptions): Metadata {
   const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`;
   const pageUrl = url ? `${SITE_URL}${url}` : SITE_URL;
@@ -29,6 +31,7 @@ export function generateBaseMetadata({
   return {
     title,
     description,
+    keywords,
     robots: {
       index: !noindex,
       follow: !nofollow,
@@ -136,6 +139,7 @@ export interface PageMetadataOptions {
   path: string;
   noindex?: boolean;
   nofollow?: boolean;
+  keywords?: string;
 }
 
 export function generatePageMetadata({
@@ -144,6 +148,7 @@ export function generatePageMetadata({
   path,
   noindex = false,
   nofollow = false,
+  keywords,
 }: PageMetadataOptions): Metadata {
   return generateBaseMetadata({
     title,
@@ -151,5 +156,6 @@ export function generatePageMetadata({
     url: path,
     noindex,
     nofollow,
+    keywords,
   });
 }

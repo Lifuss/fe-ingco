@@ -152,6 +152,46 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'page' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'filters' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'sortValue' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'query' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
         source: '/cart',
         headers: [
           {

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { setShopView } from '@/lib/appState/main/slice';
 import { LayoutGrid, List, ChevronDown } from 'lucide-react';
@@ -26,19 +26,32 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
   const {
     products = [],
     total = 0,
     shopView,
   } = useAppSelector((state) => state.persistedMainReducer);
 
-  const activeCategoryId = searchParams.get('category') || '';
+  const paramsRoute = useParams<{ categorySlug?: string }>();
+  const categorySlug = paramsRoute?.categorySlug;
   const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
 
   // Determine active category name for breadcrumbs & title
-  const activeCategory = productsCategories.find((c) => String(c.id) === activeCategoryId);
-  const categoryName = activeCategory ? activeCategory.name : 'Електроінструмент';
+  const activeCategory = React.useMemo(() => {
+    if (productsCategories && productsCategories.length > 0) {
+      if (categorySlug) {
+        return productsCategories.find((c) => c.slug === categorySlug);
+      }
+      const activeCategoryId = searchParams.get('category') || '';
+      if (activeCategoryId) {
+        return productsCategories.find((c) => String(c.id) === activeCategoryId);
+      }
+    }
+    return undefined;
+  }, [categorySlug, productsCategories, searchParams]);
+
+  const categoryName = activeCategory ? activeCategory.name : 'Каталог інструментів INGCO';
 
   // Breadcrumbs items
   const breadcrumbItems: { label: string; href?: string }[] = [

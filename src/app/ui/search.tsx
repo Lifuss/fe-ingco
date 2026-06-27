@@ -1,7 +1,8 @@
 'use client';
 import { Search, X } from 'lucide-react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useSearchParams, usePathname, useRouter, useParams } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
+import { useAppSelector } from '@/lib/hooks';
 
 export default function SearchFoo({
   placeholder,
@@ -13,10 +14,16 @@ export default function SearchFoo({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const paramsRoute = useParams();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const searchQuery = searchParams?.get('query')?.toString() || '';
   const [term, setTerm] = useState(searchQuery);
+
+  const categorySlug = paramsRoute?.categorySlug;
+  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const currentCategory = categories?.find((c) => c.slug === categorySlug);
+  const currentCategoryName = currentCategory?.name || '';
 
   useEffect(() => {
     setTerm(searchQuery);
@@ -48,6 +55,17 @@ export default function SearchFoo({
     router.replace(`${validPathname}?${params.toString()}`);
   };
 
+  const handleRemoveCategory = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1');
+    if (term) {
+      params.set('query', term);
+    } else {
+      params.delete('query');
+    }
+    router.push(`/?${params.toString()}`);
+  };
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTerm(e.target.value);
   };
@@ -75,6 +93,19 @@ export default function SearchFoo({
         <label htmlFor="header-search" className="sr-only">
           Пошук
         </label>
+        {currentCategoryName && (
+          <div className="mr-2 flex shrink-0 items-center gap-1 rounded-md border border-[#FFD9C6] bg-[#FFF2EB] py-0.5 pr-1 pl-2 text-xs font-semibold text-[#D95F2B] select-none">
+            <span className="max-w-[120px] truncate">{currentCategoryName}</span>
+            <button
+              type="button"
+              onClick={handleRemoveCategory}
+              className="rounded-full p-0.5 text-[#D95F2B] transition hover:bg-[#FFD9C6]"
+              title="Шукати в усіх категоріях"
+            >
+              <X size={12} className="stroke-[2.5]" />
+            </button>
+          </div>
+        )}
         <input
           id="header-search"
           name="search"
@@ -119,18 +150,33 @@ export default function SearchFoo({
         className="absolute top-1/2 left-4 -translate-y-1/2 text-gray-500"
         aria-hidden
       />
-      <input
-        id="spefix-search"
-        name="search"
-        className="block w-full appearance-none border-none bg-transparent pr-32 pl-10 text-base text-gray-900 placeholder:text-gray-500 focus:border-transparent focus:ring-0 focus:outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none"
-        placeholder={placeholder}
-        onChange={handleInput}
-        value={term}
-        aria-label="Search"
-        ref={inputRef}
-        autoComplete="off"
-        onKeyDown={handleKeyDown}
-      />
+      <div className="flex w-full items-center pr-32 pl-10">
+        {currentCategoryName && (
+          <div className="mr-2 flex shrink-0 items-center gap-1 rounded-md border border-[#FFD9C6] bg-[#FFF2EB] py-0.5 pr-1 pl-2 text-xs font-semibold text-[#D95F2B] select-none">
+            <span className="max-w-[120px] truncate">{currentCategoryName}</span>
+            <button
+              type="button"
+              onClick={handleRemoveCategory}
+              className="rounded-full p-0.5 text-[#D95F2B] transition hover:bg-[#FFD9C6]"
+              title="Шукати в усіх категоріях"
+            >
+              <X size={12} className="stroke-[2.5]" />
+            </button>
+          </div>
+        )}
+        <input
+          id="spefix-search"
+          name="search"
+          className="block w-full appearance-none border-none bg-transparent text-base text-gray-900 placeholder:text-gray-500 focus:border-transparent focus:ring-0 focus:outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none"
+          placeholder={placeholder}
+          onChange={handleInput}
+          value={term}
+          aria-label="Search"
+          ref={inputRef}
+          autoComplete="off"
+          onKeyDown={handleKeyDown}
+        />
+      </div>
       {term && (
         <button
           type="button"

@@ -36,15 +36,17 @@ export const CategoryModalCreate = () => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const slugInput = form.elements.namedItem('slug') as HTMLInputElement;
     const parentIdSelect = form.elements.namedItem('parentId') as HTMLSelectElement;
     const showInMenuInput = form.elements.namedItem('showInMenu') as HTMLInputElement;
 
     if (nameInput) {
       const name = nameInput.value.trim();
+      const slug = slugInput ? slugInput.value.trim() : '';
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(createCategoryThunk({ name, parentId, showInMenu, attributeIds }))
+      dispatch(createCategoryThunk({ name, slug, parentId, showInMenu, attributeIds }))
         .unwrap()
         .then(() => closeModal())
         .catch(

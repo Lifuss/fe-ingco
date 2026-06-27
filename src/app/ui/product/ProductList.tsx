@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
@@ -36,9 +36,20 @@ const ProductList = ({ isFavoritePage = false }) => {
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
-  const category = searchParams.get('category') || '';
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
+
+  const params = useParams<{ categorySlug?: string }>();
+  const categorySlug = params?.categorySlug;
+  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+
+  const category = useMemo(() => {
+    if (categorySlug && rawCategories) {
+      const catObj = rawCategories.find((c) => c.slug === categorySlug);
+      return catObj ? String(catObj.id) : '';
+    }
+    return searchParams.get('category') || '';
+  }, [categorySlug, rawCategories, searchParams]);
 
   // Spec filters from URL
   const minPower = searchParams.get('minPower')
