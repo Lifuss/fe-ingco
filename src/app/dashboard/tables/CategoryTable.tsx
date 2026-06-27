@@ -22,6 +22,7 @@ type CategoryTableRow = {
   id: number;
   nameCol: string;
   slugCol?: string | null;
+  seoKeywordsCol?: string | null;
   productsCountCol: number;
   editCol: number;
   deleteCol: number;
@@ -86,6 +87,7 @@ const CategoryTable = () => {
     id?: number;
     name: string;
     slug?: string | null;
+    seoKeywords?: string | null;
     renderSort: number;
     parentId?: number | null;
     showInMenu?: boolean;
@@ -98,12 +100,13 @@ const CategoryTable = () => {
     id: number,
     name: string,
     slug: string | null | undefined,
+    seoKeywords: string | null | undefined,
     renderSort: number,
     parentId: number | null,
     showInMenu: boolean,
   ) => {
     setSelectedId(id);
-    setSelectedCategory({ id, name, slug, renderSort, parentId, showInMenu });
+    setSelectedCategory({ id, name, slug, seoKeywords, renderSort, parentId, showInMenu });
     setSelectedAttributeIds([]);
 
     // Fetch linked attributes for this category
@@ -134,12 +137,14 @@ const CategoryTable = () => {
     const form = e.currentTarget as HTMLFormElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
     const slugInput = form.elements.namedItem('slug') as HTMLInputElement;
+    const seoKeywordsInput = form.elements.namedItem('seoKeywords') as HTMLInputElement;
     const parentIdSelect = form.elements.namedItem('parentId') as HTMLSelectElement;
     const showInMenuInput = form.elements.namedItem('showInMenu') as HTMLInputElement;
 
     if (nameInput) {
       const name = nameInput.value.trim();
       const slug = slugInput ? slugInput.value.trim() : '';
+      const seoKeywords = seoKeywordsInput ? seoKeywordsInput.value.trim() : '';
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
@@ -148,6 +153,7 @@ const CategoryTable = () => {
           id: selectedId,
           name,
           slug,
+          seoKeywords,
           parentId,
           showInMenu,
           attributeIds: selectedAttributeIds,
@@ -174,6 +180,7 @@ const CategoryTable = () => {
         id: category.id,
         nameCol: category.name,
         slugCol: category.slug,
+        seoKeywordsCol: category.seoKeywords,
         productsCountCol: category.count,
         editCol: category.id,
         deleteCol: category.id,
@@ -241,6 +248,7 @@ const CategoryTable = () => {
                 row.original.editCol,
                 row.original.nameCol,
                 row.original.slugCol,
+                row.original.seoKeywordsCol,
                 row.original.renderSortCol,
                 row.original.parentIdCol,
                 row.original.showInMenuCol,

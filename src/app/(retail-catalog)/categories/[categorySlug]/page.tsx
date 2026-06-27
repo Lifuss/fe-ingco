@@ -31,11 +31,15 @@ export async function generateMetadata({
     };
   }
 
+  const seoKeywords = category.seoKeywords
+    ? category.seoKeywords
+    : `${category.name}, купити ${category.name}, ${category.name} інгко, ${category.name} ingco, інструменти ingco, купити в Україні`;
+
   return generatePageMetadata({
-    title: `${category.name} | Купити в інтернет-магазині INGCO`,
-    description: `Купуйте ${category.name} від офіційного дистриб'ютора INGCO в Україні. Офіційна гарантія, якісні інструменти, доставка по всій країні.`,
+    title: `${category.name} INGCO | Купити в офіційному інтернет-магазині в Україні`,
+    description: `Купити ${category.name} INGCO в офіційному інтернет-магазині в Україні. Гарантія якості, широкий асортимент та швидка доставка по всій країні (Київ, Харків, Одеса, Дніпро, Львів та інші міста). Замовляйте за вигідною ціною!`,
     path: `/categories/${categorySlug}`,
-    keywords: `${category.name}, купити ${category.name}, ${category.name} інгко, ${category.name} ingco, інструменти ingco, купити в Україні`,
+    keywords: seoKeywords,
   });
 }
 

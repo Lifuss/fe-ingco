@@ -2,6 +2,7 @@ export interface Category {
   id: number;
   name: string;
   slug?: string | null;
+  seoKeywords?: string | null;
   renderSort: number;
   count: number;
   parentId?: number | null;

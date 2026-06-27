@@ -77,6 +77,7 @@ const CategoryForm = ({
     id?: number;
     name: string;
     slug?: string | null;
+    seoKeywords?: string | null;
     renderSort?: number;
     parentId?: number | null;
     showInMenu?: boolean;
@@ -99,6 +100,16 @@ const CategoryForm = ({
       })
       .catch((err) => console.error('Failed to fetch attributes:', err));
   }, []);
+
+  const defaultKeywords = useMemo(() => {
+    if (defaultValue && defaultValue.seoKeywords) {
+      return defaultValue.seoKeywords;
+    }
+    if (defaultValue && defaultValue.name) {
+      return `${defaultValue.name}, купити ${defaultValue.name}, ${defaultValue.name} інгко, ${defaultValue.name} ingco, інструменти ingco, купити в Україні`;
+    }
+    return '';
+  }, [defaultValue]);
 
   const hierarchyOptions = useMemo(
     () => getHierarchyOptions(categoriesList, defaultValue?.id),
@@ -137,6 +148,22 @@ const CategoryForm = ({
         />
         <span className="text-xs text-neutral-400">
           Залиште порожнім для автоматичної генерації на основі назви.
+        </span>
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
+          SEO Ключові слова (Keywords)
+        </span>
+        <input
+          type="text"
+          name="seoKeywords"
+          placeholder="Наприклад: садові пили, акумуляторні пилки..."
+          defaultValue={defaultKeywords}
+          className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2 text-sm font-medium text-neutral-800 placeholder-neutral-400 transition-all focus:bg-white focus:outline-none"
+        />
+        <span className="text-xs text-neutral-400">
+          Через кому. Якщо порожньо, використовується шаблон за замовчуванням.
         </span>
       </label>
 

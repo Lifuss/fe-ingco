@@ -192,6 +192,56 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'view' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'minPower' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'maxPower' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'battery' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
+        source: '/categories/:categorySlug',
+        has: [{ type: 'query', key: 'mains' }],
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, follow',
+          },
+        ],
+      },
+      {
         source: '/cart',
         headers: [
           {

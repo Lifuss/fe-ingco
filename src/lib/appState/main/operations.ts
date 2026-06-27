@@ -192,6 +192,7 @@ export const createCategoryThunk = createAsyncThunk(
       parentId,
       showInMenu,
       slug,
+      seoKeywords,
       attributeIds,
     }: {
       name: string;
@@ -199,6 +200,7 @@ export const createCategoryThunk = createAsyncThunk(
       parentId?: number | null;
       showInMenu?: boolean;
       slug?: string;
+      seoKeywords?: string;
       attributeIds?: number[];
     },
     { rejectWithValue },
@@ -210,6 +212,7 @@ export const createCategoryThunk = createAsyncThunk(
         parentId,
         showInMenu,
         slug,
+        seoKeywords,
       });
       if (attributeIds && attributeIds.length > 0) {
         await apiIngco.post(`/categories/${data.id}/attributes`, { attributeIds });
@@ -231,6 +234,7 @@ export const updateCategoryThunk = createAsyncThunk(
       parentId,
       showInMenu,
       slug,
+      seoKeywords,
       attributeIds,
     }: {
       id: number;
@@ -239,6 +243,7 @@ export const updateCategoryThunk = createAsyncThunk(
       parentId?: number | null;
       showInMenu?: boolean;
       slug?: string;
+      seoKeywords?: string;
       attributeIds?: number[];
     },
     { rejectWithValue },
@@ -250,6 +255,7 @@ export const updateCategoryThunk = createAsyncThunk(
         parentId,
         showInMenu,
         slug,
+        seoKeywords,
       });
       if (attributeIds !== undefined) {
         await apiIngco.post(`/categories/${id}/attributes`, { attributeIds });
