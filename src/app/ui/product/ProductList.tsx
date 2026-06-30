@@ -18,6 +18,8 @@ import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import ProductBlockList from '../product/ProductBlockList';
 import FiltersBlock, { sortValueType } from '../catalog/FiltersBlock';
 import { SITE_URL } from '@/lib/metadata';
+import Loader from '../utils/Loader';
+import { CardSkeleton } from '../skeletons/skeletons';
 
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
@@ -27,7 +29,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const isWideDesktop = useMediaQuery({ query: '(min-width: 1536px)' });
 
-  const { products = [], totalPages = 1 } = mainState;
+  const { products = [], totalPages = 1, tableLoading } = mainState;
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const isAuth = authState.isAuthenticated || false;
   const favoritesIdList = favorites.map((product) => product.id);
@@ -206,10 +208,19 @@ const ProductList = ({ isFavoritePage = false }) => {
           }}
         />
       )}
-      {productsData.length === 0 ? (
+      {tableLoading && productsData.length === 0 ? (
+        <div className="w-full">
+          <FiltersBlock listType="retail" />
+          <ul className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-4">
+            {Array.from({ length: limit }).map((_, index) => (
+              <CardSkeleton key={index} />
+            ))}
+          </ul>
+        </div>
+      ) : productsData.length === 0 ? (
         <div className="pt-10">
           <TextPlaceholder
-            title="Не знайдено 🥲"
+            title="Нічого не знайдено"
             text={
               isFavoritePage
                 ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'
@@ -220,7 +231,15 @@ const ProductList = ({ isFavoritePage = false }) => {
           />
         </div>
       ) : (
-        <>
+        <div className="relative">
+          {tableLoading && !isFavoritePage && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+              <div className="flex flex-col items-center gap-2 rounded-xl bg-white p-5 shadow-md border border-neutral-100">
+                <Loader size={32} className="text-primary-500" />
+                <p className="text-sm font-semibold text-neutral-600">Оновлення...</p>
+              </div>
+            </div>
+          )}
           <FiltersBlock listType="retail" />
           <ProductBlockList
             favoritesIdList={favoritesIdList}
@@ -235,7 +254,7 @@ const ProductList = ({ isFavoritePage = false }) => {
               <Pagination totalPages={totalPage} />
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

@@ -78,7 +78,7 @@ const ShopList = ({ isFavoritePage = false, products, favorites = [] }: ShopList
       {products.length === 0 ? (
         <div className="pt-10">
           <TextPlaceholder
-            title="Не знайдено 🥲"
+            title="Нічого не знайдено"
             text={
               isFavoritePage
                 ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'

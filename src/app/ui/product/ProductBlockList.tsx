@@ -1,10 +1,9 @@
 'use client';
 
-import { useAppSelector, useProductStats } from '@/lib/hooks';
+import { useProductStats } from '@/lib/hooks';
 import { Product } from '@/lib/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
-import { CardSkeleton } from '../skeletons/skeletons';
 
 interface ProductBlockListProps {
   productsData: Product[];
@@ -24,8 +23,6 @@ const ProductBlockList = ({
   const { logProductClick } = useProductStats();
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const isProductsLoading = useAppSelector((state) => state.persistedMainReducer.tableLoading);
 
   const viewParam = searchParams.get('view') || 'grid';
   const isListView = listType === 'partner' ? false : viewParam === 'list';
@@ -49,9 +46,7 @@ const ProductBlockList = ({
         }
       >
         {productsData?.map((product) => {
-          return isProductsLoading ? (
-            <CardSkeleton key={product.id} />
-          ) : (
+          return (
             <ProductCard
               key={product.id}
               product={product}

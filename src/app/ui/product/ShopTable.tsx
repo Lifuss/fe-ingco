@@ -22,6 +22,7 @@ import Modal from 'react-modal';
 import ShopList from './ShopList';
 import FiltersBlock, { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import { type ColumnDef } from '@tanstack/react-table';
+import Loader from '../utils/Loader';
 
 type ShopTableRow = {
   codeCol: string;
@@ -45,6 +46,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
     totalPages,
     currencyRates: { USD = 0 },
     shopView,
+    tableLoading,
   } = useAppSelector((state) => state.persistedMainReducer);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -314,10 +316,15 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
   return (
     <>
-      {products.length === 0 ? (
+      {tableLoading && products.length === 0 ? (
+        <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-4">
+          <Loader size={48} className="text-primary-500" />
+          <p className="text-neutral-500 font-semibold">Завантаження товарів...</p>
+        </div>
+      ) : products.length === 0 ? (
         <div className="pt-10">
           <TextPlaceholder
-            title="Не знайдено 🥲"
+            title="Нічого не знайдено"
             text={
               isFavoritePage
                 ? 'Ви ще не додали жодного товару або видалили наявні товари з обраного'
@@ -330,6 +337,14 @@ const ShopTable = ({ isFavoritePage = false }) => {
       ) : (
         <>
           <div className="relative">
+            {tableLoading && !isFavoritePage && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                <div className="flex flex-col items-center gap-2 rounded-xl bg-white p-5 shadow-md border border-neutral-100">
+                  <Loader size={32} className="text-primary-500" />
+                  <p className="text-sm font-semibold text-neutral-600">Оновлення...</p>
+                </div>
+              </div>
+            )}
             <FiltersBlock listType="partner" />
             <div>
               {shopView === 'table' ? (
