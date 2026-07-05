@@ -300,6 +300,36 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/shop',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/shop/cart',
+        destination: '/cart',
+        permanent: true,
+      },
+      {
+        source: '/shop/favorites',
+        destination: '/favorites',
+        permanent: true,
+      },
+      {
+        source: '/shop/history',
+        destination: '/history',
+        permanent: true,
+      },
+      {
+        source: '/shop/export',
+        destination: '/export',
+        permanent: true,
+      },
+      {
+        source: '/shop/:productSlug',
+        destination: '/:productSlug',
+        permanent: true,
+      },
+      {
         source: '/retail',
         destination: '/',
         permanent: true,

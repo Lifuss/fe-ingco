@@ -15,6 +15,10 @@ export async function generateMetadata({
     return {
       title: 'Продукт не знайдено | INGCO',
       description: 'Продукт не знайдено',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
