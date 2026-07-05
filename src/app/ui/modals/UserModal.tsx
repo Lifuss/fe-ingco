@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
 import { logoutThunk } from '@/lib/appState/user/operation';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
@@ -14,10 +14,18 @@ import { FileClock, LogOut, Table } from 'lucide-react';
 const User = ({ showLabel = true }: { showLabel?: boolean }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
+
+  // Close dropdown when pathname changes
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsOpen(false);
+  }
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
   const closeModal = () => setIsOpen(false);
@@ -88,7 +96,6 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
             <Link
               href="/history"
               className="hover:text-primary-500 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
-              onClick={closeModal}
             >
               <FileClock size={15} className="text-neutral-500" />
               <span>Історія</span>
@@ -98,7 +105,6 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
               <Link
                 href="/dashboard"
                 className="hover:text-primary-500 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
-                onClick={closeModal}
               >
                 <Table size={15} className="text-neutral-500" />
                 <span>Адмін</span>

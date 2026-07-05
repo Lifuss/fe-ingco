@@ -29,16 +29,9 @@ export default function SearchFoo({
     setTerm(searchQuery);
   }, [searchQuery]);
 
-  let validPathname = pathname;
-  const splitedPathname = validPathname.split('/');
-
-  const excludedPaths = ['favorites', 'cart', 'history', 'dashboard'];
-  const isExcludedPath = excludedPaths.some((path) => splitedPathname.includes(path));
-
-  if (!isExcludedPath) {
-    if (splitedPathname.length === 2 && pathname !== '/') {
-      validPathname = '/';
-    }
+  let validPathname = '/';
+  if (pathname === '/' || pathname.startsWith('/categories/') || pathname === '/favorites') {
+    validPathname = pathname;
   }
 
   const handleSearch = (term: string) => {
@@ -52,7 +45,7 @@ export default function SearchFoo({
       params.delete('query');
     }
 
-    router.replace(`${validPathname}?${params.toString()}`);
+    router.push(`${validPathname}?${params.toString()}`);
   };
 
   const handleRemoveCategory = () => {
