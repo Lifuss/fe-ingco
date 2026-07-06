@@ -30,7 +30,12 @@ export default function SearchFoo({
   }, [searchQuery]);
 
   let validPathname = '/';
-  if (pathname === '/' || pathname.startsWith('/categories/') || pathname === '/favorites') {
+  if (
+    pathname === '/' ||
+    pathname.startsWith('/categories/') ||
+    pathname === '/favorites' ||
+    pathname.startsWith('/dashboard')
+  ) {
     validPathname = pathname;
   }
 
