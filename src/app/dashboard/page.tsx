@@ -4,19 +4,21 @@ import ProductTable from './tables/ProductTable';
 
 const Page = () => {
   return (
-    <div className="w-4/5">
-      <h1 className="mb-10 text-4xl">Управління продуктами</h1>
-      <div className="mb-10 flex justify-between gap-2 text-sm xl:text-base 2xl:text-lg">
-        <Search placeholder="Артикль або найменування" />
-        <div className="flex gap-4">
+    <div className="w-full max-w-[1200px]">
+      <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">Управління продуктами</h1>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full sm:max-w-md">
+          <Search placeholder="Артикль або найменування" variant="dashboard" />
+        </div>
+        <div className="flex gap-3">
           <Link
             href={'/dashboard/product/create'}
-            className="rounded-xl bg-blue-400 p-2 text-center text-white transition-colors hover:bg-blue-700 xl:p-4"
+            className="inline-flex items-center justify-center rounded-xl bg-blue-500 px-5 py-2.5 text-center text-sm font-bold text-white shadow-sm transition-all duration-200 hover:bg-blue-600 active:scale-98"
           >
             Створити новий продукт
           </Link>
           <button
-            className="cursor-help rounded-xl bg-gray-400 p-2 text-center text-white xl:p-4"
+            className="cursor-help inline-flex items-center justify-center rounded-xl bg-neutral-400 px-5 py-2.5 text-center text-sm font-bold text-white shadow-sm transition-all duration-200 hover:bg-neutral-500 active:scale-98"
             title="В майбутніх планах"
           >
             Завантажити з Excel

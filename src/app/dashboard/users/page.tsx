@@ -18,7 +18,7 @@ const Page = () => {
       {/* Search and Action Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:max-w-md">
-          <Search placeholder="Емайл або логін" />
+          <Search placeholder="Емайл або логін" variant="dashboard" />
         </div>
         <Link
           href={'/dashboard/users/create'}

@@ -9,7 +9,7 @@ export default function SearchFoo({
   variant = 'default',
 }: {
   placeholder: string;
-  variant?: 'default' | 'header';
+  variant?: 'default' | 'header' | 'dashboard';
 }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -84,6 +84,51 @@ export default function SearchFoo({
       handleSubmit();
     }
   };
+
+  if (variant === 'dashboard') {
+    return (
+      <div className="relative flex w-full items-center">
+        <label htmlFor="dashboard-search" className="sr-only">
+          Пошук
+        </label>
+        <Search
+          size={16}
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+          aria-hidden
+        />
+        <input
+          id="dashboard-search"
+          name="search"
+          className="w-full rounded-xl border border-neutral-300 bg-white pl-10 pr-24 py-2 text-sm font-semibold text-neutral-800 placeholder:text-neutral-400 placeholder:font-normal focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all shadow-sm"
+          placeholder={placeholder}
+          onChange={handleInput}
+          value={term}
+          aria-label="Search"
+          ref={inputRef}
+          autoComplete="off"
+          onKeyDown={handleKeyDown}
+        />
+        {term && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="absolute right-20 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none"
+            aria-label="Скинути пошук"
+          >
+            <X size={14} />
+          </button>
+        )}
+        <button
+          type="button"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-blue-500 hover:bg-blue-600 active:scale-95 px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm focus-visible:outline-none"
+          onClick={handleSubmit}
+          aria-label="Пошук"
+        >
+          Знайти
+        </button>
+      </div>
+    );
+  }
 
   if (variant === 'header') {
     return (

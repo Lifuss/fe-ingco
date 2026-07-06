@@ -22,7 +22,7 @@ const AttributesPage = () => {
       </h1>
       <div className="mb-10 flex items-center justify-between gap-4">
         <div className="w-72">
-          <Search placeholder="Назва характеристики..." />
+          <Search placeholder="Назва характеристики..." variant="dashboard" />
         </div>
         <AttributeModalCreate onSuccess={triggerRefresh} />
       </div>
