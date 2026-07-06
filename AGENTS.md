@@ -333,7 +333,38 @@ The file `src/proxy.ts` is a Next.js middleware that:
 
 ---
 
-## 11. AI Browser Testing Credentials
+## 11. Project-Scoped Rules & Patterns
+
+### 11.1 TypeScript & Type Safety — Type Narrowing for Disjoint User Types
+When extracting customer details from orders or accounts, always distinguish between `UserWithoutAuth` and `UserWithAuth` explicitly:
+- Use `'userId' in user` to narrow to `UserWithAuth` (where profile fields are under `user.userId`).
+- Use `'firstName' in user` to narrow to `UserWithoutAuth` (where profile fields are flat on the root).
+
+```typescript
+// ✅ Correct Type-safe pattern
+if (order.user) {
+  if ('userId' in order.user && order.user.userId) {
+    const profile = order.user.userId;
+    name = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+  } else if ('firstName' in order.user) {
+    const profile = order.user;
+    name = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+  } else {
+    name = order.user.login;
+  }
+}
+```
+
+### 11.2 UI/UX & Routing Patterns — URL-Bound CRM Filter State
+All table filters (tabs, status selects, search strings, page offsets) in the admin dashboard CRM must be stored in the URL search parameters (`searchParams`):
+- Read filter values directly from the URL using `searchParams.get()`.
+- Update filters by pushing new parameters to the router via `router.push()`.
+- Reset the active `page` offset back to `1` whenever other filters change.
+- Do not store transient filters in Redux/React local state unless they are completely non-shareable.
+
+---
+
+## 12. AI Browser Testing Credentials
 
 Use the following credentials when running browser-based tests, automated flows, or navigating secure parts of the site:
 
