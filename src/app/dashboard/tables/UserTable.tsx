@@ -4,20 +4,12 @@ import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import AdminUserModal from '@/app/ui/modals/AdminUserModal';
 import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
-import { setCheckbox } from '@/lib/appState/dashboard/slice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { User } from '@/lib/types';
 import clsx from 'clsx';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
-
-export enum CheckboxActionType {
-  Admin = 'admin',
-  IsUserVerified = 'isUserVerified',
-  IsB2B = 'isB2B',
-  isDeleted = 'isDeleted',
-}
 
 type UserTableRow = {
   emailCol: string;
@@ -27,21 +19,51 @@ type UserTableRow = {
 };
 
 const UserTable = () => {
-  const [isAdministrator, setIsAdministrator] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { users, totalPages, userTableCheckboxesStatus } = useAppSelector(
-    (state) => state.dashboardSlice,
-  );
-  const { isB2B, isUserVerified, isDeleted } = userTableCheckboxesStatus;
+  const router = useRouter();
+  const pathname = usePathname();
 
+  const { users, totalPages } = useAppSelector((state) => state.dashboardSlice);
+
+  // Read filters from URL search params for bookmarkable state
+  const activeTab = searchParams.get('tab') || 'all';
+  const activeVerified = searchParams.get('verified') || 'all';
+  const query = searchParams.get('query') || '';
+  
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
-  const query = searchParams.get('query') || '';
-  const role: 'admin' | 'user' = isAdministrator ? 'admin' : 'user';
+  // Map filters to backend service query params
+  const { role, isB2B, isUserVerified, isDeleted } = useMemo(() => {
+    let role: 'user' | 'admin' | 'all' = 'all';
+    let isB2B: boolean | undefined = undefined;
+    let isUserVerified: boolean | undefined = undefined;
+    let isDeleted: 'true' | 'false' | 'only' = 'false';
+
+    if (activeTab === 'b2b') {
+      role = 'user';
+      isB2B = true;
+    } else if (activeTab === 'b2c') {
+      role = 'user';
+      isB2B = false;
+    } else if (activeTab === 'admins') {
+      role = 'admin';
+    } else if (activeTab === 'deleted') {
+      isDeleted = 'only';
+    }
+
+    if (activeVerified === 'verified') {
+      isUserVerified = true;
+    } else if (activeVerified === 'unverified') {
+      isUserVerified = false;
+    }
+
+    return { role, isB2B, isUserVerified, isDeleted };
+  }, [activeTab, activeVerified]);
 
   useEffect(() => {
     dispatch(
@@ -52,7 +74,7 @@ const UserTable = () => {
         isUserVerified,
         page,
         isDeleted,
-        limit: 50,
+        limit: 20, // Clean paginated limit
       }),
     );
   }, [dispatch, query, role, isB2B, isUserVerified, isDeleted, page]);
@@ -64,7 +86,7 @@ const UserTable = () => {
         loginCol: user.login,
         activeDateCol: new Date(user.updatedAt).toLocaleDateString('uk-UA'),
         verificationStatusCol: user.isVerified,
-      })),
+      })) || [],
     [users],
   );
 
@@ -73,19 +95,35 @@ const UserTable = () => {
       {
         header: 'E-mail',
         accessorKey: 'emailCol',
+        cell: ({ row }) => <span className="font-medium text-neutral-800">{row.original.emailCol}</span>
       },
       {
         header: 'Логін',
         accessorKey: 'loginCol',
+        cell: ({ row }) => <span className="font-semibold text-neutral-700">{row.original.loginCol}</span>
       },
       {
         header: 'Активність',
         accessorKey: 'activeDateCol',
+        cell: ({ row }) => <span className="text-neutral-500 font-bold">{row.original.activeDateCol}</span>
       },
       {
         header: 'Верифікація',
         accessorKey: 'verificationStatusCol',
-        cell: ({ row }) => <div>{row.original.verificationStatusCol ? '✅' : '❌'}</div>,
+        cell: ({ row }) => (
+          <div className="flex justify-start">
+            <span
+              className={clsx(
+                'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ring-1 ring-inset',
+                row.original.verificationStatusCol
+                  ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                  : 'bg-red-50 text-red-700 ring-red-600/20'
+              )}
+            >
+              {row.original.verificationStatusCol ? 'Верифікований' : 'Неверифікований'}
+            </span>
+          </div>
+        ),
       },
     ],
     [],
@@ -103,83 +141,80 @@ const UserTable = () => {
     openModal(targetRow.loginCol);
   };
 
-  const handleCheckboxChange = (action: CheckboxActionType) => {
-    if (action === CheckboxActionType.Admin) {
-      setIsAdministrator((prev) => !prev);
-    } else {
-      dispatch(setCheckbox(action));
-    }
+  const handleTabChange = (tabId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tabId);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
   };
 
+  const handleVerifiedChange = (val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('verified', val);
+    params.set('page', '1');
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const tabs = [
+    { id: 'all', label: 'Всі' },
+    { id: 'b2b', label: 'B2B Гурт' },
+    { id: 'b2c', label: 'B2C Роздріб' },
+    { id: 'admins', label: 'Адміністратори' },
+    { id: 'deleted', label: 'Видалені' },
+  ];
+
   return (
-    <div>
-      <div className="flex gap-4">
-        <label
-          className={clsx(
-            'mb-2 flex w-fit items-center gap-2',
-            (!isB2B && 'cursor-not-allowed opacity-50') ||
-              (!isUserVerified && 'cursor-not-allowed opacity-50'),
-          )}
-        >
-          Адміністратор
-          <input
-            disabled={!isB2B || !isUserVerified}
-            type="checkbox"
-            name="role"
-            onChange={() => handleCheckboxChange(CheckboxActionType.Admin)}
-          />
-        </label>
-        <label
-          className={clsx(
-            'mb-2 flex w-fit items-center gap-2',
-            isAdministrator && 'cursor-not-allowed opacity-50',
-          )}
-        >
-          Роздріб
-          <input
-            type="checkbox"
-            name="isB2B"
-            disabled={isAdministrator}
-            checked={!isB2B}
-            onChange={() => handleCheckboxChange(CheckboxActionType.IsB2B)}
-          />
-        </label>
-        <label
-          className={clsx(
-            'mb-2 flex w-fit items-center gap-2',
-            isAdministrator && 'cursor-not-allowed opacity-50',
-          )}
-        >
-          Неверифіковані
-          <input
-            disabled={isAdministrator}
-            type="checkbox"
-            name="isVerified"
-            checked={!isUserVerified}
-            onChange={() => handleCheckboxChange(CheckboxActionType.IsUserVerified)}
-          />
-        </label>
-        <label className={clsx('mb-2 flex w-fit items-center gap-2')}>
-          Видалені
-          <input
-            type="checkbox"
-            name="isDeleted"
-            checked={isDeleted}
-            onChange={() => handleCheckboxChange(CheckboxActionType.isDeleted)}
-          />
-        </label>
+    <div className="rounded-2xl border border-neutral-200/60 bg-white p-6 shadow-sm">
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-neutral-100 mb-6 text-sm font-semibold select-none">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => handleTabChange(t.id)}
+            className={clsx(
+              'pb-3 pt-1 px-4 border-b-2 transition-all duration-200 cursor-pointer -mb-[2px]',
+              activeTab === t.id
+                ? 'border-blue-500 text-blue-600 font-bold'
+                : 'border-transparent text-neutral-400 hover:text-neutral-600 hover:border-neutral-200'
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <Table
-        columns={columns}
-        data={data}
-        headerColor="bg-blue-200"
-        borderColor="border-gray-400"
-        rowClickable={true}
-        rowFunction={handleRowClick}
-      />
+      {/* Verification Filter Dropdown */}
+      {activeTab !== 'admins' && activeTab !== 'deleted' && (
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Верифікація:</span>
+          <select
+            value={activeVerified}
+            onChange={(e) => handleVerifiedChange(e.target.value)}
+            className="rounded-xl bg-neutral-50 border border-neutral-200 px-3.5 py-1.5 text-xs font-semibold text-neutral-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none cursor-pointer"
+          >
+            <option value="all">Всі користувачі</option>
+            <option value="verified">Тільки верифіковані ✅</option>
+            <option value="unverified">Не верифіковані ❌</option>
+          </select>
+        </div>
+      )}
+
+      {/* Main Table */}
+      <div className="overflow-hidden rounded-xl border border-neutral-200/50 shadow-sm">
+        <Table
+          columns={columns}
+          data={data}
+          headerColor="bg-neutral-50/70"
+          borderColor="border-neutral-200"
+          rowClickable={true}
+          rowFunction={handleRowClick}
+        />
+      </div>
+
       <AdminUserModal isOpen={isOpen} closeModal={closeModal} user={selectedUser} />
-      <div className="mx-auto mt-5 w-fit">
+
+      <div className="mx-auto mt-6 w-fit">
         <Pagination totalPages={totalPages} />
       </div>
     </div>

@@ -14,9 +14,6 @@ import {
 } from './operations';
 import { toast } from 'react-toastify';
 import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
-import { CheckboxActionType } from '@/app/dashboard/tables/UserTable';
-
-type AllowedCheckboxActions = Exclude<CheckboxActionType, CheckboxActionType.Admin>;
 type InitialStateType = {
   users: User[];
   orders: Order[];
@@ -24,10 +21,20 @@ type InitialStateType = {
   totalPages: number;
   page: number;
   usersStats: {
+    total: number;
+    b2b: number;
+    b2c: number;
     notVerified: number;
   };
+  orderStats: {
+    'очікує підтвердження': number;
+    'очікує оплати': number;
+    комплектується: number;
+    відправлено: number;
+    'замовлення виконано': number;
+    'замовлення скасовано': number;
+  };
   stats: { productClicks: object[]; activityUsers: User[] };
-  userTableCheckboxesStatus: Record<AllowedCheckboxActions, boolean>;
 };
 
 const initialState: InitialStateType = {
@@ -37,27 +44,29 @@ const initialState: InitialStateType = {
   totalPages: 0,
   page: 1,
   usersStats: {
+    total: 0,
+    b2b: 0,
+    b2c: 0,
     notVerified: 0,
+  },
+  orderStats: {
+    'очікує підтвердження': 0,
+    'очікує оплати': 0,
+    комплектується: 0,
+    відправлено: 0,
+    'замовлення виконано': 0,
+    'замовлення скасовано': 0,
   },
   stats: {
     productClicks: [],
     activityUsers: [],
-  },
-  userTableCheckboxesStatus: {
-    [CheckboxActionType.IsUserVerified]: true,
-    [CheckboxActionType.IsB2B]: true,
-    [CheckboxActionType.isDeleted]: false,
   },
 };
 
 const Slice = createSlice({
   name: 'dashboard',
   initialState,
-  reducers: {
-    setCheckbox: (state, { payload }: { payload: AllowedCheckboxActions }) => {
-      state.userTableCheckboxesStatus[payload] = !state.userTableCheckboxesStatus[payload];
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsersThunk.fulfilled, (state, { payload }) => {
@@ -67,6 +76,9 @@ const Slice = createSlice({
       .addCase(fetchOrdersThunk.fulfilled, (state, { payload }) => {
         state.orders = payload.orders;
         state.totalPages = payload.totalPages;
+        if (payload.stats) {
+          state.orderStats = payload.stats;
+        }
       })
       .addCase(fetchSupportTicketsThunk.fulfilled, (state, { payload }) => {
         state.supportTickets = payload.tickets;
@@ -114,5 +126,4 @@ const Slice = createSlice({
   },
 });
 
-export const { setCheckbox } = Slice.actions;
 export const dashboardSlice = Slice.reducer;

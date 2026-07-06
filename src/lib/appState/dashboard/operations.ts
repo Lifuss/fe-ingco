@@ -53,10 +53,10 @@ export const fetchUsersThunk = createAsyncThunk(
       limit = 25,
     }: {
       query: string;
-      role: 'user' | 'admin';
+      role: 'user' | 'admin' | 'all';
       isB2B?: boolean;
       isUserVerified?: boolean;
-      isDeleted?: boolean;
+      isDeleted?: 'true' | 'false' | 'only';
       page: number;
       limit: number;
     },
@@ -66,7 +66,7 @@ export const fetchUsersThunk = createAsyncThunk(
       const { data } = await apiIngco.get('/users', {
         params: {
           q,
-          role: role.toUpperCase(),
+          role: role === 'all' ? undefined : role.toUpperCase(),
           isB2b: isB2B,
           isUserVerified,
           isDeleted,
