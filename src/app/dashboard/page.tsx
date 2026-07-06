@@ -8,7 +8,7 @@ const Page = () => {
       <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">Управління продуктами</h1>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:max-w-md">
-          <Search placeholder="Артикль або найменування" variant="dashboard" />
+          <Search placeholder="Артикул або назва товару" variant="dashboard" />
         </div>
         <div className="flex gap-3">
           <Link
