@@ -141,7 +141,7 @@ const ExportClient = () => {
                 href="/api/feed/prom"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-orangeLight rounded-md p-2 text-center text-lg font-medium transition-colors duration-300 ease-in-out hover:bg-orange-400 hover:text-white"
+                className="bg-orange-light rounded-md p-2 text-center text-lg font-medium transition-colors duration-300 ease-in-out hover:bg-orange-400 hover:text-white"
               >
                 XML фід для prom.ua
               </Link>
