@@ -83,25 +83,28 @@ const UsersStats = () => {
           className={clsx(
             'flex items-center justify-between rounded-2xl border bg-white p-6 text-left shadow-sm transition-all duration-200 select-none hover:-translate-y-0.5 hover:shadow-md active:scale-98',
             stat.active
-              ? [stat.borderActive, 'border-2 ring-1 ring-neutral-200/50 shadow-md']
+              ? [stat.borderActive, 'border-2 shadow-md ring-1 ring-neutral-200/50']
               : 'border-neutral-200/60',
-            stat.id === 'unverified' && stat.hasAlert && !stat.active && 'border-red-200 bg-red-50/10 shadow-sm shadow-red-50',
+            stat.id === 'unverified' &&
+              stat.hasAlert &&
+              !stat.active &&
+              'border-red-200 bg-red-50/10 shadow-sm shadow-red-50',
           )}
         >
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
               {stat.label}
             </span>
-            <span className={clsx(
-              "text-3xl font-extrabold text-neutral-800",
-              stat.id === 'unverified' && stat.hasAlert && "text-red-600"
-            )}>
+            <span
+              className={clsx(
+                'text-3xl font-extrabold text-neutral-800',
+                stat.id === 'unverified' && stat.hasAlert && 'text-red-600',
+              )}
+            >
               {stat.value}
             </span>
           </div>
-          <div className={clsx('rounded-xl p-3.5', stat.iconBg)}>
-            {stat.icon}
-          </div>
+          <div className={clsx('rounded-xl p-3.5', stat.iconBg)}>{stat.icon}</div>
         </button>
       ))}
     </div>

@@ -211,7 +211,7 @@ const ProductList = ({ isFavoritePage = false }) => {
       {tableLoading && productsData.length === 0 ? (
         <div className="w-full">
           <FiltersBlock listType="retail" />
-          <ul className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-4">
+          <ul className="grid w-full grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: limit }).map((_, index) => (
               <CardSkeleton key={index} />
             ))}
@@ -234,7 +234,7 @@ const ProductList = ({ isFavoritePage = false }) => {
         <div className="relative">
           {tableLoading && !isFavoritePage && (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-              <div className="flex flex-col items-center gap-2 rounded-xl bg-white p-5 shadow-md border border-neutral-100">
+              <div className="flex flex-col items-center gap-2 rounded-xl border border-neutral-100 bg-white p-5 shadow-md">
                 <Loader size={32} className="text-primary-500" />
                 <p className="text-sm font-semibold text-neutral-600">Оновлення...</p>
               </div>

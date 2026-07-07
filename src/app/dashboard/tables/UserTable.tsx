@@ -1,4 +1,6 @@
+'use no memo';
 'use client';
+
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
@@ -21,7 +23,7 @@ type UserTableRow = {
 const UserTable = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -33,7 +35,7 @@ const UserTable = () => {
   const activeTab = searchParams.get('tab') || 'all';
   const activeVerified = searchParams.get('verified') || 'all';
   const query = searchParams.get('query') || '';
-  
+
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
@@ -95,17 +97,23 @@ const UserTable = () => {
       {
         header: 'E-mail',
         accessorKey: 'emailCol',
-        cell: ({ row }) => <span className="font-medium text-neutral-800">{row.original.emailCol}</span>
+        cell: ({ row }) => (
+          <span className="font-medium text-neutral-800">{row.original.emailCol}</span>
+        ),
       },
       {
         header: 'Логін',
         accessorKey: 'loginCol',
-        cell: ({ row }) => <span className="font-semibold text-neutral-700">{row.original.loginCol}</span>
+        cell: ({ row }) => (
+          <span className="font-semibold text-neutral-700">{row.original.loginCol}</span>
+        ),
       },
       {
         header: 'Активність',
         accessorKey: 'activeDateCol',
-        cell: ({ row }) => <span className="text-neutral-500 font-bold">{row.original.activeDateCol}</span>
+        cell: ({ row }) => (
+          <span className="font-bold text-neutral-500">{row.original.activeDateCol}</span>
+        ),
       },
       {
         header: 'Верифікація',
@@ -117,7 +125,7 @@ const UserTable = () => {
                 'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ring-1 ring-inset',
                 row.original.verificationStatusCol
                   ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
-                  : 'bg-red-50 text-red-700 ring-red-600/20'
+                  : 'bg-red-50 text-red-700 ring-red-600/20',
               )}
             >
               {row.original.verificationStatusCol ? 'Верифікований' : 'Неверифікований'}
@@ -166,17 +174,17 @@ const UserTable = () => {
   return (
     <div className="rounded-2xl border border-neutral-200/60 bg-white p-6 shadow-sm">
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-neutral-100 mb-6 text-sm font-semibold select-none">
+      <div className="mb-6 flex flex-wrap gap-2 border-b border-neutral-100 text-sm font-semibold select-none">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => handleTabChange(t.id)}
             className={clsx(
-              'pb-3 pt-1 px-4 border-b-2 transition-all duration-200 cursor-pointer -mb-[2px]',
+              '-mb-[2px] cursor-pointer border-b-2 px-4 pt-1 pb-3 transition-all duration-200',
               activeTab === t.id
-                ? 'border-blue-500 text-blue-600 font-bold'
-                : 'border-transparent text-neutral-400 hover:text-neutral-600 hover:border-neutral-200'
+                ? 'border-blue-500 font-bold text-blue-600'
+                : 'border-transparent text-neutral-400 hover:border-neutral-200 hover:text-neutral-600',
             )}
           >
             {t.label}
@@ -186,12 +194,14 @@ const UserTable = () => {
 
       {/* Verification Filter Dropdown */}
       {activeTab !== 'admins' && activeTab !== 'deleted' && (
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Верифікація:</span>
+        <div className="mb-6 flex items-center gap-2">
+          <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase">
+            Верифікація:
+          </span>
           <select
             value={activeVerified}
             onChange={(e) => handleVerifiedChange(e.target.value)}
-            className="rounded-xl bg-neutral-50 border border-neutral-200 px-3.5 py-1.5 text-xs font-semibold text-neutral-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none cursor-pointer"
+            className="cursor-pointer rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-1.5 text-xs font-semibold text-neutral-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           >
             <option value="all">Всі користувачі</option>
             <option value="verified">Тільки верифіковані ✅</option>

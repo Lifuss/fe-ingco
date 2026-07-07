@@ -8,9 +8,7 @@ const Page = () => {
   return (
     <div className="w-full max-w-[1200px]">
       {/* Title */}
-      <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">
-        Користувачі
-      </h1>
+      <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">Користувачі</h1>
 
       {/* KPI Cards Grid */}
       <UsersStats />

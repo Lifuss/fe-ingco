@@ -7,7 +7,7 @@ const Page = () => {
       <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">
         Замовлення в Роздріб
       </h1>
-      
+
       {/* Search Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:max-w-md">

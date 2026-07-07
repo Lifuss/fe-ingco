@@ -69,8 +69,17 @@ export async function GET() {
       if (!response.ok) {
         throw new Error(`Backend returned status ${response.status}`);
       }
-      const data = (await response.json()) as { products: Product[]; total: number };
-      const fetchedProducts = data.products || [];
+      const data = (await response.json()) as {
+        products: (Omit<Product, 'category'> & {
+          category?: Category | null;
+          mainCategory?: Category | null;
+        })[];
+        total: number;
+      };
+      const fetchedProducts: Product[] = (data.products || []).map((p) => ({
+        ...p,
+        category: p.mainCategory || p.category || null,
+      }));
       products = products.concat(fetchedProducts);
 
       if (fetchedProducts.length < limit || products.length >= data.total) {

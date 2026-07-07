@@ -319,7 +319,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {tableLoading && products.length === 0 ? (
         <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-4">
           <Loader size={48} className="text-primary-500" />
-          <p className="text-neutral-500 font-semibold">Завантаження товарів...</p>
+          <p className="font-semibold text-neutral-500">Завантаження товарів...</p>
         </div>
       ) : products.length === 0 ? (
         <div className="pt-10">
@@ -339,7 +339,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <div className="relative">
             {tableLoading && !isFavoritePage && (
               <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                <div className="flex flex-col items-center gap-2 rounded-xl bg-white p-5 shadow-md border border-neutral-100">
+                <div className="flex flex-col items-center gap-2 rounded-xl border border-neutral-100 bg-white p-5 shadow-md">
                   <Loader size={32} className="text-primary-500" />
                   <p className="text-sm font-semibold text-neutral-600">Оновлення...</p>
                 </div>

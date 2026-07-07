@@ -93,13 +93,13 @@ export default function SearchFoo({
         </label>
         <Search
           size={16}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+          className="absolute top-1/2 left-3.5 -translate-y-1/2 text-neutral-400"
           aria-hidden
         />
         <input
           id="dashboard-search"
           name="search"
-          className="w-full rounded-xl border border-neutral-300 bg-white pl-10 pr-24 py-2 text-sm font-semibold text-neutral-800 placeholder:text-neutral-400 placeholder:font-normal focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all shadow-sm"
+          className="w-full rounded-xl border border-neutral-300 bg-white py-2 pr-24 pl-10 text-sm font-semibold text-neutral-800 shadow-sm transition-all placeholder:font-normal placeholder:text-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           placeholder={placeholder}
           onChange={handleInput}
           value={term}
@@ -112,7 +112,7 @@ export default function SearchFoo({
           <button
             type="button"
             onClick={handleReset}
-            className="absolute right-20 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none"
+            className="absolute top-1/2 right-20 -translate-y-1/2 rounded-full p-1 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-600 focus-visible:outline-none"
             aria-label="Скинути пошук"
           >
             <X size={14} />
@@ -120,7 +120,7 @@ export default function SearchFoo({
         )}
         <button
           type="button"
-          className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-blue-500 hover:bg-blue-600 active:scale-95 px-4 py-1.5 text-xs font-bold text-white transition-all shadow-sm focus-visible:outline-none"
+          className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-lg bg-blue-500 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-600 focus-visible:outline-none active:scale-95"
           onClick={handleSubmit}
           aria-label="Пошук"
         >

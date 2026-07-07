@@ -1,11 +1,13 @@
+'use no memo';
 'use client';
+
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import { fetchOrdersThunk, updateOrderThunk } from '@/lib/appState/dashboard/operations';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
@@ -24,7 +26,7 @@ import {
   XCircle,
   FileSpreadsheet,
   Eye,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -54,7 +56,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [openDropdownCode, setOpenDropdownCode] = useState<string | null>(null);
-  
+
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -63,17 +65,17 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const { orders, totalPages, orderStats } = useAppSelector((state) => state.dashboardSlice);
   const usdRate = useAppSelector(selectUSDRate);
 
-  const openModal = (id: string) => {
+  const openModal = useCallback((id: string) => {
     const order = orders.find((order) => order.orderCode === id) ?? null;
     setSelectedOrder(order);
     setIsOpen(true);
-  };
+  }, [orders]);
   const closeModal = () => setIsOpen(false);
 
   // Read status, page, query from URL search parameters
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
-  
+
   const query = searchParams.get('query') || '';
   const status = (searchParams.get('status') as StatusType) || 'всі';
 
@@ -81,16 +83,12 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
   }, [dispatch, page, query, isRetail, status]);
 
-  const handleRowClick = (targetRow: OrderTableRow) => {
-    openModal(targetRow.numberCol);
-  };
-
-  const handleStatusChange = (order: Order, newStatus: OrderStatusEnum) => {
+  const handleStatusChange = useCallback((order: Order, newStatus: OrderStatusEnum) => {
     if (order.status === newStatus) return;
 
     if (
       confirm(
-        `Ви впевнені, що хочете змінити статус замовлення №${order.orderCode} на "${newStatus}"?`
+        `Ви впевнені, що хочете змінити статус замовлення №${order.orderCode} на "${newStatus}"?`,
       )
     ) {
       const normalizeProducts =
@@ -124,7 +122,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
           orderId: order.id,
           updateOrder: updatedOrderWithoutUser,
           isRetail,
-        })
+        }),
       )
         .unwrap()
         .then(() => {
@@ -135,7 +133,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
           toast.error('Не вдалося оновити статус замовлення');
         });
     }
-  };
+  }, [dispatch, isRetail, page, query, status]);
 
   const handleExcelClick = async (e: React.MouseEvent, order: Order) => {
     e.stopPropagation();
@@ -194,7 +192,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         header: 'Дата',
         accessorKey: 'dateCol',
         cell: ({ row }) => (
-          <span className="text-neutral-500 font-bold">{row.original.dateCol}</span>
+          <span className="font-bold text-neutral-500">{row.original.dateCol}</span>
         ),
       },
       {
@@ -241,11 +239,11 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
             <div className="flex flex-col gap-0.5 text-xs text-neutral-800">
               <span className="font-bold text-neutral-900">{name}</span>
               {subDetails && (
-                <span className="font-bold text-blue-600 text-[10px] uppercase tracking-wider">
+                <span className="text-[10px] font-bold tracking-wider text-blue-600 uppercase">
                   {subDetails}
                 </span>
               )}
-              <div className="flex flex-col text-[10px] text-neutral-400 font-semibold mt-0.5">
+              <div className="mt-0.5 flex flex-col text-[10px] font-semibold text-neutral-400">
                 {phone && <span>📞 {phone}</span>}
                 {email && <span>✉️ {email}</span>}
               </div>
@@ -271,8 +269,8 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
                 type="button"
                 onClick={handleStatusClick}
                 className={clsx(
-                  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset cursor-pointer transition-all hover:brightness-95',
-                  getStatusStyle(order.status)
+                  'inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ring-1 transition-all ring-inset hover:brightness-95',
+                  getStatusStyle(order.status),
                 )}
               >
                 <span>{order.status}</span>
@@ -288,7 +286,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
                       setOpenDropdownCode(null);
                     }}
                   />
-                  <div className="absolute left-0 mt-1.5 z-50 w-56 rounded-xl bg-white p-1 shadow-lg border border-neutral-200/80 animate-fade-in">
+                  <div className="animate-fade-in absolute left-0 z-50 mt-1.5 w-56 rounded-xl border border-neutral-200/80 bg-white p-1 shadow-lg">
                     {Object.values(OrderStatusEnum).map((st) => (
                       <button
                         key={st}
@@ -299,8 +297,8 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
                           handleStatusChange(order, st);
                         }}
                         className={clsx(
-                          'block w-full rounded-lg px-3 py-1.5 text-left text-xs font-bold text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors duration-150',
-                          order.status === st && 'bg-blue-50 text-blue-600'
+                          'block w-full rounded-lg px-3 py-1.5 text-left text-xs font-bold text-neutral-700 transition-colors duration-150 hover:bg-neutral-50 hover:text-black',
+                          order.status === st && 'bg-blue-50 text-blue-600',
                         )}
                       >
                         {st}
@@ -322,7 +320,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
               'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold',
               row.original.commentCol
                 ? 'bg-amber-50 text-amber-800'
-                : 'bg-neutral-50 text-neutral-400'
+                : 'bg-neutral-50 text-neutral-400',
             )}
           >
             {row.original.commentCol ? 'Так' : 'Немає'}
@@ -351,7 +349,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
                 type="button"
                 onClick={(e) => handleExcelClick(e, order)}
                 title="Скачати Excel"
-                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-neutral-50 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 border border-neutral-200/40"
+                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/40 bg-neutral-50 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
               >
                 <FileSpreadsheet size={16} />
               </button>
@@ -362,7 +360,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
                   openModal(order.orderCode);
                 }}
                 title="Детальніше"
-                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-neutral-50 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 border border-neutral-200/40"
+                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-neutral-200/40 bg-neutral-50 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
               >
                 <Eye size={16} />
               </button>
@@ -371,7 +369,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         },
       },
     ],
-    [orders, openDropdownCode],
+    [orders, openDropdownCode, handleStatusChange, openModal],
   );
 
   // Compute status cards stats
@@ -465,28 +463,31 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   return (
     <div className="w-full">
       {/* Interactive Status Cards Row */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 select-none">
+      <div className="mb-6 grid grid-cols-2 gap-3 select-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
         {statsList.map((st) => (
           <button
             key={st.id}
             type="button"
             onClick={() => handleFilterClick(st.id as StatusType)}
             className={clsx(
-              'flex flex-col justify-between rounded-xl border p-4 text-left shadow-sm transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-98',
+              'flex cursor-pointer flex-col justify-between rounded-xl border p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:scale-98',
               st.active
-                ? [st.color, st.bg, 'border-2 ring-1 ring-neutral-100 shadow-md']
-                : 'border-neutral-200/60 bg-white hover:shadow-md'
+                ? [st.color, st.bg, 'border-2 shadow-md ring-1 ring-neutral-100']
+                : 'border-neutral-200/60 bg-white hover:shadow-md',
             )}
           >
             <div className="flex w-full items-center justify-between gap-1.5 text-neutral-400">
-              <span className="text-[10px] font-bold uppercase tracking-wider truncate">
+              <span className="truncate text-[10px] font-bold tracking-wider uppercase">
                 {st.label}
               </span>
-              <span className={clsx(st.active ? st.color : 'text-neutral-400')}>
-                {st.icon}
-              </span>
+              <span className={clsx(st.active ? st.color : 'text-neutral-400')}>{st.icon}</span>
             </div>
-            <span className={clsx('text-xl font-extrabold mt-2', st.active ? 'text-neutral-900' : 'text-neutral-800')}>
+            <span
+              className={clsx(
+                'mt-2 text-xl font-extrabold',
+                st.active ? 'text-neutral-900' : 'text-neutral-800',
+              )}
+            >
               {st.count}
             </span>
           </button>
