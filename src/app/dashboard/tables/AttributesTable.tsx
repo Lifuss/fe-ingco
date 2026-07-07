@@ -1,4 +1,6 @@
+'use no memo';
 'use client';
+
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Table from '@/app/ui/Table';

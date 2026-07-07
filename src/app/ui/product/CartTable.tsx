@@ -1,4 +1,6 @@
+'use no memo';
 'use client';
+
 
 import Table from '@/app/ui/Table';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
