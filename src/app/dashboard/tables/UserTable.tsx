@@ -150,14 +150,14 @@ const UserTable = () => {
   };
 
   const handleTabChange = (tabId: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('tab', tabId);
     params.set('page', '1');
     router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleVerifiedChange = (val: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('verified', val);
     params.set('page', '1');
     router.push(`${pathname}?${params.toString()}`);

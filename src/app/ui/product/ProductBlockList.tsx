@@ -31,7 +31,7 @@ const ProductBlockList = ({
     logProductClick(id);
 
     const base = `/${slug}`;
-    const qs = searchParams.toString();
+    const qs = searchParams ? searchParams.toString() : '';
     const link = qs ? `${base}?${qs}` : base;
     router.push(link);
   };

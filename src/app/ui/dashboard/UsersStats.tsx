@@ -22,7 +22,7 @@ const UsersStats = () => {
   const activeVerified = searchParams.get('verified') || 'all';
 
   const updateFilters = (tab: string, verified: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('page', '1');
     if (tab) params.set('tab', tab);
     if (verified) params.set('verified', verified);

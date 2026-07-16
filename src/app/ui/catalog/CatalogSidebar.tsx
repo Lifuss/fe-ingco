@@ -167,7 +167,7 @@ const CatalogSidebar = () => {
   // Helper to update URL params
   const updateUrlParams = useCallback(
     (updates: Record<string, string | null>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
       params.set('page', '1'); // reset page on filter change
 
       Object.entries(updates).forEach(([key, value]) => {
@@ -318,7 +318,7 @@ const CatalogSidebar = () => {
       updateUrlParams({ category: null, filters: null });
       return;
     }
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.delete('category');
     params.delete('filters'); // Filters are category-specific
     params.set('page', '1');

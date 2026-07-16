@@ -142,7 +142,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   };
 
   const handleFilterClick = (statusValue: StatusType) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('status', statusValue);
     params.set('page', '1');
     router.push(`${pathname}?${params.toString()}`);

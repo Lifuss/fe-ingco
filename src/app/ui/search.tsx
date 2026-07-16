@@ -40,7 +40,7 @@ export default function SearchFoo({
   }
 
   const handleSearch = (term: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
 
     params.set('page', '1');
 
@@ -54,7 +54,7 @@ export default function SearchFoo({
   };
 
   const handleRemoveCategory = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('page', '1');
     if (term) {
       params.set('query', term);

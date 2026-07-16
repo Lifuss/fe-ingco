@@ -68,7 +68,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
   // Handle Sort Change
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as sortValueType;
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     params.set('sortValue', value);
     params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
@@ -79,7 +79,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
     if (listType === 'partner') {
       dispatch(setShopView(newView === 'grid' ? 'table' : 'list'));
     } else {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
       params.set('view', newView);
       router.replace(`${pathname}?${params.toString()}`);
     }

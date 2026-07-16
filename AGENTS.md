@@ -366,6 +366,26 @@ All table filters (tabs, status selects, search strings, page offsets) in the ad
 - Reset the active `page` offset back to `1` whenever other filters change.
 - Do not store transient filters in Redux/React local state unless they are completely non-shareable.
 
+### 11.3 Next.js Hydration & Routing Safety Rules
+
+- **Hydration Mismatch Mitigation**: When conditionally switching layouts based on client-only values (e.g., `useSearchParams()`, authentication state, or `localStorage`), always use React 18/19's `useSyncExternalStore` to detect the client-side environment. This prevents hydration mismatch errors and avoids ESLint cascading-render warnings (`react-hooks/set-state-in-effect`):
+  ```typescript
+  import { useSyncExternalStore } from 'react';
+
+  const isClient = useSyncExternalStore(
+    () => () => {}, // empty subscribe
+    () => true,     // client snapshot
+    () => false     // server snapshot
+  );
+  ```
+- **Same-Pathname Query Cleansing**: When navigating to the root `/` to clear search or filter parameters from the same page, bypass Next.js client-side router caching by forcing a clean full-page reload if query params exist:
+  ```typescript
+  if (searchParams && Array.from(searchParams.keys()).length > 0) {
+    window.location.href = '/';
+  }
+  ```
+- **SearchParams Safety**: Never call `searchParams.toString()` directly without checking if `searchParams` is null/undefined. Use a fallback: `const params = new URLSearchParams(searchParams ? searchParams.toString() : '');`.
+
 ---
 
 ## 12. AI Browser Testing Credentials

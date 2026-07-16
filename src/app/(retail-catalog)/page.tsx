@@ -3,7 +3,7 @@
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import ProductList from '@/app/ui/product/ProductList';
 import ShopTable from '@/app/ui/product/ShopTable';
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { refreshTokenThunk } from '@/lib/appState/user/operation';
 import { clearAuthState } from '@/lib/appState/user/slice';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -21,12 +21,17 @@ import Testimonials from '~/ui/home/Testimonials';
 import FaqSection from '~/ui/home/FaqSection';
 import ConsultationCTA from '~/ui/home/ConsultationCTA';
 
+const emptySubscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export default function Page() {
   const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
   const { products = [] } = useAppSelector((state) => state.persistedMainReducer);
 
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
+  const isClient = useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
 
   const category = searchParams.get('category') || '';
   const query = searchParams.get('query') || '';
@@ -79,7 +84,12 @@ export default function Page() {
     }
   }, [dispatch, isAuthenticated]);
 
-  if (isAuthenticated && isB2b) {
+  // During hydration, displayB2b and displayCatalog will be false, matching the server-rendered HTML.
+  // Once mounted on the client, they will evaluate correctly to B2B or search catalog if necessary.
+  const displayB2b = isClient && isAuthenticated && isB2b;
+  const displayCatalog = isClient && showCatalog;
+
+  if (displayB2b) {
     return (
       <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
         <CatalogSidebar />
@@ -94,7 +104,7 @@ export default function Page() {
     );
   }
 
-  return showCatalog ? (
+  return displayCatalog ? (
     <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
       <CatalogSidebar />
       <div className="min-h-[550px] w-full">
