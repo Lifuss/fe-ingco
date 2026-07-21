@@ -18,6 +18,7 @@ interface RawProduct extends Omit<
   | 'sort'
   | 'countInStock'
   | 'category'
+  | 'badges'
 > {
   price: string | number;
   priceBulk?: string | number | null;
