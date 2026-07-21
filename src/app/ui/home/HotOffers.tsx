@@ -296,7 +296,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
 
   const renderBadges = () => {
     const list: React.ReactNode[] = [];
-    
+
     list.push(
       <span
         key="standard"
@@ -305,15 +305,18 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
         }`}
       >
         {isStandart ? 'STANDART' : 'INDUSTRIAL'}
-      </span>
+      </span>,
     );
 
     if (isSale) {
       list.push(
-        <span key="sale" className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 font-sans text-[10px] font-bold text-red-600 select-none">
+        <span
+          key="sale"
+          className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 font-sans text-[10px] font-bold text-red-600 select-none"
+        >
           <Percent size={10} />
           Акція
-        </span>
+        </span>,
       );
     }
 
@@ -326,10 +329,10 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
               backgroundColor: badge.backgroundColor,
               color: badge.textColor,
             }}
-            className="w-fit rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none shadow-sm"
+            className="w-fit rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase shadow-sm select-none"
           >
             {badge.name}
-          </span>
+          </span>,
         );
       });
     }
@@ -347,9 +350,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
     >
       {/* Top action/tag ribbon */}
       <div className="z-10 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 font-sans">
-          {renderBadges()}
-        </div>
+        <div className="flex items-center gap-1.5 font-sans">{renderBadges()}</div>
         <button
           onClick={() => onFavClick(product)}
           className={`cursor-pointer rounded-full p-1.5 transition-colors hover:bg-neutral-100 ${isFav ? 'text-rose-500' : 'text-neutral-400 hover:text-neutral-600'}`}

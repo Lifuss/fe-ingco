@@ -1,7 +1,6 @@
 'use no memo';
 'use client';
 
-
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import { fetchOrdersThunk, updateOrderThunk } from '@/lib/appState/dashboard/operations';
@@ -65,11 +64,14 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const { orders, totalPages, orderStats } = useAppSelector((state) => state.dashboardSlice);
   const usdRate = useAppSelector(selectUSDRate);
 
-  const openModal = useCallback((id: string) => {
-    const order = orders.find((order) => order.orderCode === id) ?? null;
-    setSelectedOrder(order);
-    setIsOpen(true);
-  }, [orders]);
+  const openModal = useCallback(
+    (id: string) => {
+      const order = orders.find((order) => order.orderCode === id) ?? null;
+      setSelectedOrder(order);
+      setIsOpen(true);
+    },
+    [orders],
+  );
   const closeModal = () => setIsOpen(false);
 
   // Read status, page, query from URL search parameters
@@ -83,57 +85,60 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
   }, [dispatch, page, query, isRetail, status]);
 
-  const handleStatusChange = useCallback((order: Order, newStatus: OrderStatusEnum) => {
-    if (order.status === newStatus) return;
+  const handleStatusChange = useCallback(
+    (order: Order, newStatus: OrderStatusEnum) => {
+      if (order.status === newStatus) return;
 
-    if (
-      confirm(
-        `Ви впевнені, що хочете змінити статус замовлення №${order.orderCode} на "${newStatus}"?`,
-      )
-    ) {
-      const normalizeProducts =
-        order.products
-          ?.filter((product) => product?.product?.id)
-          ?.map((product) => ({
-            id: product.id,
-            quantity: product.quantity || 0,
-            totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
-            product: product.product.id,
-            price: product.price || 0,
-          })) || [];
+      if (
+        confirm(
+          `Ви впевнені, що хочете змінити статус замовлення №${order.orderCode} на "${newStatus}"?`,
+        )
+      ) {
+        const normalizeProducts =
+          order.products
+            ?.filter((product) => product?.product?.id)
+            ?.map((product) => ({
+              id: product.id,
+              quantity: product.quantity || 0,
+              totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
+              product: product.product.id,
+              price: product.price || 0,
+            })) || [];
 
-      const updatedOrder = {
-        ...order,
-        products: normalizeProducts,
-        status: newStatus,
-      };
+        const updatedOrder = {
+          ...order,
+          products: normalizeProducts,
+          status: newStatus,
+        };
 
-      const {
-        user: _user,
-        orderCode: _orderCode,
-        createdAt: _createdAt,
-        updatedAt: _updatedAt,
-        usdRate: _usdRate,
-        ...updatedOrderWithoutUser
-      } = updatedOrder;
+        const {
+          user: _user,
+          orderCode: _orderCode,
+          createdAt: _createdAt,
+          updatedAt: _updatedAt,
+          usdRate: _usdRate,
+          ...updatedOrderWithoutUser
+        } = updatedOrder;
 
-      dispatch(
-        updateOrderThunk({
-          orderId: order.id,
-          updateOrder: updatedOrderWithoutUser,
-          isRetail,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          // Refetch order statistics & table list to reflect counts change
-          dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
-        })
-        .catch(() => {
-          toast.error('Не вдалося оновити статус замовлення');
-        });
-    }
-  }, [dispatch, isRetail, page, query, status]);
+        dispatch(
+          updateOrderThunk({
+            orderId: order.id,
+            updateOrder: updatedOrderWithoutUser,
+            isRetail,
+          }),
+        )
+          .unwrap()
+          .then(() => {
+            // Refetch order statistics & table list to reflect counts change
+            dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
+          })
+          .catch(() => {
+            toast.error('Не вдалося оновити статус замовлення');
+          });
+      }
+    },
+    [dispatch, isRetail, page, query, status],
+  );
 
   const handleExcelClick = async (e: React.MouseEvent, order: Order) => {
     e.stopPropagation();

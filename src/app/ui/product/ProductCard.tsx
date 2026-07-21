@@ -152,16 +152,22 @@ const ProductCard = ({
     const list: React.ReactNode[] = [];
     if (rrcSale && discountPercent > 0) {
       list.push(
-        <span key="sale" className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
+        <span
+          key="sale"
+          className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm"
+        >
           АКЦІЯ -{discountPercent}%
-        </span>
+        </span>,
       );
     }
     if (isNew) {
       list.push(
-        <span key="new" className="w-fit rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
+        <span
+          key="new"
+          className="w-fit rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm"
+        >
           НОВИНКА
-        </span>
+        </span>,
       );
     }
     if (product.badges && product.badges.length > 0) {
@@ -176,7 +182,7 @@ const ProductCard = ({
             className="w-fit rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm"
           >
             {badge.name}
-          </span>
+          </span>,
         );
       });
     }

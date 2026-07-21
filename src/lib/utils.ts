@@ -46,12 +46,14 @@ export function normalizeProduct(p: unknown): Product {
     warranty: Number(raw.warranty),
     sort: Number(raw.sort),
     countInStock: Number(raw.countInStock),
-    badges: raw.badges ? raw.badges.map((b) => ({
-      id: Number(b.id),
-      name: b.name,
-      backgroundColor: b.backgroundColor || '#000000',
-      textColor: b.textColor || '#ffffff',
-    })) : [],
+    badges: raw.badges
+      ? raw.badges.map((b) => ({
+          id: Number(b.id),
+          name: b.name,
+          backgroundColor: b.backgroundColor || '#000000',
+          textColor: b.textColor || '#ffffff',
+        }))
+      : [],
   } as Product;
 }
 

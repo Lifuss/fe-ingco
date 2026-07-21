@@ -1,7 +1,6 @@
 'use no memo';
 'use client';
 
-
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import AdminUserModal from '@/app/ui/modals/AdminUserModal';

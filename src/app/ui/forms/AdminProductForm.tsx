@@ -193,9 +193,11 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
         textColor: newBadgeTextColor,
       });
       const createdBadge = response.data;
-      setAvailableBadges((prev) => [...prev, createdBadge].sort((a, b) => a.name.localeCompare(b.name)));
+      setAvailableBadges((prev) =>
+        [...prev, createdBadge].sort((a, b) => a.name.localeCompare(b.name)),
+      );
       setSelectedBadgeIds((prev) => [...prev, createdBadge.id]);
-      
+
       // Reset form
       setNewBadgeName('');
       setNewBadgeBgColor('#000000');
@@ -1070,7 +1072,10 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
               {availableBadges.map((badge) => {
                 const isChecked = selectedBadgeIds.includes(badge.id);
                 return (
-                  <div key={badge.id} className="flex items-center justify-between py-1 transition-colors hover:bg-neutral-100/50">
+                  <div
+                    key={badge.id}
+                    className="flex items-center justify-between py-1 transition-colors hover:bg-neutral-100/50"
+                  >
                     <label className="group flex cursor-pointer items-center gap-3 select-none">
                       <input
                         type="checkbox"
@@ -1089,16 +1094,16 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                           backgroundColor: badge.backgroundColor,
                           color: badge.textColor,
                         }}
-                        className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none rounded"
+                        className="rounded px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none"
                       >
                         {badge.name}
                       </span>
                     </label>
-                    
+
                     <button
                       type="button"
                       onClick={() => handleDeleteBadge(badge)}
-                      className="text-neutral-400 hover:text-rose-500 cursor-pointer p-1 transition-all"
+                      className="cursor-pointer p-1 text-neutral-400 transition-all hover:text-rose-500"
                       title="Видалити бейдж"
                     >
                       <Icon icon="delete" className="h-3.5 w-3.5 fill-current" />
@@ -1107,7 +1112,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                 );
               })}
               {availableBadges.length === 0 && (
-                <span className="text-xs text-neutral-400 text-center py-2">Бейджі відсутні</span>
+                <span className="py-2 text-center text-xs text-neutral-400">Бейджі відсутні</span>
               )}
             </div>
 
@@ -1117,7 +1122,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                 <button
                   type="button"
                   onClick={() => setIsAddingBadge(true)}
-                  className="bg-neutral-50 hover:bg-neutral-100 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-neutral-200 py-2 text-xs font-semibold text-neutral-700 transition-all"
+                  className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 py-2 text-xs font-semibold text-neutral-700 transition-all hover:bg-neutral-100"
                 >
                   <Plus size={14} />
                   <span>Створити новий бейдж</span>
@@ -1157,7 +1162,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                             setNewBadgeBgColor(preset.bg);
                             setNewBadgeTextColor(preset.text);
                           }}
-                          className="bg-white hover:bg-neutral-100 px-2 py-1 text-[10px] font-semibold text-neutral-700 rounded border border-neutral-200 transition-all cursor-pointer"
+                          className="cursor-pointer rounded border border-neutral-200 bg-white px-2 py-1 text-[10px] font-semibold text-neutral-700 transition-all hover:bg-neutral-100"
                         >
                           {preset.label}
                         </button>
@@ -1178,10 +1183,12 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                           onChange={(e) => setNewBadgeBgColor(e.target.value)}
                           className="h-7 w-8 cursor-pointer rounded border border-neutral-300 bg-transparent p-0"
                         />
-                        <span className="text-[10px] font-mono font-bold text-neutral-600 uppercase">{newBadgeBgColor}</span>
+                        <span className="font-mono text-[10px] font-bold text-neutral-600 uppercase">
+                          {newBadgeBgColor}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col">
                       <label className="mb-0.5 text-[9px] font-bold text-neutral-400 uppercase">
                         Колір тексту
@@ -1191,22 +1198,26 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                           type="color"
                           value={newBadgeTextColor}
                           onChange={(e) => setNewBadgeTextColor(e.target.value)}
-                          className="h-7 w-8 cursor-pointer rounded border border-neutral-350 bg-transparent p-0"
+                          className="border-neutral-350 h-7 w-8 cursor-pointer rounded border bg-transparent p-0"
                         />
-                        <span className="text-[10px] font-mono font-bold text-neutral-600 uppercase">{newBadgeTextColor}</span>
+                        <span className="font-mono text-[10px] font-bold text-neutral-600 uppercase">
+                          {newBadgeTextColor}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Preview box */}
-                  <div className="mt-1 flex flex-col gap-1 items-center justify-center py-2.5 rounded-lg border border-neutral-100 bg-white">
-                    <span className="mb-1 text-[9px] font-bold text-neutral-400 uppercase select-none">Попередній перегляд:</span>
+                  <div className="mt-1 flex flex-col items-center justify-center gap-1 rounded-lg border border-neutral-100 bg-white py-2.5">
+                    <span className="mb-1 text-[9px] font-bold text-neutral-400 uppercase select-none">
+                      Попередній перегляд:
+                    </span>
                     <span
                       style={{
                         backgroundColor: newBadgeBgColor,
                         color: newBadgeTextColor,
                       }}
-                      className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none rounded"
+                      className="rounded px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none"
                     >
                       {newBadgeName.trim() || 'БЕЙДЖ'}
                     </span>
@@ -1217,7 +1228,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                     <button
                       type="button"
                       onClick={handleCreateBadge}
-                      className="bg-green-500 hover:bg-green-600 flex-1 cursor-pointer py-1.5 rounded-lg text-xs font-bold text-white text-center transition-colors"
+                      className="flex-1 cursor-pointer rounded-lg bg-green-500 py-1.5 text-center text-xs font-bold text-white transition-colors hover:bg-green-600"
                     >
                       Створити
                     </button>
@@ -1229,7 +1240,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                         setNewBadgeTextColor('#ffffff');
                         setIsAddingBadge(false);
                       }}
-                      className="bg-neutral-200 hover:bg-neutral-300 flex-1 cursor-pointer py-1.5 rounded-lg text-xs font-bold text-neutral-700 text-center transition-colors"
+                      className="flex-1 cursor-pointer rounded-lg bg-neutral-200 py-1.5 text-center text-xs font-bold text-neutral-700 transition-colors hover:bg-neutral-300"
                     >
                       Скасувати
                     </button>

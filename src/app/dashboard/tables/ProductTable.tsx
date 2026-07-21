@@ -1,7 +1,6 @@
 'use no memo';
 'use client';
 
-
 import Icon from '@/app/ui/assets/Icon';
 import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import Pagination from '@/app/ui/Pagination';

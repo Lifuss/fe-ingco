@@ -11,9 +11,22 @@ import {
   updateUserThunk,
   updateSupportTicketThunk,
   restoreUserThunk,
+  fetchGmcStatusThunk,
+  syncGmcProductsThunk,
 } from './operations';
 import { toast } from 'react-toastify';
 import { getProductClicksThunk, getUserActivityThunk } from './statsOperations';
+
+export interface GmcStatusType {
+  configured: boolean;
+  merchantId: string | null;
+  serviceAccountEmail: string | null;
+  lastSyncAt: string | null;
+  totalSynced: number;
+  lastError: string | null;
+  apiVersion?: string;
+}
+
 type InitialStateType = {
   users: User[];
   orders: Order[];
@@ -35,6 +48,8 @@ type InitialStateType = {
     'замовлення скасовано': number;
   };
   stats: { productClicks: object[]; activityUsers: User[] };
+  gmcStatus: GmcStatusType | null;
+  gmcSyncLoading: boolean;
 };
 
 const initialState: InitialStateType = {
@@ -61,6 +76,8 @@ const initialState: InitialStateType = {
     productClicks: [],
     activityUsers: [],
   },
+  gmcStatus: null,
+  gmcSyncLoading: false,
 };
 
 const Slice = createSlice({
@@ -114,6 +131,31 @@ const Slice = createSlice({
       .addCase(updateSupportTicketThunk.fulfilled, (state, { payload }) => {
         state.supportTickets = state.supportTickets.filter(
           (ticket) => ticket.ticketNumber !== payload,
+        );
+      })
+      .addCase(fetchGmcStatusThunk.fulfilled, (state, { payload }) => {
+        state.gmcStatus = payload;
+      })
+      .addCase(syncGmcProductsThunk.pending, (state) => {
+        state.gmcSyncLoading = true;
+      })
+      .addCase(syncGmcProductsThunk.fulfilled, (state, { payload }) => {
+        state.gmcSyncLoading = false;
+        if (payload.success) {
+          toast.success(`Синхронізацію успішно завершено! Оновлено товарів: ${payload.count}`);
+          if (state.gmcStatus) {
+            state.gmcStatus.lastSyncAt = new Date().toISOString();
+            state.gmcStatus.totalSynced = payload.count;
+            state.gmcStatus.lastError = null;
+          }
+        } else {
+          toast.error(`Помилка синхронізації GMC: ${payload.error || 'Невідома помилка'}`);
+        }
+      })
+      .addCase(syncGmcProductsThunk.rejected, (state, { payload }) => {
+        state.gmcSyncLoading = false;
+        toast.error(
+          `Помилка підключення: ${typeof payload === 'string' ? payload : 'Не вдалося виконати запит'}`,
         );
       });
     builder

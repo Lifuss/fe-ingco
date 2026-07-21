@@ -361,3 +361,27 @@ export const updateSupportTicketThunk = createAsyncThunk(
     }
   },
 );
+
+export const fetchGmcStatusThunk = createAsyncThunk(
+  'dashboard/fetchGmcStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.get('/google-merchant/status');
+      return data;
+    } catch (error) {
+      return rejectWithValue(serializeAxiosError(error));
+    }
+  },
+);
+
+export const syncGmcProductsThunk = createAsyncThunk(
+  'dashboard/syncGmcProducts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await apiIngco.post('/google-merchant/sync');
+      return data;
+    } catch (error) {
+      return rejectWithValue(serializeAxiosError(error));
+    }
+  },
+);

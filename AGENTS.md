@@ -315,13 +315,13 @@ The file `src/proxy.ts` is a Next.js middleware that:
 
 ### ❌ React / Redux Anti-Patterns
 
-| Anti-Pattern                                                     | Why It's Wrong                                                    | Do This Instead                                                        |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Calling the backend API directly in components                   | Bypasses token interceptors, breaks consistency                   | Always dispatch a Redux thunk using the `apiIngco` instance            |
-| Using raw `error.response?.data?.message` in `rejectWithValue`   | Non-serializable values cause Redux warnings and break DevTools   | Use `serializeAxiosError(error)`                                       |
-| Adding new state management solutions                            | Multiple state libs create sync bugs and confusion                | Use Redux Toolkit only                                                 |
-| Removing the `'use no memo'` directive from TanStack Table files | React Compiler memoization breaks TanStack Table's internal state | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
-| Using `index` as `key` for dynamic lists with mutations          | Causes incorrect DOM diffing, ghost elements, state leaking       | Use a stable unique ID (`item.id`, `item.article`)                     |
+| Anti-Pattern                                                      | Why It's Wrong                                                    | Do This Instead                                                        |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Calling the backend API directly in components                    | Bypasses token interceptors, breaks consistency                   | Always dispatch a Redux thunk using the `apiIngco` instance            |
+| Using raw `error.response?.data?.message` in `rejectWithValue`    | Non-serializable values cause Redux warnings and break DevTools   | Use `serializeAxiosError(error)`                                       |
+| Adding new state management solutions                             | Multiple state libs create sync bugs and confusion                | Use Redux Toolkit only                                                 |
+| Removing the `'use no memo'` directive from TanStack Table files  | React Compiler memoization breaks TanStack Table's internal state | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
+| Using `index` as `key` for dynamic lists with mutations           | Causes incorrect DOM diffing, ghost elements, state leaking       | Use a stable unique ID (`item.id`, `item.article`)                     |
 | Using blocking browser prompts (`window.alert`, `window.confirm`) | Blocks the browser main execution thread and degrades UX          | Use custom modals like `ConfirmModal` or inline notifications          |
 
 ### ❌ Styling Anti-Patterns
@@ -370,15 +370,17 @@ All table filters (tabs, status selects, search strings, page offsets) in the ad
 ### 11.3 Next.js Hydration & Routing Safety Rules
 
 - **Hydration Mismatch Mitigation**: When conditionally switching layouts based on client-only values (e.g., `useSearchParams()`, authentication state, or `localStorage`), always use React 18/19's `useSyncExternalStore` to detect the client-side environment. This prevents hydration mismatch errors and avoids ESLint cascading-render warnings (`react-hooks/set-state-in-effect`):
+
   ```typescript
   import { useSyncExternalStore } from 'react';
 
   const isClient = useSyncExternalStore(
     () => () => {}, // empty subscribe
-    () => true,     // client snapshot
-    () => false     // server snapshot
+    () => true, // client snapshot
+    () => false, // server snapshot
   );
   ```
+
 - **Same-Pathname Query Cleansing**: When navigating to the root `/` to clear search or filter parameters from the same page, bypass Next.js client-side router caching by forcing a clean full-page reload if query params exist:
   ```typescript
   if (searchParams && Array.from(searchParams.keys()).length > 0) {
@@ -403,22 +405,25 @@ Use the following credentials when running browser-based tests, automated flows,
 When writing future unit, integration, or E2E tests for the frontend catalog and dashboard application, follow these guidelines:
 
 ### 🧪 React Component & Integration Testing
+
 - **User-Centric Assertions**: Use `@testing-library/react` and query elements by role, text, or accessibility labels (e.g. `screen.getByRole('button', { name: /Зберегти/i })`) to test the application from the user's perspective.
 - **Redux Store Integration**: When testing components that dispatch thunks or read state, wrap them in a helper utility that configures a fresh Redux store (using our slices from `lib/appState`) with a custom `preloadedState`.
 - **Localization**: Assertions checking labels, alerts, or toast notifications must match the Ukrainian copy exactly.
 
 ### 🌐 Next.js & Router Mocking
+
 - **Navigation Mocking**: Mock Next.js routing APIs (`next/navigation` hooks like `useRouter`, `useSearchParams`, and `usePathname`) to control query parameters and simulate page navigation.
 - **Controlled SearchParams**: Pass mock search parameters via wrapper contexts or manually mock return values of `useSearchParams` using Jest/Vitest spy functions.
 
 ### 🧼 Code Quality & Cleanup
+
 - **Prevent Leakage**: Always clean up test side effects and mock calls in `afterEach` or `beforeEach` to keep each component spec independent.
 - **Mock Network Requests**: Mock API calls made via Axios (`apiIngco`) using mock adapters (e.g., `axios-mock-adapter`) to avoid querying the production backend.
 
 ### 🌐 End-to-End (E2E) Multi-User Testing
+
 - **Three-User Flow**: For E2E testing of authentication, client segment flows (B2B wholesale catalog vs B2C retail catalog), and CRM admin panel access, always write tests utilizing 3 distinct types of preconfigured users:
   - **Admin**: `arsen_admin_e2e` / `123456A` (Note: do NOT use `arsen` in automated E2E tests as it is reserved for manual/browser testing)
   - **B2B User**: `arsenb2b` / `7AtewuZO`
   - **B2C User**: `arsenb2c` / `wA4GSsCK`
 - **Graceful Lifecycle**: Always seed these test accounts in the test DB inside `beforeAll` (deleting any existing records with these logins first to prevent unique constraint failures) and cleanly delete them inside `afterAll`.
-
