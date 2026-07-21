@@ -8,6 +8,7 @@ import {
   ProductCharacteristic,
   CharacteristicState,
   ProductAttribute,
+  Badge,
 } from '@/lib/types';
 import Icon from '../assets/Icon';
 import {
@@ -28,6 +29,7 @@ const questionSvg = (
 
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
+import ConfirmModal from '@/app/ui/modals/ConfirmModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
@@ -122,6 +124,28 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
   // Media files state
   const [mediaFiles, setMediaFiles] = useState<MediaItem[]>([]);
 
+  // Badges state
+  const [availableBadges, setAvailableBadges] = useState<Badge[]>([]);
+  const [selectedBadgeIds, setSelectedBadgeIds] = useState<number[]>(
+    () => product?.badges?.map((b) => b.id) || [],
+  );
+  const [newBadgeName, setNewBadgeName] = useState('');
+  const [newBadgeBgColor, setNewBadgeBgColor] = useState('#000000');
+  const [newBadgeTextColor, setNewBadgeTextColor] = useState('#ffffff');
+  const [isAddingBadge, setIsAddingBadge] = useState(false);
+  const [badgeToDelete, setBadgeToDelete] = useState<Badge | null>(null);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API}/api/badges`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAvailableBadges(data);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch badges:', err));
+  }, []);
+
   useEffect(() => {
     if (!categories.length) {
       dispatch(fetchCategoriesThunk(''));
@@ -148,8 +172,42 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
       setCharacteristics(product.characteristics || []);
       setSelectedCategoryIds(product.categories?.map((c) => c.id) || []);
       setSelectedMainCategoryId(product.mainCategory?.id || product.category?.id || '');
+      setSelectedBadgeIds(product.badges?.map((b) => b.id) || []);
     }
   }, [product]);
+
+  const handleDeleteBadge = (badge: Badge) => {
+    setBadgeToDelete(badge);
+  };
+
+  const handleCreateBadge = async () => {
+    const name = newBadgeName.trim();
+    if (!name) {
+      toast.warning('Назва бейджа не може бути порожньою');
+      return;
+    }
+    try {
+      const response = await apiIngco.post('/badges', {
+        name,
+        backgroundColor: newBadgeBgColor,
+        textColor: newBadgeTextColor,
+      });
+      const createdBadge = response.data;
+      setAvailableBadges((prev) => [...prev, createdBadge].sort((a, b) => a.name.localeCompare(b.name)));
+      setSelectedBadgeIds((prev) => [...prev, createdBadge.id]);
+      
+      // Reset form
+      setNewBadgeName('');
+      setNewBadgeBgColor('#000000');
+      setNewBadgeTextColor('#ffffff');
+      setIsAddingBadge(false);
+      toast.success('Бейдж успішно створено');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg = error.response?.data?.message || error.message || 'Помилка створення бейджа';
+      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -163,6 +221,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
 
     formData.append('characteristics', JSON.stringify(characteristicsArr));
     formData.append('categoryIds', JSON.stringify(selectedCategoryIds));
+    formData.append('badgeIds', JSON.stringify(selectedBadgeIds));
     formData.delete('characteristicName');
     formData.delete('characteristicDesc');
     formData.delete('image'); // Delete standard file field to avoid duplicates
@@ -992,6 +1051,194 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
             </div>
           </div>
 
+          {/* Card: Product Badges */}
+          <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-neutral-800 uppercase">
+                Бейджі товару
+              </h2>
+              <span
+                className="cursor-help"
+                title="Оберіть один або кілька бейджів для відображення на сторінці товару. Ви можете створити новий або видалити існуючий бейдж."
+              >
+                {questionSvg}
+              </span>
+            </div>
+
+            {/* Checklist of badges */}
+            <div className="flex max-h-[180px] flex-col gap-2.5 overflow-y-auto rounded-xl border border-neutral-200 bg-[#FAFAFF] p-3 shadow-inner">
+              {availableBadges.map((badge) => {
+                const isChecked = selectedBadgeIds.includes(badge.id);
+                return (
+                  <div key={badge.id} className="flex items-center justify-between py-1 transition-colors hover:bg-neutral-100/50">
+                    <label className="group flex cursor-pointer items-center gap-3 select-none">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          if (isChecked) {
+                            setSelectedBadgeIds((prev) => prev.filter((id) => id !== badge.id));
+                          } else {
+                            setSelectedBadgeIds((prev) => [...prev, badge.id]);
+                          }
+                        }}
+                        className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
+                      />
+                      <span
+                        style={{
+                          backgroundColor: badge.backgroundColor,
+                          color: badge.textColor,
+                        }}
+                        className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none rounded"
+                      >
+                        {badge.name}
+                      </span>
+                    </label>
+                    
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteBadge(badge)}
+                      className="text-neutral-400 hover:text-rose-500 cursor-pointer p-1 transition-all"
+                      title="Видалити бейдж"
+                    >
+                      <Icon icon="delete" className="h-3.5 w-3.5 fill-current" />
+                    </button>
+                  </div>
+                );
+              })}
+              {availableBadges.length === 0 && (
+                <span className="text-xs text-neutral-400 text-center py-2">Бейджі відсутні</span>
+              )}
+            </div>
+
+            {/* Create Badge Toggle / Form */}
+            <div className="mt-2 border-t border-neutral-100 pt-3">
+              {!isAddingBadge ? (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingBadge(true)}
+                  className="bg-neutral-50 hover:bg-neutral-100 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-neutral-200 py-2 text-xs font-semibold text-neutral-700 transition-all"
+                >
+                  <Plus size={14} />
+                  <span>Створити новий бейдж</span>
+                </button>
+              ) : (
+                <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-neutral-50/50 p-3 shadow-inner">
+                  {/* Name field */}
+                  <div className="flex flex-col">
+                    <label className="mb-1 text-[10px] font-bold text-neutral-400 uppercase">
+                      Назва бейджа
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Наприклад: АКЦІЯ"
+                      value={newBadgeName}
+                      onChange={(e) => setNewBadgeName(e.target.value)}
+                      className="focus:border-primary-500 w-full rounded-lg border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-neutral-800 placeholder-neutral-400 transition-all focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Preset styling selector */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold text-neutral-400 uppercase">
+                      Шаблони кольорів
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { label: 'Чорний', bg: '#171717', text: '#ffffff' },
+                        { label: 'Синій', bg: '#0284c7', text: '#ffffff' },
+                        { label: 'Червоний', bg: '#dc2626', text: '#ffffff' },
+                        { label: 'Зелений', bg: '#16a34a', text: '#ffffff' },
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => {
+                            setNewBadgeBgColor(preset.bg);
+                            setNewBadgeTextColor(preset.text);
+                          }}
+                          className="bg-white hover:bg-neutral-100 px-2 py-1 text-[10px] font-semibold text-neutral-700 rounded border border-neutral-200 transition-all cursor-pointer"
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Colors pickers */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col">
+                      <label className="mb-0.5 text-[9px] font-bold text-neutral-400 uppercase">
+                        Колір фону
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          value={newBadgeBgColor}
+                          onChange={(e) => setNewBadgeBgColor(e.target.value)}
+                          className="h-7 w-8 cursor-pointer rounded border border-neutral-300 bg-transparent p-0"
+                        />
+                        <span className="text-[10px] font-mono font-bold text-neutral-600 uppercase">{newBadgeBgColor}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <label className="mb-0.5 text-[9px] font-bold text-neutral-400 uppercase">
+                        Колір тексту
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          value={newBadgeTextColor}
+                          onChange={(e) => setNewBadgeTextColor(e.target.value)}
+                          className="h-7 w-8 cursor-pointer rounded border border-neutral-350 bg-transparent p-0"
+                        />
+                        <span className="text-[10px] font-mono font-bold text-neutral-600 uppercase">{newBadgeTextColor}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview box */}
+                  <div className="mt-1 flex flex-col gap-1 items-center justify-center py-2.5 rounded-lg border border-neutral-100 bg-white">
+                    <span className="mb-1 text-[9px] font-bold text-neutral-400 uppercase select-none">Попередній перегляд:</span>
+                    <span
+                      style={{
+                        backgroundColor: newBadgeBgColor,
+                        color: newBadgeTextColor,
+                      }}
+                      className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm select-none rounded"
+                    >
+                      {newBadgeName.trim() || 'БЕЙДЖ'}
+                    </span>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="mt-1 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCreateBadge}
+                      className="bg-green-500 hover:bg-green-600 flex-1 cursor-pointer py-1.5 rounded-lg text-xs font-bold text-white text-center transition-colors"
+                    >
+                      Створити
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewBadgeName('');
+                        setNewBadgeBgColor('#000000');
+                        setNewBadgeTextColor('#ffffff');
+                        setIsAddingBadge(false);
+                      }}
+                      className="bg-neutral-200 hover:bg-neutral-300 flex-1 cursor-pointer py-1.5 rounded-lg text-xs font-bold text-neutral-700 text-center transition-colors"
+                    >
+                      Скасувати
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Card 5: SEO settings */}
           <div className="flex flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
@@ -1036,6 +1283,32 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
           </div>
         </div>
       </form>
+
+      <ConfirmModal
+        isOpen={!!badgeToDelete}
+        onClose={() => setBadgeToDelete(null)}
+        onConfirm={async () => {
+          if (!badgeToDelete) return;
+          try {
+            await apiIngco.delete(`/badges/${badgeToDelete.id}`);
+            setAvailableBadges((prev) => prev.filter((b) => b.id !== badgeToDelete.id));
+            setSelectedBadgeIds((prev) => prev.filter((id) => id !== badgeToDelete.id));
+            toast.success('Бейдж успішно видалено');
+          } catch (_err: unknown) {
+            toast.error('Не вдалося видалити бейдж');
+          }
+        }}
+        title="Видалення бейджа"
+        message={
+          badgeToDelete
+            ? badgeToDelete._count?.products && badgeToDelete._count.products > 0
+              ? `Увага! Бейдж "${badgeToDelete.name}" використовується у ${badgeToDelete._count.products} продуктах. Його видалення прибере його з усіх цих товарів. Ви впевнені, що хочете видалити?`
+              : `Ви впевнені, що хочете видалити бейдж "${badgeToDelete.name}"?`
+            : ''
+        }
+        confirmText="Видалити"
+        type="danger"
+      />
     </div>
   );
 };

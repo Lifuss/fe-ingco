@@ -360,14 +360,22 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                 {/* Main Media Box */}
                 <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm select-none">
                   {/* Badges absolute top-left */}
-                  <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                    <span className="rounded bg-neutral-900 px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow-sm select-none md:text-xs">
-                      PRO SERIES
-                    </span>
-                    <span className="bg-brand-cyan rounded px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow-sm select-none md:text-xs">
-                      P20S SYSTEM
-                    </span>
-                  </div>
+                  {product.badges && product.badges.length > 0 && (
+                    <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
+                      {product.badges.map((badge) => (
+                        <span
+                          key={badge.id}
+                          style={{
+                            backgroundColor: badge.backgroundColor,
+                            color: badge.textColor,
+                          }}
+                          className="rounded px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shadow-sm select-none md:text-xs"
+                        >
+                          {badge.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {galleryImages[activeImageIndex].type === 'image' ? (
                     <Image

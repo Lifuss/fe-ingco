@@ -148,6 +148,41 @@ const ProductCard = ({
 
   const isFavorite = favoritesIdList.includes(id);
 
+  const renderBadges = () => {
+    const list: React.ReactNode[] = [];
+    if (rrcSale && discountPercent > 0) {
+      list.push(
+        <span key="sale" className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
+          АКЦІЯ -{discountPercent}%
+        </span>
+      );
+    }
+    if (isNew) {
+      list.push(
+        <span key="new" className="w-fit rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
+          НОВИНКА
+        </span>
+      );
+    }
+    if (product.badges && product.badges.length > 0) {
+      product.badges.forEach((badge) => {
+        list.push(
+          <span
+            key={`badge-${badge.id}`}
+            style={{
+              backgroundColor: badge.backgroundColor,
+              color: badge.textColor,
+            }}
+            className="w-fit rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow-sm"
+          >
+            {badge.name}
+          </span>
+        );
+      });
+    }
+    return list.slice(0, 3);
+  };
+
   return (
     <>
       <li
@@ -171,16 +206,7 @@ const ProductCard = ({
             <div className="relative mb-2 flex h-[180px] w-full shrink-0 items-center justify-center bg-white">
               {/* Top Left Badges */}
               <div className="pointer-events-none absolute top-0 left-0 z-10 flex flex-col gap-1">
-                {!!(rrcSale && discountPercent > 0) && (
-                  <span className="rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
-                    АКЦІЯ -{discountPercent}%
-                  </span>
-                )}
-                {!!isNew && (
-                  <span className="w-fit rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm">
-                    НОВИНКА
-                  </span>
-                )}
+                {renderBadges()}
               </div>
 
               {/* Top Right Badges */}

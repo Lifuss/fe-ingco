@@ -10,6 +10,16 @@ export interface Category {
   showInMenu: boolean;
 }
 
+export interface Badge {
+  id: number;
+  name: string;
+  backgroundColor: string;
+  textColor: string;
+  _count?: {
+    products: number;
+  };
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -33,6 +43,7 @@ export interface Product {
   category: Category | null;
   mainCategory?: Category | null;
   categories?: Category[];
+  badges?: Badge[];
   createdAt: string;
   updatedAt: string;
 }

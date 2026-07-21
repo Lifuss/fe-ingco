@@ -294,6 +294,49 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
     }
   };
 
+  const renderBadges = () => {
+    const list: React.ReactNode[] = [];
+    
+    list.push(
+      <span
+        key="standard"
+        className={`rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none ${
+          isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
+        }`}
+      >
+        {isStandart ? 'STANDART' : 'INDUSTRIAL'}
+      </span>
+    );
+
+    if (isSale) {
+      list.push(
+        <span key="sale" className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 font-sans text-[10px] font-bold text-red-600 select-none">
+          <Percent size={10} />
+          Акція
+        </span>
+      );
+    }
+
+    if (product.badges && product.badges.length > 0) {
+      product.badges.forEach((badge) => {
+        list.push(
+          <span
+            key={`badge-${badge.id}`}
+            style={{
+              backgroundColor: badge.backgroundColor,
+              color: badge.textColor,
+            }}
+            className="w-fit rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none shadow-sm"
+          >
+            {badge.name}
+          </span>
+        );
+      });
+    }
+
+    return list.slice(0, 3);
+  };
+
   return (
     <div
       onMouseDown={handleMouseDown}
@@ -304,20 +347,8 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
     >
       {/* Top action/tag ribbon */}
       <div className="z-10 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <span
-            className={`rounded px-2 py-0.5 font-sans text-[10px] font-bold uppercase select-none ${
-              isStandart ? 'bg-neutral-100 text-neutral-600' : 'bg-amber-100 text-amber-800'
-            }`}
-          >
-            {isStandart ? 'STANDART' : 'INDUSTRIAL'}
-          </span>
-          {isSale && (
-            <span className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 font-sans text-[10px] font-bold text-red-600 select-none">
-              <Percent size={10} />
-              Акція
-            </span>
-          )}
+        <div className="flex items-center gap-1.5 font-sans">
+          {renderBadges()}
         </div>
         <button
           onClick={() => onFavClick(product)}

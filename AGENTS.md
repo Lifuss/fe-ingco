@@ -322,6 +322,7 @@ The file `src/proxy.ts` is a Next.js middleware that:
 | Adding new state management solutions                            | Multiple state libs create sync bugs and confusion                | Use Redux Toolkit only                                                 |
 | Removing the `'use no memo'` directive from TanStack Table files | React Compiler memoization breaks TanStack Table's internal state | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
 | Using `index` as `key` for dynamic lists with mutations          | Causes incorrect DOM diffing, ghost elements, state leaking       | Use a stable unique ID (`item.id`, `item.article`)                     |
+| Using blocking browser prompts (`window.alert`, `window.confirm`) | Blocks the browser main execution thread and degrades UX          | Use custom modals like `ConfirmModal` or inline notifications          |
 
 ### ❌ Styling Anti-Patterns
 

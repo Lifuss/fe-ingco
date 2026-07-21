@@ -28,6 +28,7 @@ interface RawProduct extends Omit<
   sort: string | number;
   countInStock: string | number;
   category?: Category | null;
+  badges?: { id: string | number; name: string; backgroundColor?: string; textColor?: string }[];
 }
 
 // Prisma serializes Decimal fields as strings. This converts them back to numbers.
@@ -44,6 +45,12 @@ export function normalizeProduct(p: unknown): Product {
     warranty: Number(raw.warranty),
     sort: Number(raw.sort),
     countInStock: Number(raw.countInStock),
+    badges: raw.badges ? raw.badges.map((b) => ({
+      id: Number(b.id),
+      name: b.name,
+      backgroundColor: b.backgroundColor || '#000000',
+      textColor: b.textColor || '#ffffff',
+    })) : [],
   } as Product;
 }
 
