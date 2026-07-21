@@ -416,7 +416,7 @@ When writing future unit, integration, or E2E tests for the frontend catalog and
 
 ### 🌐 End-to-End (E2E) Multi-User Testing
 - **Three-User Flow**: For E2E testing of authentication, client segment flows (B2B wholesale catalog vs B2C retail catalog), and CRM admin panel access, always write tests utilizing 3 distinct types of preconfigured users:
-  - **Admin**: `arsen` / `123456A`
+  - **Admin**: `arsen_admin_e2e` / `123456A` (Note: do NOT use `arsen` in automated E2E tests as it is reserved for manual/browser testing)
   - **B2B User**: `arsenb2b` / `7AtewuZO`
   - **B2C User**: `arsenb2c` / `wA4GSsCK`
 - **Graceful Lifecycle**: Always seed these test accounts in the test DB inside `beforeAll` (deleting any existing records with these logins first to prevent unique constraint failures) and cleanly delete them inside `afterAll`.
