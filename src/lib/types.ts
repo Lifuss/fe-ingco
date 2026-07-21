@@ -59,6 +59,7 @@ export interface User {
   password?: string;
   resetToken?: string;
   isB2B: boolean;
+  isB2b?: boolean;
 }
 
 export enum OrderStatusEnum {

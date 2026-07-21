@@ -394,3 +394,30 @@ Use the following credentials when running browser-based tests, automated flows,
 
 - **Login/Username:** `arsen`
 - **Password:** `123456A`
+
+---
+
+## 13. Testing Best Practices & Conventions (React + Redux + Next.js)
+
+When writing future unit, integration, or E2E tests for the frontend catalog and dashboard application, follow these guidelines:
+
+### 🧪 React Component & Integration Testing
+- **User-Centric Assertions**: Use `@testing-library/react` and query elements by role, text, or accessibility labels (e.g. `screen.getByRole('button', { name: /Зберегти/i })`) to test the application from the user's perspective.
+- **Redux Store Integration**: When testing components that dispatch thunks or read state, wrap them in a helper utility that configures a fresh Redux store (using our slices from `lib/appState`) with a custom `preloadedState`.
+- **Localization**: Assertions checking labels, alerts, or toast notifications must match the Ukrainian copy exactly.
+
+### 🌐 Next.js & Router Mocking
+- **Navigation Mocking**: Mock Next.js routing APIs (`next/navigation` hooks like `useRouter`, `useSearchParams`, and `usePathname`) to control query parameters and simulate page navigation.
+- **Controlled SearchParams**: Pass mock search parameters via wrapper contexts or manually mock return values of `useSearchParams` using Jest/Vitest spy functions.
+
+### 🧼 Code Quality & Cleanup
+- **Prevent Leakage**: Always clean up test side effects and mock calls in `afterEach` or `beforeEach` to keep each component spec independent.
+- **Mock Network Requests**: Mock API calls made via Axios (`apiIngco`) using mock adapters (e.g., `axios-mock-adapter`) to avoid querying the production backend.
+
+### 🌐 End-to-End (E2E) Multi-User Testing
+- **Three-User Flow**: For E2E testing of authentication, client segment flows (B2B wholesale catalog vs B2C retail catalog), and CRM admin panel access, always write tests utilizing 3 distinct types of preconfigured users:
+  - **Admin**: `arsen` / `123456A`
+  - **B2B User**: `arsenb2b` / `7AtewuZO`
+  - **B2C User**: `arsenb2c` / `wA4GSsCK`
+- **Graceful Lifecycle**: Always seed these test accounts in the test DB inside `beforeAll` (deleting any existing records with these logins first to prevent unique constraint failures) and cleanly delete them inside `afterAll`.
+

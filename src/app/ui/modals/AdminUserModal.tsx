@@ -60,6 +60,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
     address,
     orders,
     isVerified,
+    isB2B,
     updatedAt,
   } = selectedUser;
 
@@ -69,6 +70,7 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
     const normalizeUser = {
       ...selectedUser,
       isVerified: form.isVerified.checked,
+      isB2B: form.isB2B.checked,
     };
     const {
       token: _token,
@@ -327,6 +329,33 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
                       className="cursor-pointer text-sm font-semibold text-neutral-700"
                     >
                       {isVerified ? 'Верифікований ✅' : 'Неверифікований ❌'}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-bold text-neutral-500 uppercase">
+                    Тип клієнта
+                  </span>
+                  <div className="flex w-fit items-center gap-2.5 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 select-none">
+                    <input
+                      id="isB2B"
+                      type="checkbox"
+                      name="isB2B"
+                      defaultChecked={isB2B}
+                      className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
+                      onChange={(e) => {
+                        setSelectedUser({
+                          ...selectedUser,
+                          isB2B: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label
+                      htmlFor="isB2B"
+                      className="cursor-pointer text-sm font-semibold text-neutral-700"
+                    >
+                      {isB2B ? 'B2B (Гурт) 🏢' : 'B2C (Роздріб) 👤'}
                     </label>
                   </div>
                 </div>

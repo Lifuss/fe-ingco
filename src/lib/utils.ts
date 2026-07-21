@@ -107,8 +107,11 @@ export type NormalizedUserResult = User & {
 export function normalizeUser(user: unknown): NormalizedUserResult {
   if (!user) return user as NormalizedUserResult;
   const raw = user as Record<string, unknown>;
+  const isB2BVal = !!(raw.isB2B || raw.isB2b);
   return {
     ...raw,
+    isB2B: isB2BVal,
+    isB2b: isB2BVal,
     role: typeof raw.role === 'string' ? raw.role.toLowerCase() : 'user',
     orders: ((raw.orders as RawUserOrder[]) || []).map((o) => ({
       ...o,

@@ -18,6 +18,7 @@ type UserTableRow = {
   loginCol: string;
   activeDateCol: string;
   verificationStatusCol: boolean;
+  isB2bCol: boolean;
 };
 
 const UserTable = () => {
@@ -88,6 +89,7 @@ const UserTable = () => {
         loginCol: user.login,
         activeDateCol: new Date(user.updatedAt).toLocaleDateString('uk-UA'),
         verificationStatusCol: user.isVerified,
+        isB2bCol: user.isB2B,
       })) || [],
     [users],
   );
@@ -129,6 +131,24 @@ const UserTable = () => {
               )}
             >
               {row.original.verificationStatusCol ? 'Верифікований' : 'Неверифікований'}
+            </span>
+          </div>
+        ),
+      },
+      {
+        header: 'Тип клієнта',
+        accessorKey: 'isB2bCol',
+        cell: ({ row }) => (
+          <div className="flex justify-start">
+            <span
+              className={clsx(
+                'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ring-1 ring-inset',
+                row.original.isB2bCol
+                  ? 'bg-blue-50 text-blue-700 ring-blue-600/20'
+                  : 'bg-amber-50 text-amber-700 ring-amber-600/20',
+              )}
+            >
+              {row.original.isB2bCol ? 'B2B (Гурт)' : 'B2C (Роздріб)'}
             </span>
           </div>
         ),

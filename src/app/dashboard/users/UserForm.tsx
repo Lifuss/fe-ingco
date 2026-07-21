@@ -19,6 +19,7 @@ interface UserFormProps {
     edrpou: string;
     about: string;
     address: string;
+    isB2B?: boolean;
   };
   handleSubmit: (e: SubmitEvent<HTMLFormElement>) => void;
   isEditing?: boolean;
@@ -40,6 +41,7 @@ const UserForm: React.FC<UserFormProps> = ({ defaultValues, handleSubmit, isEdit
     edrpou,
     about,
     address,
+    isB2B,
   } = defaultValues || {};
 
   const toggleShowPassword = () => {
@@ -144,6 +146,17 @@ const UserForm: React.FC<UserFormProps> = ({ defaultValues, handleSubmit, isEdit
           <select name="role" className={inputStyle} defaultValue={isEditing ? role : 'user'}>
             <option value="user">Клієнт</option>
             <option value="admin">Адміністратор</option>
+          </select>
+        </label>
+        <label>
+          Тип клієнта
+          <select
+            name="isB2B"
+            className={inputStyle}
+            defaultValue={isEditing ? (isB2B ? 'true' : 'false') : 'false'}
+          >
+            <option value="false">B2C (Роздріб)</option>
+            <option value="true">B2B (Гурт)</option>
           </select>
         </label>
 
