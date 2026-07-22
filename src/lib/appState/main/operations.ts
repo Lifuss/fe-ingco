@@ -10,7 +10,10 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
   'currencyRates/fetch',
   async (_, { rejectWithValue, signal }) => {
     try {
-      const { data } = await axios.get('/api/currency', {
+      const endpoint =
+        typeof window !== 'undefined' ? `${window.location.origin}/api/currency` : '/api/currency';
+
+      const { data } = await axios.get(endpoint, {
         headers: { 'Cache-Control': 'no-cache' },
         timeout: 8000, // 8s timeout to prevent hanging requests
         signal,
@@ -33,12 +36,26 @@ export const fetchCurrencyRatesThunk = createAsyncThunk(
     } catch (error) {
       const isCanceled =
         axios.isCancel(error) ||
+        signal.aborted ||
         (error instanceof Error &&
-          (error.message.includes('aborted') || error.message.includes('canceled')));
+          (error.name === 'CanceledError' ||
+            error.message.toLowerCase().includes('aborted') ||
+            error.message.toLowerCase().includes('canceled')));
 
-      if (!isCanceled) {
-        console.error('Currency fetch error:', error);
+      if (isCanceled) {
+        return rejectWithValue('silent_cancel');
       }
+
+      // Handle 404 gracefully (e.g. dev route recompiling or fast navigation unmounts) with fallback rates
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return {
+          lastUpdate: new Date().toISOString(),
+          USD: 44.0,
+          EUR: 52.0,
+        };
+      }
+
+      console.error('Currency fetch error:', error);
 
       return rejectWithValue(
         axios.isAxiosError(error) && error.response?.status === 429

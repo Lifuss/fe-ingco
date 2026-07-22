@@ -53,6 +53,20 @@ let cachedToken: string | null = null;
 apiIngco.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
+      const isPublicAuthUrl =
+        config.url?.includes('/users/login') ||
+        config.url?.includes('/users/register') ||
+        config.url?.includes('/users/forgot') ||
+        config.url?.includes('/users/resetPassword');
+
+      if (isPublicAuthUrl) {
+        if (config.headers) {
+          delete config.headers['Authorization'];
+          delete config.headers['authorization'];
+        }
+        return config;
+      }
+
       let authHeader: unknown = undefined;
       if (config.headers) {
         if (typeof config.headers.get === 'function') {
@@ -131,6 +145,11 @@ const clearToken = () => {
     const clearFlags = `path=/; max-age=0; SameSite=Lax${isLocalhost ? '' : '; Secure'}`;
     document.cookie = `token=; ${clearFlags}`;
     document.cookie = `role=; ${clearFlags}`;
+    try {
+      localStorage.removeItem('persist:auth');
+    } catch (_e) {
+      // ignore
+    }
   }
 };
 
@@ -424,6 +443,8 @@ apiIngco.interceptors.response.use(
       originalRequest._retry = true;
 
       if (
+        originalRequest.url?.includes('/users/login') ||
+        originalRequest.url?.includes('/users/register') ||
         originalRequest.url?.includes('/users/refresh') ||
         originalRequest.url?.includes('/users/logout')
       ) {

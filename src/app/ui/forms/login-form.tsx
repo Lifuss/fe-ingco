@@ -4,7 +4,7 @@ import { Button } from '../buttons/button';
 import Link from 'next/link';
 import { loginThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import withAuth from '../../service/PrivateRouting';
 import { toast } from 'react-toastify';
@@ -17,9 +17,9 @@ function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect('/');
+      router.replace('/');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

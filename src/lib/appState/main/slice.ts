@@ -79,7 +79,9 @@ const appStateSlice = createSlice({
         state.currencyRates = payload as PayloadCurrencyRates;
       })
       .addCase(fetchCurrencyRatesThunk.rejected, (state, { payload }) => {
-        toast.error(typeof payload === 'string' ? payload : 'Помилка завантаження курсу валют');
+        if (payload && payload !== 'silent_cancel') {
+          toast.error(typeof payload === 'string' ? payload : 'Помилка завантаження курсу валют');
+        }
       })
       .addCase(fetchMainTableDataThunk.pending, (state) => {
         state.tableLoading = true;

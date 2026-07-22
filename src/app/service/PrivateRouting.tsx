@@ -36,6 +36,10 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
       if (!rehydrated) return;
 
       if (!isAuthenticated) {
+        if (pathname === '/auth/login' || pathname === '/auth/register') {
+          return;
+        }
+
         let token: string | null = null;
         try {
           const savedUserString = localStorage.getItem('persist:auth');

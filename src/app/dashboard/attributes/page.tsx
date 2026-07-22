@@ -16,8 +16,8 @@ const AttributesPage = () => {
   };
 
   return (
-    <div className="w-4/5">
-      <h1 className="mb-10 text-4xl font-bold tracking-wider text-neutral-800 uppercase">
+    <div className="w-full max-w-full">
+      <h1 className="mb-8 text-2xl font-bold tracking-tight text-neutral-800 uppercase sm:text-3xl lg:text-4xl">
         Характеристики
       </h1>
       <div className="mb-10 flex items-center justify-between gap-4">

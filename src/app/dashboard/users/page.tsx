@@ -6,9 +6,11 @@ import { Plus } from 'lucide-react';
 
 const Page = () => {
   return (
-    <div className="w-full max-w-[1200px]">
+    <div className="w-full max-w-full">
       {/* Title */}
-      <h1 className="mb-6 text-4xl font-bold tracking-tight text-neutral-800">Користувачі</h1>
+      <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-800 sm:text-3xl lg:text-4xl">
+        Користувачі
+      </h1>
 
       {/* KPI Cards Grid */}
       <UsersStats />
