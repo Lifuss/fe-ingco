@@ -100,8 +100,8 @@ export const getProductByIdThunk = createAsyncThunk(
   'product/fetch',
   async (productId: string, { rejectWithValue }) => {
     try {
-      const { data } = await apiIngco.get(`/products/${productId}`);
-      return data;
+      const { data } = await apiIngco.get(`/products/id/${productId}`);
+      return normalizeProduct(data);
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
     }

@@ -12,6 +12,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import ConfirmModal from '@/app/ui/modals/ConfirmModal';
+import { Eye } from 'lucide-react';
 
 type ProductTableRow = {
   articleCol: string;
@@ -21,6 +22,7 @@ type ProductTableRow = {
   rrcCol: string;
   availabilityCol: number;
   editCol: number;
+  slugCol: string | undefined;
 };
 
 const ProductTable = () => {
@@ -69,21 +71,35 @@ const ProductTable = () => {
         : product.priceRetailRecommendation.toString(),
       availabilityCol: product.countInStock,
       editCol: product.id,
+      slugCol: product.slug,
     }));
   }, [products]);
 
   const columns = useMemo<ColumnDef<ProductTableRow>[]>(
     () => [
       {
-        header: 'Артикль',
+        header: 'Артикул',
         accessorKey: 'articleCol',
         cell: ({ row }) => (
-          <Link
-            href={`/dashboard/product/edit/${row.original.editCol}`}
-            className="block w-full text-left transition-colors hover:text-blue-500"
-          >
-            {row.original.articleCol}
-          </Link>
+          <div className="flex items-center gap-2">
+            {row.original.slugCol && (
+              <a
+                href={`/${row.original.slugCol}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Швидкий перегляд у магазині"
+                className="shrink-0 text-neutral-400 transition-colors hover:text-blue-600"
+              >
+                <Eye size={16} />
+              </a>
+            )}
+            <Link
+              href={`/dashboard/product/edit/${row.original.editCol}`}
+              className="block text-left transition-colors hover:text-blue-500"
+            >
+              {row.original.articleCol}
+            </Link>
+          </div>
         ),
       },
       {

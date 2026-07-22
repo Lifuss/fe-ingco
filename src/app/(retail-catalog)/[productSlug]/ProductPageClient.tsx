@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
+
 import Image from 'next/image';
 import JsBarcode from 'jsbarcode';
 import { useMediaQuery } from 'react-responsive';
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 import {
   Heart,
   ShoppingCart,
@@ -18,6 +20,7 @@ import {
   Info,
   Plus,
   Minus,
+  Pencil,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
 import { getYoutubeEmbedUrl } from '@/lib/utils';
@@ -42,17 +45,33 @@ import { Product } from '@/lib/types';
 type ProductPageClientProps = {
   initialProduct: Product;
   productSlug: string;
+  isAdminServer?: boolean;
 };
 
-export default function ProductPageClient({ initialProduct, productSlug }: ProductPageClientProps) {
+export default function ProductPageClient({
+  initialProduct,
+  productSlug,
+  isAdminServer = false,
+}: ProductPageClientProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // Redux state
   const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
 
+  const user = useAppSelector((state) => state.persistedAuthReducer.user);
+  const isAdminClient = isClient && (user?.role === 'ADMIN' || user?.role === 'admin');
+  const isAdmin = Boolean(isAdminServer || isAdminClient);
+
   const reduxProduct = useAppSelector((state) => state.persistedMainReducer.product);
   const products = useAppSelector((state) => state.persistedMainReducer.products || []);
+
   const categories = useAppSelector((state) => state.persistedMainReducer.categories);
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favoritesState = useAppSelector(
@@ -344,10 +363,20 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                   <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
                     {product.name}
                   </h1>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded bg-neutral-200 px-2 py-0.5 font-mono text-[11px] text-neutral-700">
                       Артикул: {product.article}
                     </span>
+                    {isAdmin && (
+                      <Link
+                        href={`/dashboard/product/edit/${product.id}`}
+                        className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 transition-colors hover:bg-amber-200"
+                        title="Редагувати в адмінці"
+                      >
+                        <Pencil size={12} />
+                        <span>Редагувати в адмінці</span>
+                      </Link>
+                    )}
                   </div>
                 </div>
 
@@ -477,8 +506,20 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                       <h2 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
                         {product.name}
                       </h2>
-                      <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
-                        Артикул: {product.article}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
+                          Артикул: {product.article}
+                        </div>
+                        {isAdmin && (
+                          <Link
+                            href={`/dashboard/product/edit/${product.id}`}
+                            className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 transition-colors hover:bg-amber-200"
+                            title="Редагувати в адмінці"
+                          >
+                            <Pencil size={12} />
+                            <span>Редагувати в адмінці</span>
+                          </Link>
+                        )}
                       </div>
                     </div>
 

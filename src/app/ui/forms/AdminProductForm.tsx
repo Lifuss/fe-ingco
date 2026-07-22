@@ -19,6 +19,8 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
+  RotateCcw,
 } from 'lucide-react';
 
 const questionSvg = (
@@ -134,6 +136,69 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
   const [newBadgeTextColor, setNewBadgeTextColor] = useState('#ffffff');
   const [isAddingBadge, setIsAddingBadge] = useState(false);
   const [badgeToDelete, setBadgeToDelete] = useState<Badge | null>(null);
+
+  // Draft & LocalStorage state
+  const draftKey = useMemo(
+    () => (product?.id ? `ingco_product_edit_draft_${product.id}` : 'ingco_product_create_draft'),
+    [product?.id],
+  );
+
+  const [draftData, setDraftData] = useState<Record<string, unknown> | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+
+  const [hasDraft, setHasDraft] = useState<boolean>(() => draftData !== null);
+
+  const clearDraft = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(draftKey);
+    }
+    setHasDraft(false);
+    setDraftData(null);
+  };
+
+  const handleRestoreDraft = () => {
+    if (!draftData) return;
+    if (Array.isArray(draftData.characteristics)) {
+      setCharacteristics(draftData.characteristics as ProductCharacteristic[]);
+    }
+    if (Array.isArray(draftData.selectedCategoryIds)) {
+      setSelectedCategoryIds(draftData.selectedCategoryIds as number[]);
+    }
+    if (draftData.selectedMainCategoryId !== undefined) {
+      setSelectedMainCategoryId(draftData.selectedMainCategoryId as number | '');
+    }
+    if (Array.isArray(draftData.selectedBadgeIds)) {
+      setSelectedBadgeIds(draftData.selectedBadgeIds as number[]);
+    }
+    toast.success('Чернетку відновлено');
+  };
+
+  const handleResetToInitial = () => {
+    clearDraft();
+    if (product) {
+      setCharacteristics(product.characteristics || []);
+      setSelectedCategoryIds(product.categories?.map((c) => c.id) || []);
+      setSelectedMainCategoryId(product.mainCategory?.id || product.category?.id || '');
+      setSelectedBadgeIds(product.badges?.map((b) => b.id) || []);
+    }
+    toast.info('Дані скинуто до початкового стану');
+  };
+
+  const handleCancelAndLeave = () => {
+    clearDraft();
+    router.back();
+  };
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API}/api/badges`)
@@ -255,6 +320,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
         await dispatch(createProductThunk(formData)).unwrap();
         toast.success('Продукт успішно створено');
       }
+      clearDraft();
       router.back();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } }; message?: string };
@@ -300,24 +366,77 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 font-sans">
       {/* Premium Dashboard Header */}
-      <div className="mb-8 flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="flex cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm transition-all select-none hover:bg-neutral-50 hover:text-neutral-800"
-          title="Назад"
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <div>
-          <span className="text-[10px] font-extrabold tracking-widest text-neutral-400 uppercase">
-            Панель керування
-          </span>
-          <h1 className="font-display text-2xl leading-tight font-bold text-neutral-900">
-            {isEdit ? 'Редагування продукту' : 'Створення продукту'}
-          </h1>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={handleCancelAndLeave}
+            className="flex cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm transition-all select-none hover:bg-neutral-50 hover:text-neutral-800"
+            title="Назад"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <span className="text-[10px] font-extrabold tracking-widest text-neutral-400 uppercase">
+              Панель керування
+            </span>
+            <h1 className="font-display text-2xl leading-tight font-bold text-neutral-900">
+              {isEdit ? 'Редагування продукту' : 'Створення продукту'}
+            </h1>
+          </div>
         </div>
+
+        {isEdit && product?.slug && (
+          <a
+            href={`/${product.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-xs font-bold text-neutral-700 shadow-sm transition-all hover:bg-neutral-50 hover:text-neutral-900"
+          >
+            <ExternalLink size={15} />
+            <span className="hidden sm:inline">Переглянути в магазині</span>
+          </a>
+        )}
       </div>
+
+      {/* Unsaved draft alert banner */}
+      {hasDraft && (
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-amber-300/80 bg-amber-50/90 p-4 shadow-sm sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <div className="shrink-0 rounded-xl bg-amber-200/80 p-2.5 text-amber-800">
+              <RotateCcw size={20} />
+            </div>
+            <div className="flex flex-col">
+              <h4 className="font-display text-sm font-bold text-amber-950">
+                Знайдено незбережену чернетку для цього товару
+              </h4>
+              <p className="font-sans text-xs text-amber-800">
+                Ви можете відновити збережені зміни або очистити чернетку та повернутися до
+                початкових даних.
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={handleRestoreDraft}
+              className="cursor-pointer rounded-xl bg-amber-600 px-4 py-2 font-sans text-xs font-bold text-white shadow-sm transition-all hover:bg-amber-700"
+            >
+              Відновити чернетку
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                clearDraft();
+                toast.info('Чернетку очищено');
+              }}
+              className="cursor-pointer rounded-xl border border-amber-300 bg-white px-4 py-2 font-sans text-xs font-semibold text-amber-900 transition-all hover:bg-amber-100"
+            >
+              Очистити
+            </button>
+          </div>
+        </div>
+      )}
 
       <form className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12" onSubmit={handleSubmit}>
         {/* Left column: Product Specs, Data, Characteristics */}
@@ -1286,10 +1405,11 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
               Підтвердити
             </button>
             <button
-              type="reset"
+              type="button"
+              onClick={handleResetToInitial}
               className="font-display flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-xs font-bold tracking-wider text-neutral-700 uppercase transition-all hover:border-neutral-400"
             >
-              Скинути
+              Скинути до початкового стану
             </button>
           </div>
         </div>
