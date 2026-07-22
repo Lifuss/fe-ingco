@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { Heart, ShoppingCart, Minus, Plus } from 'lucide-react';
+import { Heart, ShoppingCart, Minus, Plus, Star } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   addProductToCartThunk,
@@ -258,6 +258,17 @@ const ProductCard = ({
                 />
               </button>
             </div>
+
+            {/* Star Rating Badge */}
+            {product.reviewCount && product.reviewCount > 0 ? (
+              <div className="my-0.5 flex items-center gap-1">
+                <Star size={13} className="fill-amber-400 text-amber-400" />
+                <span className="text-xs font-bold text-gray-800">
+                  {Number(product.averageRating || 0).toFixed(1)}
+                </span>
+                <span className="text-[11px] text-gray-400">({product.reviewCount})</span>
+              </div>
+            ) : null}
 
             {/* Product Title */}
             <h3 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">

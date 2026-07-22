@@ -159,3 +159,53 @@ export function generatePageMetadata({
     keywords,
   });
 }
+
+export function generateProductJsonLd(product: Product) {
+  const imageUrl = product.image
+    ? product.image.startsWith('http')
+      ? product.image
+      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
+    : `${SITE_URL}/placeholder.webp`;
+
+  const cleanDescription = (product.description || product.name)
+    .replace(/<[^>]*>?/gm, '')
+    .substring(0, 300)
+    .trim();
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: [imageUrl],
+    description: cleanDescription,
+    sku: product.article,
+    mpn: product.article,
+    brand: {
+      '@type': 'Brand',
+      name: 'INGCO',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'UAH',
+      price: Number(product.rrcSale || product.priceRetailRecommendation || 0),
+      itemCondition: 'https://schema.org/NewCondition',
+      availability:
+        product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+      },
+    },
+    ...(product.reviewCount && product.reviewCount > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: Number(product.averageRating || 0),
+            reviewCount: Number(product.reviewCount),
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+  };
+}

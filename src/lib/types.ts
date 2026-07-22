@@ -44,6 +44,8 @@ export interface Product {
   mainCategory?: Category | null;
   categories?: Category[];
   badges?: Badge[];
+  averageRating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -175,4 +177,53 @@ export interface CharacteristicState {
   value: string;
   unit: string;
   options?: string[];
+}
+
+export interface Review {
+  id: number;
+  productId: number;
+  userId: number;
+  rating: number;
+  comment: string;
+  pros?: string | null;
+  cons?: string | null;
+  images: string[];
+  isVerifiedBuyer: boolean;
+  isApproved: boolean;
+  createdAt: string;
+  updatedAt: string;
+  product?: {
+    id: number;
+    name: string;
+    article: string;
+    slug: string;
+    image: string;
+  };
+  user?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email?: string;
+  };
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalCount: number;
+  ratingBreakdown: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+}
+
+export interface CreateReviewData {
+  productId: number;
+  rating: number;
+  comment: string;
+  pros?: string;
+  cons?: string;
+  images?: File[];
 }

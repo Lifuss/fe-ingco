@@ -16,13 +16,12 @@ import {
   Receipt,
   Play,
   Info,
-  ChevronRight,
-  MessageSquare,
   Plus,
   Minus,
 } from 'lucide-react';
-import { getSpecIcon, shouldShowBatteryWarning, parseDescription } from '@/lib/productUtils';
+import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
 import { getYoutubeEmbedUrl } from '@/lib/utils';
+import { generateProductJsonLd } from '@/lib/metadata';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
@@ -33,6 +32,7 @@ import {
 } from '@/lib/appState/user/operation';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
+import { ProductReviewsSection } from '~/ui/product/ProductReviewsSection';
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
 import ProductSkeleton from '~/ui/skeletons/ProductSkeleton';
@@ -274,12 +274,6 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
       className: '',
     });
   }
-
-  // Battery link resolver
-  const batteryCategory = categories?.find(
-    (c) => c.name?.toLowerCase().includes('акумулятор') || c.name?.toLowerCase().includes('зарядн'),
-  );
-  const batteryLink = batteryCategory ? `/?category=${batteryCategory.id}` : '/?query=акумулятор';
 
   // Smooth scroll helper
   const scrollToSection = (id: string) => {
@@ -659,7 +653,7 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                       <div className="flex flex-col">
                         <span className="text-xs font-bold text-neutral-800 md:text-sm">
                           {product.warranty === 0
-                            ? 'Без гарантії'
+                            ? 'Без гарантії (витратний матеріал)'
                             : `Гарантія ${product.warranty ?? 24} міс.`}
                         </span>
                         <span className="text-[11px] text-neutral-500">
@@ -759,63 +753,21 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                       використовувати сумісні АКБ INGCO серії <strong>P20S</strong>, які є у вашому
                       арсеналі, або придбати їх окремо.
                     </p>
-
-                    <button
-                      onClick={() => router.push(batteryLink)}
-                      className="text-primary font-display flex w-fit cursor-pointer items-center gap-1.5 text-xs font-bold tracking-wider uppercase transition-all hover:underline md:text-sm"
-                    >
-                      <span>Переглянути сумісні акумулятори</span>
-                      <ChevronRight size={14} className="stroke-[2.5]" />
-                    </button>
                   </div>
                 )}
               </div>
             </section>
 
-            {/* Section 3: Description */}
-            <section id="description" className="scroll-mt-24">
-              <h2 className="font-display mb-6 border-b border-neutral-200 pb-2 text-xl font-bold text-neutral-900 md:text-2xl">
-                Опис
-              </h2>
-              <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8">
-                {product.description ? (
-                  parseDescription(product.description, product.article)
-                ) : (
-                  <p className="py-4 text-center text-neutral-400">Опис відсутній</p>
-                )}
-              </div>
-            </section>
-
             {/* Section 4: Reviews Section */}
-            <section id="reviews" className="scroll-mt-24">
-              <div className="mb-6 flex items-center justify-between border-b border-neutral-200 pb-2">
-                <h2 className="font-display text-xl font-bold text-neutral-900 md:text-2xl">
-                  Відгуки та питання
-                </h2>
-                <button
-                  onClick={() => toast.info('Напишіть нам у підтримку, щоб залишити відгук!')}
-                  className="cursor-pointer rounded-lg border border-neutral-300 bg-white px-3 py-2 font-sans text-xs font-semibold text-neutral-700 transition-all hover:border-neutral-500 hover:bg-neutral-50 md:px-4 md:text-sm"
-                >
-                  Залишити відгук
-                </button>
-              </div>
+            <ProductReviewsSection product={product} />
 
-              {/* Empty state reviews layout */}
-              <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-neutral-200/60 bg-neutral-50/60 p-10 text-center shadow-inner md:p-14">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-neutral-200/50 text-neutral-400 shadow-sm">
-                  <MessageSquare size={24} />
-                </div>
-                <div>
-                  <h3 className="font-display mb-1 text-base font-semibold text-neutral-800 md:text-lg">
-                    Поки що немає відгуків про цей товар
-                  </h3>
-                  <p className="mx-auto max-w-sm font-sans text-xs leading-relaxed text-neutral-500 md:text-sm">
-                    Будьте першим, хто залишить відгук або запитання! Ваша думка допоможе іншим
-                    покупцям зробити правильний вибір.
-                  </p>
-                </div>
-              </div>
-            </section>
+            {/* Schema.org JSON-LD for Google SEO Rich Snippets */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(generateProductJsonLd(product)),
+              }}
+            />
 
             {/* Section 5: Cross-sell Recommendations */}
             <section id="cross-sell" className="scroll-mt-24 pb-12">

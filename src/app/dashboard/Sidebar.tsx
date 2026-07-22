@@ -11,6 +11,7 @@ import {
   ScanBarcode,
   Users,
   SlidersHorizontal,
+  MessageSquare,
 } from 'lucide-react';
 
 const listData = [
@@ -35,12 +36,12 @@ const listData = [
     svg: <Users size={20} />,
   },
   {
-    title: 'B2B',
+    title: 'Гурт Замовлення',
     link: '/dashboard/orders',
     svg: <PackageOpen size={20} />,
   },
   {
-    title: 'Роздріб',
+    title: 'Роздріб замовлення',
     link: '/dashboard/retailorders',
     svg: <Inbox size={20} />,
   },
@@ -48,6 +49,11 @@ const listData = [
     title: 'Підтримка',
     link: '/dashboard/support',
     svg: <Mails />,
+  },
+  {
+    title: 'Відгуки',
+    link: '/dashboard/reviews',
+    svg: <MessageSquare size={20} />,
   },
   {
     title: 'Статистика',
