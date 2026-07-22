@@ -658,7 +658,9 @@ export default function ProductPageClient({ initialProduct, productSlug }: Produ
                       />
                       <div className="flex flex-col">
                         <span className="text-xs font-bold text-neutral-800 md:text-sm">
-                          Гарантія {product.warranty || 24} міс.
+                          {product.warranty === 0
+                            ? 'Без гарантії'
+                            : `Гарантія ${product.warranty ?? 24} міс.`}
                         </span>
                         <span className="text-[11px] text-neutral-500">
                           Офіційний сервісний центр
