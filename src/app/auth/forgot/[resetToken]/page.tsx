@@ -5,8 +5,9 @@ import { inputStyle } from '@/app/ui/forms/RegisterClient-form';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import { resetPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, use } from 'react';
+import { use, useState } from 'react';
 import { toast } from 'react-toastify';
 
 type PageProps = {
@@ -18,6 +19,7 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const { resetToken } = use(params);
   const [isAllow, setIsAllow] = useState<boolean>(Boolean(resetToken));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -30,6 +32,8 @@ const Page = ({ params }: PageProps) => {
       toast.error('Паролі не співпадають');
       return;
     }
+
+    setIsLoading(true);
     dispatch(
       resetPasswordThunk({
         resetToken,
@@ -38,21 +42,24 @@ const Page = ({ params }: PageProps) => {
     )
       .unwrap()
       .then(() => {
-        toast.success('Пароль успішно змінено');
+        toast.success('Пароль успішно змінено!');
         setTimeout(() => {
           router.replace('/auth/login');
         }, 500);
       })
-      .catch(() => {
-        toast.error('Посилання не валідне');
+      .catch((_err) => {
+        toast.error('Посилання застаріло або невалідне');
         setIsAllow(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   return isAllow ? (
     <form onSubmit={handleSubmit}>
-      <div className="mt-20 grid place-content-center gap-4">
-        <h1 className="mb-2 block text-center text-xl">Новий пароль</h1>
+      <div className="mx-auto mt-20 grid max-w-md place-content-center gap-4 px-4">
+        <h1 className="mb-2 block text-center text-xl font-bold">Новий пароль</h1>
         <div>
           <label className="mb-2 block text-base" htmlFor="password">
             Пароль <span className="text-red">*</span>
@@ -64,6 +71,7 @@ const Page = ({ params }: PageProps) => {
             name="password"
             placeholder="Пароль"
             maxLength={20}
+            disabled={isLoading}
             required
           />
         </div>
@@ -78,17 +86,31 @@ const Page = ({ params }: PageProps) => {
             name="checkPassword"
             placeholder="Пароль"
             maxLength={20}
+            disabled={isLoading}
             required
           />
         </div>
-        <Button className="bg-orange-light text-white hover:bg-orange-500">Скинути пароль</Button>
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="bg-orange-light flex items-center justify-center gap-2 text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Збереження...</span>
+            </>
+          ) : (
+            'Скинути пароль'
+          )}
+        </Button>
       </div>
     </form>
   ) : (
     <div className="mx-auto flex w-fit flex-col gap-4 pt-20">
       <TextPlaceholder
         text="Це посилання не валідне або термін операції скидування вже закінчився"
-        title="Не можливо змінити пароль по цьому посиланню"
+        title="Неможливо змінити пароль по цьому посиланню"
       />
       <Button
         onClick={() => {
@@ -96,7 +118,7 @@ const Page = ({ params }: PageProps) => {
         }}
         className="bg-orange-light text-white hover:bg-orange-500"
       >
-        Ввійти в кабінет
+        Увійти в кабінет
       </Button>
     </div>
   );
