@@ -799,6 +799,29 @@ export default function ProductPageClient({
               </div>
             </section>
 
+            {/* Section 3: Product Description */}
+            <section id="description" className="scroll-mt-24">
+              <h2 className="font-display mb-6 border-b border-neutral-200 pb-2 text-xl font-bold text-neutral-900 md:text-2xl">
+                Опис
+              </h2>
+              <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+                {product.description ? (
+                  <div
+                    className="font-sans text-sm leading-relaxed text-neutral-700 whitespace-pre-line md:text-base"
+                    dangerouslySetInnerHTML={{
+                      __html: product.description.includes('<p>')
+                        ? product.description
+                        : product.description.replace(/\r\n|\n/g, '<br />'),
+                    }}
+                  />
+                ) : (
+                  <p className="text-center text-sm font-semibold text-neutral-400">
+                    Опис для даного товару відсутній
+                  </p>
+                )}
+              </div>
+            </section>
+
             {/* Section 4: Reviews Section */}
             <ProductReviewsSection product={product} />
 
