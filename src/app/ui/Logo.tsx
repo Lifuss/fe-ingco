@@ -2,18 +2,21 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 
 export default function Logo() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const targetUrl = '/';
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // If there are search params in the current URL (e.g. ?query=скло or ?category=123),
+    // If there are search params in the current URL or if we are not on the root page,
     // we force a clean redirect/reload to '/' to ensure all search, category,
     // and input states are completely reset and cleared across the app.
-    const hasParams = searchParams ? Array.from(searchParams.keys()).length > 0 : false;
-    if (hasParams) {
+    const isFilteredOrNotHome =
+      pathname !== '/' || (searchParams ? Array.from(searchParams.keys()).length > 0 : false);
+
+    if (isFilteredOrNotHome) {
       e.preventDefault();
       window.location.href = '/';
     }

@@ -40,9 +40,12 @@ export default function Page() {
 
   const showCatalog = !!(category || query || page || catalog === 'true');
 
-  // Prefetch products for B2C Showcase elements if not already present
+  const displayB2b = isClient && isAuthenticated && isB2b;
+  const displayCatalog = isClient && showCatalog;
+
+  // Prefetch products for B2C Showcase elements when on landing page
   useEffect(() => {
-    if (!showCatalog && products.length === 0) {
+    if (!showCatalog && !displayB2b) {
       dispatch(
         fetchMainTableDataThunk({
           page: 1,
@@ -53,7 +56,7 @@ export default function Page() {
         }),
       );
     }
-  }, [dispatch, showCatalog, products.length]);
+  }, [dispatch, showCatalog, displayB2b]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -83,11 +86,6 @@ export default function Page() {
       }
     }
   }, [dispatch, isAuthenticated]);
-
-  // During hydration, displayB2b and displayCatalog will be false, matching the server-rendered HTML.
-  // Once mounted on the client, they will evaluate correctly to B2B or search catalog if necessary.
-  const displayB2b = isClient && isAuthenticated && isB2b;
-  const displayCatalog = isClient && showCatalog;
 
   if (displayB2b) {
     return (
