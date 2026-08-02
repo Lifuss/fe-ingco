@@ -35,6 +35,7 @@ import ConfirmModal from '@/app/ui/modals/ConfirmModal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
+import MultiSelectAutocomplete from './MultiSelectAutocomplete';
 
 type AdminProductFormProps = {
   isEdit?: boolean;
@@ -117,7 +118,6 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
   const [selectedMainCategoryId, setSelectedMainCategoryId] = useState<number | ''>(
     () => product?.mainCategory?.id || product?.category?.id || '',
   );
-  const [prevMainCategoryId, setPrevMainCategoryId] = useState<number | ''>(selectedMainCategoryId);
   const [availableAttributes, setAvailableAttributes] = useState<ProductAttribute[]>([]);
   const [selectedAttrCode, setSelectedAttrCode] = useState<string>('');
   const [isAddingNewOption, setIsAddingNewOption] = useState<boolean>(false);
@@ -329,25 +329,16 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
     }
   };
 
-  if (selectedMainCategoryId !== prevMainCategoryId) {
-    setPrevMainCategoryId(selectedMainCategoryId);
-    if (!selectedMainCategoryId) {
-      setAvailableAttributes([]);
-    }
-  }
-
   useEffect(() => {
-    if (selectedMainCategoryId) {
-      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${selectedMainCategoryId}/attributes`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setAvailableAttributes(data);
-          }
-        })
-        .catch((err) => console.error('Failed to fetch category attributes:', err));
-    }
-  }, [selectedMainCategoryId]);
+    fetch(`${process.env.NEXT_PUBLIC_API}/api/attributes`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAvailableAttributes(data);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch global attributes:', err));
+  }, []);
 
   const moveCharacteristic = (index: number, direction: 'up' | 'down') => {
     setCharacteristics((prev) => {
@@ -502,7 +493,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                 </select>
               </div>
 
-              {/* Checklist for additional categories */}
+              {/* MultiSelect for additional categories */}
               <div className="col-span-1 mt-2 flex flex-col md:col-span-2">
                 <label className="mb-2 flex items-center gap-1.5 text-xs font-bold tracking-wider text-neutral-500 uppercase">
                   <span>Додаткові категорії відображення</span>
@@ -513,46 +504,17 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                     {questionSvg}
                   </span>
                 </label>
-                <div className="flex max-h-[200px] flex-col gap-2.5 overflow-y-auto rounded-xl border border-neutral-200 bg-[#FAFAFF] p-4 font-semibold shadow-inner">
-                  {sortedCategories.map((category) => {
-                    const isChecked = selectedCategoryIds.includes(category.id);
-                    return (
-                      <label
-                        key={category.id}
-                        className="group flex cursor-pointer items-center gap-3 py-0.5 select-none"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => {
-                            if (isChecked) {
-                              setSelectedCategoryIds((prev) =>
-                                prev.filter((id) => id !== category.id),
-                              );
-                            } else {
-                              setSelectedCategoryIds((prev) => [...prev, category.id]);
-                            }
-                          }}
-                          className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
-                        />
-                        <span
-                          style={{ paddingLeft: `${category.depth * 16}px` }}
-                          className={`text-sm transition-colors group-hover:text-gray-950 ${
-                            isChecked ? 'font-semibold text-gray-950' : 'text-gray-600'
-                          }`}
-                        >
-                          {category.depth > 0 && (
-                            <span className="mr-1 font-mono text-neutral-400">└─</span>
-                          )}
-                          {category.name}
-                        </span>
-                      </label>
-                    );
-                  })}
-                  {sortedCategories.length === 0 && (
-                    <span className="text-xs text-neutral-400">Категорії відсутні</span>
-                  )}
-                </div>
+                <MultiSelectAutocomplete
+                  options={sortedCategories.map((c) => ({
+                    id: c.id,
+                    label: c.name,
+                    depth: c.depth,
+                  }))}
+                  selectedIds={selectedCategoryIds}
+                  onChange={(newIds) => setSelectedCategoryIds(newIds.map(Number))}
+                  placeholder="Оберіть або введіть назву категорії..."
+                  emptyText="Категорій не знайдено"
+                />
               </div>
 
               <div className="flex flex-col">
