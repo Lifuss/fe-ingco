@@ -6,7 +6,7 @@ import { useAppDispatch } from '@/lib/hooks';
 import { createCategoryThunk } from '@/lib/appState/main/operations';
 import { toast } from 'react-toastify';
 
-export const customModalStyles = {
+export const customModalStyles: Modal.Styles = {
   overlay: {
     backgroundColor: 'rgba(15, 15, 14, 0.6)',
     backdropFilter: 'blur(4px)',
@@ -31,17 +31,15 @@ export const customModalStyles = {
 
 export const CategoryModalCreate = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [attributeIds, setAttributeIds] = useState<number[]>([]);
   const dispatch = useAppDispatch();
   const openModal = () => setIsOpen(true);
   const closeModal = () => {
     setIsOpen(false);
-    setAttributeIds([]);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget as HTMLFormElement;
+    const form = e.currentTarget;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
     const slugInput = form.elements.namedItem('slug') as HTMLInputElement;
     const seoKeywordsInput = form.elements.namedItem('seoKeywords') as HTMLInputElement;
@@ -52,10 +50,19 @@ export const CategoryModalCreate = () => {
       const name = nameInput.value.trim();
       const slug = slugInput ? slugInput.value.trim() : '';
       const seoKeywords = seoKeywordsInput ? seoKeywordsInput.value.trim() : '';
-      const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
+      const parentId =
+        parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(createCategoryThunk({ name, slug, seoKeywords, parentId, showInMenu, attributeIds }))
+      dispatch(
+        createCategoryThunk({
+          name,
+          slug,
+          seoKeywords,
+          parentId,
+          showInMenu,
+        }),
+      )
         .unwrap()
         .then(() => closeModal())
         .catch(
@@ -79,11 +86,7 @@ export const CategoryModalCreate = () => {
         style={customModalStyles}
         ariaHideApp={false}
       >
-        <CategoryForm
-          handleSubmit={handleSubmit}
-          selectedAttributeIds={attributeIds}
-          setSelectedAttributeIds={setAttributeIds}
-        />
+        <CategoryForm handleSubmit={handleSubmit} />
       </Modal>
     </>
   );
