@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAppSelector } from '@/lib/hooks';
-import { Category, ProductAttribute } from '@/lib/types';
+import { Category } from '@/lib/types';
 
 interface CategoryNode extends Category {
   children: CategoryNode[];
@@ -69,8 +69,6 @@ function getHierarchyOptions(categories: Category[], excludeId?: number) {
 const CategoryForm = ({
   handleSubmit,
   defaultValue,
-  selectedAttributeIds = [],
-  setSelectedAttributeIds,
 }: {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   defaultValue?: {
@@ -82,24 +80,40 @@ const CategoryForm = ({
     parentId?: number | null;
     showInMenu?: boolean;
   };
-  selectedAttributeIds?: number[];
-  setSelectedAttributeIds: React.Dispatch<React.SetStateAction<number[]>>;
 }) => {
   const rawCategoriesList = useAppSelector((state) => state.persistedMainReducer.categories);
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
 
-  const [allAttributes, setAllAttributes] = useState<ProductAttribute[]>([]);
+  const [detectedFilters, setDetectedFilters] = useState<
+    { code: string; name: string; unit?: string | null }[]
+  >([]);
+  const [isLoadingFilters, setIsLoadingFilters] = useState(Boolean(defaultValue?.id));
+  const [filterSearchQuery, setFilterSearchQuery] = useState('');
+
+  const filteredDetectedFilters = useMemo(() => {
+    const q = filterSearchQuery.trim().toLowerCase();
+    if (!q) return detectedFilters;
+    return detectedFilters.filter(
+      (f) =>
+        f.name.toLowerCase().includes(q) ||
+        f.code.toLowerCase().includes(q) ||
+        (f.unit && f.unit.toLowerCase().includes(q)),
+    );
+  }, [detectedFilters, filterSearchQuery]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API}/api/attributes`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setAllAttributes(data);
-        }
-      })
-      .catch((err) => console.error('Failed to fetch attributes:', err));
-  }, []);
+    if (defaultValue?.id) {
+      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${defaultValue.id}/filters`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setDetectedFilters(data);
+          }
+        })
+        .catch((err) => console.error('Failed to fetch category filters:', err))
+        .finally(() => setIsLoadingFilters(false));
+    }
+  }, [defaultValue?.id]);
 
   const defaultKeywords = useMemo(() => {
     if (defaultValue && defaultValue.seoKeywords) {
@@ -119,7 +133,7 @@ const CategoryForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex min-w-[340px] flex-col gap-4 font-sans md:min-w-[420px]"
+      className="flex w-full flex-col gap-4 font-sans"
     >
       <label className="flex flex-col gap-1">
         <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
@@ -199,49 +213,65 @@ const CategoryForm = ({
         </span>
       </label>
 
-      <div className="mt-2 flex flex-col gap-2.5">
-        <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
-          Характеристики для фільтрації
-        </span>
-        {allAttributes.length === 0 ? (
-          <span className="text-xs text-neutral-400 italic">
-            Немає створених характеристик. Створіть їх спочатку в розділі «Характеристики».
-          </span>
-        ) : (
-          <div className="flex max-h-40 flex-col gap-2 overflow-y-auto rounded-lg border border-neutral-200 bg-[#FAFAFF] p-3">
-            {allAttributes.map((attr) => {
-              const isChecked = selectedAttributeIds.includes(attr.id);
-              return (
-                <label
-                  key={attr.id}
-                  className="group flex cursor-pointer items-center gap-2.5 py-0.5 text-xs font-semibold text-neutral-700 select-none"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedAttributeIds([...selectedAttributeIds, attr.id]);
-                      } else {
-                        setSelectedAttributeIds(
-                          selectedAttributeIds.filter((id) => id !== attr.id),
-                        );
-                      }
-                    }}
-                    className="text-primary-500 focus:ring-primary-500 accent-primary-500 h-4 w-4 cursor-pointer rounded border-gray-300"
-                  />
-                  <span className="transition-colors group-hover:text-neutral-950">
-                    {attr.name}{' '}
-                    <span className="font-mono text-[10px] font-bold text-neutral-400">
-                      ({attr.code})
-                    </span>
-                  </span>
-                </label>
-              );
-            })}
+      {/* Auto-detected Category Filters Informational Block */}
+      {defaultValue?.id && (
+        <div className="mt-1 flex flex-col gap-2 rounded-xl border border-amber-200/60 bg-amber-50/40 p-4 shadow-xs min-h-[110px]">
+          <div className="flex items-center justify-between gap-2 text-amber-900">
+            <span className="text-xs font-bold tracking-wider uppercase">
+              Автоматично виявлені фільтри {isLoadingFilters ? '' : `(${detectedFilters.length})`}
+            </span>
           </div>
-        )}
-      </div>
+          <p className="text-[11px] font-medium leading-relaxed text-neutral-600">
+            Фільтри виводяться покупцям сайдбару автоматично на основі характеристик товарів у наявності.
+          </p>
+
+          {isLoadingFilters ? (
+            <div className="flex flex-col gap-2 pt-1">
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="h-6 w-20 animate-pulse rounded-lg bg-amber-200/50" />
+                <div className="h-6 w-28 animate-pulse rounded-lg bg-amber-200/50" />
+                <div className="h-6 w-16 animate-pulse rounded-lg bg-amber-200/50" />
+                <div className="h-6 w-24 animate-pulse rounded-lg bg-amber-200/50" />
+              </div>
+            </div>
+          ) : detectedFilters.length > 0 ? (
+            <div className="flex flex-col gap-2 pt-1">
+              {detectedFilters.length > 8 && (
+                <input
+                  type="text"
+                  placeholder="Швидкий пошук фільтра за назвою або кодом..."
+                  value={filterSearchQuery}
+                  onChange={(e) => setFilterSearchQuery(e.target.value)}
+                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 outline-none placeholder-neutral-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20"
+                />
+              )}
+              <div className="flex max-h-[140px] flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-amber-200/50 bg-white/70 p-2 scrollbar-thin">
+                {filteredDetectedFilters.length > 0 ? (
+                  filteredDetectedFilters.map((filter) => (
+                    <span
+                      key={filter.code}
+                      className="inline-flex items-center gap-1 rounded-lg border border-amber-500/20 bg-white px-2.5 py-1 text-xs font-bold text-neutral-800 shadow-xs select-none"
+                    >
+                      <span>{filter.name}</span>
+                      {filter.unit && (
+                        <span className="font-normal text-neutral-400 text-[10px]">({filter.unit})</span>
+                      )}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs font-medium italic text-neutral-400">
+                    Фільтрів не знайдено за запитом «{filterSearchQuery}»
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <span className="text-xs font-medium italic text-neutral-400">
+              У цій категорії поки немає товарів із характеристиками у наявності.
+            </span>
+          )}
+        </div>
+      )}
 
       <button className="bg-primary-500 hover:bg-primary-600 mt-2 cursor-pointer rounded-lg px-4 py-2 text-sm font-bold tracking-wide text-white uppercase transition-colors">
         Підтвердити

@@ -16,7 +16,7 @@ import { customModalStyles } from '../../ui/modals/CategoryModal';
 import CategoryForm from '../../ui/forms/CategoryForm';
 import { toast } from 'react-toastify';
 import Icon from '@/app/ui/assets/Icon';
-import { Category, ProductAttribute } from '@/lib/types';
+import { Category } from '@/lib/types';
 import CategorySortView from './CategorySortView';
 
 type CategoryTableRow = {
@@ -83,7 +83,6 @@ const CategoryTable = () => {
   const [viewMode, setViewMode] = useState<'table' | 'sort'>('table');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
-  const [selectedAttributeIds, setSelectedAttributeIds] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<{
     id?: number;
     name: string;
@@ -108,23 +107,10 @@ const CategoryTable = () => {
   ) => {
     setSelectedId(id);
     setSelectedCategory({ id, name, slug, seoKeywords, renderSort, parentId, showInMenu });
-    setSelectedAttributeIds([]);
-
-    // Fetch linked attributes for this category
-    fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${id}/attributes`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setSelectedAttributeIds(data.map((a: ProductAttribute) => a.id));
-        }
-      })
-      .catch((err) => console.error('Failed to fetch category attributes:', err));
-
     setIsOpen(true);
   };
   const closeModal = () => {
     setIsOpen(false);
-    setSelectedAttributeIds([]);
   };
 
   const query = searchParams.get('query') || '';
@@ -135,7 +121,7 @@ const CategoryTable = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget as HTMLFormElement;
+    const form = e.currentTarget;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
     const slugInput = form.elements.namedItem('slug') as HTMLInputElement;
     const seoKeywordsInput = form.elements.namedItem('seoKeywords') as HTMLInputElement;
@@ -157,7 +143,6 @@ const CategoryTable = () => {
           seoKeywords,
           parentId,
           showInMenu,
-          attributeIds: selectedAttributeIds,
         }),
       )
         .unwrap()
@@ -328,8 +313,6 @@ const CategoryTable = () => {
         <CategoryForm
           handleSubmit={handleSubmit}
           defaultValue={selectedCategory}
-          selectedAttributeIds={selectedAttributeIds}
-          setSelectedAttributeIds={setSelectedAttributeIds}
         />
       </Modal>
     </div>

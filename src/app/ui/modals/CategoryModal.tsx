@@ -19,6 +19,13 @@ export const customModalStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    width: 'calc(100% - 32px)',
+    maxWidth: '600px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    borderRadius: '16px',
+    padding: '24px',
+    border: 'none',
   },
 };
 
