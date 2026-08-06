@@ -366,6 +366,7 @@ All table filters (tabs, status selects, search strings, page offsets) in the ad
 - Update filters by pushing new parameters to the router via `router.push()`.
 - Reset the active `page` offset back to `1` whenever other filters change.
 - Do not store transient filters in Redux/React local state unless they are completely non-shareable.
+- **Admin Dashboard Navigation & Links**: The Admin Dashboard uses a single page route at `/dashboard`. Data tables inside `src/app/dashboard/tables/` (such as `ProductTable.tsx`) are UI components rendered on `/dashboard`, **not separate Next.js page routes**. All external or cross-component links pointing to specific products in the CRM MUST use `/dashboard?query=...` (e.g. `/dashboard?query=ARTICLE`), **never** `/dashboard/products` or `/dashboard/tables/...`.
 
 ### 11.3 Next.js Hydration & Routing Safety Rules
 

@@ -8,6 +8,8 @@ import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import Icon from '@/app/ui/assets/Icon';
 import { AttributeModalEdit } from '@/app/ui/modals/AttributeModal';
+import ConfirmModal from '@/app/ui/modals/ConfirmModal';
+import AttributeUsageModal, { UsedProduct } from '@/app/ui/modals/AttributeUsageModal';
 import { ProductAttribute } from '@/lib/types';
 
 type AttributeTableRow = {
@@ -31,6 +33,14 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedAttribute, setSelectedAttribute] = useState<ProductAttribute | null>(null);
+  const [deleteConfirmAttr, setDeleteConfirmAttr] = useState<{ id: number; name: string } | null>(
+    null,
+  );
+  const [usageModalData, setUsageModalData] = useState<{
+    attributeName: string;
+    usageCount: number;
+    products: UsedProduct[];
+  } | null>(null);
 
   const fetchAttributes = useCallback(() => {
     Promise.resolve().then(() => setLoading(true));
@@ -52,20 +62,27 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
     fetchAttributes();
   }, [refreshTrigger, fetchAttributes]);
 
-  const handleDelete = useCallback(
+  const executeDelete = useCallback(
     (id: number, name: string) => {
-      if (confirm(`Ви дійсно хочете видалити характеристику "${name}"?`)) {
-        apiIngco
-          .delete(`/attributes/${id}`)
-          .then(() => {
-            toast.success(`Характеристику "${name}" видалено`);
-            onRefresh();
-          })
-          .catch((err) => {
-            const msg = err.response?.data?.message || 'Помилка видалення характеристики';
+      apiIngco
+        .delete(`/attributes/${id}`)
+        .then(() => {
+          toast.success(`Характеристику "${name}" видалено`);
+          onRefresh();
+        })
+        .catch((err) => {
+          const data = err.response?.data;
+          if (data && Array.isArray(data.products) && data.products.length > 0) {
+            setUsageModalData({
+              attributeName: data.attributeName || name,
+              usageCount: data.usageCount || data.products.length,
+              products: data.products,
+            });
+          } else {
+            const msg = data?.message || 'Помилка видалення характеристики';
             toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-          });
-      }
+          }
+        });
     },
     [onRefresh],
   );
@@ -170,7 +187,9 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         cell: ({ row }) => (
           <button
             className="flex w-full cursor-pointer justify-center select-none"
-            onClick={() => handleDelete(row.original.deleteCol, row.original.nameCol)}
+            onClick={() =>
+              setDeleteConfirmAttr({ id: row.original.deleteCol, name: row.original.nameCol })
+            }
           >
             <Icon
               icon="delete"
@@ -180,7 +199,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         ),
       },
     ],
-    [attributes, handleDelete, openEditModal],
+    [attributes, openEditModal],
   );
 
   if (loading && attributes.length === 0) {
@@ -203,6 +222,27 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         defaultValue={selectedAttribute}
         onSuccess={onRefresh}
       />
+      <ConfirmModal
+        isOpen={!!deleteConfirmAttr}
+        onClose={() => setDeleteConfirmAttr(null)}
+        onConfirm={() =>
+          deleteConfirmAttr && executeDelete(deleteConfirmAttr.id, deleteConfirmAttr.name)
+        }
+        title="Видалення характеристики"
+        message={`Ви дійсно хочете видалити характеристику "${deleteConfirmAttr?.name}"?`}
+        confirmText="Видалити"
+        cancelText="Скасувати"
+        type="danger"
+      />
+      {usageModalData && (
+        <AttributeUsageModal
+          isOpen={!!usageModalData}
+          onClose={() => setUsageModalData(null)}
+          attributeName={usageModalData.attributeName}
+          usageCount={usageModalData.usageCount}
+          products={usageModalData.products}
+        />
+      )}
     </div>
   );
 };
