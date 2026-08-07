@@ -58,9 +58,9 @@ export default function AttributeUsageModal({
         },
       }}
     >
-      <div className="flex flex-col h-full font-sans select-none overflow-hidden">
+      <div className="flex h-full flex-col overflow-hidden font-sans select-none">
         {/* Header */}
-        <div className="flex items-start gap-4 pb-4 border-b border-neutral-200/80 shrink-0">
+        <div className="flex shrink-0 items-start gap-4 border-b border-neutral-200/80 pb-4">
           <div className="flex shrink-0 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 p-3 shadow-xs">
             <AlertTriangle className="h-6 w-6 text-amber-600" />
           </div>
@@ -77,41 +77,41 @@ export default function AttributeUsageModal({
         </div>
 
         {/* Subtitle instructions */}
-        <div className="py-3 shrink-0">
-          <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+        <div className="shrink-0 py-3">
+          <p className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
             Список товарів для опрацювання ({products.length} показується):
           </p>
         </div>
 
         {/* Scrollable list of products */}
-        <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 my-1 divide-y divide-neutral-100">
+        <div className="my-1 flex-1 space-y-2.5 divide-y divide-neutral-100 overflow-y-auto pr-1">
           {products.map((prod) => (
             <div
               key={prod.id}
-              className="flex items-center justify-between gap-3 pt-2.5 first:pt-0 group hover:bg-neutral-50 p-2 rounded-xl transition-colors"
+              className="group flex items-center justify-between gap-3 rounded-xl p-2 pt-2.5 transition-colors first:pt-0 hover:bg-neutral-50"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex shrink-0 items-center justify-center h-9 w-9 rounded-lg bg-neutral-100 border border-neutral-200/60 text-neutral-500">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-neutral-200/60 bg-neutral-100 text-neutral-500">
                   <Package className="h-4 w-4" />
                 </div>
-                <div className="flex flex-col min-w-0">
+                <div className="flex min-w-0 flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded border border-neutral-300/80 bg-neutral-100 text-neutral-700">
+                    <span className="rounded border border-neutral-300/80 bg-neutral-100 px-2 py-0.5 font-mono text-xs font-bold text-neutral-700">
                       {prod.article}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold text-neutral-800 truncate group-hover:text-neutral-950">
+                  <span className="truncate text-sm font-semibold text-neutral-800 group-hover:text-neutral-950">
                     {prod.name}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex shrink-0 items-center gap-2">
                 <Link
                   href={`/${prod.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 bg-white text-xs font-bold text-neutral-700 hover:border-neutral-400 hover:bg-neutral-100 transition-all shadow-2xs"
+                  className="flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-bold text-neutral-700 shadow-2xs transition-all hover:border-neutral-400 hover:bg-neutral-100"
                   title="Відкрити картку товару на сайті"
                 >
                   <span>На сайті</span>
@@ -122,7 +122,7 @@ export default function AttributeUsageModal({
                   href={`/dashboard?query=${encodeURIComponent(prod.article)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50 text-xs font-bold text-amber-800 hover:bg-amber-100 hover:border-amber-300 transition-all shadow-2xs"
+                  className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 shadow-2xs transition-all hover:border-amber-300 hover:bg-amber-100"
                   title="Шукати в таблиці адмінки"
                 >
                   <span>В CRM</span>
@@ -134,13 +134,13 @@ export default function AttributeUsageModal({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-neutral-200/80 flex items-center justify-between shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-t border-neutral-200/80 pt-4">
           <span className="text-xs text-neutral-400">
             Вилучіть або замініть характеристику у цих товарах перед її видаленням.
           </span>
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-xl bg-neutral-900 px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-neutral-800 shadow-md"
+            className="cursor-pointer rounded-xl bg-neutral-900 px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-colors hover:bg-neutral-800"
           >
             Зрозуміло
           </button>

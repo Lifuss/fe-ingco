@@ -131,10 +131,7 @@ const CategoryForm = ({
   );
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-4 font-sans"
-    >
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 font-sans">
       <label className="flex flex-col gap-1">
         <span className="block text-sm font-bold tracking-wider text-neutral-700 uppercase">
           Назва категорії
@@ -215,14 +212,15 @@ const CategoryForm = ({
 
       {/* Auto-detected Category Filters Informational Block */}
       {defaultValue?.id && (
-        <div className="mt-1 flex flex-col gap-2 rounded-xl border border-amber-200/60 bg-amber-50/40 p-4 shadow-xs min-h-[110px]">
+        <div className="mt-1 flex min-h-[110px] flex-col gap-2 rounded-xl border border-amber-200/60 bg-amber-50/40 p-4 shadow-xs">
           <div className="flex items-center justify-between gap-2 text-amber-900">
             <span className="text-xs font-bold tracking-wider uppercase">
               Автоматично виявлені фільтри {isLoadingFilters ? '' : `(${detectedFilters.length})`}
             </span>
           </div>
-          <p className="text-[11px] font-medium leading-relaxed text-neutral-600">
-            Фільтри виводяться покупцям сайдбару автоматично на основі характеристик товарів у наявності.
+          <p className="text-[11px] leading-relaxed font-medium text-neutral-600">
+            Фільтри виводяться покупцям сайдбару автоматично на основі характеристик товарів у
+            наявності.
           </p>
 
           {isLoadingFilters ? (
@@ -242,10 +240,10 @@ const CategoryForm = ({
                   placeholder="Швидкий пошук фільтра за назвою або кодом..."
                   value={filterSearchQuery}
                   onChange={(e) => setFilterSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 outline-none placeholder-neutral-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20"
+                  className="w-full rounded-lg border border-amber-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 placeholder-neutral-400 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20"
                 />
               )}
-              <div className="flex max-h-[140px] flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-amber-200/50 bg-white/70 p-2 scrollbar-thin">
+              <div className="scrollbar-thin flex max-h-[140px] flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-amber-200/50 bg-white/70 p-2">
                 {filteredDetectedFilters.length > 0 ? (
                   filteredDetectedFilters.map((filter) => (
                     <span
@@ -254,19 +252,21 @@ const CategoryForm = ({
                     >
                       <span>{filter.name}</span>
                       {filter.unit && (
-                        <span className="font-normal text-neutral-400 text-[10px]">({filter.unit})</span>
+                        <span className="text-[10px] font-normal text-neutral-400">
+                          ({filter.unit})
+                        </span>
                       )}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs font-medium italic text-neutral-400">
+                  <span className="text-xs font-medium text-neutral-400 italic">
                     Фільтрів не знайдено за запитом «{filterSearchQuery}»
                   </span>
                 )}
               </div>
             </div>
           ) : (
-            <span className="text-xs font-medium italic text-neutral-400">
+            <span className="text-xs font-medium text-neutral-400 italic">
               У цій категорії поки немає товарів із характеристиками у наявності.
             </span>
           )}

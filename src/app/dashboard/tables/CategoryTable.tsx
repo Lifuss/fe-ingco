@@ -310,10 +310,7 @@ const CategoryTable = () => {
         style={customModalStyles}
         ariaHideApp={false}
       >
-        <CategoryForm
-          handleSubmit={handleSubmit}
-          defaultValue={selectedCategory}
-        />
+        <CategoryForm handleSubmit={handleSubmit} defaultValue={selectedCategory} />
       </Modal>
     </div>
   );

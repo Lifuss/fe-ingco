@@ -807,7 +807,7 @@ export default function ProductPageClient({
               <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
                 {product.description ? (
                   <div
-                    className="font-sans text-sm leading-relaxed text-neutral-700 whitespace-pre-line md:text-base"
+                    className="font-sans text-sm leading-relaxed whitespace-pre-line text-neutral-700 md:text-base"
                     dangerouslySetInnerHTML={{
                       __html: product.description.includes('<p>')
                         ? product.description

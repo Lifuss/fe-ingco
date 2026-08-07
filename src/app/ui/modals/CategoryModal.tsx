@@ -50,8 +50,7 @@ export const CategoryModalCreate = () => {
       const name = nameInput.value.trim();
       const slug = slugInput ? slugInput.value.trim() : '';
       const seoKeywords = seoKeywordsInput ? seoKeywordsInput.value.trim() : '';
-      const parentId =
-        parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
+      const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
       dispatch(
