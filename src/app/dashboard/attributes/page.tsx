@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import AttributesTable from '../tables/AttributesTable';
 import { AttributeModalCreate } from '@/app/ui/modals/AttributeModal';
 import Search from '@/app/ui/search';
 import { useSearchParams } from 'next/navigation';
 
-const AttributesPage = () => {
+const AttributesContent = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
@@ -28,6 +28,14 @@ const AttributesPage = () => {
       </div>
       <AttributesTable refreshTrigger={refreshTrigger} onRefresh={triggerRefresh} query={query} />
     </div>
+  );
+};
+
+const AttributesPage = () => {
+  return (
+    <Suspense fallback={<div className="py-10 text-center font-bold text-neutral-500">Завантаження...</div>}>
+      <AttributesContent />
+    </Suspense>
   );
 };
 

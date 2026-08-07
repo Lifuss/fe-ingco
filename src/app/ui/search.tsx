@@ -39,18 +39,23 @@ export default function SearchFoo({
     validPathname = pathname;
   }
 
-  const handleSearch = (term: string) => {
+  const handleSearch = (termToSearch: string) => {
     const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
 
-    params.set('page', '1');
-
-    if (term) {
-      params.set('query', term);
+    const trimmed = termToSearch.trim();
+    if (trimmed) {
+      params.set('query', trimmed);
+      params.set('page', '1');
     } else {
       params.delete('query');
+      if (params.get('page') === '1') {
+        params.delete('page');
+      }
     }
 
-    router.push(`${validPathname}?${params.toString()}`);
+    const queryString = params.toString();
+    const newUrl = queryString ? `${validPathname}?${queryString}` : validPathname;
+    router.replace(newUrl);
   };
 
   const handleRemoveCategory = () => {
@@ -61,11 +66,16 @@ export default function SearchFoo({
     } else {
       params.delete('query');
     }
-    router.push(`/?${params.toString()}`);
+    const queryString = params.toString();
+    router.replace(queryString ? `/?${queryString}` : '/');
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTerm(e.target.value);
+    const val = e.target.value;
+    setTerm(val);
+    if (val === '') {
+      handleSearch('');
+    }
   };
 
   const handleReset = () => {
