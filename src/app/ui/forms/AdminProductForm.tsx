@@ -36,6 +36,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
 import MultiSelectAutocomplete from './MultiSelectAutocomplete';
+import SearchableSelect from './SearchableSelect';
 
 type AdminProductFormProps = {
   isEdit?: boolean;
@@ -709,11 +710,24 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                     </button>
                   </div>
                 ) : (
-                  <select
-                    className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                  <SearchableSelect
+                    options={[
+                      ...availableAttributes.map((attr) => ({
+                        id: attr.code,
+                        label: attr.name,
+                        sublabel: attr.unit ? attr.unit : undefined,
+                      })),
+                      {
+                        id: '__custom__',
+                        label: '+ Додати нову (якої немає в списку)...',
+                        isAction: true,
+                      },
+                    ]}
                     value={selectedAttrCode}
-                    onChange={(e) => {
-                      const code = e.target.value;
+                    placeholder="Оберіть характеристику..."
+                    emptyText="Характеристик не знайдено"
+                    onChange={(val) => {
+                      const code = String(val);
                       setSelectedAttrCode(code);
                       setIsAddingNewOption(false);
                       setNewOptionValue('');
@@ -746,17 +760,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                         }
                       }
                     }}
-                  >
-                    <option value="">Оберіть характеристику...</option>
-                    {availableAttributes.map((attr) => (
-                      <option key={attr.code} value={attr.code}>
-                        {attr.name} {attr.unit ? `(${attr.unit})` : ''}
-                      </option>
-                    ))}
-                    <option value="__custom__" className="text-primary-600 font-bold">
-                      + Додати нову (якої немає в списку)...
-                    </option>
-                  </select>
+                  />
                 )}
               </div>
 
@@ -837,32 +841,34 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                       </button>
                     </div>
                   ) : (
-                    <select
-                      className="focus:border-primary-500 w-full cursor-pointer rounded-lg border border-neutral-200 bg-[#FAFAFF] px-3.5 py-2.5 text-sm font-semibold text-neutral-800 transition-all focus:bg-white focus:outline-none"
+                    <SearchableSelect
+                      options={[
+                        ...characteristic.options.map((opt: string) => ({
+                          id: opt,
+                          label: opt,
+                        })),
+                        {
+                          id: '__new_option__',
+                          label: '+ Додати нове значення...',
+                          isAction: true,
+                        },
+                      ]}
                       value={characteristic.value}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === '__new_option__') {
+                      placeholder="Оберіть значення..."
+                      emptyText="Значень не знайдено"
+                      onChange={(val) => {
+                        const optionValue = String(val);
+                        if (optionValue === '__new_option__') {
                           setIsAddingNewOption(true);
                           setNewOptionValue('');
                         } else {
                           setCharacteristic((prev: CharacteristicState) => ({
                             ...prev,
-                            value: val,
+                            value: optionValue,
                           }));
                         }
                       }}
-                    >
-                      <option value="">Оберіть значення...</option>
-                      {characteristic.options.map((opt: string) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                      <option value="__new_option__" className="text-primary-600 font-bold">
-                        + Додати нове значення...
-                      </option>
-                    </select>
+                    />
                   )
                 ) : (
                   <div className="relative flex items-center">
