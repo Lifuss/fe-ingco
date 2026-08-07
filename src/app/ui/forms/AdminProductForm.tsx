@@ -10,6 +10,7 @@ import {
   ProductAttribute,
   Badge,
 } from '@/lib/types';
+import { slugifyCyrillicToLatin } from '@/lib/utils';
 import Icon from '../assets/Icon';
 import {
   CircleHelp,
@@ -899,8 +900,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                   const charName = characteristic.name.trim();
                   const newVal = characteristic.value.trim();
                   if (charName && newVal) {
-                    const charCode =
-                      characteristic.code || charName.toLowerCase().replace(/\s+/g, '_');
+                    const charCode = characteristic.code || slugifyCyrillicToLatin(charName);
                     const selectedAttr = availableAttributes.find(
                       (a) => a.code.toLowerCase() === charCode.toLowerCase(),
                     );

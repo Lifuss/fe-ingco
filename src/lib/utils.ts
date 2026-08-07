@@ -207,6 +207,56 @@ export function getYoutubeEmbedUrl(url: string): string {
       /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i,
     );
     if (match) videoId = match[1];
-  }
+}
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+}
+
+const CYRILLIC_TO_LATIN: Record<string, string> = {
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'h',
+  ґ: 'g',
+  д: 'd',
+  е: 'e',
+  є: 'ye',
+  ж: 'zh',
+  з: 'z',
+  и: 'y',
+  і: 'i',
+  ї: 'yi',
+  й: 'y',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'kh',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ь: '',
+  ю: 'yu',
+  я: 'ya',
+  '’': '',
+  "'": '',
+};
+
+export function slugifyCyrillicToLatin(text: string): string {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .split('')
+    .map((char) => CYRILLIC_TO_LATIN[char] ?? char)
+    .join('')
+    .replace(/[^a-z0-9\s_]/g, '')
+    .trim()
+    .replace(/\s+/g, '_');
 }

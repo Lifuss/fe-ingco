@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import { slugifyCyrillicToLatin } from '@/lib/utils';
 
 interface AttributeFormProps {
   handleSubmit: (data: {
@@ -16,7 +17,7 @@ interface AttributeFormProps {
     code: string;
     name: string;
     unit?: string | null;
-    options?: string[] | null;
+    options?: string[];
     isMultiple?: boolean;
   };
 }
@@ -31,11 +32,7 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
   const [isManualCode, setIsManualCode] = useState(!!defaultValue?.code);
 
   const getSlugified = (val: string) => {
-    return val
-      .toLowerCase()
-      .replace(/[^a-z0-9а-яіїєґ\s_]/g, '')
-      .trim()
-      .replace(/\s+/g, '_');
+    return slugifyCyrillicToLatin(val);
   };
 
   const handleAddOption = () => {
