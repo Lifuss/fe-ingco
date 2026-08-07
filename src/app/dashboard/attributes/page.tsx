@@ -33,7 +33,9 @@ const AttributesContent = () => {
 
 const AttributesPage = () => {
   return (
-    <Suspense fallback={<div className="py-10 text-center font-bold text-neutral-500">Завантаження...</div>}>
+    <Suspense
+      fallback={<div className="py-10 text-center font-bold text-neutral-500">Завантаження...</div>}
+    >
       <AttributesContent />
     </Suspense>
   );
