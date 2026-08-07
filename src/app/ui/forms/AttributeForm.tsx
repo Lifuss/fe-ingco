@@ -137,9 +137,14 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
       </label>
 
       <div className="flex flex-col gap-1.5">
-        <span className="block text-xs font-bold tracking-wider text-neutral-500 uppercase">
-          Офіційні значення (Опції)
-        </span>
+        <div className="flex flex-col gap-0.5">
+          <span className="block text-xs font-bold tracking-wider text-neutral-500 uppercase">
+            Офіційні значення (Опції)
+          </span>
+          <span className="text-[11px] font-normal text-neutral-400">
+            Шаблонні підказки для селекту в адмінці. Якщо порожньо — значення вводиться довільним текстом для кожного товару окремо (наприклад, модель або колір).
+          </span>
+        </div>
         <div className="flex gap-2">
           <input
             type="text"

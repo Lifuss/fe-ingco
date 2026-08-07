@@ -159,7 +159,14 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         cell: ({ row }) => {
           const opts = row.original.optionsCol;
           if (opts.length === 0)
-            return <span className="text-xs text-neutral-400 italic">Текстове поле</span>;
+            return (
+              <span
+                className="cursor-help text-xs font-medium italic text-neutral-400 hover:text-neutral-600"
+                title="Значення цієї характеристики вписуються довільним текстом для кожного товару окремо (наприклад, для моделей чи штрихкодів)"
+              >
+                Довільний ввід
+              </span>
+            );
           return (
             <div className="flex max-w-[320px] flex-wrap gap-1">
               {opts.slice(0, 3).map((o) => (
