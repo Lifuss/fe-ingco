@@ -116,15 +116,17 @@ export const shouldShowBatteryWarning = (prod: Product): boolean => {
     articleLower.includes('solo') ||
     articleLower.endsWith('-s');
 
-  const hasPackagingInfoNoBattery = prod.characteristics?.some(
-    (char) =>
-      char.name?.toLowerCase().includes('комплектація') &&
-      (char.value?.toLowerCase().includes('без акб') ||
-        char.value?.toLowerCase().includes('без акумулятор') ||
-        char.value?.toLowerCase().includes('без зп') ||
-        char.value?.toLowerCase().includes('каркас') ||
-        char.value?.toLowerCase().includes('не входить')),
-  );
+  const hasPackagingInfoNoBattery = prod.characteristics?.some((char) => {
+    if (!char.name?.toLowerCase().includes('комплектація') || !char.value) return false;
+    const valStr = (Array.isArray(char.value) ? char.value.join(' ') : char.value).toLowerCase();
+    return (
+      valStr.includes('без акб') ||
+      valStr.includes('без акумулятор') ||
+      valStr.includes('без зп') ||
+      valStr.includes('каркас') ||
+      valStr.includes('не входить')
+    );
+  });
 
   return !!(hasSoloKeywords || hasPackagingInfoNoBattery);
 };

@@ -487,9 +487,9 @@ export default function ProductPageClient({
                         </span>
                         <span
                           className="font-display max-w-full truncate text-xs font-bold text-neutral-900 md:text-sm"
-                          title={char.value}
+                          title={Array.isArray(char.value) ? char.value.join(', ') : char.value}
                         >
-                          {char.value}
+                          {Array.isArray(char.value) ? char.value.join(', ') : char.value}
                         </span>
                       </div>
                     ))}

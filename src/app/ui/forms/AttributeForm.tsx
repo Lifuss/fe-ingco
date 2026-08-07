@@ -17,7 +17,7 @@ interface AttributeFormProps {
     code: string;
     name: string;
     unit?: string | null;
-    options?: string[];
+    options?: string[] | null;
     isMultiple?: boolean;
   };
 }

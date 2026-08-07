@@ -89,7 +89,8 @@ const ProductList = ({ isFavoritePage = false }) => {
         c.name.toLowerCase().includes('потужність'),
       );
       if (!powerChar) return false;
-      const powerVal = parseInt(powerChar.value);
+      const rawPower = Array.isArray(powerChar.value) ? powerChar.value[0] : powerChar.value;
+      const powerVal = parseInt(rawPower || '');
       if (isNaN(powerVal)) return false;
       if (minPower !== null && powerVal < minPower) return false;
       if (maxPower !== null && powerVal > maxPower) return false;
@@ -102,14 +103,16 @@ const ProductList = ({ isFavoritePage = false }) => {
       const nameLower = product.name.toLowerCase();
       const hasBatteryIndicators =
         nameLower.includes('акумулятор') ||
-        product.characteristics?.some(
-          (c) =>
+        product.characteristics?.some((c) => {
+          const valStr = (Array.isArray(c.value) ? c.value.join(' ') : c.value).toLowerCase();
+          return (
             c.name.toLowerCase().includes('напруга') ||
-            c.value.toLowerCase().includes('li-ion') ||
-            c.value.toLowerCase().includes('акум') ||
-            c.value.toLowerCase().includes('в ') ||
-            c.value.endsWith('в'),
-        );
+            valStr.includes('li-ion') ||
+            valStr.includes('акум') ||
+            valStr.includes('в ') ||
+            valStr.endsWith('в')
+          );
+        });
 
       const isBatteryProduct = !!hasBatteryIndicators;
       const isMainsProduct = !isBatteryProduct;
