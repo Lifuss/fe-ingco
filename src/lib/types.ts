@@ -31,7 +31,7 @@ export interface Product {
   rrcSale?: number;
   enterPrice?: number;
   priceRetailRecommendation: number;
-  characteristics: { code: string; name: string; value: string; unit?: string | null }[];
+  characteristics: ProductCharacteristic[];
   countInStock: number;
   image: string;
   images?: string[];
@@ -162,13 +162,15 @@ export interface ProductAttribute {
   name: string;
   unit?: string | null;
   options?: string[] | null;
+  isMultiple?: boolean;
 }
 
 export interface ProductCharacteristic {
   code: string;
   name: string;
-  value: string;
+  value: string | string[];
   unit?: string | null;
+  isMultiple?: boolean;
 }
 
 export interface CharacteristicState {

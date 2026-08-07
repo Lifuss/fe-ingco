@@ -896,20 +896,65 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
               <button
                 type="button"
                 onClick={() => {
-                  if (characteristic.name.trim() && characteristic.value.trim()) {
-                    setCharacteristics((prev) => [
-                      ...prev,
-                      {
-                        code:
-                          characteristic.code ||
-                          characteristic.name.toLowerCase().replace(/\s+/g, '_'),
-                        name: characteristic.name.trim(),
-                        value: characteristic.value.trim(),
-                        unit: characteristic.unit || null,
-                      },
-                    ]);
-                    setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
-                    setSelectedAttrCode('');
+                  const charName = characteristic.name.trim();
+                  const newVal = characteristic.value.trim();
+                  if (charName && newVal) {
+                    const charCode =
+                      characteristic.code || charName.toLowerCase().replace(/\s+/g, '_');
+                    const selectedAttr = availableAttributes.find(
+                      (a) => a.code.toLowerCase() === charCode.toLowerCase(),
+                    );
+                    const isMulti = selectedAttr?.isMultiple || false;
+
+                    setCharacteristics((prev) => {
+                      const existingIndex = prev.findIndex(
+                        (c) => c.code.toLowerCase() === charCode.toLowerCase(),
+                      );
+                      if (existingIndex !== -1) {
+                        const existing = prev[existingIndex];
+                        let updatedValue: string | string[];
+                        if (isMulti) {
+                          const currentVals = Array.isArray(existing.value)
+                            ? existing.value
+                            : existing.value
+                              ? [existing.value]
+                              : [];
+                          if (!currentVals.includes(newVal)) {
+                            updatedValue = [...currentVals, newVal];
+                          } else {
+                            updatedValue = currentVals;
+                          }
+                        } else {
+                          updatedValue = newVal;
+                        }
+                        const next = [...prev];
+                        next[existingIndex] = {
+                          ...existing,
+                          name: charName,
+                          value: updatedValue,
+                          unit: characteristic.unit || existing.unit || null,
+                          isMultiple: isMulti,
+                        };
+                        return next;
+                      } else {
+                        return [
+                          ...prev,
+                          {
+                            code: charCode,
+                            name: charName,
+                            value: isMulti ? [newVal] : newVal,
+                            unit: characteristic.unit || null,
+                            isMultiple: isMulti,
+                          },
+                        ];
+                      }
+                    });
+                    if (isMulti) {
+                      setCharacteristic((prev) => ({ ...prev, value: '' }));
+                    } else {
+                      setCharacteristic({ code: '', name: '', value: '', unit: '', options: [] });
+                      setSelectedAttrCode('');
+                    }
                   }
                 }}
                 className="bg-primary-500 hover:bg-primary-600 flex h-9 shrink-0 cursor-pointer items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-md shadow-orange-500/10 transition-all"
@@ -928,12 +973,62 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                       key={i}
                       className="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50"
                     >
-                      <div className="flex gap-2">
-                        <span className="font-semibold text-neutral-500">{char.name}:</span>
-                        <span className="font-semibold text-neutral-800">
-                          {char.value}{' '}
-                          {char.unit && !char.value.endsWith(char.unit) ? char.unit : ''}
-                        </span>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-neutral-500">{char.name}:</span>
+                          {char.isMultiple && (
+                            <span className="rounded border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700">
+                              Мультиселект
+                            </span>
+                          )}
+                        </div>
+                        {Array.isArray(char.value) ? (
+                          <div className="mt-0.5 flex flex-wrap gap-1.5 pl-1">
+                            {char.value.map((valItem, valIdx) => (
+                              <span
+                                key={valIdx}
+                                className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-semibold text-neutral-800 shadow-xs"
+                              >
+                                <span>
+                                  {valItem}{' '}
+                                  {char.unit && !valItem.endsWith(char.unit) ? char.unit : ''}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setCharacteristics((prev) => {
+                                      const next = [...prev];
+                                      const item = next[i];
+                                      if (Array.isArray(item.value)) {
+                                        const newVals = item.value.filter(
+                                          (_, idx) => idx !== valIdx,
+                                        );
+                                        if (newVals.length === 0) {
+                                          return prev.filter((_, idx) => idx !== i);
+                                        }
+                                        next[i] = { ...item, value: newVals };
+                                      }
+                                      return next;
+                                    });
+                                  }}
+                                  className="cursor-pointer text-neutral-400 hover:text-rose-500"
+                                  title="Видалити цей пункт"
+                                >
+                                  &times;
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="font-semibold text-neutral-800">
+                            {char.value}{' '}
+                            {char.unit &&
+                            typeof char.value === 'string' &&
+                            !char.value.endsWith(char.unit)
+                              ? char.unit
+                              : ''}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <button

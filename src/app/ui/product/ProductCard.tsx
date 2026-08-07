@@ -295,7 +295,7 @@ const ProductCard = ({
                           <tr key={index} className="border-gray-150 border-b last:border-b-0">
                             <td className="py-0.5 font-medium text-gray-500">{char.name}</td>
                             <td className="py-0.5 text-right font-bold text-gray-900">
-                              {char.value}
+                              {Array.isArray(char.value) ? char.value.join(', ') : char.value}
                             </td>
                           </tr>
                         ))}

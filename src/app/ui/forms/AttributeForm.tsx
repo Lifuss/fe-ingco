@@ -4,13 +4,20 @@ import React, { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface AttributeFormProps {
-  handleSubmit: (data: { code: string; name: string; unit?: string; options?: string[] }) => void;
+  handleSubmit: (data: {
+    code: string;
+    name: string;
+    unit?: string;
+    options?: string[];
+    isMultiple?: boolean;
+  }) => void;
   defaultValue?: {
     id?: number;
     code: string;
     name: string;
     unit?: string | null;
     options?: string[] | null;
+    isMultiple?: boolean;
   };
 }
 
@@ -18,6 +25,7 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
   const [name, setName] = useState(defaultValue?.name || '');
   const [code, setCode] = useState(defaultValue?.code || '');
   const [unit, setUnit] = useState(defaultValue?.unit || '');
+  const [isMultiple, setIsMultiple] = useState<boolean>(defaultValue?.isMultiple || false);
   const [options, setOptions] = useState<string[]>(defaultValue?.options || []);
   const [newOption, setNewOption] = useState('');
   const [isManualCode, setIsManualCode] = useState(!!defaultValue?.code);
@@ -49,6 +57,7 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
       code: code.trim(),
       name: name.trim(),
       unit: unit.trim() || undefined,
+      isMultiple,
       options: options.length > 0 ? options : undefined,
     });
   };
@@ -175,6 +184,23 @@ const AttributeForm = ({ handleSubmit, defaultValue }: AttributeFormProps) => {
           </div>
         )}
       </div>
+
+      <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-neutral-100 bg-[#FAFAFF] p-3 transition-colors hover:bg-neutral-50">
+        <input
+          type="checkbox"
+          checked={isMultiple}
+          onChange={(e) => setIsMultiple(e.target.checked)}
+          className="accent-primary-500 h-4 w-4 rounded border-neutral-300"
+        />
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-neutral-800">
+            Дозволити декілька значень (Мультиселект)
+          </span>
+          <span className="text-[11px] text-neutral-400">
+            Увімкніть для характеристик на кшталт «Комплектація», «Особливості» чи «Призначення»
+          </span>
+        </div>
+      </label>
 
       <div className="mt-4 flex justify-end gap-3 border-t border-neutral-100 pt-3">
         <button

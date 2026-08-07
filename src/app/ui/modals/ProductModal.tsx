@@ -236,7 +236,11 @@ const ModalProduct = ({
                           className="flex items-baseline justify-between gap-4 px-3 py-2 text-xs transition-colors hover:bg-neutral-100/50"
                         >
                           <span className="shrink-0 font-medium text-neutral-500">{item.name}</span>
-                          {item.value !== '-' ? (
+                          {Array.isArray(item.value) ? (
+                            <span className="text-right font-semibold text-neutral-900">
+                              {item.value.join(', ')}
+                            </span>
+                          ) : item.value !== '-' ? (
                             <span className="text-right font-semibold text-neutral-900">
                               {item.value}
                             </span>

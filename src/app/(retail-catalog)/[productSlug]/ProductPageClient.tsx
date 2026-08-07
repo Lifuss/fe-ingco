@@ -756,16 +756,47 @@ export default function ProductPageClient({
                       product.characteristics.map((char, index) => (
                         <div
                           key={`${char.name}-${index}`}
-                          className={`flex justify-between px-5 py-3.5 text-sm md:text-base ${
+                          className={`flex items-start justify-between gap-4 px-5 py-3.5 text-sm md:text-base ${
                             index % 2 === 0 ? 'bg-neutral-50/50' : 'bg-white'
                           }`}
                         >
-                          <span className="pr-4 font-sans font-medium text-neutral-500">
+                          <span className="max-w-[40%] shrink-0 pr-4 font-sans font-medium text-neutral-500">
                             {char.name}
                           </span>
-                          <span className="text-right font-sans font-semibold text-neutral-900">
-                            {char.value === '-' ? '+' : char.value}
-                          </span>
+                          {Array.isArray(char.value) ? (
+                            <ul className="flex flex-col items-start gap-1.5 text-left">
+                              {char.value.map((item, idx) => (
+                                <li
+                                  key={idx}
+                                  className="flex items-start gap-2 font-sans font-semibold text-neutral-900"
+                                >
+                                  <span className="bg-primary-500 mt-2 h-1.5 w-1.5 shrink-0 rounded-full" />
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : typeof char.value === 'string' &&
+                            (char.value.includes('\n') || char.value.includes(';')) ? (
+                            <ul className="flex flex-col items-start gap-1.5 text-left">
+                              {char.value
+                                .split(/[;\n]/)
+                                .map((s) => s.trim())
+                                .filter(Boolean)
+                                .map((item, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-start gap-2 font-sans font-semibold text-neutral-900"
+                                  >
+                                    <span className="bg-primary-500 mt-2 h-1.5 w-1.5 shrink-0 rounded-full" />
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                            </ul>
+                          ) : (
+                            <span className="text-right font-sans font-semibold text-neutral-900">
+                              {char.value === '-' ? '+' : char.value}
+                            </span>
+                          )}
                         </div>
                       ))
                     ) : (

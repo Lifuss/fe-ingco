@@ -17,6 +17,7 @@ type AttributeTableRow = {
   codeCol: string;
   nameCol: string;
   unitCol: string;
+  isMultipleCol: boolean;
   optionsCol: string[];
   editCol: number;
   deleteCol: number;
@@ -105,6 +106,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
           codeCol: attr.code,
           nameCol: attr.name,
           unitCol: attr.unit || '—',
+          isMultipleCol: !!attr.isMultiple,
           optionsCol: attr.options || [],
           editCol: attr.id,
           deleteCol: attr.id,
@@ -129,6 +131,20 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
         cell: ({ row }) => (
           <span className="font-semibold text-neutral-900">{row.original.nameCol}</span>
         ),
+      },
+      {
+        header: 'Режим значень',
+        accessorKey: 'isMultipleCol',
+        cell: ({ row }) =>
+          row.original.isMultipleCol ? (
+            <span className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-semibold text-purple-700">
+              Мультиселект
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
+              Одиночне
+            </span>
+          ),
       },
       {
         header: 'Одиниці',
