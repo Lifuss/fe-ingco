@@ -761,7 +761,7 @@ export default function ProductPageClient({
                       product.characteristics.map((char, index) => (
                         <div
                           key={`${char.name}-${index}`}
-                          className={`flex items-start justify-between gap-4 px-5 py-3.5 text-sm md:text-base ${
+                          className={`flex items-start justify-between gap-4 px-4 py-2 text-sm md:px-5 md:py-2.5 ${
                             index % 2 === 0 ? 'bg-neutral-50/50' : 'bg-white'
                           }`}
                         >
