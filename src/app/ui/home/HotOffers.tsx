@@ -18,6 +18,8 @@ import {
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
+import { isProductOnSale, getEffectiveRetailPrice } from '@/lib/utils';
+
 import { CATEGORY_IDS } from '@/lib/constants';
 
 interface HotOffersProps {
@@ -47,7 +49,7 @@ export default function HotOffers({ products }: HotOffersProps) {
 
   // Dynamic filter lists
   const popularOffers = products
-    .filter((p) => (p.rrcSale && p.rrcSale > 0) || p.countInStock > 50)
+    .filter((p) => isProductOnSale(p) || p.countInStock > 50)
     .slice(0, 10);
 
   const p20sOffers = products
@@ -241,8 +243,8 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
       : `${apiBaseUrl}${product.image}`
     : '/placeholder.webp';
 
-  let isSale = !!(product.rrcSale && product.rrcSale > 0);
-  let price = isSale ? product.rrcSale : product.priceRetailRecommendation;
+  let isSale = isProductOnSale(product);
+  let price = getEffectiveRetailPrice(product);
   let originalPrice = isSale ? product.priceRetailRecommendation : null;
 
   if (!isSale && activeTab === 'popular' && product.priceRetailRecommendation > 100) {

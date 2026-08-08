@@ -22,6 +22,7 @@ import {
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import { type ColumnDef } from '@tanstack/react-table';
+import { getEffectiveRetailPrice } from '@/lib/utils';
 
 type CartData = { quantity: number; id: number; productId: Product }[];
 type RetailCartRow = {
@@ -81,18 +82,19 @@ const RetailCartTable = () => {
   };
 
   const data = useMemo<RetailCartRow[]>(() => {
-    return selectedCart.map((item) => ({
-      codeCol: item.productId.article,
-      nameCol: item.productId.name,
-      photoCol: item.productId.image,
-      rrcCol: item.productId.rrcSale
-        ? item.productId.rrcSale
-        : item.productId.priceRetailRecommendation,
-      quantityCol: item.quantity,
-      totalCol: `${item.productId.rrcSale ? item.productId.rrcSale * item.quantity : item.productId.priceRetailRecommendation * item.quantity} грн`,
-      id: item.productId.id,
-      product: item.productId,
-    }));
+    return selectedCart.map((item) => {
+      const effectivePrice = getEffectiveRetailPrice(item.productId);
+      return {
+        codeCol: item.productId.article,
+        nameCol: item.productId.name,
+        photoCol: item.productId.image,
+        rrcCol: effectivePrice,
+        quantityCol: item.quantity,
+        totalCol: `${effectivePrice * item.quantity} грн`,
+        id: item.productId.id,
+        product: item.productId,
+      };
+    });
   }, [selectedCart]);
 
   const columns = useMemo<ColumnDef<RetailCartRow>[]>(
@@ -215,12 +217,7 @@ const RetailCartTable = () => {
 
   const sum = Math.ceil(
     selectedCart.reduce((acc, item) => {
-      return (
-        acc +
-        (item.productId.rrcSale
-          ? item.productId.rrcSale * item.quantity
-          : item.productId.priceRetailRecommendation * item.quantity)
-      );
+      return acc + getEffectiveRetailPrice(item.productId) * item.quantity;
     }, 0),
   );
 
@@ -230,6 +227,7 @@ const RetailCartTable = () => {
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
     const firstName = (form.elements.namedItem('firstName') as HTMLInputElement)?.value;
     const lastName = (form.elements.namedItem('lastName') as HTMLInputElement)?.value;
+
     const surName = (form.elements.namedItem('surName') as HTMLInputElement)?.value;
     const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
@@ -239,20 +237,16 @@ const RetailCartTable = () => {
     const shippingAddress = `${city}, ${warehouse}`;
 
     const order = {
-      products: selectedCart.map((item) => ({
-        productId: item.productId.id,
-        quantity: item.quantity,
-        price: Math.ceil(
-          item.productId.rrcSale
-            ? item.productId.rrcSale
-            : item.productId.priceRetailRecommendation,
-        ),
-        totalPriceByOneProduct: Math.ceil(
-          item.productId.rrcSale
-            ? item.productId.rrcSale * item.quantity
-            : item.productId.priceRetailRecommendation * item.quantity,
-        ),
-      })),
+      products: selectedCart.map((item) => {
+        const unitPrice = getEffectiveRetailPrice(item.productId);
+        return {
+          productId: item.productId.id,
+          quantity: item.quantity,
+          price: Math.ceil(unitPrice),
+          totalPriceByOneProduct: Math.ceil(unitPrice * item.quantity),
+        };
+      }),
+
       totalPrice: sum,
       shippingAddress,
       firstName,

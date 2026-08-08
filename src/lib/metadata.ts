@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Product } from './types';
+import { getEffectiveRetailPrice } from './utils';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ingcoua.com.ua';
 export const SITE_NAME = 'INGCO Ukraine';
@@ -84,7 +85,8 @@ export function generateProductMetadata({
   price,
   isB2B = false,
 }: ProductMetadataOptions): Metadata {
-  const productPrice = price || product.rrcSale || product.priceRetailRecommendation;
+  const productPrice = price || getEffectiveRetailPrice(product);
+
   const imageUrl = product.image
     ? product.image.startsWith('http')
       ? product.image
@@ -187,7 +189,7 @@ export function generateProductJsonLd(product: Product) {
     offers: {
       '@type': 'Offer',
       priceCurrency: 'UAH',
-      price: Number(product.rrcSale || product.priceRetailRecommendation || 0),
+      price: Number(getEffectiveRetailPrice(product) || 0),
       itemCondition: 'https://schema.org/NewCondition',
       availability:
         product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',

@@ -23,11 +23,15 @@ import {
   Pencil,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
+import { isProductOnSale } from '@/lib/utils';
+
 import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
+
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
@@ -80,7 +84,7 @@ export default function ProductPageClient({
   const favoritesIdList = favoritesState.map((p: unknown) =>
     typeof p === 'object' && p !== null ? (p as { id: number }).id : Number(p),
   );
-  const usdRate = useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || 40;
+  const usdRate = useAppSelector(selectUSDRate);
 
   // Use initialProduct as fallback to ensure zero layout shift during SSR/Hydration
   const product = reduxProduct && reduxProduct.slug === productSlug ? reduxProduct : initialProduct;
@@ -171,7 +175,8 @@ export default function ProductPageClient({
     );
   }
 
-  const wholesalePriceUah = Math.ceil((product.priceBulk || product.price || 0) * usdRate);
+  const wholesalePriceUah = Math.ceil((product.price || 0) * usdRate);
+  const isOnSale = isProductOnSale(product);
 
   // Favorite toggle
   const isFavorite = favoritesIdList.includes(product.id);
@@ -561,7 +566,7 @@ export default function ProductPageClient({
                             </span>
                           </div>
                           <span className="text-xs font-bold tracking-wide text-neutral-400">
-                            ${Number(product.priceBulk || product.price || 0).toFixed(2)} / од.
+                            ${Number(product.price || 0).toFixed(2)} / од.
                           </span>
                           <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
                             <span>
@@ -578,7 +583,7 @@ export default function ProductPageClient({
                                 </span>
                               )}
                             </span>
-                            {!!(product.rrcSale && product.rrcSale > wholesalePriceUah) && (
+                            {isOnSale && product.rrcSale && product.rrcSale > wholesalePriceUah && (
                               <span className="font-bold text-red-500">
                                 РРЦ Акція: {product.rrcSale.toLocaleString('uk-UA')} ₴
                                 <span className="ml-1.5 font-bold text-teal-600">
@@ -598,7 +603,7 @@ export default function ProductPageClient({
                             Ціна
                           </span>
                           <div className="flex items-baseline gap-2">
-                            {product.rrcSale ? (
+                            {isOnSale && product.rrcSale ? (
                               <>
                                 <span className="font-display text-primary text-2xl font-bold">
                                   {product.rrcSale.toLocaleString('uk-UA')} ₴

@@ -161,7 +161,7 @@ const AttributesTable = ({ refreshTrigger, onRefresh, query = '' }: AttributesTa
           if (opts.length === 0)
             return (
               <span
-                className="cursor-help text-xs font-medium italic text-neutral-400 hover:text-neutral-600"
+                className="cursor-help text-xs font-medium text-neutral-400 italic hover:text-neutral-600"
                 title="Значення цієї характеристики вписуються довільним текстом для кожного товару окремо (наприклад, для моделей чи штрихкодів)"
               >
                 Довільний ввід

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Icon from '../assets/Icon';
 import { X } from 'lucide-react';
+import { isProductOnSale } from '@/lib/utils';
 
 const customModalStyles = {
   overlay: {
@@ -119,7 +120,7 @@ const ModalProduct = ({
                         </span>
                       </div>
                     </div>
-                  ) : product.rrcSale ? (
+                  ) : isProductOnSale(product) ? (
                     <div>
                       <div className="mb-0.5 text-xs text-neutral-400 line-through">
                         {product.priceRetailRecommendation} грн

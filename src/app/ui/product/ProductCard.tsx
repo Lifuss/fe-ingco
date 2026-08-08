@@ -15,6 +15,8 @@ import {
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import OutOfStockModal from '../modals/OutOfStockModal';
+import { isProductOnSale } from '@/lib/utils';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 interface ProductCardProps {
   product: Product;
@@ -38,8 +40,8 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
-  const usdRate =
-    useAppSelector((state) => state.persistedMainReducer.currencyRates.USD) || USDCurrency || 40;
+  const storeUsdRate = useAppSelector(selectUSDRate);
+  const usdRate = USDCurrency || storeUsdRate;
 
   const isAuth = authState.isAuthenticated;
   const user = authState.user;
@@ -70,7 +72,6 @@ const ProductCard = ({
     characteristics = [],
     priceRetailRecommendation = 0,
     price = 0,
-    priceBulk,
     slug,
     createdAt,
   } = product;
@@ -78,14 +79,17 @@ const ProductCard = ({
   // Check if item is new (within last 60 days)
   const isNew = createdAt ? NOW - new Date(createdAt).getTime() < 60 * 24 * 60 * 60 * 1000 : false;
 
+  // Check if item is on sale
+  const isOnSale = isProductOnSale(product);
+
   // Calculate discount percent
   const discountPercent =
-    priceRetailRecommendation > 0 && rrcSale
+    isOnSale && priceRetailRecommendation > 0 && rrcSale
       ? Math.round(((priceRetailRecommendation - rrcSale) / priceRetailRecommendation) * 100)
       : 0;
 
   // B2B Wholesale UAH price
-  const wholesalePriceUah = Math.ceil((priceBulk || price) * usdRate);
+  const wholesalePriceUah = Math.ceil(price * usdRate);
 
   // Favorite toggle handler
   const handleFavClick = (e: React.MouseEvent) => {
@@ -150,7 +154,7 @@ const ProductCard = ({
 
   const renderBadges = () => {
     const list: React.ReactNode[] = [];
-    if (rrcSale && discountPercent > 0) {
+    if (isOnSale && discountPercent > 0) {
       list.push(
         <span
           key="sale"
@@ -330,7 +334,7 @@ const ProductCard = ({
                             </span>
                           )}
                         </span>
-                        {!!(rrcSale && rrcSale > wholesalePriceUah) && (
+                        {isOnSale && rrcSale && rrcSale > wholesalePriceUah && (
                           <span className="font-bold text-red-500">
                             РРЦ Акція: {rrcSale.toLocaleString('uk-UA')}.00 ₴
                             <span className="ml-1.5 font-bold text-teal-600 normal-case">
@@ -352,7 +356,7 @@ const ProductCard = ({
                   ) : (
                     // B2C / Retail Pricing Structure
                     <div className="flex items-baseline gap-2">
-                      {rrcSale ? (
+                      {isOnSale && rrcSale ? (
                         <>
                           <span className="text-primary-500 text-2xl font-extrabold">
                             {rrcSale.toLocaleString('uk-UA')}.00 ₴

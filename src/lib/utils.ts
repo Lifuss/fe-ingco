@@ -57,6 +57,19 @@ export function normalizeProduct(p: unknown): Product {
   } as Product;
 }
 
+export function isProductOnSale(
+  product?: Pick<Product, 'rrcSale' | 'priceRetailRecommendation'> | null,
+): boolean {
+  if (!product || !product.rrcSale) return false;
+  return product.rrcSale > 0 && product.rrcSale < product.priceRetailRecommendation;
+}
+
+export function getEffectiveRetailPrice(
+  product: Pick<Product, 'rrcSale' | 'priceRetailRecommendation'>,
+): number {
+  return isProductOnSale(product) ? (product.rrcSale as number) : product.priceRetailRecommendation;
+}
+
 interface RawOrderItem {
   id: number;
   quantity: number;
@@ -207,7 +220,7 @@ export function getYoutubeEmbedUrl(url: string): string {
       /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i,
     );
     if (match) videoId = match[1];
-}
+  }
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
 }
 

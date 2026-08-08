@@ -18,6 +18,7 @@ import {
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
+import { isProductOnSale, getEffectiveRetailPrice } from '@/lib/utils';
 
 interface SeriesComparisonProps {
   products: Product[];
@@ -316,8 +317,8 @@ function ProductCarouselCard({
       : `${apiBaseUrl}${product.image}`
     : '/placeholder.webp';
 
-  const isSale = !!(product.rrcSale && product.rrcSale > 0);
-  const price = isSale ? product.rrcSale : product.priceRetailRecommendation;
+  const isSale = isProductOnSale(product);
+  const price = getEffectiveRetailPrice(product);
   const originalPrice = isSale ? product.priceRetailRecommendation : null;
 
   const mouseCoords = React.useRef({ x: 0, y: 0 });
