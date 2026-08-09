@@ -22,6 +22,7 @@ import {
   ChevronRight,
   ExternalLink,
   RotateCcw,
+  GripVertical,
 } from 'lucide-react';
 
 const questionSvg = (
@@ -38,6 +39,7 @@ import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
 import MultiSelectAutocomplete from './MultiSelectAutocomplete';
 import SearchableSelect from './SearchableSelect';
+import SortableList from './SortableList';
 
 type AdminProductFormProps = {
   isEdit?: boolean;
@@ -967,68 +969,77 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
             {/* Added list */}
             <div className="mt-2 overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50/30">
               {characteristics.length > 0 ? (
-                <div className="flex flex-col divide-y divide-neutral-100">
-                  {characteristics.map((char, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-neutral-500">{char.name}:</span>
-                          {char.isMultiple && (
-                            <span className="rounded border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700">
-                              Мультиселект
+                <SortableList
+                  items={characteristics}
+                  onReorder={setCharacteristics}
+                  keyExtractor={(char, i) => `${char.code || char.name}-${i}`}
+                  renderItem={(char, i, dragHandleProps) => (
+                    <div className="flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50">
+                      <div className="flex items-center gap-3">
+                        <div
+                          {...dragHandleProps}
+                          className="cursor-grab text-neutral-400 hover:text-neutral-600 active:cursor-grabbing"
+                          title="Перетягніть для сортування"
+                        >
+                          <GripVertical size={16} />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-neutral-500">{char.name}:</span>
+                            {char.isMultiple && (
+                              <span className="rounded border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700">
+                                Мультиселект
+                              </span>
+                            )}
+                          </div>
+                          {Array.isArray(char.value) ? (
+                            <div className="mt-0.5 flex flex-wrap gap-1.5 pl-1">
+                              {char.value.map((valItem, valIdx) => (
+                                <span
+                                  key={valIdx}
+                                  className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-semibold text-neutral-800 shadow-xs"
+                                >
+                                  <span>
+                                    {valItem}{' '}
+                                    {char.unit && !valItem.endsWith(char.unit) ? char.unit : ''}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setCharacteristics((prev) => {
+                                        const next = [...prev];
+                                        const item = next[i];
+                                        if (Array.isArray(item.value)) {
+                                          const newVals = item.value.filter(
+                                            (_, idx) => idx !== valIdx,
+                                          );
+                                          if (newVals.length === 0) {
+                                            return prev.filter((_, idx) => idx !== i);
+                                          }
+                                          next[i] = { ...item, value: newVals };
+                                        }
+                                        return next;
+                                      });
+                                    }}
+                                    className="cursor-pointer text-neutral-400 hover:text-rose-500"
+                                    title="Видалити цей пункт"
+                                  >
+                                    &times;
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="font-semibold text-neutral-800">
+                              {char.value}{' '}
+                              {char.unit &&
+                              typeof char.value === 'string' &&
+                              !char.value.endsWith(char.unit)
+                                ? char.unit
+                                : ''}
                             </span>
                           )}
                         </div>
-                        {Array.isArray(char.value) ? (
-                          <div className="mt-0.5 flex flex-wrap gap-1.5 pl-1">
-                            {char.value.map((valItem, valIdx) => (
-                              <span
-                                key={valIdx}
-                                className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-semibold text-neutral-800 shadow-xs"
-                              >
-                                <span>
-                                  {valItem}{' '}
-                                  {char.unit && !valItem.endsWith(char.unit) ? char.unit : ''}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setCharacteristics((prev) => {
-                                      const next = [...prev];
-                                      const item = next[i];
-                                      if (Array.isArray(item.value)) {
-                                        const newVals = item.value.filter(
-                                          (_, idx) => idx !== valIdx,
-                                        );
-                                        if (newVals.length === 0) {
-                                          return prev.filter((_, idx) => idx !== i);
-                                        }
-                                        next[i] = { ...item, value: newVals };
-                                      }
-                                      return next;
-                                    });
-                                  }}
-                                  className="cursor-pointer text-neutral-400 hover:text-rose-500"
-                                  title="Видалити цей пункт"
-                                >
-                                  &times;
-                                </button>
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="font-semibold text-neutral-800">
-                            {char.value}{' '}
-                            {char.unit &&
-                            typeof char.value === 'string' &&
-                            !char.value.endsWith(char.unit)
-                              ? char.unit
-                              : ''}
-                          </span>
-                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <button
@@ -1061,8 +1072,8 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                         </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                />
               ) : (
                 <div className="p-5 text-center text-xs font-medium text-neutral-400">
                   Характеристики відсутні
