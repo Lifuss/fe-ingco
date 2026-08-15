@@ -122,11 +122,17 @@ apiIngco.interceptors.request.use(
   },
 );
 
-const isLocalhost =
-  typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
 
-const COOKIE_FLAGS = `path=/; max-age=604800; SameSite=Lax${isLocalhost ? '' : '; Secure'}`;
+const COOKIE_FLAGS = `path=/; max-age=604800; SameSite=Lax${isHttps ? '; Secure' : ''}`;
+
+if (typeof window !== 'undefined' && !cachedToken) {
+  const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+  if (match && match[1]) {
+    cachedToken = decodeURIComponent(match[1]);
+    apiIngco.defaults.headers.common.Authorization = `Bearer ${cachedToken}`;
+  }
+}
 
 const setToken = (token: string, role?: string) => {
   cachedToken = token;
@@ -142,7 +148,7 @@ const clearToken = () => {
   cachedToken = null;
   apiIngco.defaults.headers.common.Authorization = ``;
   if (typeof window !== 'undefined') {
-    const clearFlags = `path=/; max-age=0; SameSite=Lax${isLocalhost ? '' : '; Secure'}`;
+    const clearFlags = `path=/; max-age=0; SameSite=Lax${isHttps ? '; Secure' : ''}`;
     document.cookie = `token=; ${clearFlags}`;
     document.cookie = `role=; ${clearFlags}`;
     try {
@@ -216,9 +222,14 @@ export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWit
 
 export const refreshTokenThunk = createAsyncThunk(
   'auth/refreshToken',
-  async (_, { rejectWithValue, getState }) => {
+  async (explicitToken: string | undefined, { rejectWithValue, getState }) => {
     const state = getState() as RootState;
-    const savedToken = state.persistedAuthReducer.token;
+    let cookieToken: string | undefined;
+    if (typeof window !== 'undefined') {
+      const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+      if (match && match[1]) cookieToken = decodeURIComponent(match[1]);
+    }
+    const savedToken = explicitToken || state.persistedAuthReducer.token || cookieToken;
     if (!savedToken) {
       return rejectWithValue('token was not found');
     }

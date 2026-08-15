@@ -75,7 +75,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
         };
 
         if (token) {
-          dispatch(refreshTokenThunk())
+          dispatch(refreshTokenThunk(token))
             .unwrap()
             .catch(() => {
               logRedirect('refresh_failed');
@@ -98,7 +98,9 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
       return null;
     }
 
-    if (user?.isVerified === false && pathname !== '/auth/login' && pathname !== '/auth/register') {
+    const isUserAdmin = user?.role?.toLowerCase() === 'admin';
+
+    if (user?.isVerified === false && !isUserAdmin && pathname !== '/auth/login' && pathname !== '/auth/register') {
       if (typeof window !== 'undefined') {
         const logs = JSON.parse(sessionStorage.getItem('auth_logs') || '[]');
         logs.push({
@@ -118,7 +120,7 @@ export default function withAuth<T extends object>(Component: ComponentType<T>) 
     }
 
     // Admin routing
-    if (pathname.includes('/dashboard') && user?.role !== 'admin') {
+    if (pathname.includes('/dashboard') && !isUserAdmin) {
       if (typeof window !== 'undefined') {
         const logs = JSON.parse(sessionStorage.getItem('auth_logs') || '[]');
         logs.push({
