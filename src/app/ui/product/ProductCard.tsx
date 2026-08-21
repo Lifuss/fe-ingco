@@ -222,7 +222,7 @@ const ProductCard = ({
               {/* Top Right Badges */}
               {countInStock <= 0 && (
                 <div className="pointer-events-none absolute top-0 right-0 z-10">
-                  <span className="rounded-md bg-gray-400 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm">
+                  <span className="rounded-md bg-neutral-700 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm">
                     НЕ В НАЯВНОСТІ
                   </span>
                 </div>
@@ -240,7 +240,7 @@ const ProductCard = ({
 
             {/* SKU / Article */}
             <div className="flex shrink-0 items-center justify-between">
-              <span className="text-gray-450 font-mono text-[11px] tracking-wider">
+              <span className="font-mono text-[11px] tracking-wider text-neutral-600">
                 АРТИКУЛ: {article}
               </span>
 
@@ -358,10 +358,10 @@ const ProductCard = ({
                     <div className="flex items-baseline gap-2">
                       {isOnSale && rrcSale ? (
                         <>
-                          <span className="text-primary-500 text-2xl font-extrabold">
+                          <span className="text-2xl font-extrabold text-amber-700">
                             {rrcSale.toLocaleString('uk-UA')}.00 ₴
                           </span>
-                          <span className="text-xs font-semibold text-gray-400 line-through">
+                          <span className="text-xs font-semibold text-neutral-500 line-through">
                             {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
                           </span>
                         </>
@@ -405,7 +405,7 @@ const ProductCard = ({
                   {/* Add To Cart Button */}
                   <button
                     onClick={handleAddToCart}
-                    className="bg-primary-500 hover:bg-primary-600 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all active:scale-95"
+                    className="bg-primary-500 hover:bg-primary-600 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-normal text-white shadow-sm transition-all active:scale-95"
                   >
                     <ShoppingCart size={14} className="fill-current" />В кошик
                   </button>

@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import { Check, Heart, ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
@@ -192,7 +191,26 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             className="relative cursor-grab px-4 select-none active:cursor-grabbing lg:col-span-8"
           >
             {standartProducts.length > 0 ? (
-              <Slider ref={standartSliderRef} {...getSliderSettings(standartProducts.length)}>
+              <Slider
+                ref={standartSliderRef}
+                {...getSliderSettings(standartProducts.length, {
+                  slidesToShow: Math.min(3, standartProducts.length),
+                  responsive: [
+                    {
+                      breakpoint: 1400,
+                      settings: { slidesToShow: Math.min(3, standartProducts.length) },
+                    },
+                    {
+                      breakpoint: 1024,
+                      settings: { slidesToShow: Math.min(2, standartProducts.length) },
+                    },
+                    {
+                      breakpoint: 640,
+                      settings: { slidesToShow: 1 },
+                    },
+                  ],
+                })}
+              >
                 {standartProducts.map((product) => (
                   <div key={product.id} className="h-full px-2 py-3">
                     <ProductCarouselCard
@@ -266,7 +284,26 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
             className="relative cursor-grab px-4 select-none active:cursor-grabbing lg:col-span-8"
           >
             {industrialProducts.length > 0 ? (
-              <Slider ref={industrialSliderRef} {...getSliderSettings(industrialProducts.length)}>
+              <Slider
+                ref={industrialSliderRef}
+                {...getSliderSettings(industrialProducts.length, {
+                  slidesToShow: Math.min(3, industrialProducts.length),
+                  responsive: [
+                    {
+                      breakpoint: 1400,
+                      settings: { slidesToShow: Math.min(3, industrialProducts.length) },
+                    },
+                    {
+                      breakpoint: 1024,
+                      settings: { slidesToShow: Math.min(2, industrialProducts.length) },
+                    },
+                    {
+                      breakpoint: 640,
+                      settings: { slidesToShow: 1 },
+                    },
+                  ],
+                })}
+              >
                 {industrialProducts.map((product) => (
                   <div key={product.id} className="h-full px-2 py-3">
                     <ProductCarouselCard

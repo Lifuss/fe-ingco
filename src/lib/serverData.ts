@@ -12,6 +12,7 @@ const apiIngco = axios.create({
  * Fetch a single product by its slug (Server-side with React cache)
  */
 export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
+  if (!slug) return null;
   try {
     const { data } = await apiIngco.get(`/products/${slug}`);
     return normalizeProduct(data);
@@ -25,14 +26,16 @@ export const getProductBySlug = cache(async (slug: string): Promise<Product | nu
  * Fetch related products by category ID for cross-sell recommendations
  */
 export const getRelatedProducts = cache(
-  async (categoryId: string, limit = 5): Promise<Product[]> => {
+  async (categoryId: string | number, limit = 5): Promise<Product[]> => {
+    const catNum = Number(categoryId);
+    if (!catNum || isNaN(catNum)) return [];
     try {
       const { data } = await apiIngco.get('/products', {
         params: {
           page: 1,
           limit,
           isRetail: true,
-          category: categoryId,
+          category: catNum,
           sortValue: 'default',
         },
       });
@@ -54,7 +57,6 @@ export const getShowcaseProducts = cache(async (limit = 100): Promise<Product[]>
         page: 1,
         limit,
         isRetail: true,
-        query: '',
         sortValue: 'default',
       },
     });

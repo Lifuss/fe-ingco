@@ -44,14 +44,12 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
 
         {/* Column 2: Clients links */}
         <div className="col-span-6 flex flex-col gap-4 text-left md:col-span-2 lg:col-span-2">
-          <h3 className="font-display text-primary-600 text-sm font-bold tracking-wider">
-            Клієнтам
-          </h3>
-          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
+          <h3 className="font-display text-sm font-bold tracking-wider text-amber-800">Клієнтам</h3>
+          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-600">
             <li>
               <Link
                 href={`${baseUrl}?catalog=true`}
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Каталог
               </Link>
@@ -59,7 +57,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href={`${baseUrl}?query=акція`}
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Акції
               </Link>
@@ -67,7 +65,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us/support"
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Підтримка
               </Link>
@@ -75,7 +73,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us/partnership"
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Оптовий каталог
               </Link>
@@ -85,7 +83,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
 
         {/* Column 3: Social Medias */}
         <div className="col-span-12 flex flex-col gap-4 text-left md:col-span-4 lg:col-span-3">
-          <h3 className="font-display text-primary-600 text-sm font-bold tracking-wider">
+          <h3 className="font-display text-sm font-bold tracking-wider text-amber-800">
             Соціальні мережі
           </h3>
           <div className="mt-1 flex items-center gap-3">
@@ -96,7 +94,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
                 rel="nofollow noopener noreferrer"
                 target="_blank"
                 aria-label={social.label}
-                className="hover:bg-primary-500 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-800 text-white shadow-sm transition-all hover:scale-105 active:scale-95"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-800 text-white shadow-sm transition-all hover:scale-105 hover:bg-amber-600 active:scale-95"
               >
                 <Icon
                   icon={social.name}
@@ -109,14 +107,14 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
 
         {/* Column 4: Information */}
         <div className="col-span-6 flex flex-col gap-4 text-left md:col-span-3 lg:col-span-2">
-          <h3 className="font-display text-primary-600 text-sm font-bold tracking-wider">
+          <h3 className="font-display text-sm font-bold tracking-wider text-amber-800">
             Інформація
           </h3>
-          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-500">
+          <ul className="flex flex-col gap-2.5 font-sans text-xs font-semibold text-neutral-600">
             <li>
               <Link
                 href="/about-us"
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Про нас
               </Link>
@@ -124,7 +122,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/legal/terms"
-                className="hover:text-primary-500 cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Умови та правила
               </Link>
@@ -134,30 +132,28 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
 
         {/* Column 5: Contacts */}
         <div className="col-span-12 flex flex-col gap-4 text-left md:col-span-3 lg:col-span-2">
-          <h3 className="font-display text-primary-600 text-sm font-bold tracking-wider">
-            Контакти
-          </h3>
-          <ul className="flex flex-col gap-2 font-sans text-xs font-semibold text-neutral-500">
+          <h3 className="font-display text-sm font-bold tracking-wider text-amber-800">Контакти</h3>
+          <ul className="flex flex-col gap-2 font-sans text-xs font-semibold text-neutral-600">
             <li>
               <Link
                 href="/about-us/contacts"
-                className="hover:text-primary-500 cursor-pointer font-bold text-neutral-900 transition-colors"
+                className="cursor-pointer font-bold text-neutral-900 transition-colors hover:text-amber-700"
               >
                 Фізичні магазини
               </Link>
             </li>
-            <li className="mt-1 flex flex-col gap-1 font-bold text-blue-500 select-text">
+            <li className="mt-1 flex flex-col gap-1 font-bold text-blue-600 select-text">
               {CONTACTS.PHONES.map((phone) => (
                 <a
                   href={phone.href}
                   key={phone.href}
-                  className="underline transition-colors hover:text-blue-600"
+                  className="inline-flex min-h-[38px] items-center py-1 underline transition-colors hover:text-blue-700"
                 >
                   {phone.label}
                 </a>
               ))}
             </li>
-            <li className="mt-1 flex flex-col gap-0.5 text-[10px] font-medium text-neutral-400">
+            <li className="mt-1 flex flex-col gap-0.5 text-[11px] font-medium text-neutral-500">
               {CONTACTS.WORKING_HOURS.map((hours) => (
                 <span key={hours}>{hours}</span>
               ))}
@@ -168,7 +164,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
 
       {/* Footer Bottom copyright area */}
       <div className="mx-auto w-full max-w-[1440px] border-t border-[#E5E3DD]/45 pt-6 text-center">
-        <p className="font-sans text-[11px] font-semibold tracking-wider text-neutral-400 uppercase">
+        <p className="font-sans text-[11px] font-semibold tracking-wider text-neutral-500 uppercase">
           © 2026 INGCO. Всі права захищені.
         </p>
       </div>

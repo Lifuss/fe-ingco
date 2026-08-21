@@ -64,6 +64,7 @@
   --animate-shimmer: shimmer 2s infinite;
 
   --font-heading: var(--font-sans);
+  --font-display: var(--font-sans);
   --font-sans: var(--font-sans);
   --font-table:
     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -152,7 +153,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
@@ -260,4 +264,45 @@ body::-webkit-scrollbar {
 
 .bg-manager-gradient {
   background: linear-gradient(135deg, #1c2938 0%, #111827 100%);
+}
+
+/* Accessibility fix for slick cloned slides */
+.slick-cloned[aria-hidden='true'] a,
+.slick-cloned[aria-hidden='true'] button,
+.slick-cloned[aria-hidden='true'] input {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Custom Pure CSS Slick Dots (Zero Font Dependency) */
+.slick-dots {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  list-style: none !important;
+  padding: 16px 0 0 !important;
+  margin: 0 !important;
+}
+.slick-dots li {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+}
+.slick-dots li button {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  background-color: #d1d5db !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: all 0.3s ease !important;
+}
+.slick-dots li.slick-active button {
+  width: 24px !important;
+  background-color: var(--color-primary-500) !important;
 }

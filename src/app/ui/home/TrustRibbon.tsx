@@ -35,9 +35,9 @@ export default function TrustRibbon() {
 
             {/* Content */}
             <div className="flex flex-col gap-1">
-              <h3 className="font-display text-sm leading-tight font-semibold text-neutral-800 md:text-base">
+              <p className="font-display text-sm leading-tight font-bold text-neutral-800 md:text-base">
                 {item.title}
-              </h3>
+              </p>
               <p className="font-sans text-xs text-neutral-500 md:text-sm">{item.description}</p>
             </div>
           </div>

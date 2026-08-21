@@ -21,6 +21,16 @@ const ttFirs = localFont({
       weight: '500',
       style: 'normal',
     },
+    {
+      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
+      weight: '700',
+      style: 'normal',
+    },
   ],
   variable: '--font-sans',
   display: 'swap',
@@ -223,6 +233,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://api-ingco-service.win" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api-ingco-service.win" />
         <link rel="sitemap" type="application/xml" href={`${SITE_URL}/sitemap.xml`} />
         <script
           type="application/ld+json"

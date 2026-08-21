@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';

@@ -19,12 +19,12 @@ export const getSliderSettings = (
   };
 
   const baseSettings: Settings = {
-    dots: true,
-    infinite: getInfiniteValue(4),
+    dots: false,
+    infinite: getInfiniteValue(5),
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: Math.min(5, productCount),
     slidesToScroll: 1,
-    arrows: productCount > 4,
+    arrows: productCount > 5,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     swipeToSlide: true,
@@ -32,7 +32,17 @@ export const getSliderSettings = (
     touchThreshold: 10,
     responsive: [
       {
-        breakpoint: 1300,
+        breakpoint: 1536,
+        settings: {
+          slidesToShow: Math.min(4, productCount),
+          slidesToScroll: 1,
+          infinite: getInfiniteValue(4),
+          swipeToSlide: true,
+          arrows: productCount > 4,
+        },
+      },
+      {
+        breakpoint: 1280,
         settings: {
           slidesToShow: Math.min(3, productCount),
           slidesToScroll: 1,
