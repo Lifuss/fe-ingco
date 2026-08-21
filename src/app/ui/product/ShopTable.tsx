@@ -287,6 +287,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
           <input
             name={String(row.original.id)}
             type="number"
+            aria-label={`Кількість товару ${row.original.nameCol}`}
             className="focus:border-primary-500 font-table h-8 w-[70px] rounded-lg border border-neutral-200 bg-neutral-50/50 p-1 text-center text-xs font-semibold transition-colors focus:bg-white focus:outline-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {

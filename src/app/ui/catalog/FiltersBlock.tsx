@@ -138,6 +138,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
             <select
               value={currentSort}
               onChange={handleSortChange}
+              aria-label="Сортування товарів"
               className="focus:border-primary-500 cursor-pointer appearance-none rounded-xl border border-gray-300 bg-white py-1.5 pr-10 pl-4 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none"
             >
               <option value="default">Сортувати</option>

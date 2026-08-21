@@ -166,6 +166,7 @@ const RetailCartTable = () => {
                 className="w-5 border-none p-0 text-center outline-none"
                 type="number"
                 value={row.original.quantityCol}
+                aria-label={`Кількість товару ${row.original.nameCol}`}
                 readOnly
               />
               <button

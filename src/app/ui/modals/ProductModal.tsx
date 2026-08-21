@@ -160,6 +160,7 @@ const ModalProduct = ({
                         <input
                           type="number"
                           value={productQuantity}
+                          aria-label="Кількість товару"
                           onChange={(e) =>
                             setProductQuantity(Math.max(0, parseInt(e.target.value) || 0))
                           }

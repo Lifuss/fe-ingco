@@ -275,9 +275,9 @@ const ProductCard = ({
             ) : null}
 
             {/* Product Title */}
-            <h3 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">
+            <h2 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">
               {name}
-            </h3>
+            </h2>
 
             {/* Technical characteristics: smooth transition fade in on hover */}
             {characteristics.length > 0 && (
@@ -389,6 +389,7 @@ const ProductCard = ({
                       type="number"
                       min="1"
                       value={quantity}
+                      aria-label={`Кількість товару ${name}`}
                       onChange={handleQtyChange}
                       onClick={(e) => e.stopPropagation()}
                       className="w-10 [appearance:textfield] border-none bg-transparent text-center text-xs font-bold text-gray-900 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"

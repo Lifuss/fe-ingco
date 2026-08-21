@@ -420,16 +420,18 @@ const CatalogSidebar = () => {
                               ))}
 
                               {hasMore && (
-                                <button
-                                  onClick={() => setShowAllSubcategories(!showAllSubcategories)}
-                                  className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 text-left text-[11px] font-bold hover:underline"
-                                >
-                                  <span>
-                                    {showAllSubcategories
-                                      ? 'Приховати'
-                                      : `Показати більше (+${children.length - 6})`}
-                                  </span>
-                                </button>
+                                <li>
+                                  <button
+                                    onClick={() => setShowAllSubcategories(!showAllSubcategories)}
+                                    className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 text-left text-[11px] font-bold hover:underline"
+                                  >
+                                    <span>
+                                      {showAllSubcategories
+                                        ? 'Приховати'
+                                        : `Показати більше (+${children.length - 6})`}
+                                    </span>
+                                  </button>
+                                </li>
                               )}
                             </>
                           );
@@ -492,16 +494,18 @@ const CatalogSidebar = () => {
                     })}
 
                     {hasMore && (
-                      <button
-                        onClick={() => setShowAllSubcategories(!showAllSubcategories)}
-                        className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 pl-2 text-left text-[11px] font-bold hover:underline"
-                      >
-                        <span>
-                          {showAllSubcategories
-                            ? 'Приховати'
-                            : `Показати більше (+${listToRender.length - 6})`}
-                        </span>
-                      </button>
+                      <li>
+                        <button
+                          onClick={() => setShowAllSubcategories(!showAllSubcategories)}
+                          className="text-primary-500 hover:text-primary-600 mt-1 flex cursor-pointer items-center gap-1 pl-2 text-left text-[11px] font-bold hover:underline"
+                        >
+                          <span>
+                            {showAllSubcategories
+                              ? 'Приховати'
+                              : `Показати більше (+${listToRender.length - 6})`}
+                          </span>
+                        </button>
+                      </li>
                     )}
                   </ul>
                 );
