@@ -29,7 +29,6 @@ import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getProductBySlugThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 import {
@@ -48,12 +47,14 @@ import { Product } from '@/lib/types';
 
 type ProductPageClientProps = {
   initialProduct: Product;
+  initialRelatedProducts?: Product[];
   productSlug: string;
   isAdminServer?: boolean;
 };
 
 export default function ProductPageClient({
   initialProduct,
+  initialRelatedProducts = [],
   productSlug,
   isAdminServer = false,
 }: ProductPageClientProps) {
@@ -98,27 +99,6 @@ export default function ProductPageClient({
 
   const barcodeRef = useRef<SVGSVGElement | null>(null);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
-
-  // Fetch product data on load (sync with redux)
-  useEffect(() => {
-    dispatch(getProductBySlugThunk(productSlug));
-  }, [dispatch, productSlug]);
-
-  // Fetch related products for cross-sell recommendations
-  useEffect(() => {
-    if (product?.category?.id) {
-      dispatch(
-        fetchMainTableDataThunk({
-          page: 1,
-          limit: 5,
-          isRetail: true,
-          category: String(product.category.id),
-          query: '',
-          sortValue: 'default',
-        }),
-      );
-    }
-  }, [dispatch, product?.category?.id]);
 
   useEffect(() => {
     if (product?.barcode && barcodeRef.current) {
@@ -317,7 +297,10 @@ export default function ProductPageClient({
   };
 
   // Filter out the current product from recommendations
-  const relatedProducts = products.filter((p) => p.id !== product.id).slice(0, 4);
+  const relatedProducts =
+    initialRelatedProducts && initialRelatedProducts.length > 0
+      ? initialRelatedProducts.filter((p) => p.id !== product.id).slice(0, 4)
+      : products.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
     <>

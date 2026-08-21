@@ -1,4 +1,4 @@
-import { getProductBySlug } from '@/lib/actions';
+import { getProductBySlug, getRelatedProducts } from '@/lib/serverData';
 import ProductPageClient from './ProductPageClient';
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
@@ -17,11 +17,19 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
+  const categoryId = product.category?.id ? String(product.category.id) : '';
+  const relatedProducts = categoryId ? await getRelatedProducts(categoryId, 5) : [];
+
   const cookieStore = await cookies();
   const role = cookieStore.get('role')?.value;
   const isAdmin = role === 'admin' || role === 'ADMIN';
 
   return (
-    <ProductPageClient initialProduct={product} productSlug={productSlug} isAdminServer={isAdmin} />
+    <ProductPageClient
+      initialProduct={product}
+      initialRelatedProducts={relatedProducts}
+      productSlug={productSlug}
+      isAdminServer={isAdmin}
+    />
   );
 }

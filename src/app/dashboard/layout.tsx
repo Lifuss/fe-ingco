@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useState, useEffect, useSyncExternalStore } from 'react';
-import withAuth from '../service/PrivateRouting';
 import Sidebar from './Sidebar';
 import Link from 'next/link';
 import { Menu, Store } from 'lucide-react';
@@ -110,4 +109,4 @@ const Layout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default withAuth(Layout);
+export default Layout;

@@ -92,16 +92,10 @@ export function SortableList<T>({
         };
 
         const defaultItemClass = `transition-colors ${
-          isDragging
-            ? 'opacity-40 bg-neutral-100/80'
-            : isOver
-              ? 'bg-amber-50/90 shadow-inner'
-              : ''
+          isDragging ? 'opacity-40 bg-neutral-100/80' : isOver ? 'bg-amber-50/90 shadow-inner' : ''
         }`;
 
-        const className = itemClassName
-          ? itemClassName(isDragging, isOver)
-          : defaultItemClass;
+        const className = itemClassName ? itemClassName(isDragging, isOver) : defaultItemClass;
 
         return (
           <div

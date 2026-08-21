@@ -6,7 +6,6 @@ import { loginThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import withAuth from '../../service/PrivateRouting';
 import { toast } from 'react-toastify';
 import Loader from '../utils/Loader';
 
@@ -114,4 +113,4 @@ function LoginButton() {
   );
 }
 
-export default withAuth(LoginForm);
+export default LoginForm;
