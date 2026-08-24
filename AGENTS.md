@@ -428,3 +428,29 @@ When writing future unit, integration, or E2E tests for the frontend catalog and
   - **B2B User**: `arsenb2b` / `7AtewuZO`
   - **B2C User**: `arsenb2c` / `wA4GSsCK`
 - **Graceful Lifecycle**: Always seed these test accounts in the test DB inside `beforeAll` (deleting any existing records with these logins first to prevent unique constraint failures) and cleanly delete them inside `afterAll`.
+
+---
+
+## 14. Release Workflow, Versioning & CHANGELOG
+
+To maintain transparent project evolution and ensure smooth collaboration between Frontend, Backend, and AI agents:
+
+### 📦 Semantic Versioning (`package.json`)
+Follow standard [SemVer](https://semver.org/) (`MAJOR.MINOR.PATCH`):
+- **PATCH** (`2.1.0` → `2.1.1`): Bug fixes, CSS/layout tweaks, UI polish, non-breaking copy updates.
+- **MINOR** (`2.1.0` → `2.2.0`): New user features, new dashboard pages/charts, new Redux thunks/slices, SEO enhancements.
+- **MAJOR** (`2.x.x` → `3.0.0`): Major framework rewrites (e.g. Next.js major upgrades), complete redesigns, or breaking API contract overhauls.
+
+### 📝 CHANGELOG Maintenance (`CHANGELOG.md`)
+- **Single Source of Truth**: Keep `CHANGELOG.md` in the repository root formatted according to [Keep a Changelog](https://keepachangelog.com/).
+- **When to Update**:
+  - Whenever implementing new components, pages, dashboard tools, SEO routes (`llms.txt`, sitemaps), or API state integration.
+  - During pre-commit audits (`/check`), verify if `CHANGELOG.md` reflects recent UI/state changes.
+- **Categories to Use**:
+  - `🎨 UI/UX` — new pages, dialogs, responsive design, styling updates.
+  - `⚡ Performance & SEO` — Core Web Vitals, sitemaps, caching, `llms.txt`.
+  - `🔄 State & API Integration` — Redux slices, Axios thunks, API contract alignments.
+  - `🛡️ Security & Auth` — auth guards, token refresh, route protection.
+  - `🐛 Fixed` — UI glitches, hydration error fixes, state sync bugs.
+- **Conciseness Rule**: Focus on user-facing and architectural features rather than microscopic CSS tweaks.
+
