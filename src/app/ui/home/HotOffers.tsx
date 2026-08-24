@@ -397,10 +397,12 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
           <div className="flex flex-col">
             {!!originalPrice && (
               <span className="font-sans text-xs text-neutral-400 line-through">
-                {originalPrice} ₴
+                {Math.round(originalPrice).toLocaleString('uk-UA')} ₴
               </span>
             )}
-            <span className="font-display text-lg font-bold text-neutral-900">{price} ₴</span>
+            <span className="font-display text-lg font-bold text-neutral-900">
+              {Math.round(price).toLocaleString('uk-UA')} ₴
+            </span>
           </div>
 
           <button

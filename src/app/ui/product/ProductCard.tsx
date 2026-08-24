@@ -321,7 +321,7 @@ const ProductCard = ({
                     <div className="flex flex-col gap-0.5">
                       <span className="flex flex-col gap-0.5 text-[10px] font-bold tracking-wide text-gray-400 uppercase">
                         <span>
-                          РРЦ: {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
+                          РРЦ: {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
                           {priceRetailRecommendation > wholesalePriceUah && (
                             <span className="ml-1.5 font-bold text-teal-600 normal-case">
                               (Маржа:{' '}
@@ -330,23 +330,28 @@ const ProductCard = ({
                                   priceRetailRecommendation) *
                                   100,
                               )}
-                              % / +{priceRetailRecommendation - wholesalePriceUah} ₴)
+                              % / +
+                              {Math.round(
+                                priceRetailRecommendation - wholesalePriceUah,
+                              ).toLocaleString('uk-UA')}{' '}
+                              ₴)
                             </span>
                           )}
                         </span>
                         {isOnSale && rrcSale && rrcSale > wholesalePriceUah && (
                           <span className="font-bold text-red-500">
-                            РРЦ Акція: {rrcSale.toLocaleString('uk-UA')}.00 ₴
+                            РРЦ Акція: {Math.round(rrcSale).toLocaleString('uk-UA')} ₴
                             <span className="ml-1.5 font-bold text-teal-600 normal-case">
                               (Маржа: {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}%
-                              / +{rrcSale - wholesalePriceUah} ₴)
+                              / +{Math.round(rrcSale - wholesalePriceUah).toLocaleString('uk-UA')}{' '}
+                              ₴)
                             </span>
                           </span>
                         )}
                       </span>
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-extrabold text-gray-900">
-                          {wholesalePriceUah.toLocaleString('uk-UA')}.00 ₴
+                          {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
                         </span>
                       </div>
                       <span className="text-xs font-bold tracking-wide text-gray-400">
@@ -359,15 +364,15 @@ const ProductCard = ({
                       {isOnSale && rrcSale ? (
                         <>
                           <span className="text-2xl font-extrabold text-amber-700">
-                            {rrcSale.toLocaleString('uk-UA')}.00 ₴
+                            {Math.round(rrcSale).toLocaleString('uk-UA')} ₴
                           </span>
                           <span className="text-xs font-semibold text-neutral-500 line-through">
-                            {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
+                            {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
                           </span>
                         </>
                       ) : (
                         <span className="text-2xl font-extrabold text-gray-900">
-                          {priceRetailRecommendation.toLocaleString('uk-UA')}.00 ₴
+                          {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
                         </span>
                       )}
                     </div>

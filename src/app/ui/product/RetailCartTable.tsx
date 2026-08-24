@@ -90,7 +90,7 @@ const RetailCartTable = () => {
         photoCol: item.productId.image,
         rrcCol: effectivePrice,
         quantityCol: item.quantity,
-        totalCol: `${effectivePrice * item.quantity} грн`,
+        totalCol: `${Math.round(effectivePrice * item.quantity).toLocaleString('uk-UA')} грн`,
         id: item.productId.id,
         product: item.productId,
       };
@@ -271,7 +271,7 @@ const RetailCartTable = () => {
       <Table columns={columns} data={data} />
       <div className="mt-2 ml-auto flex w-fit gap-2 border-b-2 text-lg">
         <p>Загальна сума</p>
-        <p>{sum} грн</p>
+        <p>{Math.round(sum).toLocaleString('uk-UA')} грн</p>
       </div>
       <form className="mb-20 flex justify-between gap-2" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2">

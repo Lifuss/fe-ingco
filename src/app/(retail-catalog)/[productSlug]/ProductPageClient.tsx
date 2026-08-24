@@ -545,7 +545,7 @@ export default function ProductPageClient({
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="font-display text-2xl font-bold text-neutral-900">
-                              {wholesalePriceUah.toLocaleString('uk-UA')} ₴
+                              {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
                             </span>
                           </div>
                           <span className="text-xs font-bold tracking-wide text-neutral-400">
@@ -553,7 +553,11 @@ export default function ProductPageClient({
                           </span>
                           <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
                             <span>
-                              РРЦ: {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                              РРЦ:{' '}
+                              {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
+                                'uk-UA',
+                              )}{' '}
+                              ₴
                               {product.priceRetailRecommendation > wholesalePriceUah && (
                                 <span className="ml-1.5 font-bold text-teal-600">
                                   (Маржа:{' '}
@@ -562,19 +566,27 @@ export default function ProductPageClient({
                                       product.priceRetailRecommendation) *
                                       100,
                                   )}
-                                  % / +{product.priceRetailRecommendation - wholesalePriceUah} ₴)
+                                  % / +
+                                  {Math.round(
+                                    product.priceRetailRecommendation - wholesalePriceUah,
+                                  ).toLocaleString('uk-UA')}{' '}
+                                  ₴)
                                 </span>
                               )}
                             </span>
                             {isOnSale && product.rrcSale && product.rrcSale > wholesalePriceUah && (
                               <span className="font-bold text-red-500">
-                                РРЦ Акція: {product.rrcSale.toLocaleString('uk-UA')} ₴
+                                РРЦ Акція: {Math.round(product.rrcSale).toLocaleString('uk-UA')} ₴
                                 <span className="ml-1.5 font-bold text-teal-600">
                                   (Маржа:{' '}
                                   {Math.ceil(
                                     ((product.rrcSale - wholesalePriceUah) / product.rrcSale) * 100,
                                   )}
-                                  % / +{product.rrcSale - wholesalePriceUah} ₴)
+                                  % / +
+                                  {Math.round(product.rrcSale - wholesalePriceUah).toLocaleString(
+                                    'uk-UA',
+                                  )}{' '}
+                                  ₴)
                                 </span>
                               </span>
                             )}
@@ -589,15 +601,21 @@ export default function ProductPageClient({
                             {isOnSale && product.rrcSale ? (
                               <>
                                 <span className="font-display text-primary text-2xl font-bold">
-                                  {product.rrcSale.toLocaleString('uk-UA')} ₴
+                                  {Math.round(product.rrcSale).toLocaleString('uk-UA')} ₴
                                 </span>
                                 <span className="text-sm text-neutral-400 line-through">
-                                  {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                                  {Math.round(
+                                    product.priceRetailRecommendation || 0,
+                                  ).toLocaleString('uk-UA')}{' '}
+                                  ₴
                                 </span>
                               </>
                             ) : (
                               <span className="font-display text-2xl font-bold text-neutral-900">
-                                {product.priceRetailRecommendation.toLocaleString('uk-UA')} ₴
+                                {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
+                                  'uk-UA',
+                                )}{' '}
+                                ₴
                               </span>
                             )}
                           </div>

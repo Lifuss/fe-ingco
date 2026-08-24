@@ -109,24 +109,29 @@ const ModalProduct = ({
                       </div>
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-neutral-950">
-                          ${product.price}
+                          ${Number(product.price || 0).toFixed(2)}
                         </span>
                         <span className="text-xs font-medium text-neutral-400">за одиницю</span>
                       </div>
                       <div className="mt-2 w-fit rounded bg-neutral-200/50 px-2 py-1 text-xs font-medium text-neutral-500">
                         РРЦ:{' '}
                         <span className="font-semibold text-neutral-800">
-                          {product.priceRetailRecommendation} грн
+                          {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
+                            'uk-UA',
+                          )}{' '}
+                          грн
                         </span>
                       </div>
                     </div>
                   ) : isProductOnSale(product) ? (
                     <div>
                       <div className="mb-0.5 text-xs text-neutral-400 line-through">
-                        {product.priceRetailRecommendation} грн
+                        {Math.round(product.priceRetailRecommendation || 0).toLocaleString('uk-UA')}{' '}
+                        грн
                       </div>
                       <div className="text-primary-600 text-2xl font-bold">
-                        {product.rrcSale} <span className="text-sm font-semibold">грн</span>
+                        {Math.round(product.rrcSale || 0).toLocaleString('uk-UA')}{' '}
+                        <span className="text-sm font-semibold">грн</span>
                       </div>
                     </div>
                   ) : (
@@ -135,7 +140,7 @@ const ModalProduct = ({
                         Роздрібна ціна:
                       </div>
                       <div className="text-2xl font-bold text-neutral-950">
-                        {product.priceRetailRecommendation}{' '}
+                        {Math.round(product.priceRetailRecommendation || 0).toLocaleString('uk-UA')}{' '}
                         <span className="text-sm font-semibold">грн</span>
                       </div>
                     </div>
