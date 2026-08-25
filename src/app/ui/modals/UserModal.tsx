@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import Link from 'next/link';
-import { logoutThunk } from '@/lib/appState/user/operation';
+import { logoutThunk, refreshTokenThunk, setToken } from '@/lib/appState/user/operation';
+import { getPersistedToken } from '@/lib/authUtils';
 import { useRouter, usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { toast } from 'react-toastify';
@@ -18,8 +19,10 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isAdminNavigating, setIsAdminNavigating] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const user = useAppSelector((state) => state.persistedAuthReducer.user);
+  const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const user = authState.user;
 
   // Close dropdown when pathname changes
   if (pathname !== prevPathname) {
@@ -46,6 +49,42 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
       .finally(() => {
         closeQuestionModal();
       });
+  };
+
+  const handleAdminNavigation = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAdminNavigating) return;
+    setIsAdminNavigating(true);
+
+    try {
+      const token = authState.token || getPersistedToken();
+      if (!token || user?.role?.toLowerCase() !== 'admin') {
+        toast.error('Не вдалося виконати перехід. Спробуйте оновити сторінку або увійти знову.');
+        setIsAdminNavigating(false);
+        return;
+      }
+
+      // Ensure cookies are synchronized before navigation
+      setToken(token, user.role);
+
+      // Proactively refresh token to verify session with backend
+      try {
+        await dispatch(refreshTokenThunk(token)).unwrap();
+      } catch (err) {
+        console.error('Failed to validate token before admin navigation:', err);
+        toast.error('Не вдалося виконати перехід. Спробуйте оновити сторінку або увійти знову.');
+        setIsAdminNavigating(false);
+        return;
+      }
+
+      closeModal();
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Admin navigation error:', err);
+      toast.error('Не вдалося виконати перехід. Спробуйте оновити сторінку або увійти знову.');
+    } finally {
+      setIsAdminNavigating(false);
+    }
   };
 
   // Block body scroll when logout question modal is open
@@ -101,14 +140,15 @@ const User = ({ showLabel = true }: { showLabel?: boolean }) => {
               <span>Історія</span>
             </Link>
 
-            {user?.role === 'admin' && (
-              <Link
-                href="/dashboard"
-                className="hover:text-primary-500 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50"
+            {user?.role?.toLowerCase() === 'admin' && (
+              <button
+                onClick={handleAdminNavigation}
+                disabled={isAdminNavigating}
+                className="hover:text-primary-500 flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-50 disabled:opacity-50"
               >
                 <Table size={15} className="text-neutral-500" />
-                <span>Адмін</span>
-              </Link>
+                <span>{isAdminNavigating ? 'Завантаження...' : 'Адмін'}</span>
+              </button>
             )}
 
             <button

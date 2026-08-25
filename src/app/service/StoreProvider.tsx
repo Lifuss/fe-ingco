@@ -3,29 +3,43 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { makePersistor } from '../../lib/appState/store';
-import { injectStore, refreshTokenThunk } from '../../lib/appState/user/operation';
+import {
+  injectStore,
+  refreshTokenThunk,
+  setToken,
+  clearToken,
+} from '../../lib/appState/user/operation';
 import { clearAuthState } from '../../lib/appState/user/slice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 import { getPersistedToken } from '../../lib/authUtils';
-import { toast } from 'react-toastify';
 
 function AuthInitializer({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
+  const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const { token, user, isAuthenticated } = authState;
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      const token = getPersistedToken();
-      if (token) {
-        dispatch(refreshTokenThunk(token))
-          .unwrap()
-          .catch(() => {
-            dispatch(clearAuthState());
-            toast.info('Сесія закінчилася. Для взаємодії з акаунтом будь ласка, увійдіть знову.');
-          });
+    const savedToken = token || getPersistedToken();
+    if (savedToken) {
+      // 1. Immediately ensure cookies match active token and role
+      if (typeof window !== 'undefined') {
+        const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+        const cookieToken = match ? decodeURIComponent(match[1]) : null;
+        if (!cookieToken || cookieToken !== savedToken) {
+          setToken(savedToken, user?.role);
+        }
       }
+
+      // 2. Validate and refresh session with backend
+      dispatch(refreshTokenThunk(savedToken))
+        .unwrap()
+        .catch(() => {
+          dispatch(clearAuthState());
+        });
+    } else if (!isAuthenticated) {
+      clearToken();
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, token, user?.role, isAuthenticated]);
 
   return <>{children}</>;
 }

@@ -134,7 +134,7 @@ if (typeof window !== 'undefined' && !cachedToken) {
   }
 }
 
-const setToken = (token: string, role?: string) => {
+export const setToken = (token: string, role?: string) => {
   cachedToken = token;
   apiIngco.defaults.headers.common.Authorization = `Bearer ${token}`;
   if (typeof window !== 'undefined') {
@@ -144,7 +144,7 @@ const setToken = (token: string, role?: string) => {
     }
   }
 };
-const clearToken = () => {
+export const clearToken = () => {
   cachedToken = null;
   apiIngco.defaults.headers.common.Authorization = ``;
   if (typeof window !== 'undefined') {
