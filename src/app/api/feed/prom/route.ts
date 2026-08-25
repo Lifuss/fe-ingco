@@ -9,8 +9,11 @@ interface Category {
 }
 
 interface Characteristic {
-  name: string;
-  value: string;
+  code?: string;
+  name?: string;
+  value?: string | string[] | number | boolean | null;
+  unit?: string | null;
+  isMultiple?: boolean;
 }
 
 interface Product {
@@ -32,8 +35,9 @@ interface Product {
   seoKeywords?: string;
 }
 
-function escapeXml(str: string): string {
-  return str
+function escapeXml(str: unknown): string {
+  if (str == null) return '';
+  return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -41,8 +45,8 @@ function escapeXml(str: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function wrapCdata(str: string): string {
-  const normalized = (str || '')
+function wrapCdata(str: unknown): string {
+  const normalized = (str == null ? '' : String(str))
     .replace(/\r\n/g, '\n')
     .replace(/\n{2,}/g, '<br><br>')
     .replace(/\n/g, '<br>')
@@ -89,20 +93,25 @@ export async function GET() {
       }
     }
 
+    const baseApi = process.env.NEXT_PUBLIC_API || '';
+
     const offers = products
       .map((product) => {
-        const inStock = product.countInStock > 0;
+        const countInStock = Number(product.countInStock) || 0;
+        const inStock = countInStock > 0;
         const available = inStock ? 'true' : 'false';
         const pictures: string[] = [];
-        if (product.images && product.images.length > 0) {
+        if (Array.isArray(product.images) && product.images.length > 0) {
           product.images.forEach((img) => {
-            const url = img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API || ''}${img}`;
-            pictures.push(`      <picture>${escapeXml(url)}</picture>`);
+            if (typeof img === 'string' && img.trim()) {
+              const trimmed = img.trim();
+              const url = trimmed.startsWith('http') ? trimmed : `${baseApi}${trimmed}`;
+              pictures.push(`      <picture>${escapeXml(url)}</picture>`);
+            }
           });
-        } else if (product.image) {
-          const url = product.image.startsWith('http')
-            ? product.image
-            : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`;
+        } else if (typeof product.image === 'string' && product.image.trim()) {
+          const trimmed = product.image.trim();
+          const url = trimmed.startsWith('http') ? trimmed : `${baseApi}${trimmed}`;
           pictures.push(`      <picture>${escapeXml(url)}</picture>`);
         } else {
           pictures.push(`      <picture>${escapeXml(`${DOMAIN}/placeholder.webp`)}</picture>`);
@@ -110,17 +119,33 @@ export async function GET() {
         const picturesXml = pictures.join('\n');
 
         const params: string[] = [];
-        if (product.characteristics?.length) {
+        if (Array.isArray(product.characteristics) && product.characteristics.length > 0) {
           product.characteristics.forEach((char) => {
-            if (char.name && char.value) {
-              params.push(
-                `      <param name="${escapeXml(char.name)}">${escapeXml(char.value)}</param>`,
-              );
+            if (!char || !char.name || char.value == null) return;
+            if (Array.isArray(char.value)) {
+              const valStr = char.value
+                .map((v) => (v != null ? String(v).trim() : ''))
+                .filter(Boolean)
+                .join(', ');
+              if (valStr) {
+                params.push(
+                  `      <param name="${escapeXml(char.name)}">${escapeXml(valStr)}</param>`,
+                );
+              }
+            } else {
+              const valStr = String(char.value).trim();
+              if (valStr) {
+                params.push(
+                  `      <param name="${escapeXml(char.name)}">${escapeXml(valStr)}</param>`,
+                );
+              }
             }
           });
         }
         if (product.warranty) {
-          params.push(`      <param name="Гарантія" unit="міс.">${product.warranty}</param>`);
+          params.push(
+            `      <param name="Гарантія" unit="міс.">${escapeXml(product.warranty)}</param>`,
+          );
         }
         const paramsXml = params.length ? '\n' + params.join('\n') : '';
 
@@ -128,15 +153,16 @@ export async function GET() {
           ? `\n      <barcode>${escapeXml(product.barcode)}</barcode>`
           : '';
 
-        const keywordsXml = product.seoKeywords?.trim()
-          ? `\n      <keywords>${escapeXml(product.seoKeywords.trim())}</keywords>\n      <keywords_ua>${escapeXml(product.seoKeywords.trim())}</keywords_ua>`
-          : '';
+        const keywordsXml =
+          product.seoKeywords && String(product.seoKeywords).trim()
+            ? `\n      <keywords>${escapeXml(String(product.seoKeywords).trim())}</keywords>\n      <keywords_ua>${escapeXml(String(product.seoKeywords).trim())}</keywords_ua>`
+            : '';
 
-        const name = product.name.trim();
-        const article = product.article.trim();
+        const name = (product.name || '').trim();
+        const article = (product.article || '').trim();
 
         const rrcSaleNum = product.rrcSale != null ? Number(product.rrcSale) : 0;
-        const priceRetailRecNum = Number(product.priceRetailRecommendation);
+        const priceRetailRecNum = Number(product.priceRetailRecommendation) || 0;
         const hasSale = rrcSaleNum > 0 && rrcSaleNum < priceRetailRecNum;
         const displayPrice = hasSale ? rrcSaleNum : priceRetailRecNum;
         const oldPriceXml = hasSale ? `\n      <oldprice>${priceRetailRecNum}</oldprice>` : '';
@@ -145,7 +171,7 @@ export async function GET() {
     <offer id="${escapeXml(String(product.id))}" available="${available}" in_stock="${available}" selling_type="r">
       <name>${escapeXml(name)}</name>
       <name_ua>${escapeXml(name)}</name_ua>
-      <url>${DOMAIN}/${escapeXml(product.slug)}</url>
+      <url>${DOMAIN}/${escapeXml(product.slug || '')}</url>
       <price>${displayPrice}</price>${oldPriceXml}
       <currencyId>UAH</currencyId>
       <categoryId>${escapeXml(product.category ? String(product.category.id) : 'uncategorized')}</categoryId>
@@ -154,7 +180,7 @@ ${picturesXml}
       <vendorCode>${escapeXml(article)}</vendorCode>
       <mpn>${escapeXml(article)}</mpn>${barcodeXml}
       <country>Китай</country>
-      <quantity_in_stock>${product.countInStock}</quantity_in_stock>
+      <quantity_in_stock>${countInStock}</quantity_in_stock>
       <description>${wrapCdata(product.description || '')}</description>
       <description_ua>${wrapCdata(product.description || '')}</description_ua>${keywordsXml}${paramsXml}
     </offer>`;
@@ -163,7 +189,7 @@ ${picturesXml}
 
     const categoriesMap = new Map<number, string>();
     products.forEach((p) => {
-      if (p.category) {
+      if (p.category && p.category.id != null && p.category.name) {
         categoriesMap.set(p.category.id, p.category.name);
       }
     });

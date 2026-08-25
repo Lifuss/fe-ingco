@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { makePersistor } from '../../lib/appState/store';
@@ -17,8 +17,12 @@ function AuthInitializer({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const { token, user, isAuthenticated } = authState;
+  const isInitialized = useRef(false);
 
   useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
     const savedToken = token || getPersistedToken();
     if (savedToken) {
       // 1. Immediately ensure cookies match active token and role
