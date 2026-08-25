@@ -7,6 +7,13 @@
 
 ## [Unreleased]
 
+### [Fixed] / [Feed] Prom.ua XML Feed Generation
+
+- **Підтримка множинних характеристик та типобезпечність експорту**:
+  - Виправлено фатальну помилку `TypeError (500 Internal Server Error)` у [`/api/feed/prom`](file:///f:/code/repos/fe-ingco/src/app/api/feed/prom/route.ts), яка виникала при спробі обробити масиви значень характеристик (`isMultiple: true`).
+  - Додано безпечне об'єднання значень масивів через кому `, ` та посилено захист функцій `escapeXml` і `wrapCdata` для роботи з будь-якими типами даних.
+  - Додано захисні значення за замовчуванням для числових та строкових полів товару (`countInStock`, `priceRetailRecommendation`, `rrcSale`, `slug`, `article`, `category`).
+
 ### [Added] / [UX] Catalog Mega Menu Redesign
 
 - Модернізовано дизайн та UX десктопного Мега-меню каталогу ([`CatalogDrawer.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/header/CatalogDrawer.tsx)):
