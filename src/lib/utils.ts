@@ -34,18 +34,27 @@ interface RawProduct extends Omit<
 
 // Prisma serializes Decimal fields as strings. This converts them back to numbers.
 export function normalizeProduct(p: unknown): Product {
+  if (!p || typeof p !== 'object') return p as Product;
   const raw = p as RawProduct;
+  const priceNum = raw.price != null && !isNaN(Number(raw.price)) ? Number(raw.price) : 0;
+  const rrcNum =
+    raw.priceRetailRecommendation != null && !isNaN(Number(raw.priceRetailRecommendation))
+      ? Number(raw.priceRetailRecommendation)
+      : priceNum;
+
   return {
     ...raw,
     category: raw.mainCategory || raw.category || null,
-    price: Number(raw.price),
-    priceBulk: raw.priceBulk != null ? Number(raw.priceBulk) : undefined,
-    rrcSale: raw.rrcSale != null ? Number(raw.rrcSale) : undefined,
-    enterPrice: raw.enterPrice != null ? Number(raw.enterPrice) : undefined,
-    priceRetailRecommendation: Number(raw.priceRetailRecommendation),
-    warranty: Number(raw.warranty),
-    sort: Number(raw.sort),
-    countInStock: Number(raw.countInStock),
+    price: priceNum,
+    priceBulk:
+      raw.priceBulk != null && !isNaN(Number(raw.priceBulk)) ? Number(raw.priceBulk) : undefined,
+    rrcSale: raw.rrcSale != null && !isNaN(Number(raw.rrcSale)) ? Number(raw.rrcSale) : undefined,
+    enterPrice:
+      raw.enterPrice != null && !isNaN(Number(raw.enterPrice)) ? Number(raw.enterPrice) : undefined,
+    priceRetailRecommendation: rrcNum,
+    warranty: Number(raw.warranty || 0),
+    sort: Number(raw.sort || 0),
+    countInStock: Number(raw.countInStock || 0),
     badges: raw.badges
       ? raw.badges.map((b) => ({
           id: Number(b.id),

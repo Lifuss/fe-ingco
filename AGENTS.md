@@ -449,10 +449,11 @@ Follow standard [SemVer](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 - **When to Update**:
   - Whenever implementing new components, pages, dashboard tools, SEO routes (`llms.txt`, sitemaps), or API state integration.
   - During pre-commit audits (`/check`), verify if `CHANGELOG.md` reflects recent UI/state changes.
-- **Categories to Use**:
-  - `🎨 UI/UX` — new pages, dialogs, responsive design, styling updates.
-  - `⚡ Performance & SEO` — Core Web Vitals, sitemaps, caching, `llms.txt`.
-  - `🔄 State & API Integration` — Redux slices, Axios thunks, API contract alignments.
-  - `🛡️ Security & Auth` — auth guards, token refresh, route protection.
-  - `🐛 Fixed` — UI glitches, hydration error fixes, state sync bugs.
+- **Categories to Use (No Emojis, Use Informative Tags)**:
+  - `### [Fixed]` — UI glitches, hydration error fixes, state sync bugs.
+  - `### [UI/UX]` — new pages, dialogs, responsive design, styling updates.
+  - `### [Performance] SEO & Metadata` — Core Web Vitals, sitemaps, caching, `llms.txt`.
+  - `### [Changed] State & API Integration` — Redux slices, Axios thunks, API contract alignments.
+  - `### [Security] Auth & Route Protection` — auth guards, token refresh, route protection.
+  - `### [Pricing] Formatting` — currency formatting, calculations.
 - **Conciseness Rule**: Focus on user-facing and architectural features rather than microscopic CSS tweaks.
