@@ -103,7 +103,7 @@ const ExportClient = () => {
   if (!isAuthenticated || !isB2b) return null;
 
   return (
-    <main className="min-h-[550px] w-full bg-white px-[60px] pt-8 pb-12">
+    <main className="mx-auto min-h-[550px] w-full max-w-[1680px] bg-white px-4 pt-8 pb-12 md:px-8 lg:px-[60px]">
       <section className="mb-10 flex flex-col gap-1">
         <h1 className="col-span-2 mb-5 text-center text-2xl font-medium">Експорт товарів</h1>
         <div className="col-span-1">

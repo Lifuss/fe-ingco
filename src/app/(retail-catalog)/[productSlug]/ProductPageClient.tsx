@@ -306,13 +306,13 @@ export default function ProductPageClient({
     <>
       <main className="flex min-h-[600px] flex-col gap-4 bg-neutral-50 px-4 pt-8 md:px-[60px]">
         {/* Dynamic breadcrumbs */}
-        <div className="mx-auto w-full max-w-[1440px]">
+        <div className="mx-auto w-full max-w-[1680px]">
           <Breadcrumbs items={breadcrumbsItems} />
         </div>
 
         {/* ScrollSpy Tabs navigation */}
         <div className="sticky top-0 z-40 -mx-4 border-b border-neutral-200 bg-white px-4 shadow-sm md:-mx-[60px] md:px-[60px]">
-          <div className="scrollbar-none mx-auto flex max-w-[1440px] gap-6 overflow-x-auto py-3.5 md:gap-10">
+          <div className="scrollbar-none mx-auto flex max-w-[1680px] gap-6 overflow-x-auto py-3.5 md:gap-10">
             {[
               { id: 'about-product', label: 'Про товар' },
               { id: 'specifications', label: 'Характеристики' },
@@ -335,7 +335,7 @@ export default function ProductPageClient({
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 py-6 xl:flex-row 2xl:gap-14">
+        <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 py-6 xl:flex-row 2xl:gap-14">
           <CatalogSidebar />
 
           <div className="flex w-full flex-col gap-10">

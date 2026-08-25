@@ -51,7 +51,7 @@ export default function ConsultationCTA() {
   };
 
   return (
-    <section className="w-full px-5 pb-16 md:px-[60px]">
+    <section className="mx-auto w-full max-w-[1680px] px-5 pb-16 md:px-[60px]">
       <div className="relative flex w-full flex-col items-center justify-between gap-10 overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 px-6 py-12 shadow-[0_10px_50px_rgba(245,158,11,0.1)] md:px-12 md:py-16 lg:flex-row">
         {/* Glow effect overlays for high premium visuals */}
         <div className="bg-primary-500/10 pointer-events-none absolute top-[-50%] left-[-20%] h-[350px] w-[350px] rounded-full blur-[120px] select-none" />

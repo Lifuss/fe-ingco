@@ -125,7 +125,7 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   useSliderMouseWheel(industrialSliderRef, industrialContainerRef, industrialProducts.length);
 
   return (
-    <section className="flex w-full flex-col gap-10 px-5 pb-16 md:px-[60px]">
+    <section className="mx-auto flex w-full max-w-[1680px] flex-col gap-10 px-5 pb-16 md:px-[60px]">
       {/* Title Block */}
       <div className="mx-auto flex max-w-3xl flex-col gap-3 text-center">
         <h2 className="font-display text-2xl leading-tight font-bold text-neutral-900 md:text-4xl">

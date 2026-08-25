@@ -21,7 +21,7 @@ export default function TrustRibbon() {
   ];
 
   return (
-    <section className="relative z-10 -mt-8 w-full px-5 pb-4 md:-mt-12 md:px-[60px]">
+    <section className="relative z-10 mx-auto -mt-8 w-full max-w-[1680px] px-5 pb-4 md:-mt-12 md:px-[60px]">
       <div className="grid grid-cols-1 gap-4 divide-y divide-[#E5E3DD] rounded-lg border border-[#E5E3DD] bg-white p-4 shadow-sm md:grid-cols-3 md:gap-0 md:divide-x md:divide-y-0 md:px-6 md:py-3.5">
         {items.map((item, index) => (
           <div

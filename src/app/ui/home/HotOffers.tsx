@@ -151,7 +151,7 @@ export default function HotOffers({ products }: HotOffersProps) {
   });
 
   return (
-    <section className="flex w-full flex-col gap-6 px-5 pb-16 md:px-[60px]">
+    <section className="mx-auto flex w-full max-w-[1680px] flex-col gap-6 px-5 pb-16 md:px-[60px]">
       {/* Title & Tabs Block */}
       <div className="flex flex-col gap-4 border-b border-[#E5E3DD] pb-3 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-col gap-1">

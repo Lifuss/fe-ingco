@@ -36,7 +36,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
   return (
     <footer className="flex w-full flex-col gap-10 border-t border-[#E5E3DD] bg-[#FFFDFB] px-6 py-12 select-none md:px-[60px]">
       {/* Footer Top Grid */}
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-start gap-8 md:grid-cols-12">
+      <div className="mx-auto grid w-full max-w-[1680px] grid-cols-1 items-start gap-8 md:grid-cols-12">
         {/* Column 1: Logo & Badge */}
         <div className="col-span-12 flex flex-col gap-4 lg:col-span-3">
           <Logo />
@@ -163,7 +163,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
       </div>
 
       {/* Footer Bottom copyright area */}
-      <div className="mx-auto w-full max-w-[1440px] border-t border-[#E5E3DD]/45 pt-6 text-center">
+      <div className="mx-auto w-full max-w-[1680px] border-t border-[#E5E3DD]/45 pt-6 text-center">
         <p className="font-sans text-[11px] font-semibold tracking-wider text-neutral-500 uppercase">
           © 2026 INGCO. Всі права захищені.
         </p>

@@ -18,7 +18,7 @@ export default function Header() {
         <SubHeader />
 
         {/* Main Header bar */}
-        <div className="flex w-full flex-col justify-between gap-4 px-4 py-3 md:px-8 lg:flex-row lg:items-center lg:gap-6 lg:px-10 lg:py-4 xl:px-[60px]">
+        <div className="mx-auto flex w-full max-w-[1680px] flex-col justify-between gap-4 px-4 py-3 md:px-8 lg:flex-row lg:items-center lg:gap-6 lg:px-10 lg:py-4 xl:px-[60px]">
           {/* Mobile Top Row / Desktop Row Items */}
           <div className="flex w-full shrink-0 items-center justify-between gap-4 lg:w-auto">
             <div className="flex items-center gap-3">

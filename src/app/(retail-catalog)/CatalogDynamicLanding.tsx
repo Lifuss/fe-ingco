@@ -22,7 +22,7 @@ export default function CatalogDynamicLanding({ children }: CatalogDynamicLandin
 
   if (displayB2b) {
     return (
-      <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
+      <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 bg-white px-4 pt-8 md:px-8 xl:flex-row 2xl:gap-10">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
           <ShopTable />

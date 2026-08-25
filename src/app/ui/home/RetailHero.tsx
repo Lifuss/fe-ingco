@@ -4,7 +4,7 @@ import { ArrowRight, Percent } from 'lucide-react';
 
 export default function RetailHero() {
   return (
-    <section className="relative w-full px-5 pt-1 pb-0 md:px-[60px] md:pt-2">
+    <section className="relative mx-auto w-full max-w-[1680px] px-5 pt-1 pb-0 md:px-[60px] md:pt-2">
       <div className="relative flex h-[420px] w-full items-start overflow-hidden rounded-2xl pt-6 shadow-2xl md:h-[420px] md:pt-8 lg:h-[474px] lg:pt-10">
         {/* Background Image with dark overlay */}
         <div className="absolute inset-0 z-0">

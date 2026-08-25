@@ -263,7 +263,7 @@ export default function CatalogDrawer({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave || onClose}
         >
-          <div className="grid min-h-[480px] w-full max-w-[1440px] grid-cols-12 items-stretch gap-8 px-6 py-8">
+          <div className="grid min-h-[480px] w-full max-w-[1680px] grid-cols-12 items-stretch gap-8 px-6 py-8">
             {/* 1. Left Sidebar: Categories Navigation */}
             <div className="col-span-3 flex flex-col justify-between border-r border-[#E5E3DD]/70 pr-4">
               <ul className="flex flex-col gap-1.5">

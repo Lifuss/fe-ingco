@@ -49,7 +49,7 @@ const faqSchema = {
 
 export default function FaqSection() {
   return (
-    <section className="flex w-full flex-col gap-8 px-5 pb-16 md:px-[60px]">
+    <section className="mx-auto flex w-full max-w-[1680px] flex-col gap-8 px-5 pb-16 md:px-[60px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
