@@ -40,7 +40,7 @@ export function normalizeProduct(p: unknown): Product {
   const rrcNum =
     raw.priceRetailRecommendation != null && !isNaN(Number(raw.priceRetailRecommendation))
       ? Number(raw.priceRetailRecommendation)
-      : priceNum;
+      : 0;
 
   return {
     ...raw,
