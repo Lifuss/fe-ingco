@@ -310,96 +310,137 @@ export default function CatalogDrawer({
               </Link>
             </div>
 
-            {/* 2. Right Panel: Dynamic Subcategories & Banner Grid */}
-            <div className="col-span-9 flex flex-col justify-between pl-4">
-              {/* Title & Columns Grid */}
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-between border-b border-[#E5E3DD]/45 pb-3">
-                  <h2 className="font-display text-2xl font-bold text-neutral-900">
-                    {activeCategory?.name}
-                  </h2>
-                  {activeCategory && (
-                    <Link
-                      href={getSearchUrl(String(activeCategory.id), activeCategory.slug)}
-                      onClick={onClose}
-                      className="text-primary-500 flex cursor-pointer items-center gap-1 text-xs font-bold hover:underline"
-                    >
-                      Переглянути всі товари категорії <ArrowRight size={12} />
-                    </Link>
-                  )}
-                </div>
-
-                <div className="grid max-h-[350px] grid-cols-3 gap-6 overflow-y-auto pr-2">
-                  {activeSubgroups.map((group) => (
-                    <div key={group.id} className="flex flex-col gap-3">
+            {/* 2. Right Panel: Dynamic Subcategories & Vertical Promo Card */}
+            <div className="col-span-9 flex items-stretch gap-6 pl-2">
+              {/* Center: Subcategories Area */}
+              <div className="flex min-w-0 flex-1 flex-col justify-between pr-2">
+                <div className="flex flex-col gap-5">
+                  {/* Category Header Bar */}
+                  <div className="flex items-center justify-between border-b border-[#E5E3DD]/60 pb-3">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-neutral-900">
+                      {activeCategory?.name}
+                    </h2>
+                    {activeCategory && (
                       <Link
-                        href={getSearchUrl(String(group.id), group.slug)}
+                        href={getSearchUrl(String(activeCategory.id), activeCategory.slug)}
                         onClick={onClose}
-                        className="font-display hover:text-primary-500 text-xs font-bold tracking-wider text-neutral-800 uppercase transition-colors select-none"
+                        className="text-primary-600 hover:text-primary-700 group flex cursor-pointer items-center gap-1.5 text-xs font-bold transition-colors"
                       >
-                        {group.name}
+                        <span>Переглянути всі товари</span>
+                        <ArrowRight
+                          size={12}
+                          className="transition-transform group-hover:translate-x-0.5"
+                        />
                       </Link>
-                      <ul className="flex flex-col gap-2 font-sans text-[13px]">
-                        {group.children.map((item) => (
-                          <li key={item.id}>
+                    )}
+                  </div>
+
+                  {/* Subcategories Grid (Sentence Case, Comfortable 2-Column Grid) */}
+                  <div className="grid max-h-[380px] grid-cols-2 gap-x-6 gap-y-2.5 overflow-y-auto pr-2">
+                    {activeSubgroups.map((group) => {
+                      const hasChildren = group.children && group.children.length > 0;
+
+                      if (hasChildren) {
+                        return (
+                          <div key={group.id} className="flex flex-col gap-2 py-1">
                             <Link
-                              href={getSearchUrl(String(item.id), item.slug)}
+                              href={getSearchUrl(String(group.id), group.slug)}
                               onClick={onClose}
-                              className="hover:text-primary-500 cursor-pointer font-medium text-neutral-600 transition-colors"
+                              className="font-display hover:text-primary-600 border-b border-neutral-100 pb-1 text-sm font-bold text-neutral-900 transition-colors"
                             >
-                              {item.name}
+                              {group.name}
                             </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                  {activeSubgroups.length === 0 && (
-                    <span className="text-sm text-neutral-400">Підкатегорії відсутні</span>
-                  )}
+                            <ul className="flex flex-col gap-1.5 font-sans text-xs">
+                              {group.children.map((item) => (
+                                <li key={item.id}>
+                                  <Link
+                                    href={getSearchUrl(String(item.id), item.slug)}
+                                    onClick={onClose}
+                                    className="hover:text-primary-600 inline-flex cursor-pointer items-center gap-1.5 font-normal text-neutral-600 transition-colors duration-150 hover:translate-x-0.5"
+                                  >
+                                    <span className="text-[10px] text-neutral-400">•</span>
+                                    <span>{item.name}</span>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={group.id}
+                          href={getSearchUrl(String(group.id), group.slug)}
+                          onClick={onClose}
+                          className="group flex items-center justify-between rounded-xl border border-transparent px-3.5 py-2 text-sm font-semibold text-neutral-800 transition-all duration-200 hover:border-amber-200/50 hover:bg-amber-50/70 hover:text-amber-800 hover:shadow-xs"
+                        >
+                          <span className="truncate">{group.name}</span>
+                          <ChevronRight
+                            size={14}
+                            className="ml-2 shrink-0 text-neutral-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-amber-600"
+                          />
+                        </Link>
+                      );
+                    })}
+
+                    {activeSubgroups.length === 0 && (
+                      <div className="col-span-2 py-8 text-center text-sm text-neutral-400">
+                        Підкатегорії для обраного розділу відсутні
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom Row Area (Promo Banner card at the bottom right) */}
-              <div className="mt-6 flex justify-end">
-                {/* Promo Banner Card */}
+              {/* Right Side: Full-height Vertical Promo Card */}
+              <div className="flex w-[300px] shrink-0 flex-col justify-stretch border-l border-[#E5E3DD]/70 pl-6">
                 <Link
                   href="/?query=P20S"
                   onClick={onClose}
-                  className="group relative flex w-full max-w-xl cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-neutral-800 bg-gradient-to-r from-neutral-900 to-neutral-950 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
+                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-neutral-800 bg-gradient-to-b from-neutral-900 via-neutral-950 to-neutral-900 p-5 shadow-md transition-all duration-300 select-none hover:border-amber-500/40 hover:shadow-xl"
                 >
-                  {/* Glow effects */}
-                  <div className="bg-primary-500/10 pointer-events-none absolute top-[-30%] left-[-20%] h-[200px] w-[200px] rounded-full blur-[80px] select-none" />
+                  {/* Background Glow */}
+                  <div className="bg-primary-500/10 pointer-events-none absolute -top-10 -right-10 h-[180px] w-[180px] rounded-full blur-[70px]" />
 
-                  {/* Banner Content */}
-                  <div className="relative z-10 flex max-w-sm flex-col gap-2.5 text-left">
-                    <span className="w-fit rounded bg-amber-500 px-2 py-0.5 font-sans text-[9px] font-bold text-neutral-950 uppercase select-none">
-                      НОВИНКА
-                    </span>
-                    <h3 className="font-display text-lg leading-snug font-bold text-white">
-                      Акумуляторна лінійка P20S
+                  {/* Top Tag & Title */}
+                  <div className="relative z-10 flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-fit rounded bg-amber-500 px-2 py-0.5 font-sans text-[9px] font-bold text-neutral-950 uppercase">
+                        НОВИНКА
+                      </span>
+                      <span className="text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
+                        P20S SYSTEM
+                      </span>
+                    </div>
+                    <h3 className="font-display text-base leading-snug font-bold text-white">
+                      Акумуляторна лінійка INGCO
                     </h3>
-                    <p className="font-sans text-xs leading-normal text-neutral-400">
-                      Один акумулятор для понад 150 інструментів. Професійна потужність без дротів.
+                    <p className="font-sans text-xs leading-relaxed text-neutral-400">
+                      150+ інструментів на одному універсальному акумуляторі P20S.
                     </p>
-                    <span className="font-display mt-2 flex items-center gap-1 text-xs font-bold text-amber-500 transition-colors group-hover:text-amber-400">
-                      Дізнатися більше{' '}
-                      <ArrowRight
-                        size={12}
-                        className="transition-transform group-hover:translate-x-0.5"
-                      />
-                    </span>
                   </div>
 
-                  {/* Banner Image */}
-                  <div className="pointer-events-none relative h-[110px] w-[180px] shrink-0 overflow-hidden rounded-lg select-none">
+                  {/* Center Image */}
+                  <div className="relative my-3 h-[120px] w-full shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src="/hero/tools_bg.png"
                       alt="Лінійка P20S"
                       fill
-                      sizes="180px"
+                      sizes="280px"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                  </div>
+
+                  {/* Bottom CTA Link */}
+                  <div className="relative z-10 flex items-center justify-between border-t border-neutral-800/80 pt-2">
+                    <span className="font-display flex items-center gap-1.5 text-xs font-bold text-amber-500 transition-colors group-hover:text-amber-400">
+                      Дивитися всі P20S
+                      <ArrowRight
+                        size={12}
+                        className="transition-transform group-hover:translate-x-1"
+                      />
+                    </span>
                   </div>
                 </Link>
               </div>
