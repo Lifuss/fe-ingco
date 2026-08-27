@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import { registerThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import { registerPartnerSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
 import { Button } from '../buttons/button';
 import Loader from '../utils/Loader';
+import TurnstileWidget from '../utils/TurnstileWidget';
 
 type RegisterFormData = z.infer<typeof registerPartnerSchema>;
 
@@ -19,6 +20,9 @@ export default function RegisterPartnerForm() {
   const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [turnstileKey, setTurnstileKey] = useState<number>(0);
+
   const {
     register,
     handleSubmit,
@@ -36,15 +40,19 @@ export default function RegisterPartnerForm() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      const registerResponse = await dispatch(registerThunk(data));
+      const registerResponse = await dispatch(registerThunk({ ...data, turnstileToken }));
 
       if (registerResponse.meta.requestStatus === 'rejected') {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
         const payload = registerResponse.payload as
           | { status?: number; message?: string }
           | null
           | undefined;
         if (payload?.status === 409 || payload?.message?.includes('already exists')) {
           toast.error('Користувач з таким email або номером телефону вже існує');
+        } else if (payload?.message?.includes('CAPTCHA') || payload?.message?.includes('безпеки')) {
+          toast.error(payload.message);
         } else {
           toast.error('Помилка авторизації');
         }
@@ -67,6 +75,8 @@ export default function RegisterPartnerForm() {
         reset();
       }
     } catch (error) {
+      setTurnstileKey((prev) => prev + 1);
+      setTurnstileToken('');
       console.error(error);
       toast.error('Щось пішло не так, спробуйте ще раз.');
     }
@@ -174,6 +184,15 @@ export default function RegisterPartnerForm() {
             {errors.about && <p className={errorClassName}>{errors.about.message}</p>}
           </div>
         </div>
+
+        <TurnstileWidget
+          key={turnstileKey}
+          action="signup_partner"
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken('')}
+          className="my-3 flex justify-center"
+        />
+
         <Button
           className="text-2x bg-orange-light mt-4 w-full text-2xl hover:bg-orange-400"
           type="submit"

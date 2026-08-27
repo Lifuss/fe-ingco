@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/lib/hooks';
 import { supportTicketThunk } from '@/lib/appState/main/operations';
 import { customModalStyles } from './CategoryModal';
+import TurnstileWidget from '../utils/TurnstileWidget';
 
 type ConsultationModalProps = {
   isOpen: boolean;
@@ -42,12 +43,16 @@ export default function ConsultationModal({
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleAfterOpen = () => {
     setName('');
     setPhone('');
+    setTurnstileToken('');
+    setTurnstileKey((prev) => prev + 1);
     const articleText = productArticle ? ` (Артикул: ${productArticle})` : '';
     setMessage(`Цікавить консультація щодо товару: ${productName}${articleText}`);
     setIsSubmitted(false);
@@ -69,20 +74,25 @@ export default function ConsultationModal({
         email: 'consultation@ingco.ua',
         message: message.trim(),
         phone: `+380${phone}`,
+        turnstileToken,
       }),
     )
       .unwrap()
       .then(() => {
         setIsSubmitting(false);
         setIsSubmitted(true);
+        setTurnstileToken('');
+        setTurnstileKey((prev) => prev + 1);
         toast.success('Заявку успішно надіслано! Спеціаліст зв’яжеться з вами.');
         setTimeout(() => {
           closeModal();
         }, 3000);
       })
-      .catch(() => {
+      .catch((err) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
         setIsSubmitting(false);
-        toast.error('Виникла помилка. Спробуйте пізніше.');
+        toast.error(err?.message || 'Виникла помилка. Спробуйте пізніше.');
       });
   };
 
@@ -182,6 +192,14 @@ export default function ConsultationModal({
               className="focus:border-primary-500 focus:ring-primary-500 resize-none rounded-md border border-neutral-200 bg-neutral-50 px-3.5 py-2 font-sans text-sm text-neutral-900 placeholder-neutral-400 transition-all outline-none focus:bg-white focus:ring-1"
             />
           </div>
+
+          <TurnstileWidget
+            key={turnstileKey}
+            action="support"
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken('')}
+            className="my-1 flex justify-center"
+          />
 
           <button
             type="submit"

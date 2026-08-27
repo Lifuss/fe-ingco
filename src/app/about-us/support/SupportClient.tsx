@@ -1,13 +1,18 @@
 'use client';
 import { Button } from '@/app/ui/buttons/button';
+import TurnstileWidget from '@/app/ui/utils/TurnstileWidget';
 import { supportTicketThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 const SupportClient = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [turnstileKey, setTurnstileKey] = useState<number>(0);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -15,7 +20,7 @@ const SupportClient = () => {
     const email = form.get('email') as string;
     const phone = form.get('phone') as string;
     const message = form.get('message') as string;
-    dispatch(supportTicketThunk({ name, email, message, phone }))
+    dispatch(supportTicketThunk({ name, email, message, phone, turnstileToken }))
       .unwrap()
       .then(() => {
         toast.success('Повідомлення створено, очікуйте відповіді на електронні пошті', {
@@ -23,8 +28,10 @@ const SupportClient = () => {
         });
         router.push('/about-us');
       })
-      .catch(() => {
-        toast.error('Виникла помилка зі сторони серверу, спробуйте пізніше ');
+      .catch((err) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
+        toast.error(err?.message || 'Виникла помилка зі сторони серверу, спробуйте пізніше');
       });
   };
 
@@ -67,6 +74,14 @@ const SupportClient = () => {
           maxLength={500}
           required
         ></textarea>
+
+        <TurnstileWidget
+          key={turnstileKey}
+          action="support"
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken('')}
+          className="my-1 flex justify-center"
+        />
 
         <Button
           className="bg-orange-light text-white hover:bg-orange-500"

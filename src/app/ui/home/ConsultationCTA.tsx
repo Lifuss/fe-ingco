@@ -5,11 +5,14 @@ import { Phone, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/lib/hooks';
 import { supportTicketThunk } from '@/lib/appState/main/operations';
+import TurnstileWidget from '../utils/TurnstileWidget';
 
 export default function ConsultationCTA() {
   const dispatch = useAppDispatch();
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -29,12 +32,15 @@ export default function ConsultationCTA() {
         email: 'consultation@ingco.ua',
         message: 'Заявка на консультацію з головної сторінки (блок "Важко обрати інструмент?")',
         phone: `+380${phone}`,
+        turnstileToken,
       }),
     )
       .unwrap()
       .then(() => {
         setIsSubmitting(false);
         setIsSubmitted(true);
+        setTurnstileToken('');
+        setTurnstileKey((prev) => prev + 1);
         toast.success('Дякуємо! Наш спеціаліст зв’яжеться з вами найближчим часом.');
 
         // Reset form after a delay
@@ -44,9 +50,13 @@ export default function ConsultationCTA() {
           setIsSubmitted(false);
         }, 5000);
       })
-      .catch(() => {
+      .catch((err) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
         setIsSubmitting(false);
-        toast.error('Виникла помилка. Спробуйте пізніше або зв’яжіться з нами по телефону.');
+        toast.error(
+          err?.message || 'Виникла помилка. Спробуйте пізніше або зв’яжіться з нами по телефону.',
+        );
       });
   };
 
@@ -132,6 +142,15 @@ export default function ConsultationCTA() {
                   />
                 </div>
               </div>
+
+              <TurnstileWidget
+                key={turnstileKey}
+                action="support"
+                theme="dark"
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken('')}
+                className="my-1 flex justify-center"
+              />
 
               <button
                 type="submit"

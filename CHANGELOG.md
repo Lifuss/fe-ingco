@@ -7,6 +7,22 @@
 
 ## [Unreleased]
 
+## [2.3.0] — 2026-08-27
+
+### [Security] Cloudflare Turnstile Integration & Bot Protection
+
+- Створено модульний клієнтський React-компонент [`TurnstileWidget`](file:///f:/code/repos/fe-ingco/src/app/ui/utils/TurnstileWidget.tsx) з автоматичним завантаженням скрипта Cloudflare, підтримкою темної/світлої теми, контекстних дій (`action`) та безпечним життєвим циклом (single-use token reset через declarative key-management).
+- Інтегровано Turnstile віджет у всі публічні форми:
+  - Форма реєстрації роздрібного клієнта (`RegisterClient-form.tsx`)
+  - Форма реєстрації B2B-партнера (`RegisterPartner-form.tsx`)
+  - Форма відновлення пароля (`ForgotClient.tsx`)
+  - Роздрібне оформлення замовлення в кошику (`RetailCartTable.tsx`)
+  - Сторінка підтримки (`SupportClient.tsx`)
+  - Модальне вікно зворотного дзвінка менеджера (`CallbackModal.tsx`)
+  - Модальне вікно консультації по товару (`ConsultationModal.tsx`)
+  - Секція консультації на головній сторінці (`ConsultationCTA.tsx`)
+- Оновлено Redux thunks (`registerClientThunk`, `registerThunk`, `forgotPasswordThunk`, `createRetailOrderThunk`, `supportTicketThunk`) для передачі `turnstileToken` на бекенд.
+
 ### [Fixed] / [Pricing] Dynamic isRetail & B2B Wholesale Catalog Unification
 
 - **Відновлення оптових цін та уніфікація B2B/B2C каталогів**:

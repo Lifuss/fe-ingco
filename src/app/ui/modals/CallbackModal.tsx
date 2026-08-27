@@ -5,6 +5,7 @@ import { X, PhoneCall } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { supportTicketThunk } from '@/lib/appState/main/operations';
 import { useAppDispatch } from '@/lib/hooks';
+import TurnstileWidget from '../utils/TurnstileWidget';
 
 const customModalStyles = {
   content: {
@@ -36,6 +37,8 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -52,6 +55,7 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
         phone,
         email: 'callback@ingcoua.com.ua',
         message: 'Запит на персонального менеджера / Зворотній дзвінок',
+        turnstileToken,
       }),
     )
       .unwrap()
@@ -59,11 +63,15 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
         toast.success("Запит надіслано! Менеджер зв'яжеться з вами найближчим часом.");
         setName('');
         setPhone('');
+        setTurnstileToken('');
+        setTurnstileKey((prev) => prev + 1);
         setIsSubmitting(false);
         closeModal();
       })
-      .catch(() => {
-        toast.error('Виникла помилка зі сторони серверу, спробуйте пізніше.');
+      .catch((err) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
+        toast.error(err?.message || 'Виникла помилка зі сторони серверу, спробуйте пізніше.');
         setIsSubmitting(false);
       });
   };
@@ -121,6 +129,13 @@ const CallbackModal = ({ isOpen, closeModal }: CallbackModalProps) => {
               placeholder="+380"
             />
           </div>
+          <TurnstileWidget
+            key={turnstileKey}
+            action="support"
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken('')}
+            className="my-1 flex justify-center"
+          />
           <button
             type="submit"
             disabled={isSubmitting}

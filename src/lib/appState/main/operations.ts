@@ -346,16 +346,18 @@ export const supportTicketThunk = createAsyncThunk(
       email,
       message,
       phone,
+      turnstileToken,
     }: {
       name: string;
       email: string;
       message: string;
       phone: string;
+      turnstileToken?: string;
     },
     { rejectWithValue },
   ) => {
     try {
-      await apiIngco.post('/users/support', { name, email, message, phone });
+      await apiIngco.post('/users/support', { name, email, message, phone, turnstileToken });
       return;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));

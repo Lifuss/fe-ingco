@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/app/ui/buttons/button';
+import TurnstileWidget from '@/app/ui/utils/TurnstileWidget';
 import { forgotPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
 import { Loader2 } from 'lucide-react';
@@ -11,6 +12,8 @@ const ForgotClient = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [turnstileKey, setTurnstileKey] = useState<number>(0);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,13 +26,15 @@ const ForgotClient = () => {
     }
 
     setIsLoading(true);
-    dispatch(forgotPasswordThunk({ resetData }))
+    dispatch(forgotPasswordThunk({ resetData, turnstileToken }))
       .unwrap()
       .then(() => {
         setIsSuccess(true);
         toast.success('Інструкцію з відновлення пароля надіслано на вашу пошту!');
       })
       .catch((error) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
         console.error('Error in forgot password:', error);
         if (error?.status === 429) {
           toast.error('Занадто багато спроб. Спробуйте пізніше');
@@ -72,6 +77,13 @@ const ForgotClient = () => {
             <p className="text-xs text-gray-500">
               Після підтвердження вам на пошту прийде повідомлення з інструкцією
             </p>
+            <TurnstileWidget
+              key={turnstileKey}
+              action="forgot_password"
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken('')}
+              className="my-2 flex justify-center"
+            />
             <Button
               type="submit"
               disabled={isLoading}

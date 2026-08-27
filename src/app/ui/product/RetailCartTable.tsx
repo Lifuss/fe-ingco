@@ -21,6 +21,7 @@ import {
 } from '@/lib/appState/user/slice';
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
+import TurnstileWidget from '@/app/ui/utils/TurnstileWidget';
 import { type ColumnDef } from '@tanstack/react-table';
 import { getEffectiveRetailPrice } from '@/lib/utils';
 
@@ -39,6 +40,8 @@ type RetailCartRow = {
 const RetailCartTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [turnstileKey, setTurnstileKey] = useState<number>(0);
   const dispatch = useAppDispatch();
 
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
@@ -256,13 +259,22 @@ const RetailCartTable = () => {
       phone,
       email,
       comment,
+      turnstileToken,
       token: localStorage.getItem('token') || '',
     };
     dispatch(createRetailOrderThunk(order))
       .unwrap()
       .then((data) => {
         toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
         form.reset();
+      })
+      .catch((err) => {
+        setTurnstileKey((prev) => prev + 1);
+        setTurnstileToken('');
+        const errMsg = err?.message || 'Помилка при оформленні замовлення';
+        toast.error(errMsg);
       });
   };
 
@@ -364,6 +376,13 @@ const RetailCartTable = () => {
               placeholder="Коментарій до замовлення"
             />
           </label>
+          <TurnstileWidget
+            key={turnstileKey}
+            action="checkout_retail"
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken('')}
+            className="my-2 flex justify-end"
+          />
           <button
             type="submit"
             className="bg-brand-dark mt-auto ml-auto block h-fit w-fit rounded-lg px-2 py-2 text-lg text-white"

@@ -10,6 +10,7 @@ interface Register {
   firstName: string;
   surName: string;
   phone: string;
+  turnstileToken?: string;
 }
 
 export interface RegisterB2BCredentials extends Register {
@@ -389,6 +390,7 @@ export const createRetailOrderThunk = createAsyncThunk(
       surName: string;
       phone: string;
       email: string;
+      turnstileToken?: string;
     },
     { rejectWithValue },
   ) => {
@@ -405,6 +407,7 @@ export const createRetailOrderThunk = createAsyncThunk(
         surName: order.surName,
         phone: order.phone,
         email: order.email,
+        turnstileToken: order.turnstileToken,
       };
       const { data } = await apiIngco.post('orders/retail', payload);
       return normalizeOrder(data);
@@ -416,9 +419,12 @@ export const createRetailOrderThunk = createAsyncThunk(
 
 export const forgotPasswordThunk = createAsyncThunk(
   'user/forgot',
-  async ({ resetData }: { resetData: string }, { rejectWithValue }) => {
+  async (
+    { resetData, turnstileToken }: { resetData: string; turnstileToken?: string },
+    { rejectWithValue },
+  ) => {
     try {
-      await apiIngco.post('users/forgot', { resetData });
+      await apiIngco.post('users/forgot', { resetData, turnstileToken });
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
     }
