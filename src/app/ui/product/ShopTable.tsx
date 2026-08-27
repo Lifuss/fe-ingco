@@ -132,6 +132,12 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
   const handleCartClick = useCallback(
     (id: number, productName: string) => {
+      const product = productsData.find((p) => p.id === id);
+      if (product && (!product.price || product.price <= 0)) {
+        toast.info('Ціна на цей товар уточнюється. Зверніться до менеджера для замовлення.');
+        return;
+      }
+
       const input = document.getElementsByName(String(id))[0] as HTMLInputElement | undefined;
       const qty = input ? parseInt(input.value) || 0 : 0;
 
@@ -161,7 +167,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
         if (input) input.value = '';
       }
     },
-    [dispatch],
+    [dispatch, productsData],
   );
 
   const data = useMemo<ShopTableRow[]>(() => {
@@ -275,14 +281,35 @@ const ShopTable = ({ isFavoritePage = false }) => {
       {
         header: 'Ціна($)',
         accessorKey: 'priceCol',
+        cell: ({ row }) => (
+          <span>
+            {row.original.priceCol > 0
+              ? `$${Number(row.original.priceCol).toFixed(2)}`
+              : 'За запитом'}
+          </span>
+        ),
       },
       {
         header: 'Ціна(грн)',
         accessorKey: 'priceUahCol',
+        cell: ({ row }) => (
+          <span>
+            {row.original.priceUahCol > 0
+              ? `${Math.round(row.original.priceUahCol).toLocaleString('uk-UA')} ₴`
+              : 'За запитом'}
+          </span>
+        ),
       },
       {
         header: 'РРЦ(грн)',
         accessorKey: 'rrcCol',
+        cell: ({ row }) => (
+          <span>
+            {row.original.rrcCol > 0
+              ? `${Math.round(row.original.rrcCol).toLocaleString('uk-UA')} ₴`
+              : '—'}
+          </span>
+        ),
       },
       {
         header: 'К-сть',

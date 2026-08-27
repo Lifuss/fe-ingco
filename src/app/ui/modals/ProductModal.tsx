@@ -107,30 +107,46 @@ const ModalProduct = ({
                       <div className="mb-1 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                         Ціна:
                       </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-neutral-950">
-                          ${Number(product.price || 0).toFixed(2)}
-                        </span>
-                        <span className="text-xs font-medium text-neutral-400">за одиницю</span>
-                      </div>
-                      <div className="mt-2 w-fit rounded bg-neutral-200/50 px-2 py-1 text-xs font-medium text-neutral-500">
-                        РРЦ:{' '}
-                        <span className="font-semibold text-neutral-800">
-                          {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
-                            'uk-UA',
-                          )}{' '}
+                      {(product.price || 0) > 0 ? (
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold text-neutral-950">
+                            ${Number(product.price).toFixed(2)}
+                          </span>
+                          <span className="text-xs font-medium text-neutral-400">за одиницю</span>
+                        </div>
+                      ) : (
+                        <span className="text-lg font-bold text-amber-600">Ціна за запитом</span>
+                      )}
+                      {product.priceRetailRecommendation > 0 && (
+                        <div className="mt-2 w-fit rounded bg-neutral-200/50 px-2 py-1 text-xs font-medium text-neutral-500">
+                          РРЦ:{' '}
+                          <span className="font-semibold text-neutral-800">
+                            {Math.round(product.priceRetailRecommendation).toLocaleString('uk-UA')}{' '}
+                            грн
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : isProductOnSale(product) && product.rrcSale && product.rrcSale > 0 ? (
+                    <div>
+                      {product.priceRetailRecommendation > 0 && (
+                        <div className="mb-0.5 text-xs text-neutral-400 line-through">
+                          {Math.round(product.priceRetailRecommendation).toLocaleString('uk-UA')}{' '}
                           грн
-                        </span>
+                        </div>
+                      )}
+                      <div className="text-primary-600 text-2xl font-bold">
+                        {Math.round(product.rrcSale).toLocaleString('uk-UA')}{' '}
+                        <span className="text-sm font-semibold">грн</span>
                       </div>
                     </div>
-                  ) : isProductOnSale(product) ? (
+                  ) : (product.priceRetailRecommendation || 0) > 0 ? (
                     <div>
-                      <div className="mb-0.5 text-xs text-neutral-400 line-through">
-                        {Math.round(product.priceRetailRecommendation || 0).toLocaleString('uk-UA')}{' '}
-                        грн
+                      <div className="mb-1 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
+                        Роздрібна ціна:
                       </div>
-                      <div className="text-primary-600 text-2xl font-bold">
-                        {Math.round(product.rrcSale || 0).toLocaleString('uk-UA')}{' '}
+                      <div className="text-2xl font-bold text-neutral-950">
+                        {Math.round(product.priceRetailRecommendation).toLocaleString('uk-UA')}{' '}
                         <span className="text-sm font-semibold">грн</span>
                       </div>
                     </div>
@@ -139,10 +155,7 @@ const ModalProduct = ({
                       <div className="mb-1 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                         Роздрібна ціна:
                       </div>
-                      <div className="text-2xl font-bold text-neutral-950">
-                        {Math.round(product.priceRetailRecommendation || 0).toLocaleString('uk-UA')}{' '}
-                        <span className="text-sm font-semibold">грн</span>
-                      </div>
+                      <span className="text-lg font-bold text-amber-600">Ціна за запитом</span>
                     </div>
                   )}
                 </div>

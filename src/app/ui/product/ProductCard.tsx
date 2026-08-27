@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { Heart, ShoppingCart, Minus, Plus, Star } from 'lucide-react';
+import { Heart, ShoppingCart, Minus, Plus, Star, Phone } from 'lucide-react';
 import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import {
   addProductToCartThunk,
@@ -15,6 +15,7 @@ import {
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import OutOfStockModal from '../modals/OutOfStockModal';
+import ConsultationModal from '../modals/ConsultationModal';
 import { isProductOnSale } from '@/lib/utils';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
@@ -48,6 +49,7 @@ const ProductCard = ({
 
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
+  const [isConsultOpen, setIsConsultOpen] = useState(false);
 
   if (!product || !product.id) {
     return (
@@ -314,103 +316,140 @@ const ProductCard = ({
                   {isB2BUser ? (
                     // B2B Pricing Structure
                     <div className="flex flex-col gap-0.5">
-                      <span className="flex flex-col gap-0.5 text-[10px] font-bold tracking-wide text-gray-400 uppercase">
-                        <span>
-                          РРЦ: {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
-                          {priceRetailRecommendation > wholesalePriceUah && (
-                            <span className="ml-1.5 font-bold text-teal-600 normal-case">
-                              (Маржа:{' '}
-                              {Math.ceil(
-                                ((priceRetailRecommendation - wholesalePriceUah) /
-                                  priceRetailRecommendation) *
-                                  100,
+                      {priceRetailRecommendation > 0 && (
+                        <span className="flex flex-col gap-0.5 text-[10px] font-bold tracking-wide text-gray-400 uppercase">
+                          <span>
+                            РРЦ: {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
+                            {wholesalePriceUah > 0 &&
+                              priceRetailRecommendation > wholesalePriceUah && (
+                                <span className="ml-1.5 font-bold text-teal-600 normal-case">
+                                  (Маржа:{' '}
+                                  {Math.ceil(
+                                    ((priceRetailRecommendation - wholesalePriceUah) /
+                                      priceRetailRecommendation) *
+                                      100,
+                                  )}
+                                  % / +
+                                  {Math.round(
+                                    priceRetailRecommendation - wholesalePriceUah,
+                                  ).toLocaleString('uk-UA')}{' '}
+                                  ₴)
+                                </span>
                               )}
-                              % / +
-                              {Math.round(
-                                priceRetailRecommendation - wholesalePriceUah,
-                              ).toLocaleString('uk-UA')}{' '}
-                              ₴)
-                            </span>
-                          )}
-                        </span>
-                        {isOnSale && rrcSale && rrcSale > wholesalePriceUah && (
-                          <span className="font-bold text-red-500">
-                            РРЦ Акція: {Math.round(rrcSale).toLocaleString('uk-UA')} ₴
-                            <span className="ml-1.5 font-bold text-teal-600 normal-case">
-                              (Маржа: {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}%
-                              / +{Math.round(rrcSale - wholesalePriceUah).toLocaleString('uk-UA')}{' '}
-                              ₴)
-                            </span>
                           </span>
-                        )}
-                      </span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-extrabold text-gray-900">
-                          {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
+                          {isOnSale &&
+                            rrcSale &&
+                            wholesalePriceUah > 0 &&
+                            rrcSale > wholesalePriceUah && (
+                              <span className="font-bold text-red-500">
+                                РРЦ Акція: {Math.round(rrcSale).toLocaleString('uk-UA')} ₴
+                                <span className="ml-1.5 font-bold text-teal-600 normal-case">
+                                  (Маржа:{' '}
+                                  {Math.ceil(((rrcSale - wholesalePriceUah) / rrcSale) * 100)}% / +
+                                  {Math.round(rrcSale - wholesalePriceUah).toLocaleString('uk-UA')}{' '}
+                                  ₴)
+                                </span>
+                              </span>
+                            )}
                         </span>
-                      </div>
-                      <span className="text-xs font-bold tracking-wide text-gray-400">
-                        ${Number(price).toFixed(2)} / од.
-                      </span>
+                      )}
+                      {wholesalePriceUah > 0 && price > 0 ? (
+                        <>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-extrabold text-gray-900">
+                              {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold tracking-wide text-gray-400">
+                            ${Number(price).toFixed(2)} / од.
+                          </span>
+                        </>
+                      ) : (
+                        <div className="flex items-center py-1">
+                          <span className="text-sm font-bold text-amber-600">Ціна за запитом</span>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     // B2C / Retail Pricing Structure
                     <div className="flex items-baseline gap-2">
-                      {isOnSale && rrcSale ? (
+                      {isOnSale && rrcSale && rrcSale > 0 ? (
                         <>
                           <span className="text-2xl font-extrabold text-amber-700">
                             {Math.round(rrcSale).toLocaleString('uk-UA')} ₴
                           </span>
-                          <span className="text-xs font-semibold text-neutral-500 line-through">
-                            {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
-                          </span>
+                          {priceRetailRecommendation > 0 && (
+                            <span className="text-xs font-semibold text-neutral-500 line-through">
+                              {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
+                            </span>
+                          )}
                         </>
-                      ) : (
+                      ) : priceRetailRecommendation > 0 ? (
                         <span className="text-2xl font-extrabold text-gray-900">
                           {Math.round(priceRetailRecommendation).toLocaleString('uk-UA')} ₴
                         </span>
+                      ) : (
+                        <span className="text-sm font-bold text-amber-600">Ціна за запитом</span>
                       )}
                     </div>
                   )}
                 </div>
 
                 {/* Bottom interactive action panel */}
-                <div className="flex items-center gap-2">
-                  {/* Quantity Counter */}
-                  <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 px-1">
+                {(
+                  isB2BUser
+                    ? wholesalePriceUah > 0 && price > 0
+                    : (isOnSale && rrcSale ? rrcSale : priceRetailRecommendation) > 0
+                ) ? (
+                  <div className="flex items-center gap-2">
+                    {/* Quantity Counter */}
+                    <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 px-1">
+                      <button
+                        onClick={handleDecrease}
+                        className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus size={13} strokeWidth={2.5} />
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        aria-label={`Кількість товару ${name}`}
+                        onChange={handleQtyChange}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-10 [appearance:textfield] border-none bg-transparent text-center text-xs font-bold text-gray-900 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        onClick={handleIncrease}
+                        className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={13} strokeWidth={2.5} />
+                      </button>
+                    </div>
+
+                    {/* Add To Cart Button */}
                     <button
-                      onClick={handleDecrease}
-                      className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
-                      aria-label="Decrease quantity"
+                      onClick={handleAddToCart}
+                      className="bg-primary-500 hover:bg-primary-600 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-normal text-white shadow-sm transition-all active:scale-95"
                     >
-                      <Minus size={13} strokeWidth={2.5} />
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      aria-label={`Кількість товару ${name}`}
-                      onChange={handleQtyChange}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-10 [appearance:textfield] border-none bg-transparent text-center text-xs font-bold text-gray-900 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    />
-                    <button
-                      onClick={handleIncrease}
-                      className="hover:text-primary-500 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
-                      aria-label="Increase quantity"
-                    >
-                      <Plus size={13} strokeWidth={2.5} />
+                      <ShoppingCart size={14} className="fill-current" />В кошик
                     </button>
                   </div>
-
-                  {/* Add To Cart Button */}
+                ) : (
+                  /* Consultation / Price Inquiry Button when price is not set */
                   <button
-                    onClick={handleAddToCart}
-                    className="bg-primary-500 hover:bg-primary-600 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold tracking-normal text-white shadow-sm transition-all active:scale-95"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsConsultOpen(true);
+                    }}
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-amber-500 bg-amber-50 px-4 py-2 text-xs font-bold text-amber-800 shadow-sm transition-all hover:bg-amber-100 active:scale-95"
                   >
-                    <ShoppingCart size={14} className="fill-current" />В кошик
+                    <Phone size={14} className="text-amber-600" />
+                    Уточнити ціну
                   </button>
-                </div>
+                )}
               </div>
             ) : (
               // Out of Stock details button
@@ -434,6 +473,14 @@ const ProductCard = ({
         closeModal={() => setIsOutOfStockOpen(false)}
         productName={name}
         sku={article}
+      />
+
+      {/* Price Inquiry / Consultation Dialog Modal */}
+      <ConsultationModal
+        isOpen={isConsultOpen}
+        closeModal={() => setIsConsultOpen(false)}
+        productName={name}
+        productArticle={article}
       />
     </>
   );

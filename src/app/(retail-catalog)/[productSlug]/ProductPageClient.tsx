@@ -21,9 +21,10 @@ import {
   Plus,
   Minus,
   Pencil,
+  Phone,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
-import { isProductOnSale } from '@/lib/utils';
+import { isProductOnSale, normalizeProduct } from '@/lib/utils';
 
 import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
@@ -32,6 +33,7 @@ import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 import {
+  apiIngco,
   addProductToCartThunk,
   addFavoriteProductThunk,
   deleteFavoriteProductThunk,
@@ -91,11 +93,33 @@ export default function ProductPageClient({
   const product = reduxProduct && reduxProduct.slug === productSlug ? reduxProduct : initialProduct;
 
   // UI state
+  const [clientRelatedProducts, setClientRelatedProducts] = useState<Product[] | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState<number | ''>(1);
   const [activeSection, setActiveSection] = useState('about-product');
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isB2b && product?.category?.id) {
+      apiIngco
+        .get('/products', {
+          params: {
+            page: 1,
+            limit: 5,
+            isRetail: false,
+            category: product.category.id,
+            sortValue: 'default',
+          },
+        })
+        .then(({ data }) => {
+          if (Array.isArray(data?.products)) {
+            setClientRelatedProducts(data.products.map(normalizeProduct));
+          }
+        })
+        .catch((err) => console.error('Failed to fetch B2B related products:', err));
+    }
+  }, [isB2b, product?.category?.id]);
 
   const barcodeRef = useRef<SVGSVGElement | null>(null);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
@@ -297,9 +321,10 @@ export default function ProductPageClient({
   };
 
   // Filter out the current product from recommendations
+  const baseRelated = clientRelatedProducts ?? initialRelatedProducts;
   const relatedProducts =
-    initialRelatedProducts && initialRelatedProducts.length > 0
-      ? initialRelatedProducts.filter((p) => p.id !== product.id).slice(0, 4)
+    baseRelated && baseRelated.length > 0
+      ? baseRelated.filter((p) => p.id !== product.id).slice(0, 4)
       : products.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
@@ -543,54 +568,78 @@ export default function ProductPageClient({
                           <span className="text-xs font-semibold text-neutral-400 uppercase">
                             Ціна партнера
                           </span>
-                          <div className="flex items-baseline gap-2">
-                            <span className="font-display text-2xl font-bold text-neutral-900">
-                              {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
-                            </span>
-                          </div>
-                          <span className="text-xs font-bold tracking-wide text-neutral-400">
-                            ${Number(product.price || 0).toFixed(2)} / од.
-                          </span>
-                          <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
-                            <span>
-                              РРЦ:{' '}
-                              {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
-                                'uk-UA',
-                              )}{' '}
-                              ₴
-                              {product.priceRetailRecommendation > wholesalePriceUah && (
-                                <span className="ml-1.5 font-bold text-teal-600">
-                                  (Маржа:{' '}
-                                  {Math.ceil(
-                                    ((product.priceRetailRecommendation - wholesalePriceUah) /
-                                      product.priceRetailRecommendation) *
-                                      100,
-                                  )}
-                                  % / +
-                                  {Math.round(
-                                    product.priceRetailRecommendation - wholesalePriceUah,
-                                  ).toLocaleString('uk-UA')}{' '}
-                                  ₴)
+                          {wholesalePriceUah > 0 && (product.price || 0) > 0 ? (
+                            <>
+                              <div className="flex items-baseline gap-2">
+                                <span className="font-display text-2xl font-bold text-neutral-900">
+                                  {Math.round(wholesalePriceUah).toLocaleString('uk-UA')} ₴
                                 </span>
-                              )}
-                            </span>
-                            {isOnSale && product.rrcSale && product.rrcSale > wholesalePriceUah && (
-                              <span className="font-bold text-red-500">
-                                РРЦ Акція: {Math.round(product.rrcSale).toLocaleString('uk-UA')} ₴
-                                <span className="ml-1.5 font-bold text-teal-600">
-                                  (Маржа:{' '}
-                                  {Math.ceil(
-                                    ((product.rrcSale - wholesalePriceUah) / product.rrcSale) * 100,
+                              </div>
+                              <span className="text-xs font-bold tracking-wide text-neutral-400">
+                                ${Number(product.price || 0).toFixed(2)} / од.
+                              </span>
+                              <div className="mt-2 flex flex-col gap-1 text-[11px] font-semibold text-neutral-500">
+                                <span>
+                                  РРЦ:{' '}
+                                  {Math.round(
+                                    product.priceRetailRecommendation || 0,
+                                  ).toLocaleString('uk-UA')}{' '}
+                                  ₴
+                                  {product.priceRetailRecommendation > wholesalePriceUah && (
+                                    <span className="ml-1.5 font-bold text-teal-600">
+                                      (Маржа:{' '}
+                                      {Math.ceil(
+                                        ((product.priceRetailRecommendation - wholesalePriceUah) /
+                                          product.priceRetailRecommendation) *
+                                          100,
+                                      )}
+                                      % / +
+                                      {Math.round(
+                                        product.priceRetailRecommendation - wholesalePriceUah,
+                                      ).toLocaleString('uk-UA')}{' '}
+                                      ₴)
+                                    </span>
                                   )}
-                                  % / +
-                                  {Math.round(product.rrcSale - wholesalePriceUah).toLocaleString(
+                                </span>
+                                {isOnSale &&
+                                  product.rrcSale &&
+                                  product.rrcSale > wholesalePriceUah && (
+                                    <span className="font-bold text-red-500">
+                                      РРЦ Акція:{' '}
+                                      {Math.round(product.rrcSale).toLocaleString('uk-UA')} ₴
+                                      <span className="ml-1.5 font-bold text-teal-600">
+                                        (Маржа:{' '}
+                                        {Math.ceil(
+                                          ((product.rrcSale - wholesalePriceUah) /
+                                            product.rrcSale) *
+                                            100,
+                                        )}
+                                        % / +
+                                        {Math.round(
+                                          product.rrcSale - wholesalePriceUah,
+                                        ).toLocaleString('uk-UA')}{' '}
+                                        ₴)
+                                      </span>
+                                    </span>
+                                  )}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex flex-col gap-1 py-1">
+                              <span className="font-display text-2xl font-bold text-amber-600">
+                                Ціна за запитом
+                              </span>
+                              {product.priceRetailRecommendation > 0 && (
+                                <span className="text-xs font-semibold text-neutral-500">
+                                  РРЦ:{' '}
+                                  {Math.round(product.priceRetailRecommendation).toLocaleString(
                                     'uk-UA',
                                   )}{' '}
-                                  ₴)
+                                  ₴
                                 </span>
-                              </span>
-                            )}
-                          </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <>
@@ -598,24 +647,30 @@ export default function ProductPageClient({
                             Ціна
                           </span>
                           <div className="flex items-baseline gap-2">
-                            {isOnSale && product.rrcSale ? (
+                            {isOnSale && product.rrcSale && product.rrcSale > 0 ? (
                               <>
                                 <span className="font-display text-primary text-2xl font-bold">
                                   {Math.round(product.rrcSale).toLocaleString('uk-UA')} ₴
                                 </span>
-                                <span className="text-sm text-neutral-400 line-through">
-                                  {Math.round(
-                                    product.priceRetailRecommendation || 0,
-                                  ).toLocaleString('uk-UA')}{' '}
-                                  ₴
-                                </span>
+                                {product.priceRetailRecommendation > 0 && (
+                                  <span className="text-sm text-neutral-400 line-through">
+                                    {Math.round(
+                                      product.priceRetailRecommendation || 0,
+                                    ).toLocaleString('uk-UA')}{' '}
+                                    ₴
+                                  </span>
+                                )}
                               </>
-                            ) : (
+                            ) : product.priceRetailRecommendation > 0 ? (
                               <span className="font-display text-2xl font-bold text-neutral-900">
                                 {Math.round(product.priceRetailRecommendation || 0).toLocaleString(
                                   'uk-UA',
                                 )}{' '}
                                 ₴
+                              </span>
+                            ) : (
+                              <span className="font-display text-2xl font-bold text-amber-600">
+                                Ціна за запитом
                               </span>
                             )}
                           </div>
@@ -624,44 +679,66 @@ export default function ProductPageClient({
                     </div>
 
                     {/* Quantity counter */}
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="mr-1 text-xs font-semibold text-neutral-400 uppercase">
-                        Кількість
-                      </span>
-                      <div className="flex h-10 w-[120px] items-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 shadow-inner">
-                        <button
-                          onClick={decrementQty}
-                          className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
-                          type="button"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <input
-                          type="text"
-                          value={quantity}
-                          onChange={handleQtyInputChange}
-                          onBlur={handleQtyBlur}
-                          className="h-full w-10 border-none bg-transparent p-0 text-center font-sans text-sm font-semibold text-neutral-900 outline-none focus:ring-0"
-                        />
-                        <button
-                          onClick={incrementQty}
-                          className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
-                          type="button"
-                        >
-                          <Plus size={14} />
-                        </button>
+                    {(isB2b
+                      ? wholesalePriceUah > 0 && (product.price || 0) > 0
+                      : (isOnSale && product.rrcSale
+                          ? product.rrcSale
+                          : product.priceRetailRecommendation || 0) > 0) && (
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="mr-1 text-xs font-semibold text-neutral-400 uppercase">
+                          Кількість
+                        </span>
+                        <div className="flex h-10 w-[120px] items-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 shadow-inner">
+                          <button
+                            onClick={decrementQty}
+                            className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
+                            type="button"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <input
+                            type="text"
+                            value={quantity}
+                            onChange={handleQtyInputChange}
+                            onBlur={handleQtyBlur}
+                            className="h-full w-10 border-none bg-transparent p-0 text-center font-sans text-sm font-semibold text-neutral-900 outline-none focus:ring-0"
+                          />
+                          <button
+                            onClick={incrementQty}
+                            className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
+                            type="button"
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Add to Cart CTA */}
-                  <button
-                    onClick={handleAddToCart}
-                    className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl px-6 py-3.5 text-base font-bold text-white shadow-lg transition-all select-none"
-                  >
-                    <ShoppingCart size={20} fill="currentColor" />
-                    <span>Додати до кошика</span>
-                  </button>
+                  {(
+                    isB2b
+                      ? wholesalePriceUah > 0 && (product.price || 0) > 0
+                      : (isOnSale && product.rrcSale
+                          ? product.rrcSale
+                          : product.priceRetailRecommendation || 0) > 0
+                  ) ? (
+                    <button
+                      onClick={handleAddToCart}
+                      className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl px-6 py-3.5 text-base font-bold text-white shadow-lg transition-all select-none"
+                    >
+                      <ShoppingCart size={20} fill="currentColor" />
+                      <span>Додати до кошика</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setIsConsultModalOpen(true)}
+                      className="font-display flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-amber-500 bg-amber-500 px-6 py-3.5 text-base font-bold text-white shadow-lg transition-all select-none hover:bg-amber-600 active:bg-amber-700"
+                    >
+                      <Phone size={20} />
+                      <span>Уточнити ціну</span>
+                    </button>
+                  )}
 
                   {/* Wishlist toggle for mobile */}
                   {!isTablet && (

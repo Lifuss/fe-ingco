@@ -456,14 +456,20 @@ function ProductCarouselCard({
         {/* Pricing & Add to Cart */}
         <div className="mt-2 flex items-center justify-between border-t border-neutral-50 pt-3">
           <div className="flex flex-col">
-            {!!originalPrice && (
-              <span className="font-sans text-xs text-neutral-400 line-through">
-                {Math.round(originalPrice).toLocaleString('uk-UA')} ₴
-              </span>
+            {price > 0 ? (
+              <>
+                {!!originalPrice && originalPrice > 0 && (
+                  <span className="font-sans text-xs text-neutral-400 line-through">
+                    {Math.round(originalPrice).toLocaleString('uk-UA')} ₴
+                  </span>
+                )}
+                <span className="font-display text-lg font-bold text-neutral-900">
+                  {Math.round(price).toLocaleString('uk-UA')} ₴
+                </span>
+              </>
+            ) : (
+              <span className="font-display text-sm font-bold text-amber-600">Ціна за запитом</span>
             )}
-            <span className="font-display text-lg font-bold text-neutral-900">
-              {Math.round(price).toLocaleString('uk-UA')} ₴
-            </span>
           </div>
 
           <button

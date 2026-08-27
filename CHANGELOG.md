@@ -7,6 +7,15 @@
 
 ## [Unreleased]
 
+### [Fixed] / [Pricing] B2B Related Products & Zero-Price Public Offer Protection
+
+- **Відновлення партнерських цін у блоці «Купують разом»**:
+  - У [`ProductPageClient.tsx`](file:///f:/code/repos/fe-ingco/src/app/%28retail-catalog%29/%5BproductSlug%5D/ProductPageClient.tsx) реалізовано автоматичне клієнтське дозавантаження рекомендаційного блоку з параметром `isRetail: false` для авторизованих B2B-партнерів замість використання роздрібного SSR-снапшоту з вирізаними цінами.
+- **Глобальний захист від публічної оферти «0 ₴» та «$0.00 / од.»**:
+  - Впроваджено статус **«Ціна за запитом»** замість відображення `0 ₴` або `$0.00 / од.` для товарів без встановлених цін по всіх картках, каталогах, слайдерах та модальних вікнах ([`ProductCard.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductCard.tsx), [`ProductPageClient.tsx`](file:///f:/code/repos/fe-ingco/src/app/%28retail-catalog%29/%5BproductSlug%5D/ProductPageClient.tsx), [`ShopTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopTable.tsx), [`ProductModal.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/modals/ProductModal.tsx), [`HotOffers.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/home/HotOffers.tsx), [`SeriesComparison.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/home/SeriesComparison.tsx)).
+  - Заблоковано помилковий розрахунок маржі `100%` за відсутності оптової ціни.
+  - Замінено кнопку «В кошик» для товарів із нульовою ціною на інтерактивну кнопку **«Уточнити ціну»** з відкриттям [`ConsultationModal`](file:///f:/code/repos/fe-ingco/src/app/ui/modals/ConsultationModal.tsx) та автоматичним заповненням назви й артикулу.
+
 ## [2.3.0] — 2026-08-27
 
 ### [Security] Cloudflare Turnstile Integration & Bot Protection
