@@ -289,16 +289,17 @@ The file `src/proxy.ts` is a Next.js middleware that:
 
 ## 9. Environment Variables
 
-| Variable                   | Required | Exposed to Client | Description                                          |
-| -------------------------- | -------- | ----------------- | ---------------------------------------------------- |
-| `NEXT_PUBLIC_API`          | ✅       | ✅                | Backend API base URL (e.g., `http://localhost:8080`) |
-| `NEXT_PUBLIC_VIBER_URL`    | ❌       | ✅                | Viber community link                                 |
-| `NEXT_PUBLIC_TIKTOK_URL`   | ❌       | ✅                | TikTok profile link                                  |
-| `NEXT_PUBLIC_TELEGRAM_URL` | ❌       | ✅                | Telegram group link                                  |
-| `NEXT_PUBLIC_FACEBOOK_URL` | ❌       | ✅                | Facebook page link                                   |
-| `NP_API_URL`               | ❌       | ❌                | Nova Poshta API endpoint                             |
-| `NP_API_KEY`               | ❌       | ❌                | Nova Poshta API key                                  |
-| `POSTGRES_URL`             | ❌       | ❌                | Vercel Postgres URL (for Nova Poshta data)           |
+| Variable                         | Required | Exposed to Client | Description                                          |
+| -------------------------------- | -------- | ----------------- | ---------------------------------------------------- |
+| `NEXT_PUBLIC_API`                | ✅       | ✅                | Backend API base URL (e.g., `http://localhost:8080`) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | ✅       | ✅                | Cloudflare Turnstile public site key                 |
+| `NEXT_PUBLIC_VIBER_URL`          | ❌       | ✅                | Viber community link                                 |
+| `NEXT_PUBLIC_TIKTOK_URL`         | ❌       | ✅                | TikTok profile link                                  |
+| `NEXT_PUBLIC_TELEGRAM_URL`       | ❌       | ✅                | Telegram group link                                  |
+| `NEXT_PUBLIC_FACEBOOK_URL`       | ❌       | ✅                | Facebook page link                                   |
+| `NP_API_URL`                     | ❌       | ❌                | Nova Poshta API endpoint                             |
+| `NP_API_KEY`                     | ❌       | ❌                | Nova Poshta API key                                  |
+| `POSTGRES_URL`                   | ❌       | ❌                | Vercel Postgres URL (for Nova Poshta data)           |
 
 ---
 
@@ -389,6 +390,20 @@ All table filters (tabs, status selects, search strings, page offsets) in the ad
   }
   ```
 - **SearchParams Safety**: Never call `searchParams.toString()` directly without checking if `searchParams` is null/undefined. Use a fallback: `const params = new URLSearchParams(searchParams ? searchParams.toString() : '');`.
+
+### 11.4 Cloudflare Turnstile & Bot Protection Rules
+
+- **Client Widget & Ref Stability (React 19)**:
+  - All public and sensitive forms (B2C/B2B registration, password reset, cart checkout, support tickets, consultations) must include the `<TurnstileWidget />` component.
+  - Widget callbacks (`onVerify`, `onExpire`, `onError`) inside `TurnstileWidget` must be stored in `useRef` and updated inside `useEffect(() => { ref.current = fn; })`. This prevents unmounting or resetting the challenge iframe when users type into form inputs.
+- **Declarative Single-Use Token Lifecycle (`key={turnstileKey}`)**:
+  - Cloudflare Turnstile tokens are strictly **single-use**.
+  - Upon submission failure (409 conflict, 400 validation error, network failure), reset the widget state declaratively via a counter: `setTurnstileKey((prev) => prev + 1); setTurnstileToken('');`.
+  - **Never** pass imperative widget refs directly into form submit handlers (`handleSubmit(onSubmit)`) — this violates React 19 `react-hooks/refs` rule (_"Cannot access refs during render"_).
+- **Vercel Environment Variables (`NEXT_PUBLIC_`)**:
+  - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is public by design for browser challenges. **Never remove the `NEXT_PUBLIC_` prefix**, even if Vercel's automated secret scanner flags the `_KEY` suffix. Without this prefix, the variable resolves to `undefined` in client components.
+- **Localhost Testing & Error 600010**:
+  - Error code `600010` in the browser console indicates domain restriction failure (e.g. `localhost` not allowlisted) or headless execution. For local/automated testing, use Cloudflare's dummy test sitekey `1x00000000000000000000AA` or backend bypass.
 
 ---
 

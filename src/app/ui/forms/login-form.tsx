@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../utils/Loader';
+import { PasswordInput } from './PasswordInput';
 
 function LoginForm() {
   const dispatch = useAppDispatch();
@@ -68,10 +69,8 @@ function LoginForm() {
             <label className="mb-2 block text-base" htmlFor="password">
               Пароль
             </label>
-            <input
-              className="peer border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+            <PasswordInput
               id="password"
-              type="password"
               name="password"
               placeholder="Введіть пароль"
               required

@@ -8,12 +8,14 @@ import { redirect, useRouter } from 'next/navigation';
 import { registerClientThunk } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import { CircleHelp } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerClientSchema } from '@/lib/validationSchema';
 import { z } from 'zod';
 import Loader from '../utils/Loader';
 import TurnstileWidget from '../utils/TurnstileWidget';
+import { PasswordInput } from './PasswordInput';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 type RegisterFormData = z.infer<typeof registerClientSchema>;
 
@@ -31,11 +33,15 @@ export default function RegisterClientForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerClientSchema),
+    mode: 'onChange',
   });
+
+  const passwordValue = useWatch({ control, name: 'password' }) || '';
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -165,24 +171,23 @@ export default function RegisterClientForm() {
             <label className="mb-2 block text-base" htmlFor="password">
               Пароль <span className="text-red">*</span>
             </label>
-            <input
-              className={inputStyle}
+            <PasswordInput
               id="password"
-              type="password"
               placeholder="Пароль"
+              error={!!errors.password}
               {...register('password')}
             />
+            <PasswordStrengthIndicator password={passwordValue} />
             {errors.password && <p className={errorClassName}>{errors.password.message}</p>}
           </div>
           <div>
             <label className="mb-2 block text-base" htmlFor="checkPassword">
               Повторіть пароль <span className="text-red">*</span>
             </label>
-            <input
-              className={inputStyle}
+            <PasswordInput
               id="checkPassword"
-              type="password"
-              placeholder="Пароль"
+              placeholder="Повторіть пароль"
+              error={!!errors.checkPassword}
               {...register('checkPassword')}
             />
             {errors.checkPassword && (

@@ -1,7 +1,10 @@
 'use client';
 
 import { Button } from '@/app/ui/buttons/button';
-import { inputStyle } from '@/app/ui/forms/RegisterClient-form';
+import { PasswordInput } from '@/app/ui/forms/PasswordInput';
+import PasswordStrengthIndicator, {
+  getPasswordCriteria,
+} from '@/app/ui/forms/PasswordStrengthIndicator';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import { resetPasswordThunk } from '@/lib/appState/user/operation';
 import { useAppDispatch } from '@/lib/hooks';
@@ -20,16 +23,24 @@ const Page = ({ params }: PageProps) => {
   const { resetToken } = use(params);
   const [isAllow, setIsAllow] = useState<boolean>(Boolean(resetToken));
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>('');
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const password = form.get('password') as string;
-    const checkPassword = password === (form.get('checkPassword') as string);
+    const pass = form.get('password') as string;
+    const checkPassword = pass === (form.get('checkPassword') as string);
     if (!checkPassword) {
       toast.error('Паролі не співпадають');
+      return;
+    }
+
+    const criteria = getPasswordCriteria(pass);
+    const allValid = criteria.every((c) => c.isValid);
+    if (!allValid) {
+      toast.error('Пароль не відповідає вимогам безпеки');
       return;
     }
 
@@ -37,7 +48,7 @@ const Page = ({ params }: PageProps) => {
     dispatch(
       resetPasswordThunk({
         resetToken,
-        newPassword: password,
+        newPassword: pass,
       }),
     )
       .unwrap()
@@ -64,27 +75,26 @@ const Page = ({ params }: PageProps) => {
           <label className="mb-2 block text-base" htmlFor="password">
             Пароль <span className="text-red">*</span>
           </label>
-          <input
-            className={inputStyle}
+          <PasswordInput
             id="password"
-            type="password"
             name="password"
             placeholder="Пароль"
             maxLength={20}
             disabled={isLoading}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <PasswordStrengthIndicator password={password} />
         </div>
         <div>
           <label className="mb-2 block text-base" htmlFor="checkPassword">
             Повторіть пароль <span className="text-red">*</span>
           </label>
-          <input
-            className={inputStyle}
+          <PasswordInput
             id="checkPassword"
-            type="password"
             name="checkPassword"
-            placeholder="Пароль"
+            placeholder="Повторіть пароль"
             maxLength={20}
             disabled={isLoading}
             required
