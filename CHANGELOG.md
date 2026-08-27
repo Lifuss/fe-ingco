@@ -7,6 +7,14 @@
 
 ## [Unreleased]
 
+### [Fixed] / [Pricing] Dynamic isRetail & B2B Wholesale Catalog Unification
+
+- **Відновлення оптових цін та уніфікація B2B/B2C каталогів**:
+  - Виправлено зникнення оптових цін (`price` в USD) та відображення нульових цін для авторизованих B2B-партнерів при переході на сторінки категорій (`/categories/[categorySlug]`) та при пошуку чи пагінації.
+  - Створено компонент [`CatalogClientView.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/catalog/CatalogClientView.tsx) із захистом від hydration mismatch (`useSyncExternalStore`), який динамічно відображає [`ShopTable`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopTable.tsx) для B2B-партнерів та [`ProductList`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductList.tsx) для роздрібних користувачів на всіх сторінках каталогу.
+  - Додано уніфіковані хуки `useIsB2B()` та `useActiveCategory()` у [`src/lib/hooks.tsx`](file:///f:/code/repos/fe-ingco/src/lib/hooks.tsx) для безпечного та консистентного визначення статусу B2B та категорій.
+  - Усунено захардкоджений параметр `isRetail: true` у `ProductList.tsx` для завантаження товарів та додавання в кошик.
+
 ### [Fixed] / [Feed] Prom.ua XML Feed Generation
 
 - **Підтримка множинних характеристик та типобезпечність експорту**:

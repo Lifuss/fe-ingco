@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Minus, Plus, Star } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
@@ -44,12 +44,7 @@ const ProductCard = ({
   const usdRate = USDCurrency || storeUsdRate;
 
   const isAuth = authState.isAuthenticated;
-  const user = authState.user;
-  const isB2BUser =
-    authState.isB2b ||
-    (user &&
-      ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true ||
-        (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
+  const isB2BUser = useIsB2B();
 
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);

@@ -8,7 +8,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import { Check, Heart, ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/types';
-import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useIsB2B, useSliderMouseWheel } from '@/lib/hooks';
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
@@ -26,6 +26,7 @@ interface SeriesComparisonProps {
 export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const isB2BUser = useIsB2B();
 
   const standartSliderRef = React.useRef<Slider | null>(null);
   const industrialSliderRef = React.useRef<Slider | null>(null);
@@ -33,12 +34,6 @@ export default function SeriesComparison({ products }: SeriesComparisonProps) {
   const industrialContainerRef = React.useRef<HTMLDivElement | null>(null);
 
   const isAuth = authState.isAuthenticated || false;
-  const user = authState.user;
-  const isB2BUser =
-    authState.isB2b ||
-    (user &&
-      ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true ||
-        (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => (typeof p === 'string' ? Number(p) : p.id));
 

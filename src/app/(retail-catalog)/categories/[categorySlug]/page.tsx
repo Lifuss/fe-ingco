@@ -1,5 +1,5 @@
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
-import ProductList from '~/ui/product/ProductList';
+import CatalogClientView from '~/ui/catalog/CatalogClientView';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
 import { notFound } from 'next/navigation';
@@ -58,10 +58,10 @@ export default async function Page({ params }: PageProps) {
   }
 
   return (
-    <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
+    <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 bg-white px-4 pt-8 md:px-8 xl:flex-row 2xl:gap-10">
       <CatalogSidebar />
       <div className="min-h-[550px] w-full">
-        <ProductList />
+        <CatalogClientView />
       </div>
     </main>
   );

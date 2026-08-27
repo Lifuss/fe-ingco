@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
+import { useActiveCategory, useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
@@ -80,7 +80,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
-  const category = searchParams.get('category') || '';
+  const { activeCategoryId: category } = useActiveCategory();
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
 
@@ -95,7 +95,11 @@ const ShopTable = ({ isFavoritePage = false }) => {
       );
     }
     if (category) {
-      productsData = productsData.filter((product) => product.category?.name === category);
+      productsData = productsData.filter(
+        (product) =>
+          String(product.category?.id) === category ||
+          product.category?.name.toLowerCase().includes(category.toLowerCase()),
+      );
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }

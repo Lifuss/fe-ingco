@@ -2,7 +2,7 @@
 import ExportButton from '@/app/ui/buttons/ExportButton';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { useAppSelector } from '@/lib/hooks';
+import { useIsB2B } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 
 const priceColumns = [
@@ -91,16 +91,16 @@ function ColumnPreview({ columns }: { columns: string[] }) {
 }
 
 const ExportClient = () => {
-  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+  const isB2b = useIsB2B();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated || !isB2b) {
+    if (!isB2b) {
       router.push('/');
     }
-  }, [isAuthenticated, isB2b, router]);
+  }, [isB2b, router]);
 
-  if (!isAuthenticated || !isB2b) return null;
+  if (!isB2b) return null;
 
   return (
     <main className="mx-auto min-h-[550px] w-full max-w-[1680px] bg-white px-4 pt-8 pb-12 md:px-8 lg:px-[60px]">

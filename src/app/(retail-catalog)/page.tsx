@@ -1,4 +1,4 @@
-import ProductList from '@/app/ui/product/ProductList';
+import CatalogClientView from '~/ui/catalog/CatalogClientView';
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import { getShowcaseProducts } from '@/lib/serverData';
 
@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: PageProps) {
       <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 bg-white px-4 pt-8 md:px-8 xl:flex-row 2xl:gap-10">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
-          <ProductList />
+          <CatalogClientView />
         </div>
       </main>
     );

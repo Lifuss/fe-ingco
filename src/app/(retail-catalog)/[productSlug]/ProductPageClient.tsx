@@ -28,7 +28,7 @@ import { isProductOnSale } from '@/lib/utils';
 import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
 import {
@@ -67,8 +67,8 @@ export default function ProductPageClient({
     () => false,
   );
 
-  // Redux state
-  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+  // Redux & Auth state
+  const isB2b = useIsB2B();
 
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const isAdminClient = isClient && (user?.role === 'ADMIN' || user?.role === 'admin');
@@ -913,7 +913,7 @@ export default function ProductPageClient({
                     <ProductCard
                       key={item.id}
                       product={item}
-                      listType="retail"
+                      listType={isB2b ? 'partner' : 'retail'}
                       favoritesIdList={favoritesIdList}
                       handleDirectToProduct={(id, slug) => router.push(`/${slug}`)}
                     />

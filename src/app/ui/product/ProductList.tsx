@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useEffect } from 'react';
+import { useActiveCategory, useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { useSearchParams, useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
   addFavoriteProductThunk,
@@ -24,6 +24,7 @@ import { CardSkeleton } from '../skeletons/skeletons';
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const isB2B = useIsB2B();
   const mainState = useAppSelector((state) => state.persistedMainReducer);
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
@@ -41,17 +42,7 @@ const ProductList = ({ isFavoritePage = false }) => {
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
 
-  const params = useParams<{ categorySlug?: string }>();
-  const categorySlug = params?.categorySlug;
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
-
-  const category = useMemo(() => {
-    if (categorySlug && rawCategories) {
-      const catObj = rawCategories.find((c) => c.slug === categorySlug);
-      return catObj ? String(catObj.id) : '';
-    }
-    return searchParams.get('category') || '';
-  }, [categorySlug, rawCategories, searchParams]);
+  const { activeCategoryId: category } = useActiveCategory();
 
   // Spec filters from URL
   const minPower = searchParams.get('minPower')
@@ -137,12 +128,12 @@ const ProductList = ({ isFavoritePage = false }) => {
           category,
           limit,
           sortValue,
-          isRetail: true,
+          isRetail: !isB2B,
           filters,
         }),
       );
     }
-  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue, filters]);
+  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue, isB2B, filters]);
 
   function handleFavoriteClick(id: number) {
     if (isAuth) {
@@ -162,7 +153,7 @@ const ProductList = ({ isFavoritePage = false }) => {
         addProductToCartThunk({
           productId: id,
           quantity: 1,
-          isRetail: true,
+          isRetail: !isB2B,
         }),
       )
         .unwrap()
@@ -213,7 +204,7 @@ const ProductList = ({ isFavoritePage = false }) => {
       )}
       {tableLoading && productsData.length === 0 ? (
         <div className="w-full">
-          <FiltersBlock listType="retail" />
+          <FiltersBlock listType={isB2B ? 'partner' : 'retail'} />
           <ul className="grid w-full grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: limit }).map((_, index) => (
               <CardSkeleton key={index} />
@@ -243,10 +234,10 @@ const ProductList = ({ isFavoritePage = false }) => {
               </div>
             </div>
           )}
-          <FiltersBlock listType="retail" />
+          <FiltersBlock listType={isB2B ? 'partner' : 'retail'} />
           <ProductBlockList
             favoritesIdList={favoritesIdList}
-            listType="retail"
+            listType={isB2B ? 'partner' : 'retail'}
             productsData={productsData}
             handleCartClick={handleCartClick}
             handleFavoriteClick={handleFavoriteClick}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { useAppSelector } from '@/lib/hooks';
+import { useIsB2B } from '@/lib/hooks';
 import { useSyncExternalStore } from 'react';
 import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import ShopTable from '@/app/ui/product/ShopTable';
@@ -15,10 +15,10 @@ interface CatalogDynamicLandingProps {
 }
 
 export default function CatalogDynamicLanding({ children }: CatalogDynamicLandingProps) {
-  const { isAuthenticated, isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+  const isB2b = useIsB2B();
   const isClient = useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
 
-  const displayB2b = isClient && isAuthenticated && isB2b;
+  const displayB2b = isClient && isB2b;
 
   if (displayB2b) {
     return (

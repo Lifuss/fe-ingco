@@ -3,18 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useAppSelector } from '@/lib/hooks';
+import { useIsB2B } from '@/lib/hooks';
 import CurrencyRate from './CurrencyRate';
 
 export default function SubHeader() {
   const pathname = usePathname();
-  const authState = useAppSelector((state) => state.persistedAuthReducer);
-  const user = authState.user;
-  const isB2BUser =
-    authState.isB2b ||
-    (user &&
-      ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true ||
-        (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
+  const isB2BUser = useIsB2B();
 
   const isStoreActive = pathname === '/';
   const isPartnershipActive = pathname === '/about-us/partnership';

@@ -8,7 +8,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
-import { useAppDispatch, useAppSelector, useSliderMouseWheel } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useIsB2B, useSliderMouseWheel } from '@/lib/hooks';
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
@@ -29,6 +29,7 @@ export default function HotOffers({ products }: HotOffersProps) {
   const [activeTab, setActiveTab] = useState<'popular' | 'p20s' | 'sets'>('popular');
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const isB2BUser = useIsB2B();
   const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
 
   const batteryToolCategoryId = String(
@@ -94,12 +95,6 @@ export default function HotOffers({ products }: HotOffersProps) {
   useSliderMouseWheel(sliderRef, sliderContainerRef, activeProducts.length);
 
   const isAuth = authState.isAuthenticated || false;
-  const user = authState.user;
-  const isB2BUser =
-    authState.isB2b ||
-    (user &&
-      ((user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2B === true ||
-        (user as unknown as { isB2B?: boolean; isB2b?: boolean }).isB2b === true));
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => (typeof p === 'string' ? Number(p) : p.id));
 

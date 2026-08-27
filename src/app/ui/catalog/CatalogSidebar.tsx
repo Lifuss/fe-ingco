@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
 import { ShieldCheck, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
@@ -17,9 +17,10 @@ const CatalogSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isB2B = useIsB2B();
 
   const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
-  const { isB2b } = useAppSelector((state) => state.persistedAuthReducer);
+
   const productsCategories = useMemo(() => {
     const categories = rawProductsCategories || [];
     const explicitlyHiddenIds = new Set(
@@ -262,7 +263,7 @@ const CatalogSidebar = () => {
       if (activeCategoryId) params.set('category', activeCategoryId);
       const searchQuery = searchParams.get('query') || '';
       if (searchQuery) params.set('q', searchQuery);
-      params.set('isRetail', String(!isB2b));
+      params.set('isRetail', String(!isB2B));
       if (Object.keys(nextFilters).length > 0) {
         params.set('filters', JSON.stringify(nextFilters));
       }

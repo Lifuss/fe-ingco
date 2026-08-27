@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { Heart, ShoppingBasket } from 'lucide-react';
-import { useAppSelector } from '@/lib/hooks';
+import { useAppSelector, useIsB2B } from '@/lib/hooks';
 import UserModal from '~/ui/modals/UserModal';
 import Icon from '~/ui/assets/Icon';
 
 export default function MobileActions() {
-  const { isAuthenticated, isB2b, user, localStorageCart } = useAppSelector(
+  const isB2b = useIsB2B();
+  const { isAuthenticated, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
 

@@ -1,8 +1,10 @@
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import type { RootState, AppDispatch, AppStore } from '@/lib/appState/store';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { trackProductClickThunk } from './appState/main/operations';
 import Slider from 'react-slick';
+import { Category } from '@/lib/types';
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
@@ -84,4 +86,52 @@ export const useSliderMouseWheel = (
       el.removeEventListener('wheel', handleWheel);
     };
   }, [sliderRef, containerRef, productCount]);
+};
+
+export const useIsB2B = (): boolean => {
+  const authState = useAppSelector((state) => state.persistedAuthReducer);
+  const isAuthenticated = authState.isAuthenticated || false;
+  const user = authState.user;
+  const isB2bFlag =
+    authState.isB2b ||
+    (user &&
+      ((user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2B === true ||
+        (user as unknown as { isB2b?: boolean; isB2B?: boolean }).isB2b === true));
+
+  return Boolean(isAuthenticated && isB2bFlag);
+};
+
+export const useActiveCategory = () => {
+  const searchParams = useSearchParams();
+  const params = useParams<{ categorySlug?: string }>();
+  const categorySlug = params?.categorySlug;
+  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+
+  return useMemo(() => {
+    const categories = rawCategories || [];
+    let activeCategory: Category | undefined = undefined;
+
+    if (categorySlug && categories.length > 0) {
+      activeCategory = categories.find((c) => c.slug === categorySlug);
+    } else {
+      const categoryParam = searchParams ? searchParams.get('category') : null;
+      if (categoryParam && categories.length > 0) {
+        activeCategory = categories.find((c) => String(c.id) === categoryParam);
+      }
+    }
+
+    const activeCategoryId = activeCategory
+      ? String(activeCategory.id)
+      : searchParams
+        ? searchParams.get('category') || ''
+        : '';
+
+    const categoryName = activeCategory ? activeCategory.name : 'Каталог інструментів INGCO';
+
+    return {
+      activeCategoryId,
+      activeCategory,
+      categoryName,
+    };
+  }, [categorySlug, searchParams, rawCategories]);
 };
