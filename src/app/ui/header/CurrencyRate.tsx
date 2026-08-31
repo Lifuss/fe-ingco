@@ -14,7 +14,7 @@ const CurrencyRate = () => {
 
   return (
     <ul
-      className="flex gap-2 text-sm text-neutral-500"
+      className="flex gap-2.5 text-xs font-medium text-neutral-600 md:text-sm"
       title="Курс валют (USD, EUR); оновлюється кожні 30 хвилин, джерела: Monobank → PrivatBank → НБУ → Fixer"
     >
       <li>USD: {currency?.USD.toFixed(2)}</li>

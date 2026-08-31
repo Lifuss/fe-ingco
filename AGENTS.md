@@ -184,6 +184,12 @@ This also applies to: `cookies()`, `headers()`, `draftMode()`.
 - Use `'use server'` for Server Actions.
 - Export default for page components, and named exports for reusable UI components.
 - Keep components small and focused. Extract business logic into custom hooks (`lib/hooks.tsx`) or Redux slices.
+- **Top-Down Layout ("Newspaper Model")**: Organize component files in top-down order:
+  1. Directives (`'use client'`, `'use server'`) and Imports
+  2. Local Types / Interfaces
+  3. **Main Component** (the primary component matching the filename)
+  4. Private local subcomponents and helper functions (use `function` declarations to leverage hoisting safely)
+     _Rationale: When opening a file, developers should immediately see the main component rather than having to scroll past internal helpers._
 
 ---
 
