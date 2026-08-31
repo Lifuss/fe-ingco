@@ -286,7 +286,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
     const formData = new FormData(form);
 
     const characteristicsArr = characteristics.map((c) => ({
-      code: c.code || c.name.toLowerCase().replace(/\s+/g, '_'),
+      code: c.code || (c.name ? slugifyCyrillicToLatin(c.name) : ''),
       value: c.value,
     }));
 
@@ -695,9 +695,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                         setCharacteristic((prev: CharacteristicState) => ({
                           ...prev,
                           name: e.target.value,
-                          code: e.target.value
-                            ? e.target.value.toLowerCase().replace(/\s+/g, '_')
-                            : '',
+                          code: e.target.value ? slugifyCyrillicToLatin(e.target.value) : '',
                         }))
                       }
                     />
@@ -902,10 +900,13 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
                   const charName = characteristic.name.trim();
                   const newVal = characteristic.value.trim();
                   if (charName && newVal) {
-                    const charCode = characteristic.code || slugifyCyrillicToLatin(charName);
+                    const rawCode = characteristic.code || slugifyCyrillicToLatin(charName);
                     const selectedAttr = availableAttributes.find(
-                      (a) => a.code.toLowerCase() === charCode.toLowerCase(),
+                      (a) =>
+                        a.code.toLowerCase() === rawCode.toLowerCase() ||
+                        a.name.trim().toLowerCase() === charName.toLowerCase(),
                     );
+                    const charCode = selectedAttr ? selectedAttr.code : rawCode;
                     const isMulti = selectedAttr?.isMultiple || false;
 
                     setCharacteristics((prev) => {
