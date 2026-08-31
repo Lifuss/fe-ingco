@@ -5,7 +5,26 @@
 
 ---
 
-## [Unreleased]
+## [2.4.0] — 2026-08-31
+
+### [UI/UX] SubHeader Contrast & Navigation Polish
+
+- **Контрастність та доступність верхньої навігації**:
+  - У [`SubHeader.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/header/SubHeader.tsx) підвищено контраст базового тексту (`text-neutral-800 font-semibold text-sm`) та впроваджено чітку акцентну нижню смужку для активного пункту (`after:h-[2px] after:bg-amber-500 after:rounded-full`).
+  - Виділено компонент `SubHeaderLink` з повною підтримкою доступності (`aria-current="page"`, `aria-label="Додаткова навігація"`, `focus-visible`).
+  - Додано візуальний вертикальний розділювач перед віджетом курсу валют та покращено контрастність тексту у [`CurrencyRate.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/header/CurrencyRate.tsx).
+
+### [Security] / [UX] Password Strength & Visibility Components
+
+- **Інтерактивна валідація та індикатор надійності пароля**:
+  - Створено компонент [`PasswordStrengthIndicator.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/forms/PasswordStrengthIndicator.tsx) для наочного динамічного оцінювання складності пароля (довжина, великі/малі літери, цифри, спецсимволи).
+  - Створено уніфіковане поле введення [`PasswordInput.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/forms/PasswordInput.tsx) із перемикачем видимості пароля (`Eye` / `EyeOff`), інтегроване у форми реєстрації роздрібних клієнтів, відновлення пароля та авторизації.
+
+### [Changed] Admin Product Characteristics & Attribute Binding
+
+- **Транслітерація та точна прив'язка характеристик**:
+  - У [`AdminProductForm.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/forms/AdminProductForm.tsx) інтегровано `slugifyCyrillicToLatin()` для автоматичного формування валідних латинських кодів атрибутів.
+  - Посилено відповідність введених характеристик довіднику `availableAttributes` за комбінацією коду та назви без урахування регістру для збереження зв'язку та підтримки множинних атрибутів (`isMultiple`).
 
 ### [Fixed] / [Pricing] B2B Related Products & Zero-Price Public Offer Protection
 
