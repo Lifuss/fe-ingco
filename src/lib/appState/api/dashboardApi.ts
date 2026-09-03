@@ -1,106 +1,67 @@
 import { baseApi } from './baseApi';
-import { Order, SupportTicket, User } from '@/lib/types';
+import { Order, User } from '@/lib/types';
 import { normalizeOrder, normalizeUser } from '@/lib/utils';
+import {
+  CreateUserPayload,
+  GetDashboardOrdersParams,
+  GetDashboardOrdersResponse,
+  GetSupportTicketsParams,
+  GetSupportTicketsResponse,
+  GetUsersParams,
+  GetUsersResponse,
+  GmcStatusType,
+  GmcSyncResponse,
+  StatsDateRangeParams,
+  UpdateDashboardOrderPayload,
+  UpdateSupportTicketPayload,
+  UpdateUserPayload,
+  UsersStatsData,
+} from './dashboardApi.types';
 
-export interface GmcStatusType {
-  configured: boolean;
-  merchantId: string | null;
-  serviceAccountEmail: string | null;
-  lastSyncAt: string | null;
-  totalSynced: number;
-  lastError: string | null;
-  apiVersion?: string;
-}
+export * from './dashboardApi.types';
 
-export interface OrderStats {
-  'очікує підтвердження': number;
-  'очікує оплати': number;
-  комплектується: number;
-  відправлено: number;
-  'замовлення виконано': number;
-  'замовлення скасовано': number;
-}
+// ==========================================
+// Payload & Query Parameter Helpers
+// ==========================================
 
-export interface UsersStatsData {
-  total: number;
-  b2b: number;
-  b2c: number;
-  notVerified: number;
-}
+const formatUserPayload = (user: CreateUserPayload | UpdateUserPayload) => {
+  const isB2b = 'isB2B' in user ? user.isB2B === 'true' || user.isB2B === true : undefined;
 
-export interface CreateUserPayload {
-  firstName: string;
-  lastName: string;
-  surName: string;
-  email: string;
-  login: string;
-  password: string;
-  role?: 'user' | 'admin' | string;
-  phone: string;
-  edrpou?: string;
-  about?: string;
-  address?: string;
-  isB2B?: 'true' | 'false' | boolean;
-}
-
-export type UpdateUserPayload = Omit<User, 'token' | 'createdAt' | 'updatedAt'> & {
-  password?: string;
-  about?: string;
-  isB2B?: boolean;
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    surName: user.surName,
+    email: user.email,
+    login: user.login,
+    phone: user.phone,
+    ...('password' in user && user.password ? { password: user.password } : {}),
+    ...(user.role ? { role: user.role.toUpperCase() } : {}),
+    ...(isB2b !== undefined ? { isB2b } : {}),
+    ...('isVerified' in user ? { isVerified: user.isVerified } : {}),
+    ...(user.edrpou !== undefined ? { edrpou: user.edrpou } : {}),
+    ...(user.about !== undefined ? { about: user.about } : {}),
+    ...(user.address !== undefined ? { address: user.address } : {}),
+  };
 };
 
-export interface GetUsersParams {
-  page?: number;
-  q?: string;
-  role?: 'user' | 'admin' | 'all' | string;
-  isB2B?: boolean;
-  isUserVerified?: boolean;
-  isDeleted?: 'true' | 'false' | 'only' | string;
-  limit?: number;
-}
+const formatStatsParams = (params?: StatsDateRangeParams) => {
+  if (!params) return undefined;
+  const { startDate, endDate, ...rest } = params;
+  return {
+    ...rest,
+    startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
+    endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
+  };
+};
 
-export interface GetDashboardOrdersParams {
-  page?: number;
-  q?: string;
-  limit?: number;
-  isRetail?: boolean;
-  status?: string;
-}
-
-export interface UpdateDashboardOrderPayload {
-  orderId: number;
-  updateOrder?: Partial<Order> | Record<string, unknown>;
-  data?: Partial<Order> | Record<string, unknown>;
-  isRetail?: boolean;
-}
-
-export interface GetSupportTicketsParams {
-  q?: string;
-  page?: number;
-  limit?: number;
-  isAnswered?: boolean;
-}
-
-export interface UpdateSupportTicketPayload {
-  ticketId: number;
-  isAnswered: boolean;
-  ticketNumber?: number;
-}
-
-export interface StatsDateRangeParams {
-  page?: number;
-  limit?: number;
-  startDate?: Date | string;
-  endDate?: Date | string;
-}
+// ==========================================
+// Dashboard RTK Query Endpoints
+// ==========================================
 
 export const dashboardApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    // ----------------- USERS -----------------
-    getUsers: build.query<
-      { users: User[]; totalPages: number; total: number },
-      GetUsersParams | void
-    >({
+    // ----------------- 1. USERS -----------------
+    getUsers: build.query<GetUsersResponse, GetUsersParams | void>({
       query: (params) => {
         const { role, isB2B, q, ...rest } = params || {};
         return {
@@ -127,58 +88,21 @@ export const dashboardApi = baseApi.injectEndpoints({
     }),
 
     createUser: build.mutation<User, CreateUserPayload>({
-      query: (credentials) => {
-        const payload: Record<string, unknown> = {
-          firstName: credentials.firstName,
-          lastName: credentials.lastName,
-          surName: credentials.surName,
-          email: credentials.email,
-          login: credentials.login,
-          password: credentials.password,
-          phone: credentials.phone,
-          role: credentials.role ? credentials.role.toUpperCase() : undefined,
-          isB2b: credentials.isB2B === 'true' || credentials.isB2B === true,
-        };
-
-        if (credentials.edrpou !== undefined) payload.edrpou = credentials.edrpou;
-        if (credentials.about !== undefined) payload.about = credentials.about;
-        if (credentials.address !== undefined) payload.address = credentials.address;
-
-        return {
-          url: '/users',
-          method: 'POST',
-          data: payload,
-        };
-      },
+      query: (credentials) => ({
+        url: '/users',
+        method: 'POST',
+        data: formatUserPayload(credentials),
+      }),
       transformResponse: (res: unknown) => normalizeUser(res),
       invalidatesTags: [{ type: 'User', id: 'LIST' }, 'DashboardStats'],
     }),
 
     updateUser: build.mutation<User, UpdateUserPayload>({
-      query: (user) => {
-        const payload: Record<string, unknown> = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          surName: user.surName,
-          email: user.email,
-          login: user.login,
-          phone: user.phone,
-          isVerified: user.isVerified,
-          isB2b: user.isB2B,
-        };
-
-        if (user.role) payload.role = user.role.toUpperCase();
-        if (user.password) payload.password = user.password;
-        if (user.edrpou !== undefined) payload.edrpou = user.edrpou;
-        if (user.about !== undefined) payload.about = user.about;
-        if (user.address !== undefined) payload.address = user.address;
-
-        return {
-          url: `/users/${user.id}`,
-          method: 'PUT',
-          data: payload,
-        };
-      },
+      query: (user) => ({
+        url: `/users/${user.id}`,
+        method: 'PUT',
+        data: formatUserPayload(user),
+      }),
       transformResponse: (res: unknown) => normalizeUser(res),
       invalidatesTags: (_res, _err, { id }) => [
         { type: 'User', id },
@@ -203,11 +127,8 @@ export const dashboardApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: 'User', id: 'LIST' }, 'DashboardStats'],
     }),
 
-    // ----------------- ORDERS -----------------
-    getDashboardOrders: build.query<
-      { orders: Order[]; totalPages: number; stats: OrderStats },
-      GetDashboardOrdersParams | void
-    >({
+    // ----------------- 2. ORDERS -----------------
+    getDashboardOrders: build.query<GetDashboardOrdersResponse, GetDashboardOrdersParams | void>({
       query: (params) => ({
         url: '/orders/all',
         params: params || undefined,
@@ -215,7 +136,7 @@ export const dashboardApi = baseApi.injectEndpoints({
       transformResponse: (response: {
         orders: unknown[];
         totalPages: number;
-        stats: OrderStats;
+        stats: GetDashboardOrdersResponse['stats'];
       }) => ({
         ...response,
         orders: (response.orders || []).map(normalizeOrder),
@@ -233,14 +154,11 @@ export const dashboardApi = baseApi.injectEndpoints({
     }),
 
     updateDashboardOrder: build.mutation<Order, UpdateDashboardOrderPayload>({
-      query: ({ orderId, updateOrder, data, isRetail = false }) => {
-        const body = data ?? updateOrder;
-        return {
-          url: isRetail ? `/orders/retail/${orderId}` : `/orders/${orderId}`,
-          method: 'PUT',
-          data: body,
-        };
-      },
+      query: ({ orderId, updateOrder, data, isRetail = false }) => ({
+        url: isRetail ? `/orders/retail/${orderId}` : `/orders/${orderId}`,
+        method: 'PUT',
+        data: data ?? updateOrder,
+      }),
       transformResponse: (res: unknown) => normalizeOrder(res),
       invalidatesTags: (_res, _err, { orderId }) => [
         { type: 'Order', id: String(orderId) },
@@ -248,11 +166,8 @@ export const dashboardApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // ----------------- SUPPORT TICKETS -----------------
-    getSupportTickets: build.query<
-      { tickets: SupportTicket[]; totalPages: number },
-      GetSupportTicketsParams | void
-    >({
+    // ----------------- 3. SUPPORT TICKETS -----------------
+    getSupportTickets: build.query<GetSupportTicketsResponse, GetSupportTicketsParams | void>({
       query: (params) => ({
         url: '/users/support',
         params: params || undefined,
@@ -278,52 +193,38 @@ export const dashboardApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: 'SupportTicket', id: 'LIST' }],
     }),
 
-    // ----------------- STATS & ANALYTICS -----------------
+    // ----------------- 4. STATS & ANALYTICS -----------------
     getUsersStats: build.query<UsersStatsData, void>({
       query: () => ({ url: '/users/stats' }),
       providesTags: ['DashboardStats'],
     }),
 
     getProductClicks: build.query<{ productClicks: object[] }, StatsDateRangeParams | void>({
-      query: (params) => {
-        const { startDate, endDate, ...rest } = params || {};
-        return {
-          url: '/stats/products/clicks',
-          params: {
-            ...rest,
-            startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
-            endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
-          },
-        };
-      },
+      query: (params) => ({
+        url: '/stats/products/clicks',
+        params: formatStatsParams(params || undefined),
+      }),
       providesTags: ['DashboardStats'],
     }),
 
     getUserActivity: build.query<{ users: User[] }, StatsDateRangeParams | void>({
-      query: (params) => {
-        const { startDate, endDate, ...rest } = params || {};
-        return {
-          url: '/stats/users/activity',
-          params: {
-            ...rest,
-            startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
-            endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
-          },
-        };
-      },
+      query: (params) => ({
+        url: '/stats/users/activity',
+        params: formatStatsParams(params || undefined),
+      }),
       transformResponse: (response: { users: unknown[] }) => ({
         users: (response.users || []).map(normalizeUser),
       }),
       providesTags: ['DashboardStats'],
     }),
 
-    // ----------------- GOOGLE MERCHANT CENTER -----------------
+    // ----------------- 5. GOOGLE MERCHANT CENTER -----------------
     getGmcStatus: build.query<GmcStatusType, void>({
       query: () => ({ url: '/google-merchant/status' }),
       providesTags: ['GmcStatus'],
     }),
 
-    syncGmcProducts: build.mutation<{ success: boolean; count: number; error?: string }, void>({
+    syncGmcProducts: build.mutation<GmcSyncResponse, void>({
       query: () => ({
         url: '/google-merchant/sync',
         method: 'POST',
