@@ -5,7 +5,16 @@
 
 ---
 
-## [Unreleased]
+## [2.5.0] — 2026-09-03
+
+### [Refactor] RTK Query Full Architecture Migration — Phase 5 (Final Cleanup & Audit)
+
+- **Остаточна ліквідація мертвого коду**:
+  - Повністю видалено директорію [`src/lib/appState/dashboard/`](file:///f:/code/repos/fe-ingco/src/lib/appState/dashboard/) (`operations.ts`, `statsOperations.ts`, `slice.ts`).
+  - З [`store.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/store.ts) вилучено імпорт та монтування `dashboardSlice`.
+  - Зведено `mainSlice` до єдиного стану інтерфейсу `shopView: 'table' | 'list'`.
+  - Перевірено відсутність невикористовуваних санок та побічних ефектів у редукторах.
+  - Оновлено документацію та правила проєкту в [`AGENTS.md`](file:///f:/code/repos/fe-ingco/AGENTS.md) та архітектурному плані [`docs/plans/rtk-query-migration-plan.md`](file:///f:/code/repos/fe-ingco/docs/plans/rtk-query-migration-plan.md).
 
 ### [Refactor] RTK Query Migration — Phase 4 (Cart, Favorites, Orders & History)
 

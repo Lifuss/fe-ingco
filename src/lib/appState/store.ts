@@ -1,4 +1,3 @@
-import { dashboardSlice } from './dashboard/slice';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { configureStore } from '@reduxjs/toolkit';
 import { mainSlice } from './main/slice';
@@ -53,7 +52,6 @@ export const makeStore = () =>
       [currencyApi.reducerPath]: currencyApi.reducer,
       persistedMainReducer,
       persistedAuthReducer,
-      dashboardSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

@@ -952,13 +952,13 @@ const handleUpdate = async (userData: User) => {
   - [x] Перевірити, що `createRetailOrder` коректно очищує `localStorageCart`.
   - [x] Перевірити білд (`npm run build`).
 
-- [ ] **Фаза 5: Фінальне очищення та аудит**
-  - [ ] Видалити застарілі `operations.ts` файли або невикористовувані санки.
-  - [ ] Видалити `dashboard/statsOperations.ts` (перенесено в `dashboardApi`).
-  - [ ] Очистити `mainSlice` — залишити тільки `shopView`.
-  - [ ] Очистити `authSlice` від `extraReducers` для cart/favorites (тепер в RTK Query).
-  - [ ] Запустити тести, лінтер та перевірку форматування (`npm run lint`, `npm run prettier:check`).
-  - [ ] Оновити `CHANGELOG.md` та `AGENTS.md`.
+- [x] **Фаза 5: Фінальне очищення та аудит**
+  - [x] Видалити застарілі `operations.ts` файли або невикористовувані санки.
+  - [x] Видалити `dashboard/statsOperations.ts` та директорію `dashboard` (перенесено в `dashboardApi`).
+  - [x] Очистити `mainSlice` — залишити тільки `shopView`.
+  - [x] Очистити `authSlice` від `extraReducers` для cart/favorites (тепер в RTK Query).
+  - [x] Запустити тести, лінтер та перевірку форматування (`npm run lint`, `npm run prettier:check`).
+  - [x] Оновити `CHANGELOG.md` та `AGENTS.md`.
 
 ---
 
