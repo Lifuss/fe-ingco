@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation';
-import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
-import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
+import { useIsB2B } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { ShieldCheck, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
 import { Category, ProductAttribute } from '@/lib/types';
@@ -13,13 +13,12 @@ interface FilterAttribute extends ProductAttribute {
 }
 
 const CatalogSidebar = () => {
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isB2B = useIsB2B();
 
-  const rawProductsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: rawProductsCategories = [] } = useGetCategoriesQuery('');
 
   const productsCategories = useMemo(() => {
     const categories = rawProductsCategories || [];
@@ -185,10 +184,7 @@ const CatalogSidebar = () => {
     [searchParams, pathname, router],
   );
 
-  // Fetch categories on mount
-  useEffect(() => {
-    dispatch(fetchCategoriesThunk(''));
-  }, [dispatch]);
+
 
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {

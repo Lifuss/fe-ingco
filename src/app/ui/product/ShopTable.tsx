@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useActiveCategory, useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
 import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import {
@@ -46,10 +47,10 @@ const ShopTable = ({ isFavoritePage = false }) => {
     products,
     total,
     totalPages,
-    currencyRates: { USD = 0 },
     shopView,
     tableLoading,
   } = useAppSelector((state) => state.persistedMainReducer);
+  const USD = useAppSelector(selectUSDRate);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);

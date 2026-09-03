@@ -29,6 +29,7 @@ import { isProductOnSale, normalizeProduct } from '@/lib/utils';
 import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
 
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
@@ -79,7 +80,7 @@ export default function ProductPageClient({
   const reduxProduct = useAppSelector((state) => state.persistedMainReducer.product);
   const products = useAppSelector((state) => state.persistedMainReducer.products || []);
 
-  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: categories = [] } = useGetCategoriesQuery('');
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favoritesState = useAppSelector(
     (state) => state.persistedAuthReducer.user?.favorites || [],

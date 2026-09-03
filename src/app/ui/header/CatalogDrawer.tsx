@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import {
   Wrench,
   Zap,
@@ -38,8 +37,7 @@ export default function CatalogDrawer({
   onMouseEnter,
   onMouseLeave,
 }: CatalogDrawerProps) {
-  const dispatch = useAppDispatch();
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: rawCategories = [] } = useGetCategoriesQuery('');
 
   // Build tree from flat category array
   const categoryTree = React.useMemo(() => {
@@ -78,11 +76,7 @@ export default function CatalogDrawer({
   const [activeCategoryId, setActiveCategoryId] = useState<number | ''>('');
   const [mobileExpandedCatId, setMobileExpandedCatId] = useState<number | ''>('');
 
-  React.useEffect(() => {
-    if (rawCategories.length === 0) {
-      dispatch(fetchCategoriesThunk(''));
-    }
-  }, [dispatch, rawCategories.length]);
+
 
   React.useEffect(() => {
     if (rootCategories.length > 0 && !activeCategoryId) {

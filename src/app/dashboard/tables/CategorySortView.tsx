@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { reorderCategoryThunk } from '@/lib/appState/main/operations';
+import { useGetCategoriesQuery, useReorderCategoriesMutation } from '@/lib/appState/api/categoriesApi';
 import { Category } from '@/lib/types';
 import { GripVertical } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -185,8 +184,8 @@ const CategoryTreeNode = ({
 };
 
 const CategorySortView = () => {
-  const dispatch = useAppDispatch();
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: rawCategories } = useGetCategoriesQuery('');
+  const [reorderCategory] = useReorderCategoriesMutation();
   const categoriesList = useMemo(() => rawCategories || [], [rawCategories]);
 
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -239,17 +238,17 @@ const CategorySortView = () => {
         }
       }
 
-      dispatch(reorderCategoryThunk({ id, parentId, targetIndex }))
+      reorderCategory({ id, parentId, targetIndex })
         .unwrap()
         .then(() => {
           toast.success('Порядок категорій успішно змінено');
         })
         .catch((err) => {
-          toast.error(err || 'Не вдалося змінити порядок');
+          toast.error('Не вдалося змінити порядок');
           console.error('Reorder error:', err);
         });
     },
-    [dispatch, categoriesList],
+    [reorderCategory, categoriesList],
   );
 
   return (

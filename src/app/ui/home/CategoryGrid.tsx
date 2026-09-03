@@ -5,10 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { CATEGORY_IDS } from '@/lib/constants';
-import { useAppSelector } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 
 export default function CategoryGrid() {
-  const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
   const getCategoryIdByName = (name: string, fallback: string) => {
     const matched = categoriesList.find((c) => c.name.toLowerCase() === name.toLowerCase());

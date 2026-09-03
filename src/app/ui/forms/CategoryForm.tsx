@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { useAppSelector } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { Category } from '@/lib/types';
 
 interface CategoryNode extends Category {
@@ -81,7 +81,7 @@ const CategoryForm = ({
     showInMenu?: boolean;
   };
 }) => {
-  const rawCategoriesList = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: rawCategoriesList = [] } = useGetCategoriesQuery('');
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
 
   const [detectedFilters, setDetectedFilters] = useState<

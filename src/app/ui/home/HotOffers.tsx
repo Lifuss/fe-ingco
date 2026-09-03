@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useIsB2B, useSliderMouseWheel } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import {
   addProductToCartThunk,
   addFavoriteProductThunk,
@@ -30,7 +31,7 @@ export default function HotOffers({ products }: HotOffersProps) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isB2BUser = useIsB2B();
-  const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
   const batteryToolCategoryId = String(
     categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id ||

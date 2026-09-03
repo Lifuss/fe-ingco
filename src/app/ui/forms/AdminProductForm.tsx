@@ -34,8 +34,8 @@ const questionSvg = (
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import ConfirmModal from '@/app/ui/modals/ConfirmModal';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
+import { useAppDispatch } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
 import MultiSelectAutocomplete from './MultiSelectAutocomplete';
 import SearchableSelect from './SearchableSelect';
@@ -103,7 +103,7 @@ function getSortedHierarchy(categories: Category[]): (Category & { depth: number
 const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: categories = [] } = useGetCategoriesQuery('');
 
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
     () => product?.characteristics || [],
@@ -215,11 +215,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
       .catch((err) => console.error('Failed to fetch badges:', err));
   }, []);
 
-  useEffect(() => {
-    if (!categories.length) {
-      dispatch(fetchCategoriesThunk(''));
-    }
-  }, [dispatch, categories.length]);
+
 
   useEffect(() => {
     if (product) {
