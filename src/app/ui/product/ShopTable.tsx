@@ -3,16 +3,13 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useActiveCategory, useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
+import { useActiveCategory, useAppSelector, useProductStats } from '@/lib/hooks';
 import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
-import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
 import ModalProduct from '@/app/ui/modals/ProductModal';
@@ -42,7 +39,9 @@ type ShopTableRow = {
 
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
-  const dispatch = useAppDispatch();
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
   const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
   const USD = useAppSelector(selectUSDRate);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
@@ -126,18 +125,22 @@ const ShopTable = ({ isFavoritePage = false }) => {
   }
 
   const handleFavoriteClick = useCallback(
-    (id: number) => {
-      if (favoritesList.includes(id)) {
-        dispatch(deleteFavoriteProductThunk(id));
-      } else {
-        dispatch(addFavoriteProductThunk(id));
+    async (id: number) => {
+      try {
+        if (favoritesList.includes(id)) {
+          await deleteFavorite(id).unwrap();
+        } else {
+          await addFavorite(id).unwrap();
+        }
+      } catch {
+        toast.error('Не вдалося оновити обране');
       }
     },
-    [dispatch, favoritesList],
+    [addFavorite, deleteFavorite, favoritesList],
   );
 
   const handleCartClick = useCallback(
-    (id: number, productName: string) => {
+    async (id: number, productName: string) => {
       const product = productsData.find((p) => p.id === id);
       if (product && (!product.price || product.price <= 0)) {
         toast.info('Ціна на цей товар уточнюється. Зверніться до менеджера для замовлення.');
@@ -146,34 +149,21 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
       const input = document.getElementsByName(String(id))[0] as HTMLInputElement | undefined;
       const qty = input ? parseInt(input.value) || 0 : 0;
+      const finalQty = qty > 0 ? qty : 1;
 
-      if (qty > 0) {
-        dispatch(
-          addProductToCartThunk({
-            productId: id,
-            quantity: qty,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`${qty} шт. - ${productName} додано в кошик`);
-          });
+      try {
+        await addToCart({
+          productId: id,
+          quantity: finalQty,
+          isRetail: false,
+        }).unwrap();
+        toast.success(`${finalQty} шт. - ${productName} додано в кошик`);
         if (input) input.value = '';
-      } else {
-        dispatch(
-          addProductToCartThunk({
-            productId: id,
-            quantity: 1,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`1 шт. - ${productName} додано в кошик`);
-          });
-        if (input) input.value = '';
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
       }
     },
-    [dispatch, productsData],
+    [addToCart, productsData],
   );
 
   const data = useMemo<ShopTableRow[]>(() => {

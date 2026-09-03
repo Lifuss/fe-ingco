@@ -1,32 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco, serializeAxiosError } from '../user/operation';
-import { normalizeOrder } from '@/lib/utils';
-
-export const fetchHistoryThunk = createAsyncThunk(
-  'history/fetch',
-  async (
-    {
-      page = 1,
-      q = '',
-      limit = 15,
-      isRetail,
-    }: { page: number; q: string; limit?: number; isRetail: boolean },
-    { rejectWithValue, signal },
-  ) => {
-    try {
-      const { data } = await apiIngco.get('/orders', {
-        params: { page, q, limit, isRetail },
-        signal,
-      });
-      return {
-        ...data,
-        orders: (data.orders || []).map(normalizeOrder),
-      };
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
-  },
-);
 
 export const fetchExcelFileThunk = createAsyncThunk(
   'excel/fetch',

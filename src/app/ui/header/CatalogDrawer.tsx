@@ -76,8 +76,6 @@ export default function CatalogDrawer({
   const [activeCategoryId, setActiveCategoryId] = useState<number | ''>('');
   const [mobileExpandedCatId, setMobileExpandedCatId] = useState<number | ''>('');
 
-
-
   React.useEffect(() => {
     if (rootCategories.length > 0 && !activeCategoryId) {
       setActiveCategoryId(rootCategories[0].id);

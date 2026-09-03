@@ -4,11 +4,8 @@ import { useActiveCategory, useAppDispatch, useAppSelector, useIsB2B } from '@/l
 import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
-import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import { useMediaQuery } from 'react-responsive';
@@ -23,6 +20,9 @@ import { CardSkeleton } from '../skeletons/skeletons';
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
   const isB2B = useIsB2B();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
@@ -140,31 +140,34 @@ const ProductList = ({ isFavoritePage = false }) => {
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  function handleFavoriteClick(id: number) {
+  async function handleFavoriteClick(id: number) {
     if (isAuth) {
-      if (favoritesIdList.includes(id)) {
-        dispatch(deleteFavoriteProductThunk(id));
-      } else {
-        dispatch(addFavoriteProductThunk(id));
+      try {
+        if (favoritesIdList.includes(id)) {
+          await deleteFavorite(id).unwrap();
+        } else {
+          await addFavorite(id).unwrap();
+        }
+      } catch {
+        toast.error('Не вдалося оновити обране');
       }
     } else {
       toast.error('Для додавання в обране потрібно увійти в профіль');
     }
   }
 
-  const handleCartClick = (id: number, productName: string) => {
+  const handleCartClick = async (id: number, productName: string) => {
     if (isAuth) {
-      dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: id,
           quantity: 1,
           isRetail: !isB2B,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${productName} додано в кошик`);
-        });
+        }).unwrap();
+        toast.success(`${productName} додано в кошик`);
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
+      }
     } else {
       const product = productsData.find((product) => product.id === id);
       if (!product) {

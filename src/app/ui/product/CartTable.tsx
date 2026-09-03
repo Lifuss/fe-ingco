@@ -2,15 +2,16 @@
 'use client';
 
 import Table from '@/app/ui/Table';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/hooks';
 import Image from 'next/image';
 import { SubmitEvent, useCallback, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 import {
-  addProductToCartThunk,
-  createOrderThunk,
-  deleteProductFromCartThunk,
-} from '@/lib/appState/user/operation';
+  useGetCartQuery,
+  useAddToCartMutation,
+  useDeleteFromCartMutation,
+} from '@/lib/appState/api/cartApi';
+import { useCreateOrderMutation } from '@/lib/appState/api/ordersApi';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
@@ -37,21 +38,27 @@ type CartTableRow = {
 const CartTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const dispatch = useAppDispatch();
-
+  const { data: cartData } = useGetCartQuery({ isRetail: false });
   const rawCart = useAppSelector((state) => state.persistedAuthReducer.user?.cart);
-  const selectedCart = useMemo<CartData>(() => (rawCart as CartData) || [], [rawCart]);
+  const selectedCart = useMemo<CartData>(
+    () => (cartData as CartData) ?? (rawCart as CartData) ?? [],
+    [cartData, rawCart],
+  );
   const selectedCurrency = useAppSelector(selectCurrency);
+
+  const [addToCart] = useAddToCartMutation();
+  const [deleteFromCart] = useDeleteFromCartMutation();
+  const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
 
   const handleQuantityChange = useCallback(
     (id: number, operation: string) => {
       if (operation === 'increment') {
-        dispatch(addProductToCartThunk({ productId: id, quantity: 1 }));
+        addToCart({ productId: id, quantity: 1, isRetail: false });
       } else {
-        dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1 }));
+        deleteFromCart({ productId: id, quantity: 1, isRetail: false });
       }
     },
-    [dispatch],
+    [addToCart, deleteFromCart],
   );
 
   const openProductModal = useCallback((product: Product) => {
@@ -200,12 +207,11 @@ const CartTable = () => {
           <button
             className="mx-auto flex cursor-pointer items-center justify-center text-neutral-400 transition-transform duration-200 hover:scale-110 hover:text-rose-500"
             onClick={() => {
-              dispatch(
-                deleteProductFromCartThunk({
-                  productId: row.original.id,
-                  quantity: row.original.quantityCol,
-                }),
-              );
+              deleteFromCart({
+                productId: row.original.id,
+                quantity: row.original.quantityCol,
+                isRetail: false,
+              });
             }}
             aria-label={`Видалити ${row.original.nameCol} з кошика`}
           >
@@ -214,10 +220,10 @@ const CartTable = () => {
         ),
       },
     ],
-    [dispatch, handleQuantityChange, openProductModal],
+    [deleteFromCart, handleQuantityChange, openProductModal],
   );
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
@@ -244,11 +250,12 @@ const CartTable = () => {
       usdRate: selectedCurrency.USD,
     };
 
-    dispatch(createOrderThunk(order))
-      .unwrap()
-      .then(() => {
-        toast.success('Замовлення успішно оформлено');
-      });
+    try {
+      await createOrder(order).unwrap();
+      toast.success('Замовлення успішно оформлено');
+    } catch {
+      toast.error('Не вдалося оформити замовлення');
+    }
   };
 
   const sum = selectedCart
@@ -303,9 +310,10 @@ const CartTable = () => {
 
             <button
               type="submit"
-              className="bg-brand-dark mx-auto mt-5 mb-20 w-fit rounded-lg p-2 text-2xl text-white"
+              disabled={isSubmitting}
+              className="bg-brand-dark mx-auto mt-5 mb-20 w-fit cursor-pointer rounded-lg p-2 text-2xl text-white transition-opacity disabled:opacity-50"
             >
-              Оформити замовлення
+              {isSubmitting ? 'Оформлення...' : 'Оформити замовлення'}
             </button>
           </div>
         </form>

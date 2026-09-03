@@ -943,14 +943,14 @@ const handleUpdate = async (userData: User) => {
   - [x] Видалити `fetchMainTableDataThunk`, `deleteProductThunk` та очистити `mainSlice` від `products`, `product`, `tableLoading`, `productLoading`, `total`.
   - [x] Перевірити білд (`npm run build`).
 
-- [ ] **Фаза 4: Кошик, Обране та Замовлення**
-  - [ ] Створити `cartApi.ts` та `favoritesApi.ts`.
-  - [ ] Створити `ordersApi.ts` з `createOrder`, `createRetailOrder`, `getOrderHistory`.
-  - [ ] Додати `clearLocalStorageCart` action в `authSlice` (якщо ще не існує).
-  - [ ] Налаштувати оптимістичні оновлення для обраного.
-  - [ ] Перевірити взаємодію B2B та B2C кошиків.
-  - [ ] Перевірити, що `createRetailOrder` коректно очищує `localStorageCart`.
-  - [ ] Перевірити білд (`npm run build`).
+- [x] **Фаза 4: Кошик, Обране та Замовлення**
+  - [x] Створити `cartApi.ts` (і `cartApi.types.ts`) та `favoritesApi.ts` (і `favoritesApi.types.ts`).
+  - [x] Створити `ordersApi.ts` (і `ordersApi.types.ts`) з `createOrder`, `createRetailOrder`, `getOrderHistory`.
+  - [x] Додати `clearLocalStorageCart` action в `authSlice`.
+  - [x] Налаштувати автоматичну та оптимістичну синхронізацію для обраного.
+  - [x] Перевірити взаємодію B2B та B2C кошиків.
+  - [x] Перевірити, що `createRetailOrder` коректно очищує `localStorageCart`.
+  - [x] Перевірити білд (`npm run build`).
 
 - [ ] **Фаза 5: Фінальне очищення та аудит**
   - [ ] Видалити застарілі `operations.ts` файли або невикористовувані санки.

@@ -1,11 +1,8 @@
 'use client';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/hooks';
 import { useSearchParams } from 'next/navigation';
-import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
@@ -21,7 +18,9 @@ interface ShopListProps {
 
 const ShopList = ({ isFavoritePage = false, products, favorites = [] }: ShopListProps) => {
   const searchParams = useSearchParams();
-  const dispatch = useAppDispatch();
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
   const usdRate = useAppSelector(selectUSDRate);
 
   const favoritesList = (favorites || []).map((product) => product.id);
@@ -50,25 +49,29 @@ const ShopList = ({ isFavoritePage = false, products, favorites = [] }: ShopList
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  function handleFavoriteClick(id: number) {
-    if (favoritesList.includes(id)) {
-      dispatch(deleteFavoriteProductThunk(id));
-    } else {
-      dispatch(addFavoriteProductThunk(id));
+  async function handleFavoriteClick(id: number) {
+    try {
+      if (favoritesList.includes(id)) {
+        await deleteFavorite(id).unwrap();
+      } else {
+        await addFavorite(id).unwrap();
+      }
+    } catch {
+      toast.error('Не вдалося оновити обране');
     }
   }
 
-  const handleCartClick = (id: number, productName: string) => {
-    dispatch(
-      addProductToCartThunk({
+  const handleCartClick = async (id: number, productName: string) => {
+    try {
+      await addToCart({
         productId: id,
         quantity: 1,
-      }),
-    )
-      .unwrap()
-      .then(() => {
-        toast.success(`1 шт. - ${productName} додано в кошик`);
-      });
+        isRetail: false,
+      }).unwrap();
+      toast.success(`1 шт. - ${productName} додано в кошик`);
+    } catch {
+      toast.error('Не вдалося додати товар у кошик');
+    }
   };
 
   // Перехід на товар тепер обробляється всередині ProductBlockList з урахуванням query

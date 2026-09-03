@@ -7,11 +7,8 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Minus, Plus, Star, Phone } from 'lucide-react';
 import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
-import {
-  addProductToCartThunk,
-  addFavoriteProductThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import OutOfStockModal from '../modals/OutOfStockModal';
@@ -51,6 +48,10 @@ const ProductCard = ({
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
   const [isConsultOpen, setIsConsultOpen] = useState(false);
 
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
+
   if (!product || !product.id) {
     return (
       <div className="relative flex justify-center rounded-2xl border-2 border-transparent bg-white p-4 shadow-md">
@@ -89,16 +90,20 @@ const ProductCard = ({
   const wholesalePriceUah = Math.ceil(price * usdRate);
 
   // Favorite toggle handler
-  const handleFavClick = (e: React.MouseEvent) => {
+  const handleFavClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isAuth) {
       toast.error('Для додавання в обране потрібно увійти в профіль');
       return;
     }
-    if (favoritesIdList.includes(id)) {
-      dispatch(deleteFavoriteProductThunk(id));
-    } else {
-      dispatch(addFavoriteProductThunk(id));
+    try {
+      if (favoritesIdList.includes(id)) {
+        await deleteFavorite(id).unwrap();
+      } else {
+        await addFavorite(id).unwrap();
+      }
+    } catch {
+      toast.error('Не вдалося оновити обране');
     }
   };
 
@@ -121,18 +126,19 @@ const ProductCard = ({
   };
 
   // Add to cart handler
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isAuth) {
-      dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: id,
           quantity,
           isRetail: !isB2BUser,
-        }),
-      )
-        .unwrap()
-        .then(() => toast.success(`${quantity} шт. - ${name} додано в кошик`));
+        }).unwrap();
+        toast.success(`${quantity} шт. - ${name} додано в кошик`);
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
+      }
     } else {
       // Guest local cart
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;

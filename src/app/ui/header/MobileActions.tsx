@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Heart, ShoppingBasket } from 'lucide-react';
 import { useAppSelector, useIsB2B } from '@/lib/hooks';
+import { useGetCartQuery } from '@/lib/appState/api/cartApi';
 import UserModal from '~/ui/modals/UserModal';
 import Icon from '~/ui/assets/Icon';
 
@@ -11,12 +12,13 @@ export default function MobileActions() {
   const { isAuthenticated, user, localStorageCart } = useAppSelector(
     (state) => state.persistedAuthReducer,
   );
+  const { data: serverCart } = useGetCartQuery({ isRetail: !isB2b }, { skip: !isAuthenticated });
 
   // Calculate items in cart based on B2B status
   const itemsInCart = isB2b
-    ? user?.cart?.length || 0
+    ? (serverCart ?? user?.cart)?.length || 0
     : isAuthenticated
-      ? user?.retailCart?.length || 0
+      ? (serverCart ?? user?.retailCart)?.length || 0
       : localStorageCart?.length || 0;
 
   return (

@@ -5,12 +5,12 @@ import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import OrderModal from '@/app/ui/modals/OrderModal';
-import { fetchHistoryThunk } from '@/lib/appState/main/operations';
+import { useGetOrderHistoryQuery } from '@/lib/appState/api/ordersApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/hooks';
 import { Order } from '@/lib/types';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 
 type HistoryTableProps = {
@@ -39,8 +39,7 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
     setSelectedOrder(null);
     setIsModalOpen(false);
   }, []);
-  const dispatch = useAppDispatch();
-  const { history, totalPages } = useAppSelector((state) => state.persistedMainReducer);
+
   const usdCurrency = useAppSelector(selectUSDRate);
   const searchParams = useSearchParams();
 
@@ -49,9 +48,9 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
 
   const query = searchParams.get('query') || '';
 
-  useEffect(() => {
-    dispatch(fetchHistoryThunk({ page, q: query, isRetail }));
-  }, [dispatch, page, query, isRetail]);
+  const { data: historyData } = useGetOrderHistoryQuery({ page, q: query, isRetail });
+  const history = useMemo(() => historyData?.orders || [], [historyData]);
+  const totalPages = historyData?.totalPages || 1;
 
   const columns = useMemo<ColumnDef<HistoryTableRow>[]>(
     () => [
@@ -61,7 +60,7 @@ const HistoryTable = ({ isRetail = false }: HistoryTableProps) => {
         cell: ({ row }) => (
           <button
             onClick={() => openModal(row.original.order)}
-            className="w-full transition-colors hover:text-blue-500"
+            className="w-full cursor-pointer transition-colors hover:text-blue-500"
           >
             {row.original.orderCodeCol}
           </button>

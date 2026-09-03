@@ -184,8 +184,6 @@ const CatalogSidebar = () => {
     [searchParams, pathname, router],
   );
 
-
-
   // Category select handler
   const handleCategoryChange = (categoryId: string) => {
     const selectedCat = rawProductsCategories?.find((c) => String(c.id) === categoryId);

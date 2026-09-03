@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { useGetCategoriesQuery, useReorderCategoriesMutation } from '@/lib/appState/api/categoriesApi';
+import {
+  useGetCategoriesQuery,
+  useReorderCategoriesMutation,
+} from '@/lib/appState/api/categoriesApi';
 import { Category } from '@/lib/types';
 import { GripVertical } from 'lucide-react';
 import { toast } from 'react-toastify';

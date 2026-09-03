@@ -34,11 +34,8 @@ import { useGetProductBySlugQuery, useGetProductsQuery } from '@/lib/appState/ap
 import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
-import {
-  addProductToCartThunk,
-  addFavoriteProductThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
 import { ProductReviewsSection } from '~/ui/product/ProductReviewsSection';
@@ -110,6 +107,10 @@ export default function ProductPageClient({
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
+
   const barcodeRef = useRef<SVGSVGElement | null>(null);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
 
@@ -173,17 +174,21 @@ export default function ProductPageClient({
 
   // Favorite toggle
   const isFavorite = favoritesIdList.includes(product.id);
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = async () => {
     if (!isAuth) {
       toast.info('Будь ласка, увійдіть, щоб додавати товари до обраного.');
       return;
     }
-    if (isFavorite) {
-      dispatch(deleteFavoriteProductThunk(product.id));
-      toast.success('Товар вилучено з обраного');
-    } else {
-      dispatch(addFavoriteProductThunk(product.id));
-      toast.success('Товар додано до обраного');
+    try {
+      if (isFavorite) {
+        await deleteFavorite(product.id).unwrap();
+        toast.success('Товар вилучено з обраного');
+      } else {
+        await addFavorite(product.id).unwrap();
+        toast.success('Товар додано до обраного');
+      }
+    } catch {
+      toast.error('Не вдалося оновити обране');
     }
   };
 
@@ -191,26 +196,27 @@ export default function ProductPageClient({
   const handleAddToCart = async () => {
     const qty = typeof quantity === 'number' ? quantity : 1;
     if (isAuth) {
-      await dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: product.id,
           quantity: qty,
           isRetail: !isB2b,
-        }),
-      ).unwrap();
+        }).unwrap();
+        toast.success(`Товар додано до кошика (${qty} шт.)`);
+      } catch {
+        toast.error('Не вдалося додати товар до кошика');
+      }
     } else {
       const { price: _price, priceBulk: _priceBulk, ...normalizeProduct } = product;
-      await Promise.resolve(
-        dispatch(
-          addProductToLocalStorageCart({
-            productId: normalizeProduct,
-            quantity: qty,
-            id: product.id,
-          }),
-        ),
+      dispatch(
+        addProductToLocalStorageCart({
+          productId: normalizeProduct,
+          quantity: qty,
+          id: product.id,
+        }),
       );
+      toast.success(`Товар додано до кошика (${qty} шт.)`);
     }
-    toast.success(`Товар додано до кошика (${qty} шт.)`);
   };
 
   // Qty helpers
