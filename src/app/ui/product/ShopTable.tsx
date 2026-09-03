@@ -1,10 +1,10 @@
 'use no memo';
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useActiveCategory, useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
-import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
@@ -43,13 +43,7 @@ type ShopTableRow = {
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const {
-    products,
-    total,
-    totalPages,
-    shopView,
-    tableLoading,
-  } = useAppSelector((state) => state.persistedMainReducer);
+  const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
   const USD = useAppSelector(selectUSDRate);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,6 +79,32 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
 
+  const {
+    data: catalogData,
+    isLoading,
+    isFetching,
+  } = useGetProductsQuery(
+    {
+      page,
+      query,
+      category,
+      isRetail: false,
+      sortValue,
+      filters,
+    },
+    { skip: isFavoritePage },
+  );
+
+  const products = useMemo(
+    () => (isFavoritePage ? [] : catalogData?.products || []),
+    [isFavoritePage, catalogData],
+  );
+  const total = isFavoritePage ? favorites.length : catalogData?.total || 0;
+  const totalPages = isFavoritePage
+    ? Math.ceil(favorites.length / 10) || 1
+    : catalogData?.totalPages || 1;
+  const tableLoading = !isFavoritePage && (isLoading || isFetching);
+
   let productsData = products;
   if (isFavoritePage) {
     productsData = favorites;
@@ -104,21 +124,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
     }
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
-
-  useEffect(() => {
-    if (!isFavoritePage) {
-      dispatch(
-        fetchMainTableDataThunk({
-          page,
-          query,
-          category,
-          isRetail: false,
-          sortValue,
-          filters,
-        }),
-      );
-    }
-  }, [dispatch, page, query, category, isFavoritePage, sortValue, filters]);
 
   const handleFavoriteClick = useCallback(
     (id: number) => {
@@ -347,8 +352,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
     [favoritesList, handleCartClick, handleFavoriteClick, logProductClick],
   );
 
-  const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
-
   return (
     <>
       {tableLoading && products.length === 0 ? (
@@ -380,7 +383,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
                 </div>
               </div>
             )}
-            <FiltersBlock listType="partner" />
+            <FiltersBlock listType="partner" total={total} shownCount={productsData.length} />
             <div>
               {shopView === 'table' ? (
                 <Table<ShopTableRow> columns={columns} data={data} scrollTrigger={page} />
@@ -397,7 +400,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
             </div>
             <div className="mx-auto mt-5 w-fit pb-10">
-              <Pagination totalPages={totalPage} />
+              <Pagination totalPages={totalPages} />
             </div>
           </div>
 

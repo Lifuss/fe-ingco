@@ -1,43 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiIngco, serializeAxiosError } from '../user/operation';
 import { Order, User } from '@/lib/types';
-import { normalizeProduct, normalizeOrder, normalizeUser } from '@/lib/utils';
-
-// products thunks
-export const createProductThunk = createAsyncThunk(
-  'createProduct',
-  async (formData: FormData, { rejectWithValue }) => {
-    try {
-      const { data } = await apiIngco.post('/products', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return data;
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
-  },
-);
-
-export const updateProductThunk = createAsyncThunk(
-  'updateProduct',
-  async (
-    { formData, productId }: { formData: FormData; productId: string },
-    { rejectWithValue },
-  ) => {
-    try {
-      const { data } = await apiIngco.put(`/products/${productId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return normalizeProduct(data);
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
-  },
-);
+import { normalizeOrder, normalizeUser } from '@/lib/utils';
 
 // ----------------- users thunks
 export const fetchUsersThunk = createAsyncThunk(

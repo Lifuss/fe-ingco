@@ -935,13 +935,13 @@ const handleUpdate = async (userData: User) => {
   - [x] Очистити `dashboardSlice` від дублюючих серверних масивів (`users`, `orders`, `supportTickets`, `usersStats`, `orderStats`, `stats`, `gmcStatus`).
   - [x] Перевірити білд (`npm run build`).
 
-- [ ] **Фаза 3: Каталог товарів**
-  - [ ] Створити `productsApi.ts` з `getProducts`, `getProductBySlug`, `getProductById`, `createProduct` (FormData), `updateProduct` (FormData), `deleteProduct`.
-  - [ ] Уніфікувати теги: всі Product ендпоінти використовують числовий `id`, а не slug.
-  - [ ] Оновити `ProductList.tsx`, `ShopTable.tsx`, `ProductCard.tsx`, сторінку `[productSlug]/page.tsx`.
-  - [ ] Оновити `AdminProductForm.tsx` для використання `createProduct`/`updateProduct` мутацій.
-  - [ ] Видалити `fetchMainTableDataThunk`, `deleteProductThunk` та очистити `mainSlice` від `products`, `product`, `tableLoading`, `productLoading`, `page`, `totalPages`, `total`, `history`.
-  - [ ] Перевірити білд (`npm run build`).
+- [x] **Фаза 3: Каталог товарів**
+  - [x] Створити `productsApi.ts` з `getProducts`, `getProductBySlug`, `getProductById`, `createProduct` (FormData), `updateProduct` (FormData), `deleteProduct`.
+  - [x] Уніфікувати теги: всі Product ендпоінти використовують числовий `id`, а не slug.
+  - [x] Оновити `ProductList.tsx`, `ShopTable.tsx`, `ProductCard.tsx`, сторінку `[productSlug]/page.tsx`.
+  - [x] Оновити `AdminProductForm.tsx` для використання `createProduct`/`updateProduct` мутацій.
+  - [x] Видалити `fetchMainTableDataThunk`, `deleteProductThunk` та очистити `mainSlice` від `products`, `product`, `tableLoading`, `productLoading`, `total`.
+  - [x] Перевірити білд (`npm run build`).
 
 - [ ] **Фаза 4: Кошик, Обране та Замовлення**
   - [ ] Створити `cartApi.ts` та `favoritesApi.ts`.

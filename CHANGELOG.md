@@ -7,6 +7,24 @@
 
 ## [Unreleased]
 
+### [Refactor] RTK Query Migration — Phase 3 (Products Catalog & Admin Products)
+
+- **Модуль `productsApi.ts` та типізація `productsApi.types.ts`**:
+  - Реалізовано запити каталогу `getProducts` з мапінгом пошукового параметра `q`, приведенням `category` до числового типу, сортуванням, фільтрами характеристик та автоматичною гідратацією через `normalizeProduct`.
+  - Реалізовано `getProductBySlug` та `getProductById` з кешуванням за числовим тегом `{ type: 'Product', id }`.
+  - Реалізовано мутації `createProduct` та `updateProduct` з підтримкою `FormData` (файли зображень, JSON-масиви `characteristics`, `categoryIds`, `badgeIds`, `existingImages`), а також `deleteProduct` з інвалідацією тегів `{ type: 'Product', id }` та `LIST`.
+- **Міграція компонентів каталогу та адмін-панелі**:
+  - [`ProductList.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductList.tsx) та [`ShopTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopTable.tsx): вилучено `useEffect` з багатопараметричними залежностями та `fetchMainTableDataThunk`; переведено на декларативний хук `useGetProductsQuery` з прапорцем `skip: isFavoritePage`.
+  - [`FiltersBlock.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/catalog/FiltersBlock.tsx): ізольовано від глобального масиву товарів, додано пропси `total` та `shownCount`.
+  - [`ProductTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/dashboard/tables/ProductTable.tsx): переведено на `useGetProductsQuery` та `useDeleteProductMutation` з автоматичним оновленням таблиці після видалення.
+  - [`AdminProductForm.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/forms/AdminProductForm.tsx): замінено санки створення та оновлення на `useCreateProductMutation` та `useUpdateProductMutation`, додано блокування кнопок від повторних натискань.
+  - [`ProductPageClient.tsx`](file:///f:/code/repos/fe-ingco/src/app/%28retail-catalog%29/%5BproductSlug%5D/ProductPageClient.tsx): замінено селектори `reduxProduct`/`products` на `useGetProductBySlugQuery` та усунуто прямий виклик `apiIngco.get('/products', ...)` для B2B рекомендацій через `useGetProductsQuery`.
+  - [`[productId]/page.tsx`](file:///f:/code/repos/fe-ingco/src/app/dashboard/product/edit/%5BproductId%5D/page.tsx): переведено на `useGetProductByIdQuery(productId)`, усунуто ручний стан завантаження та `useEffect`.
+- **Очищення Redux Slice та ліквідація санок**:
+  - З [`mainSlice`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/slice.ts) видалено поля `products`, `product`, `tableLoading`, `productLoading`, `total`.
+  - З [`main/operations.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/operations.ts) видалено санки `fetchMainTableDataThunk`, `getProductByIdThunk`, `getProductBySlugThunk`, `deleteProductThunk`.
+  - З [`dashboard/operations.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/dashboard/operations.ts) видалено санки `createProductThunk` та `updateProductThunk`.
+
 ### [Refactor] RTK Query Migration — Phase 2 (CRM & Admin Dashboard)
 
 - **Модуль `dashboardApi.ts`**:

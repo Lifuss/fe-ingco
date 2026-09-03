@@ -9,6 +9,8 @@ import Breadcrumbs from '../Breadcrumbs';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';
+  total?: number;
+  shownCount?: number;
 }
 
 export type sortValueType = 'default' | 'popular' | 'cheap' | 'expensive' | 'name';
@@ -20,17 +22,13 @@ const sortOptions: { label: string; sortValue: sortValueType }[] = [
   { label: 'За назвою', sortValue: 'name' },
 ];
 
-const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
+const FiltersBlock = ({ listType = 'retail', total, shownCount }: FilterBlockProps) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const {
-    products = [],
-    total = 0,
-    shopView,
-  } = useAppSelector((state) => state.persistedMainReducer);
+  const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
 
   const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
   const { activeCategory, categoryName } = useActiveCategory();
@@ -76,7 +74,7 @@ const FiltersBlock = ({ listType = 'retail' }: FilterBlockProps) => {
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold tracking-wide text-gray-900 uppercase">{categoryName}</h1>
         <p className="text-xs font-medium text-gray-500">
-          Показано {products.length} з {total} товарів
+          Показано {shownCount ?? 0} з {total ?? 0} товарів
         </p>
       </div>
 

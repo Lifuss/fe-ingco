@@ -5,14 +5,14 @@ import Icon from '@/app/ui/assets/Icon';
 import { sortValueType } from '@/app/ui/catalog/FiltersBlock';
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
-import { deleteProductThunk, fetchMainTableDataThunk } from '@/lib/appState/main/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useGetProductsQuery, useDeleteProductMutation } from '@/lib/appState/api/productsApi';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import ConfirmModal from '@/app/ui/modals/ConfirmModal';
 import { Eye } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 type ProductTableRow = {
   articleCol: string;
@@ -26,19 +26,10 @@ type ProductTableRow = {
 };
 
 const ProductTable = () => {
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { products, totalPages } = useAppSelector((state) => state.persistedMainReducer);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<{ id: number; name: string } | null>(null);
-
-  const handleConfirmDelete = () => {
-    if (productToDelete) {
-      dispatch(deleteProductThunk(productToDelete.id));
-      setProductToDelete(null);
-    }
-  };
 
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
@@ -47,18 +38,32 @@ const ProductTable = () => {
   const category = searchParams.get('category') || '';
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
 
-  useEffect(() => {
-    dispatch(
-      fetchMainTableDataThunk({
-        page,
-        query,
-        category,
-        limit: 20,
-        isRetail: false,
-        sortValue,
-      }),
-    );
-  }, [dispatch, page, query, category, sortValue]);
+  const { data: productsData } = useGetProductsQuery({
+    page,
+    query,
+    category,
+    limit: 20,
+    isRetail: false,
+    sortValue,
+  });
+
+  const [deleteProduct] = useDeleteProductMutation();
+
+  const products = useMemo(() => productsData?.products || [], [productsData]);
+  const totalPages = productsData?.totalPages || 0;
+
+  const handleConfirmDelete = async () => {
+    if (productToDelete) {
+      try {
+        await deleteProduct(productToDelete.id).unwrap();
+        toast.success('Товар успішно видалено');
+      } catch {
+        toast.error('Не вдалося видалити товар');
+      }
+      setIsConfirmOpen(false);
+      setProductToDelete(null);
+    }
+  };
 
   const data = useMemo<ProductTableRow[]>(() => {
     return products.map((product) => ({
@@ -143,7 +148,7 @@ const ProductTable = () => {
             >
               <Icon
                 icon="delete"
-                className="fill-inactive h-[28px] w-[27px] cursor-pointer transition-colors hover:fill-black"
+                className="fill-inactive h-7 w-6.75 cursor-pointer transition-colors hover:fill-black"
               />
             </button>
           </div>
