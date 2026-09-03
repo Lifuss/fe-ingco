@@ -928,12 +928,12 @@ const handleUpdate = async (userData: User) => {
   - [ ] Перенести тост помилки видалення категорії в `CategoryTable.tsx`.
   - [ ] Перевірити білд (`npm run build`).
 
-- [ ] **Фаза 2: Адмін-панель (CRM)**
-  - [ ] Створити `dashboardApi.ts` (Users з `normalizeUser` в `transformResponse`, Orders з `/orders/all`, Support, Analytics, GMC).
-  - [ ] Оновити `UserTable.tsx`, `OrdersTable.tsx`, `SupportTable.tsx`, `AnalyticsDiagrams.tsx`.
-  - [ ] Перенести всі `toast.success(...)` з `dashboardSlice` → компоненти (`.unwrap()` + toast).
-  - [ ] Очистити `dashboardSlice` від дублюючих серверних масивів (`users`, `orders`, `supportTickets`, `usersStats`, `orderStats`, `stats`, `gmcStatus`).
-  - [ ] Перевірити білд (`npm run build`).
+- [x] **Фаза 2: Адмін-панель (CRM)**
+  - [x] Створити `dashboardApi.ts` (Users з `normalizeUser` в `transformResponse`, Orders з `/orders/all`, Support, Analytics, GMC).
+  - [x] Оновити `UserTable.tsx`, `OrdersTable.tsx`, `SupportTable.tsx`, `AnalyticsDiagrams.tsx`.
+  - [x] Перенести всі `toast.success(...)` з `dashboardSlice` → компоненти (`.unwrap()` + toast).
+  - [x] Очистити `dashboardSlice` від дублюючих серверних масивів (`users`, `orders`, `supportTickets`, `usersStats`, `orderStats`, `stats`, `gmcStatus`).
+  - [x] Перевірити білд (`npm run build`).
 
 - [ ] **Фаза 3: Каталог товарів**
   - [ ] Створити `productsApi.ts` з `getProducts`, `getProductBySlug`, `getProductById`, `createProduct` (FormData), `updateProduct` (FormData), `deleteProduct`.

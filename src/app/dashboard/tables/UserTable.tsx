@@ -4,12 +4,11 @@
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import AdminUserModal from '@/app/ui/modals/AdminUserModal';
-import { fetchUsersThunk } from '@/lib/appState/dashboard/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useGetUsersQuery } from '@/lib/appState/api/dashboardApi';
 import { User } from '@/lib/types';
 import clsx from 'clsx';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 
 type UserTableRow = {
@@ -24,12 +23,9 @@ const UserTable = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  const { users, totalPages } = useAppSelector((state) => state.dashboardSlice);
 
   // Read filters from URL search params for bookmarkable state
   const activeTab = searchParams.get('tab') || 'all';
@@ -67,19 +63,18 @@ const UserTable = () => {
     return { role, isB2B, isUserVerified, isDeleted };
   }, [activeTab, activeVerified]);
 
-  useEffect(() => {
-    dispatch(
-      fetchUsersThunk({
-        query,
-        role,
-        isB2B,
-        isUserVerified,
-        page,
-        isDeleted,
-        limit: 20, // Clean paginated limit
-      }),
-    );
-  }, [dispatch, query, role, isB2B, isUserVerified, isDeleted, page]);
+  const { data: usersData } = useGetUsersQuery({
+    q: query,
+    role,
+    isB2B,
+    isUserVerified,
+    page,
+    isDeleted,
+    limit: 20, // Clean paginated limit
+  });
+
+  const users = useMemo(() => usersData?.users || [], [usersData]);
+  const totalPages = usersData?.totalPages || 0;
 
   const data = useMemo<UserTableRow[]>(
     () =>

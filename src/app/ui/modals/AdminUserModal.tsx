@@ -1,14 +1,13 @@
 'use client';
 import Modal from 'react-modal';
 import { User } from '@/lib/types';
-import { useAppDispatch } from '@/lib/hooks';
 import { useEffect, useState } from 'react';
 import { Button } from '../buttons/button';
 import {
-  deleteUserThunk,
-  restoreUserThunk,
-  updateUserThunk,
-} from '@/lib/appState/dashboard/operations';
+  useDeleteUserMutation,
+  useRestoreUserMutation,
+  useUpdateUserMutation,
+} from '@/lib/appState/api/dashboardApi';
 import { toast } from 'react-toastify';
 import { X, UserRound, KeyRound, MapPin, ClipboardList } from 'lucide-react';
 import { generatePassword } from '@/lib/utils';
@@ -40,7 +39,9 @@ const modifiedStyles = {
 };
 
 const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
-  const dispatch = useAppDispatch();
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [restoreUser, { isLoading: isRestoring }] = useRestoreUserMutation();
   const [selectedUser, setSelectedUser] = useState<User | null>(user);
 
   useEffect(() => {
@@ -87,9 +88,10 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       return;
     }
 
-    dispatch(updateUserThunk(userValidate))
+    updateUser(userValidate)
       .unwrap()
       .then(() => {
+        toast.success('Користувач успішно змінений');
         closeModal();
       })
       .catch((error) => {
@@ -491,11 +493,13 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
               </Button>
               <Button
                 type="button"
+                disabled={isDeleting}
                 onClick={() => {
                   if (confirm('Ви впевнені, що хочете видалити користувача?')) {
-                    dispatch(deleteUserThunk(selectedUser.id))
+                    deleteUser(selectedUser.id)
                       .unwrap()
                       .then(() => {
+                        toast.success('Користувач успішно видалений');
                         closeModal();
                       })
                       .catch(() => {
@@ -504,28 +508,38 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
                   }
                 }}
                 title="Видалити користувача"
-                className="h-10 cursor-pointer rounded-xl border-none bg-red-100 px-4 text-xs font-semibold text-red-700 shadow-sm transition-all duration-150 hover:bg-red-200 hover:shadow"
+                className="h-10 cursor-pointer rounded-xl border-none bg-red-100 px-4 text-xs font-semibold text-red-700 shadow-sm transition-all duration-150 hover:bg-red-200 hover:shadow disabled:opacity-50"
               >
-                Видалити
+                {isDeleting ? 'Видалення...' : 'Видалити'}
               </Button>
             </div>
 
             <div className="flex w-full items-center justify-end gap-2.5 sm:w-auto">
               <Button
-                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-100 px-4 text-xs font-semibold text-emerald-700 shadow-sm transition-all duration-150 hover:bg-emerald-200 hover:shadow"
+                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-100 px-4 text-xs font-semibold text-emerald-700 shadow-sm transition-all duration-150 hover:bg-emerald-200 hover:shadow disabled:opacity-50"
+                disabled={isRestoring}
                 onClick={() => {
-                  if (confirm('Відновити користувача?'))
-                    dispatch(restoreUserThunk(selectedUser.id));
+                  if (confirm('Відновити користувача?')) {
+                    restoreUser(selectedUser.id)
+                      .unwrap()
+                      .then(() => {
+                        toast.success('Користувач успішно відновлений');
+                      })
+                      .catch(() => {
+                        toast.error('Помилка при відновленні користувача');
+                      });
+                  }
                 }}
                 type="button"
               >
-                Відновити
+                {isRestoring ? 'Відновлення...' : 'Відновити'}
               </Button>
               <Button
                 type="submit"
-                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-600 px-5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 hover:shadow active:bg-emerald-800"
+                disabled={isUpdating}
+                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-600 px-5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 hover:shadow active:bg-emerald-800 disabled:opacity-50"
               >
-                Зберегти
+                {isUpdating ? 'Збереження...' : 'Зберегти'}
               </Button>
             </div>
           </div>

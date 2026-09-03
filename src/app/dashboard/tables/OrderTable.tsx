@@ -3,10 +3,13 @@
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
-import { fetchOrdersThunk, updateOrderThunk } from '@/lib/appState/dashboard/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import {
+  useGetDashboardOrdersQuery,
+  useUpdateDashboardOrderMutation,
+} from '@/lib/appState/api/dashboardApi';
+import { useAppSelector } from '@/lib/hooks';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
@@ -51,17 +54,44 @@ export const orderStatusEnum = [
 
 type StatusType = (typeof orderStatusEnum)[number];
 
+const defaultOrderStats = {
+  'очікує підтвердження': 0,
+  'очікує оплати': 0,
+  комплектується: 0,
+  відправлено: 0,
+  'замовлення виконано': 0,
+  'замовлення скасовано': 0,
+};
+
 const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [openDropdownCode, setOpenDropdownCode] = useState<string | null>(null);
 
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const { orders, totalPages, orderStats } = useAppSelector((state) => state.dashboardSlice);
+  // Read status, page, query from URL search parameters
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
+  page = !page || page < 1 ? 1 : page;
+
+  const query = searchParams.get('query') || '';
+  const status = (searchParams.get('status') as StatusType) || 'всі';
+
+  const { data: ordersData } = useGetDashboardOrdersQuery({
+    page,
+    q: query,
+    limit: 20,
+    isRetail,
+    status,
+  });
+  const [updateOrder] = useUpdateDashboardOrderMutation();
+
+  const orders = useMemo(() => ordersData?.orders || [], [ordersData]);
+  const totalPages = ordersData?.totalPages || 0;
+  const orderStats = ordersData?.stats || defaultOrderStats;
+
   const fallbackUsdRate = useAppSelector(selectUSDRate);
   const { data: currencyData, refetch: refetchCurrency } = useGetCurrencyRatesQuery();
   const currentLiveUsdRate = currencyData?.USD || fallbackUsdRate;
@@ -75,17 +105,6 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     [orders],
   );
   const closeModal = () => setIsOpen(false);
-
-  // Read status, page, query from URL search parameters
-  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
-  page = !page || page < 1 ? 1 : page;
-
-  const query = searchParams.get('query') || '';
-  const status = (searchParams.get('status') as StatusType) || 'всі';
-
-  useEffect(() => {
-    dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
-  }, [dispatch, page, query, isRetail, status]);
 
   const handleStatusChange = useCallback(
     (order: Order, newStatus: OrderStatusEnum) => {
@@ -122,24 +141,21 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
           ...updatedOrderWithoutUser
         } = updatedOrder;
 
-        dispatch(
-          updateOrderThunk({
-            orderId: order.id,
-            updateOrder: updatedOrderWithoutUser,
-            isRetail,
-          }),
-        )
+        updateOrder({
+          orderId: order.id,
+          updateOrder: updatedOrderWithoutUser,
+          isRetail,
+        })
           .unwrap()
           .then(() => {
-            // Refetch order statistics & table list to reflect counts change
-            dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
+            toast.success('Замовлення успішно змінено');
           })
           .catch(() => {
             toast.error('Не вдалося оновити статус замовлення');
           });
       }
     },
-    [dispatch, isRetail, page, query, status],
+    [isRetail, updateOrder],
   );
 
   const handleExcelClick = async (e: React.MouseEvent, order: Order) => {

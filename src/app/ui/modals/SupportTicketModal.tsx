@@ -2,12 +2,11 @@
 import Modal from 'react-modal';
 import { customModalStyles } from './CategoryModal';
 import { SupportTicket } from '@/lib/types';
-import { useAppDispatch } from '@/lib/hooks';
 import { useEffect, useState } from 'react';
 import { Button } from '../buttons/button';
 import { toast } from 'react-toastify';
 import { X } from 'lucide-react';
-import { updateSupportTicketThunk } from '@/lib/appState/dashboard/operations';
+import { useUpdateSupportTicketMutation } from '@/lib/appState/api/dashboardApi';
 
 type SupportTicketModalProps = {
   isOpen: boolean;
@@ -26,7 +25,7 @@ const modifiedStyles = {
 };
 
 const SupportTicketModal = ({ isOpen, closeModal, ticket }: SupportTicketModalProps) => {
-  const dispatch = useAppDispatch();
+  const [updateSupportTicket, { isLoading }] = useUpdateSupportTicketMutation();
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(ticket);
 
   useEffect(() => {
@@ -38,13 +37,11 @@ const SupportTicketModal = ({ isOpen, closeModal, ticket }: SupportTicketModalPr
   const { name, email, updatedAt, message, isAnswered, ticketNumber, id, phone } = selectedTicket;
 
   const handleButton = () => {
-    dispatch(
-      updateSupportTicketThunk({
-        ticketId: id,
-        isAnswered: !isAnswered,
-        ticketNumber,
-      }),
-    )
+    updateSupportTicket({
+      ticketId: id,
+      isAnswered: !isAnswered,
+      ticketNumber,
+    })
       .unwrap()
       .then(() => {
         toast.success(isAnswered ? 'Звернення витягнуто з архіву' : 'Звернення успішно виконано');
@@ -78,8 +75,12 @@ const SupportTicketModal = ({ isOpen, closeModal, ticket }: SupportTicketModalPr
         </ul>
       </div>
       <div>
-        <Button className="text-white" onClick={handleButton}>
-          {isAnswered ? 'Витягти з архіву' : 'Виконано (Архівувати)'}
+        <Button
+          className="text-white disabled:opacity-50"
+          onClick={handleButton}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Збереження...' : isAnswered ? 'Витягти з архіву' : 'Виконано (Архівувати)'}
         </Button>
       </div>
     </Modal>

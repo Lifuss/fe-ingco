@@ -1,10 +1,10 @@
 'use client';
 import Modal from 'react-modal';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector } from '@/lib/hooks';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { Button } from '../buttons/button';
 import { useEffect, useRef, useState } from 'react';
-import { updateOrderThunk } from '@/lib/appState/dashboard/operations';
+import { useUpdateDashboardOrderMutation } from '@/lib/appState/api/dashboardApi';
 import { toast } from 'react-toastify';
 import { Trash2, X } from 'lucide-react';
 import { printOrderExcel } from '@/lib/utils';
@@ -50,7 +50,7 @@ const formatUserName = (
 
 const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModalProps) => {
   const USD = useAppSelector(selectUSDRate);
-  const dispatch = useAppDispatch();
+  const [updateOrder, { isLoading: isUpdating }] = useUpdateDashboardOrderMutation();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(order);
   const [isPrinting, setIsPrinting] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
@@ -123,15 +123,19 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
       ...updatedOrderWithoutUser
     } = updatedOrder;
 
-    dispatch(
-      updateOrderThunk({
-        orderId: selectedOrder.id,
-        updateOrder: updatedOrderWithoutUser,
-        isRetail,
-      }),
-    );
-
-    closeModal();
+    updateOrder({
+      orderId: selectedOrder.id,
+      updateOrder: updatedOrderWithoutUser,
+      isRetail,
+    })
+      .unwrap()
+      .then(() => {
+        toast.success('Замовлення успішно змінено');
+        closeModal();
+      })
+      .catch(() => {
+        toast.error('Помилка при оновленні замовлення');
+      });
   };
 
   const handleConfirmReset = () => {
@@ -458,10 +462,11 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
             {/* Actions Buttons */}
             <div className="flex w-full flex-wrap items-center gap-2.5 sm:w-auto">
               <Button
-                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 hover:shadow active:bg-emerald-800"
+                className="h-10 cursor-pointer rounded-xl border-none bg-emerald-600 px-4 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-emerald-700 hover:shadow active:bg-emerald-800 disabled:opacity-50"
                 type="submit"
+                disabled={isUpdating}
               >
-                Підтвердити зміни
+                {isUpdating ? 'Збереження...' : 'Підтвердити зміни'}
               </Button>
               <Button
                 className="h-10 cursor-pointer rounded-xl border-none bg-neutral-200 px-4 text-xs font-semibold text-neutral-700 shadow-sm transition-all duration-150 hover:bg-neutral-300 hover:shadow active:bg-neutral-400"

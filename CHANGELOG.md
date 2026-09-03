@@ -5,6 +5,19 @@
 
 ---
 
+## [Unreleased]
+
+### [Refactor] RTK Query Migration — Phase 2 (CRM & Admin Dashboard)
+
+- **Модуль `dashboardApi.ts`**:
+  - Реалізовано ендпоінти RTK Query для керування користувачами (`getUsers`, `createUser`, `updateUser`, `deleteUser`, `restoreUser`) з обов'язковою нормалізацією `normalizeUser` та тегами `User`, `LIST`, `DashboardStats`.
+  - Реалізовано замовлення CRM (`getDashboardOrders` за маршрутом `/orders/all` та `updateDashboardOrder` з підтримкою роздрібного/гуртового роутингу) з тегами `Order` та `LIST`.
+  - Реалізовано тікети підтримки (`getSupportTickets`, `updateSupportTicket`), аналітику (`getUsersStats`, `getProductClicks`, `getUserActivity`) та синхронізацію з Google Merchant Center (`getGmcStatus`, `syncGmcProducts`).
+- **Міграція компонентів та усунення побічних ефектів**:
+  - Переведено на хуки RTK Query компоненти `UserTable`, `OrderTable`, `SupportTable`, `UsersStats`, `UserActivityChart`, `PieChart`, `GoogleMerchantSyncCard`, модальні вікна `AdminUserModal`, `AdminOrderModal`, `SupportTicketModal` та сторінку `users/create`.
+  - Вилучено побічні ефекти (`toast.success` та `toast.error`) з редукторів `dashboardSlice` — перенесено в компоненти через `.unwrap()`.
+  - Очищено `dashboardSlice` від дублюючого серверного стану.
+
 ## [2.4.0] — 2026-08-31
 
 ### [UI/UX] SubHeader Contrast & Navigation Polish

@@ -9,9 +9,7 @@ import {
 } from 'recharts';
 import { getHours } from 'date-fns';
 import { User } from '@/lib/types';
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getUserActivityThunk } from '@/lib/appState/dashboard/statsOperations';
+import { useGetUserActivityQuery } from '@/lib/appState/api/dashboardApi';
 import TextPlaceholder from '../TextPlaceholder';
 
 interface UserActivityChartProps {
@@ -37,14 +35,16 @@ const processUserActivityData = (users: User[]) => {
 };
 
 const UserActivityChart: React.FC<UserActivityChartProps> = ({ endDate, startDate }) => {
-  const dispatch = useAppDispatch();
-  const users = useAppSelector((state) => state.dashboardSlice.stats.activityUsers);
-  useEffect(() => {
-    dispatch(getUserActivityThunk({ page: 1, limit: 100, endDate, startDate }));
-  }, [dispatch, endDate, startDate]);
+  const { data: activityData } = useGetUserActivityQuery({
+    page: 1,
+    limit: 100,
+    endDate,
+    startDate,
+  });
+  const users = activityData?.users || [];
   const data = processUserActivityData(users);
 
-  if (!users) {
+  if (!users.length) {
     return <TextPlaceholder text="" title="Немає даних" />;
   }
   return (
