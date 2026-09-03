@@ -1,7 +1,6 @@
 'use client';
 import Modal from 'react-modal';
-import { useAppDispatch } from '@/lib/hooks';
-import { addProductToCartThunk } from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
 import { useState } from 'react';
 import { Product } from '@/lib/types';
 import Image from 'next/image';
@@ -42,7 +41,7 @@ const ModalProduct = ({
   isRetail?: boolean;
 }) => {
   const [productQuantity, setProductQuantity] = useState(0);
-  const dispatch = useAppDispatch();
+  const [addToCart] = useAddToCartMutation();
 
   return (
     <Modal
@@ -99,7 +98,7 @@ const ModalProduct = ({
               </div>
 
               {/* Price & Purchase controls card */}
-              <div className="mt-4 flex flex-grow flex-col justify-between rounded-xl border border-neutral-100 bg-neutral-50 p-4">
+              <div className="mt-4 flex grow flex-col justify-between rounded-xl border border-neutral-100 bg-neutral-50 p-4">
                 {/* Pricing Info */}
                 <div>
                   {!isRetail ? (
@@ -197,20 +196,19 @@ const ModalProduct = ({
 
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={async () => {
                       const qty = !isRetail ? productQuantity : 1;
                       if (qty > 0) {
-                        dispatch(
-                          addProductToCartThunk({
+                        try {
+                          await addToCart({
                             productId: product.id,
                             quantity: qty,
                             isRetail,
-                          }),
-                        )
-                          .unwrap()
-                          .then(() => {
-                            toast.success(`${product.name} додано в кошик`);
-                          });
+                          }).unwrap();
+                          toast.success(`${product.name} додано в кошик`);
+                        } catch {
+                          toast.error('Не вдалося додати товар у кошик');
+                        }
                       } else {
                         toast.error('Кількість товару не може бути менше 1');
                       }

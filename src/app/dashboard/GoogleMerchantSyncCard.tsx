@@ -1,20 +1,31 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchGmcStatusThunk, syncGmcProductsThunk } from '@/lib/appState/dashboard/operations';
+import React from 'react';
+import { useGetGmcStatusQuery, useSyncGmcProductsMutation } from '@/lib/appState/api/dashboardApi';
 import { RefreshCw, CheckCircle2, AlertTriangle, ShoppingBag } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export default function GoogleMerchantSyncCard() {
-  const dispatch = useAppDispatch();
-  const { gmcStatus, gmcSyncLoading } = useAppSelector((state) => state.dashboardSlice);
-
-  useEffect(() => {
-    dispatch(fetchGmcStatusThunk());
-  }, [dispatch]);
+  const { data: gmcStatus } = useGetGmcStatusQuery();
+  const [syncGmc, { isLoading: gmcSyncLoading }] = useSyncGmcProductsMutation();
 
   const handleSync = () => {
-    dispatch(syncGmcProductsThunk());
+    syncGmc()
+      .unwrap()
+      .then((payload) => {
+        if (payload.success) {
+          toast.success(`Синхронізацію успішно завершено! Оновлено товарів: ${payload.count}`);
+        } else {
+          toast.error(`Помилка синхронізації GMC: ${payload.error || 'Невідома помилка'}`);
+        }
+      })
+      .catch((err) => {
+        const errorMsg =
+          typeof err === 'string'
+            ? err
+            : err?.message || err?.data?.message || 'Не вдалося виконати запит';
+        toast.error(`Помилка підключення: ${errorMsg}`);
+      });
   };
 
   const formatDate = (dateStr: string | null) => {

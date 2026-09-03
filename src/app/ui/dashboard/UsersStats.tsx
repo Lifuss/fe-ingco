@@ -1,22 +1,16 @@
 'use client';
 
-import { fetchUsersStatsThunk } from '@/lib/appState/dashboard/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useGetUsersStatsQuery } from '@/lib/appState/api/dashboardApi';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Users, Briefcase, User, ShieldAlert } from 'lucide-react';
 import clsx from 'clsx';
 
 const UsersStats = () => {
-  const dispatch = useAppDispatch();
-  const { usersStats } = useAppSelector((state) => state.dashboardSlice);
+  const { data: usersStats } = useGetUsersStatsQuery();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    dispatch(fetchUsersStatsThunk());
-  }, [dispatch]);
 
   const activeTab = searchParams.get('tab') || 'all';
   const activeVerified = searchParams.get('verified') || 'all';

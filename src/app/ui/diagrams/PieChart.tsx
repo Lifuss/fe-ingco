@@ -1,8 +1,6 @@
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
-import { getProductClicksThunk } from '@/lib/appState/dashboard/statsOperations';
+import { useGetProductClicksQuery } from '@/lib/appState/api/dashboardApi';
 import { COLORS } from '@/lib/constants';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 
 const ProductClicksPieChart = ({
@@ -12,19 +10,13 @@ const ProductClicksPieChart = ({
   startDate: Date | undefined;
   endDate: Date | undefined;
 }) => {
-  const dispatch = useAppDispatch();
-  const clicksData = useAppSelector((state) => state.dashboardSlice.stats.productClicks);
-
-  useEffect(() => {
-    dispatch(
-      getProductClicksThunk({
-        page: 1,
-        limit: 40,
-        startDate,
-        endDate,
-      }),
-    );
-  }, [dispatch, endDate, startDate]);
+  const { data } = useGetProductClicksQuery({
+    page: 1,
+    limit: 40,
+    startDate,
+    endDate,
+  });
+  const clicksData = data?.productClicks || [];
 
   return (
     <div className="rounded-lg border border-gray-200 p-1">

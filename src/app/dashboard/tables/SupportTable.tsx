@@ -4,12 +4,11 @@
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
 import SupportTicketModal from '@/app/ui/modals/SupportTicketModal';
-import { fetchSupportTicketsThunk } from '@/lib/appState/dashboard/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useGetSupportTicketsQuery } from '@/lib/appState/api/dashboardApi';
 import { SupportTicket } from '@/lib/types';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 
 type SupportTableRow = {
@@ -24,24 +23,21 @@ const SupportTable = () => {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { supportTickets, totalPages } = useAppSelector((state) => state.dashboardSlice);
   let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   page = !page || page < 1 ? 1 : page;
 
   const query = searchParams.get('query') || '';
 
-  useEffect(() => {
-    dispatch(
-      fetchSupportTicketsThunk({
-        query,
-        isAnswered,
-        page,
-        limit: 30,
-      }),
-    );
-  }, [dispatch, page, isAnswered, query]);
+  const { data: ticketsData } = useGetSupportTicketsQuery({
+    q: query,
+    isAnswered,
+    page,
+    limit: 30,
+  });
+
+  const supportTickets = useMemo(() => ticketsData?.tickets || [], [ticketsData]);
+  const totalPages = ticketsData?.totalPages || 0;
 
   const data = useMemo<SupportTableRow[]>(
     () =>

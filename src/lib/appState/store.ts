@@ -1,4 +1,3 @@
-import { dashboardSlice } from './dashboard/slice';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { configureStore } from '@reduxjs/toolkit';
 import { mainSlice } from './main/slice';
@@ -13,6 +12,8 @@ import {
   REGISTER,
 } from 'redux-persist';
 import { authSlice } from './user/slice';
+import { baseApi } from './api/baseApi';
+import { currencyApi } from './api/currencyApi';
 
 const createNoopStorage = () => {
   return {
@@ -32,7 +33,7 @@ const storage = typeof window !== 'undefined' ? createWebStorage('local') : crea
 
 const persistMainConfig = {
   key: 'main',
-  whitelist: ['currencyRates', 'shopView'],
+  whitelist: ['shopView'],
   storage,
 };
 const persistAuthConfig = {
@@ -47,16 +48,17 @@ const persistedAuthReducer = persistReducer(persistAuthConfig, authSlice);
 export const makeStore = () =>
   configureStore({
     reducer: {
+      [baseApi.reducerPath]: baseApi.reducer,
+      [currencyApi.reducerPath]: currencyApi.reducer,
       persistedMainReducer,
       persistedAuthReducer,
-      dashboardSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
-      }),
+      }).concat(baseApi.middleware, currencyApi.middleware),
   });
 
 export const makePersistor = () => {

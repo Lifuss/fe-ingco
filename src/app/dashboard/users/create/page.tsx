@@ -3,13 +3,12 @@
 import ToBackButton from '@/app/ui/buttons/ToBackButton';
 import UserForm from '../UserForm';
 import { FormEvent } from 'react';
-import { useAppDispatch } from '@/lib/hooks';
-import { createUserThunk } from '@/lib/appState/dashboard/operations';
+import { useCreateUserMutation } from '@/lib/appState/api/dashboardApi';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
-  const dispatch = useAppDispatch();
+  const [createUser] = useCreateUserMutation();
   const router = useRouter();
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +27,7 @@ const Page = () => {
       address?: string;
       isB2B: 'true' | 'false';
     };
-    dispatch(createUserThunk(data))
+    createUser(data)
       .unwrap()
       .then(() => {
         toast.success('Користувача створено');

@@ -9,11 +9,9 @@ import 'slick-carousel/slick/slick.css';
 import { Heart, ShoppingCart, Percent } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useAppDispatch, useAppSelector, useIsB2B, useSliderMouseWheel } from '@/lib/hooks';
-import {
-  addProductToCartThunk,
-  addFavoriteProductThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import { getSliderSettings } from './sliderConfig';
@@ -30,7 +28,10 @@ export default function HotOffers({ products }: HotOffersProps) {
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isB2BUser = useIsB2B();
-  const categoriesList = useAppSelector((state) => state.persistedMainReducer.categories) || [];
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
+  const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
   const batteryToolCategoryId = String(
     categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id ||
@@ -98,33 +99,36 @@ export default function HotOffers({ products }: HotOffersProps) {
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const favoritesIdList = favorites.map((p) => (typeof p === 'string' ? Number(p) : p.id));
 
-  const handleFavoriteClick = (product: Product) => {
+  const handleFavoriteClick = async (product: Product) => {
     if (isAuth) {
-      if (favoritesIdList.includes(product.id)) {
-        dispatch(deleteFavoriteProductThunk(product.id));
-        toast.info(`${product.name} видалено з обраного`);
-      } else {
-        dispatch(addFavoriteProductThunk(product.id));
-        toast.success(`${product.name} додано в обране`);
+      try {
+        if (favoritesIdList.includes(product.id)) {
+          await deleteFavorite(product.id).unwrap();
+          toast.info(`${product.name} видалено з обраного`);
+        } else {
+          await addFavorite(product.id).unwrap();
+          toast.success(`${product.name} додано в обране`);
+        }
+      } catch {
+        toast.error('Не вдалося оновити обране');
       }
     } else {
       toast.error('Для додавання в обране потрібно увійти в профіль');
     }
   };
 
-  const handleCartClick = (product: Product) => {
+  const handleCartClick = async (product: Product) => {
     if (isAuth) {
-      dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: product.id,
           quantity: 1,
           isRetail: !isB2BUser,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${product.name} додано в кошик`);
-        });
+        }).unwrap();
+        toast.success(`${product.name} додано в кошик`);
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
+      }
     } else {
       const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
       dispatch(

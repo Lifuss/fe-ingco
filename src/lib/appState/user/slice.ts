@@ -1,13 +1,6 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  createOrderThunk,
-  createRetailOrderThunk,
-  deleteFavoriteProductThunk,
-  deleteProductFromCartThunk,
   forgotPasswordThunk,
-  getUserCartThunk,
   loginThunk,
   logoutThunk,
   refreshTokenThunk,
@@ -64,6 +57,7 @@ const initialState: AuthState = {
   isB2b: false,
   isLoading: false,
 };
+
 const authStateSlice = createSlice({
   name: 'authSlice',
   initialState,
@@ -71,8 +65,20 @@ const authStateSlice = createSlice({
     clearAuthState: () => {
       return initialState;
     },
+    clearLocalStorageCart: (state) => {
+      state.localStorageCart = [];
+    },
+    setFavorites: (state, { payload }) => {
+      state.user.favorites = payload;
+    },
+    setB2bCart: (state, { payload }) => {
+      state.user.cart = payload;
+    },
+    setRetailCart: (state, { payload }) => {
+      state.user.retailCart = payload;
+    },
     addProductToLocalStorageCart: (state, { payload }) => {
-      const product = state.localStorageCart.find((product) => product.id === payload.id);
+      const product = state.localStorageCart.find((p) => p.id === payload.id);
       const addedQuantity = payload.quantity || 1;
       if (product) {
         product.quantity += addedQuantity;
@@ -81,20 +87,17 @@ const authStateSlice = createSlice({
       }
     },
     removeProductFromLocalStorageCart: (state, { payload }) => {
-      state.localStorageCart = state.localStorageCart.filter((product) => product.id !== payload);
+      state.localStorageCart = state.localStorageCart.filter((p) => p.id !== payload);
     },
     decreaseProductQuantityInLocalStorageCart: (state, { payload }) => {
-      state.localStorageCart.find((product) => {
-        if (product.id === payload) {
-          if (product.quantity === 1) {
-            state.localStorageCart = state.localStorageCart.filter(
-              (product) => product.id !== payload,
-            );
-          } else {
-            product.quantity -= 1;
-          }
+      const product = state.localStorageCart.find((p) => p.id === payload);
+      if (product) {
+        if (product.quantity <= 1) {
+          state.localStorageCart = state.localStorageCart.filter((p) => p.id !== payload);
+        } else {
+          product.quantity -= 1;
         }
-      });
+      }
     },
     increaseProductQuantityInLocalStorageCart: (state, { payload }) => {
       state.localStorageCart = state.localStorageCart.map((product) =>
@@ -119,52 +122,9 @@ const authStateSlice = createSlice({
       .addCase(logoutThunk.rejected, (state) => {
         Object.assign(state, initialState);
       })
-      .addCase(createOrderThunk.fulfilled, (state) => {
-        state.user.cart = [];
-        state.isLoading = false;
-      })
-      .addCase(createRetailOrderThunk.fulfilled, (state) => {
-        state.user.retailCart = [];
-        state.localStorageCart = [];
-        state.isLoading = false;
-      })
       .addCase(forgotPasswordThunk.fulfilled, () => {
         toast.success(`Інструкцію для зміни паролю відправлено на пошту`);
       })
-      .addMatcher(
-        isAnyOf(
-          getUserCartThunk.pending,
-          addProductToCartThunk.pending,
-          deleteProductFromCartThunk.pending,
-          registerThunk.pending,
-          logoutThunk.pending,
-          loginThunk.pending,
-          createOrderThunk.pending,
-          createRetailOrderThunk.pending,
-        ),
-        (state) => {
-          state.isLoading = true;
-        },
-      )
-      .addMatcher(
-        isAnyOf(
-          getUserCartThunk.fulfilled,
-          addProductToCartThunk.fulfilled,
-          deleteProductFromCartThunk.fulfilled,
-        ),
-        (state, { payload, meta }) => {
-          const isRetail =
-            meta.arg && typeof meta.arg === 'object' && 'isRetail' in meta.arg
-              ? (meta.arg as { isRetail?: boolean }).isRetail
-              : false;
-          if (isRetail) {
-            state.user.retailCart = payload;
-          } else {
-            state.user.cart = payload;
-          }
-          state.isLoading = false;
-        },
-      )
       .addMatcher(
         isAnyOf(loginThunk.fulfilled, refreshTokenThunk.fulfilled),
         (state, { payload }) => {
@@ -195,31 +155,19 @@ const authStateSlice = createSlice({
         },
       )
       .addMatcher(
-        isAnyOf(addFavoriteProductThunk.fulfilled, deleteFavoriteProductThunk.fulfilled),
-        (state, { payload }) => {
-          state.user.favorites = payload;
-        },
-      )
-      .addMatcher(
-        isAnyOf(loginThunk.pending, registerThunk.pending, refreshTokenThunk.pending),
+        isAnyOf(
+          loginThunk.pending,
+          registerThunk.pending,
+          refreshTokenThunk.pending,
+          logoutThunk.pending,
+        ),
         (state) => {
           state.isLoading = true;
         },
       )
-      .addMatcher(
-        isAnyOf(
-          getUserCartThunk.rejected,
-          addProductToCartThunk.rejected,
-          deleteProductFromCartThunk.rejected,
-          createOrderThunk.rejected,
-          createRetailOrderThunk.rejected,
-          forgotPasswordThunk.rejected,
-          logoutThunk.rejected,
-        ),
-        (state) => {
-          state.isLoading = false;
-        },
-      )
+      .addMatcher(isAnyOf(forgotPasswordThunk.rejected, logoutThunk.rejected), (state) => {
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(loginThunk.rejected, refreshTokenThunk.rejected, registerThunk.rejected),
         (state) => {
@@ -233,9 +181,14 @@ const authStateSlice = createSlice({
 
 export const {
   clearAuthState,
+  clearLocalStorageCart,
+  setFavorites,
+  setB2bCart,
+  setRetailCart,
   addProductToLocalStorageCart,
   increaseProductQuantityInLocalStorageCart,
   decreaseProductQuantityInLocalStorageCart,
   removeProductFromLocalStorageCart,
 } = authStateSlice.actions;
+
 export const authSlice = authStateSlice.reducer;

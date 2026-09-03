@@ -3,14 +3,17 @@
 
 import Pagination from '@/app/ui/Pagination';
 import Table from '@/app/ui/Table';
-import { fetchOrdersThunk, updateOrderThunk } from '@/lib/appState/dashboard/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import {
+  useGetDashboardOrdersQuery,
+  useUpdateDashboardOrderMutation,
+} from '@/lib/appState/api/dashboardApi';
+import { useAppSelector } from '@/lib/hooks';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
-import { fetchCurrencyRatesThunk } from '@/lib/appState/main/operations';
+import { useGetCurrencyRatesQuery } from '@/lib/appState/api/currencyApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { Button } from '@/app/ui/buttons/button';
 import { printOrderExcel } from '@/lib/utils';
@@ -51,18 +54,47 @@ export const orderStatusEnum = [
 
 type StatusType = (typeof orderStatusEnum)[number];
 
+const defaultOrderStats = {
+  'очікує підтвердження': 0,
+  'очікує оплати': 0,
+  комплектується: 0,
+  відправлено: 0,
+  'замовлення виконано': 0,
+  'замовлення скасовано': 0,
+};
+
 const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [openDropdownCode, setOpenDropdownCode] = useState<string | null>(null);
 
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const { orders, totalPages, orderStats } = useAppSelector((state) => state.dashboardSlice);
-  const usdRate = useAppSelector(selectUSDRate);
+  // Read status, page, query from URL search parameters
+  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
+  page = !page || page < 1 ? 1 : page;
+
+  const query = searchParams.get('query') || '';
+  const status = (searchParams.get('status') as StatusType) || 'всі';
+
+  const { data: ordersData } = useGetDashboardOrdersQuery({
+    page,
+    q: query,
+    limit: 20,
+    isRetail,
+    status,
+  });
+  const [updateOrder] = useUpdateDashboardOrderMutation();
+
+  const orders = useMemo(() => ordersData?.orders || [], [ordersData]);
+  const totalPages = ordersData?.totalPages || 0;
+  const orderStats = ordersData?.stats || defaultOrderStats;
+
+  const fallbackUsdRate = useAppSelector(selectUSDRate);
+  const { data: currencyData, refetch: refetchCurrency } = useGetCurrencyRatesQuery();
+  const currentLiveUsdRate = currencyData?.USD || fallbackUsdRate;
 
   const openModal = useCallback(
     (id: string) => {
@@ -73,17 +105,6 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     [orders],
   );
   const closeModal = () => setIsOpen(false);
-
-  // Read status, page, query from URL search parameters
-  let page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
-  page = !page || page < 1 ? 1 : page;
-
-  const query = searchParams.get('query') || '';
-  const status = (searchParams.get('status') as StatusType) || 'всі';
-
-  useEffect(() => {
-    dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
-  }, [dispatch, page, query, isRetail, status]);
 
   const handleStatusChange = useCallback(
     (order: Order, newStatus: OrderStatusEnum) => {
@@ -120,24 +141,21 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
           ...updatedOrderWithoutUser
         } = updatedOrder;
 
-        dispatch(
-          updateOrderThunk({
-            orderId: order.id,
-            updateOrder: updatedOrderWithoutUser,
-            isRetail,
-          }),
-        )
+        updateOrder({
+          orderId: order.id,
+          updateOrder: updatedOrderWithoutUser,
+          isRetail,
+        })
           .unwrap()
           .then(() => {
-            // Refetch order statistics & table list to reflect counts change
-            dispatch(fetchOrdersThunk({ page, query, limit: 20, isRetail, status }));
+            toast.success('Замовлення успішно змінено');
           })
           .catch(() => {
             toast.error('Не вдалося оновити статус замовлення');
           });
       }
     },
-    [dispatch, isRetail, page, query, status],
+    [isRetail, updateOrder],
   );
 
   const handleExcelClick = async (e: React.MouseEvent, order: Order) => {
@@ -173,16 +191,40 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   };
 
   const data = useMemo<OrderTableRow[]>(() => {
-    return orders.map((order) => ({
-      numberCol: order.orderCode,
-      dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
-      loginCol: '', // Rendered dynamically inside cells
-      statusCol: order.status,
-      commentCol: order.comment,
-      totalPrice: !isRetail ? Math.ceil(order.totalPrice * usdRate) : order.totalPrice,
-      actionsCol: '', // Rendered dynamically
-    }));
-  }, [orders, usdRate, isRetail]);
+    return orders.map((order) => {
+      const orderRate =
+        order.usdRate && Number(order.usdRate) > 1 ? Number(order.usdRate) : currentLiveUsdRate;
+
+      let calculatedTotal = order.totalPrice;
+      if (!isRetail) {
+        if (
+          order.products &&
+          order.products.length > 0 &&
+          order.products.some((p) => p.priceUah && Number(p.priceUah) > 0)
+        ) {
+          calculatedTotal = order.products.reduce((sum, p) => {
+            const pUah =
+              p.priceUah && Number(p.priceUah) > 0
+                ? Number(p.priceUah) * (p.quantity || 0)
+                : Math.ceil((p.price || 0) * orderRate) * (p.quantity || 0);
+            return sum + pUah;
+          }, 0);
+        } else {
+          calculatedTotal = Math.ceil(order.totalPrice * orderRate);
+        }
+      }
+
+      return {
+        numberCol: order.orderCode,
+        dateCol: new Date(order.createdAt).toLocaleDateString('uk-UA'),
+        loginCol: '', // Rendered dynamically inside cells
+        statusCol: order.status,
+        commentCol: order.comment,
+        totalPrice: calculatedTotal,
+        actionsCol: '', // Rendered dynamically
+      };
+    });
+  }, [orders, currentLiveUsdRate, isRetail]);
 
   const columns = useMemo<ColumnDef<OrderTableRow>[]>(
     () => [
@@ -335,11 +377,25 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
       {
         header: 'Сума зам. грн',
         accessorKey: 'totalPrice',
-        cell: ({ row }) => (
-          <span className="font-extrabold text-neutral-800">
-            {row.original.totalPrice.toLocaleString('uk-UA')} ₴
-          </span>
-        ),
+        cell: ({ row }) => {
+          const order = orders.find((o) => o.orderCode === row.original.numberCol);
+          const orderRate =
+            order?.usdRate && Number(order.usdRate) > 1 ? Number(order.usdRate) : null;
+
+          return (
+            <div className="flex flex-col">
+              <span className="font-extrabold text-neutral-800">
+                {row.original.totalPrice.toLocaleString('uk-UA')} ₴
+              </span>
+              {!isRetail && order && (
+                <span className="text-[10px] font-medium text-neutral-400">
+                  ${Number(order.totalPrice).toFixed(2)}
+                  {orderRate ? ` · курс ${orderRate}` : ''}
+                </span>
+              )}
+            </div>
+          );
+        },
       },
       {
         header: 'Дії',
@@ -374,7 +430,7 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         },
       },
     ],
-    [orders, openDropdownCode, handleStatusChange, openModal],
+    [orders, openDropdownCode, handleStatusChange, openModal, isRetail],
   );
 
   // Compute status cards stats
@@ -448,25 +504,24 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
     ];
   }, [orderStats, status]);
 
-  if (usdRate === 41.0) {
-    return (
-      <div className="flex flex-col items-center gap-2">
-        <h2 className="text-2xl">Використовується резервний курс валюти</h2>
-        <p className="text-gray-600">USD: {usdRate} (резервний курс)</p>
-        <Button
-          className="text-white"
-          onClick={() => {
-            dispatch(fetchCurrencyRatesThunk());
-          }}
-        >
-          Спробувати оновити курс
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
+      {!isRetail && !currencyData?.USD && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800">
+          <div>
+            <span className="font-bold">Увага:</span> Не вдалося отримати актуальний курс від
+            банківських API. Використовується резервний курс ({currentLiveUsdRate} ₴).
+          </div>
+          <Button
+            type="button"
+            className="h-7 shrink-0 px-3 text-xs text-white"
+            onClick={() => refetchCurrency()}
+          >
+            Спробувати оновити курс
+          </Button>
+        </div>
+      )}
+
       {/* Interactive Status Cards Row */}
       <div className="mb-6 grid grid-cols-2 gap-3 select-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
         {statsList.map((st) => (

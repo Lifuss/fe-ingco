@@ -34,9 +34,8 @@ const questionSvg = (
 import { apiIngco } from '@/lib/appState/user/operation';
 import { toast } from 'react-toastify';
 import ConfirmModal from '@/app/ui/modals/ConfirmModal';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { fetchCategoriesThunk } from '@/lib/appState/main/operations';
-import { createProductThunk, updateProductThunk } from '@/lib/appState/dashboard/operations';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import { useCreateProductMutation, useUpdateProductMutation } from '@/lib/appState/api/productsApi';
 import MultiSelectAutocomplete from './MultiSelectAutocomplete';
 import SearchableSelect from './SearchableSelect';
 import SortableList from './SortableList';
@@ -102,8 +101,9 @@ function getSortedHierarchy(categories: Category[]): (Category & { depth: number
 
 const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const { data: categories = [] } = useGetCategoriesQuery('');
 
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>(
     () => product?.characteristics || [],
@@ -216,12 +216,6 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
   }, []);
 
   useEffect(() => {
-    if (!categories.length) {
-      dispatch(fetchCategoriesThunk(''));
-    }
-  }, [dispatch, categories.length]);
-
-  useEffect(() => {
     if (product) {
       const initialImages =
         product.images && product.images.length > 0
@@ -313,7 +307,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
 
     try {
       if (isEdit && product) {
-        await dispatch(updateProductThunk({ formData, productId: String(product.id) })).unwrap();
+        await updateProduct({ formData, productId: String(product.id) }).unwrap();
         toast.success('Продукт успішно оновлено');
       } else {
         const hasFiles = mediaFiles.length > 0;
@@ -321,7 +315,7 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
           toast.error('Будь ласка, завантажте хоча б одне зображення');
           return;
         }
-        await dispatch(createProductThunk(formData)).unwrap();
+        await createProduct(formData).unwrap();
         toast.success('Продукт успішно створено');
       }
       clearDraft();
@@ -1475,9 +1469,10 @@ const AdminProductForm = ({ product, isEdit = false }: AdminProductFormProps) =>
           <div className="flex flex-col gap-3 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
             <button
               type="submit"
-              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-lg transition-all"
+              disabled={isCreating || isUpdating}
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 font-display shadow-primary-500/10 hover:shadow-primary-500/20 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-lg transition-all disabled:opacity-50"
             >
-              Підтвердити
+              {isCreating || isUpdating ? 'Збереження...' : 'Підтвердити'}
             </button>
             <button
               type="button"

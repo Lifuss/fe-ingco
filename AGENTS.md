@@ -72,11 +72,11 @@ src/
     globals.css                 # Global styles (Tailwind + custom CSS variables)
     layout.tsx                  # Root layout with providers, SEO, JSON-LD schemas
   lib/                          # Shared utilities and logic
-    appState/                   # Redux store, slices, operations
-      store.ts                  # Redux store configuration
-      main/                     # Main slice (products, categories, currency rates)
-      dashboard/                # Dashboard slice (orders, users, stats, support)
-      user/                     # User/auth slice (auth, cart, favorites)
+    appState/                   # Redux store, slices, RTK Query API modules
+      api/                      # RTK Query services (baseApi, productsApi, categoriesApi, cartApi, favoritesApi, ordersApi, dashboardApi, currencyApi)
+      store.ts                  # Redux store configuration & persistor
+      main/                     # Main slice (UI state: shopView) & currency selectors
+      user/                     # User/auth slice (session, localStorageCart, user profile) & auth operations
     types.ts                    # TypeScript type definitions
     definitions.ts              # Additional type definitions
     validationSchema.ts         # Zod validation schemas
@@ -235,38 +235,29 @@ The file `src/proxy.ts` is a Next.js middleware that:
 - Use Next.js Metadata API for page metadata and SEO.
 - Implement structured data (JSON-LD) in layouts for search engine optimization.
 
-### Redux State Management
+### Redux State Management & RTK Query Architecture
 
-- **Store location:** `lib/appState/store.ts`.
-- **Slices:** `lib/appState/{feature}/slice.ts`.
-- **Async operations:** `lib/appState/{feature}/operations.ts` using `createAsyncThunk`.
+- **Store location:** `src/lib/appState/store.ts`.
+- **API Services (Server State):** `src/lib/appState/api/` via RTK Query (`createApi`):
+  - `baseApi.ts` — Central API instance with custom `axiosBaseQuery`, supporting Bearer auth and tag-based cache management (`Product`, `Category`, `Cart`, `Order`, `User`, `DashboardStats`, `SupportTicket`, `Favorite`).
+  - `currencyApi.ts` — Independent API instance using native `fetchBaseQuery` with 30-min caching (`keepUnusedDataFor: 1800`).
+  - Modular endpoint extensions: `productsApi.ts`, `categoriesApi.ts`, `cartApi.ts`, `favoritesApi.ts`, `ordersApi.ts`, `dashboardApi.ts`.
+  - **Type Separation:** Every API module has its own dedicated type file `*.types.ts` (e.g., `productsApi.types.ts`, `cartApi.types.ts`).
+- **UI Slices (Client State):**
+  - `src/lib/appState/main/slice.ts` — Strictly local catalog UI state (`shopView: 'table' | 'list'`).
+  - `src/lib/appState/user/slice.ts` — User session, `localStorageCart`, `user` profile state, and `isAuthenticated` / `isB2b` flags.
 - **Redux Persist Configuration:**
-  - Main slice persists: `currencyRates`, `shopView`.
-  - Auth slice persists: `token`, `localStorageCart`, `user`, `isAuthenticated`, `isB2b`.
-- **Thunk Pattern:** Always use `serializeAxiosError()` in `rejectWithValue` to avoid Redux non-serializable value warnings.
-
-  ```typescript
-  import { serializeAxiosError } from '@/lib/appState/user/operation';
-
-  export const fetchDataThunk = createAsyncThunk(
-    'feature/fetchData',
-    async (params, { rejectWithValue }) => {
-      try {
-        const response = await apiIngco.get('/endpoint', { params });
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(serializeAxiosError(error));
-      }
-    },
-  );
-  ```
+  - `persistedMainReducer` persists: `shopView`.
+  - `persistedAuthReducer` persists: `token`, `localStorageCart`, `user`, `isAuthenticated`, `isB2b`.
+- **Thunk & Error Pattern:** For internal auth operations (`loginThunk`, `registerThunk`), always use `serializeAxiosError()` in `rejectWithValue` to avoid non-serializable Redux errors.
 
 ### API Communication
 
-- All backend calls go through Redux async thunks using the `apiIngco` Axios instance.
-- Base URL from `NEXT_PUBLIC_API` environment variable.
-- Token management: Use `setToken()` and `clearToken()` helper functions to manage the Bearer token in the Axios default headers.
-- Use Server Actions for sensitive database operations and form submissions.
+- All server data queries and mutations (products, categories, users, orders, cart, favorites, CRM) must be performed exclusively via **RTK Query** hooks (`use...Query`, `use...Mutation`).
+- `createAsyncThunk` is used **only** for internal auth workflows, binary file exports (`fetchExcelFileThunk`), and one-off analytics tracking.
+- Base URL is read from the `NEXT_PUBLIC_API` environment variable.
+- Token management: Handled automatically via Axios interceptors (`apiIngco`) and `setToken()` / `clearToken()` in `src/lib/appState/user/operation.ts`.
+- Use Server Actions for sensitive database operations and server validations.
 
 ### Form Handling
 
@@ -322,14 +313,16 @@ The file `src/proxy.ts` is a Next.js middleware that:
 
 ### ❌ React / Redux Anti-Patterns
 
-| Anti-Pattern                                                      | Why It's Wrong                                                    | Do This Instead                                                        |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Calling the backend API directly in components                    | Bypasses token interceptors, breaks consistency                   | Always dispatch a Redux thunk using the `apiIngco` instance            |
-| Using raw `error.response?.data?.message` in `rejectWithValue`    | Non-serializable values cause Redux warnings and break DevTools   | Use `serializeAxiosError(error)`                                       |
-| Adding new state management solutions                             | Multiple state libs create sync bugs and confusion                | Use Redux Toolkit only                                                 |
-| Removing the `'use no memo'` directive from TanStack Table files  | React Compiler memoization breaks TanStack Table's internal state | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
-| Using `index` as `key` for dynamic lists with mutations           | Causes incorrect DOM diffing, ghost elements, state leaking       | Use a stable unique ID (`item.id`, `item.article`)                     |
-| Using blocking browser prompts (`window.alert`, `window.confirm`) | Blocks the browser main execution thread and degrades UX          | Use custom modals like `ConfirmModal` or inline notifications          |
+| Anti-Pattern                                                      | Why It's Wrong                                                     | Do This Instead                                                        |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Calling the backend API directly in components                    | Bypasses RTK Query cache, lifecycle, auth and deduplication        | Always use RTK Query hooks (`use...Query`, `use...Mutation`)           |
+| Using `createAsyncThunk` for server data caching                  | Duplicates cache, requires manual lifecycle/abort handling         | Use RTK Query (`createApi` / `injectEndpoints`) for all server state   |
+| Storing API server data in `createSlice`                          | Violates Redux single source of truth and breaks auto-invalidation | Keep `createSlice` strictly for client-only UI/session state           |
+| Using raw `error.response?.data?.message` in `rejectWithValue`    | Non-serializable values cause Redux warnings and break DevTools    | Use `serializeAxiosError(error)`                                       |
+| Adding new state management solutions                             | Multiple state libs create sync bugs and confusion                 | Use Redux Toolkit + RTK Query only                                     |
+| Removing the `'use no memo'` directive from TanStack Table files  | React Compiler memoization breaks TanStack Table's internal state  | Keep `'use no memo'` at the top of files using `@tanstack/react-table` |
+| Using `index` as `key` for dynamic lists with mutations           | Causes incorrect DOM diffing, ghost elements, state leaking        | Use a stable unique ID (`item.id`, `item.article`)                     |
+| Using blocking browser prompts (`window.alert`, `window.confirm`) | Blocks the browser main execution thread and degrades UX           | Use custom modals like `ConfirmModal` or inline notifications          |
 
 ### ❌ Styling Anti-Patterns
 

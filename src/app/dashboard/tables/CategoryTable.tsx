@@ -3,13 +3,12 @@
 
 import Table from '@/app/ui/Table';
 import {
-  deleteCategoryThunk,
-  fetchCategoriesThunk,
-  updateCategoryThunk,
-} from '../../../lib/appState/main/operations';
-import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
+  useGetCategoriesQuery,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} from '@/lib/appState/api/categoriesApi';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import Modal from 'react-modal';
 import { customModalStyles } from '../../ui/modals/CategoryModal';
@@ -92,9 +91,11 @@ const CategoryTable = () => {
     parentId?: number | null;
     showInMenu?: boolean;
   }>({ name: '', renderSort: 0, showInMenu: true });
-  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const productsCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const query = searchParams.get('query') || '';
+  const { data: productsCategories } = useGetCategoriesQuery(query);
+  const [updateCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
 
   const openModal = (
     id: number,
@@ -113,12 +114,6 @@ const CategoryTable = () => {
     setIsOpen(false);
   };
 
-  const query = searchParams.get('query') || '';
-
-  useEffect(() => {
-    dispatch(fetchCategoriesThunk(query));
-  }, [dispatch, query]);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -135,23 +130,24 @@ const CategoryTable = () => {
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(
-        updateCategoryThunk({
-          id: selectedId,
-          name,
-          slug,
-          seoKeywords,
-          parentId,
-          showInMenu,
-        }),
-      )
+      updateCategory({
+        id: selectedId,
+        name,
+        slug,
+        seoKeywords,
+        parentId,
+        showInMenu,
+      })
         .unwrap()
-        .then(() => closeModal())
-        .catch(
-          (err) =>
-            (err?.status === 409 || err?.response?.status === 409) &&
-            toast.error('Категорія з такою назвою вже існує'),
-        );
+        .then(() => {
+          toast.success('Категорію успішно оновлено');
+          closeModal();
+        })
+        .catch((err) => {
+          if (err?.status === 409 || err?.response?.status === 409) {
+            toast.error('Категорія з такою назвою вже існує');
+          }
+        });
     }
   };
 
@@ -254,7 +250,16 @@ const CategoryTable = () => {
         cell: ({ row }) => (
           <button
             className="flex w-full justify-center"
-            onClick={() => dispatch(deleteCategoryThunk(row.original.deleteCol))}
+            onClick={() => {
+              deleteCategory(row.original.deleteCol)
+                .unwrap()
+                .then(() => toast.success('Категорію успішно видалено'))
+                .catch(() =>
+                  toast.error(
+                    "В категорії існують прив'язані товари, видаліть їх, або змініть категорію",
+                  ),
+                );
+            }}
           >
             <Icon
               icon="delete"
@@ -264,7 +269,7 @@ const CategoryTable = () => {
         ),
       },
     ],
-    [dispatch],
+    [deleteCategory],
   );
 
   return (

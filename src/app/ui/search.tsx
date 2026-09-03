@@ -2,7 +2,7 @@
 import { Search, X } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter, useParams } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
-import { useAppSelector } from '@/lib/hooks';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 
 export default function SearchFoo({
   placeholder,
@@ -21,7 +21,7 @@ export default function SearchFoo({
   const [term, setTerm] = useState(searchQuery);
 
   const categorySlug = paramsRoute?.categorySlug;
-  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: categories = [] } = useGetCategoriesQuery('');
   const currentCategory = categories?.find((c) => c.slug === categorySlug);
   const currentCategoryName = currentCategory?.name || '';
 

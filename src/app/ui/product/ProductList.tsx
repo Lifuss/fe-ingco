@@ -1,15 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useActiveCategory, useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
-import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
-import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { Product } from '@/lib/types';
 import { toast } from 'react-toastify';
 import { useMediaQuery } from 'react-responsive';
@@ -24,13 +20,14 @@ import { CardSkeleton } from '../skeletons/skeletons';
 const ProductList = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
   const isB2B = useIsB2B();
-  const mainState = useAppSelector((state) => state.persistedMainReducer);
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const isDesktop = useMediaQuery({ query: '(min-width: 1280px)' });
   const isWideDesktop = useMediaQuery({ query: '(min-width: 1536px)' });
 
-  const { products = [], totalPages = 1, tableLoading } = mainState;
   const favorites: Product[] = [...(authState.user?.favorites || [])];
   const isAuth = authState.isAuthenticated || false;
   const favoritesIdList = favorites.map((product) => product.id);
@@ -53,6 +50,31 @@ const ProductList = ({ isFavoritePage = false }) => {
     : null;
   const battery = searchParams.get('battery') === 'true';
   const mains = searchParams.get('mains') === 'true';
+  const limit = isWideDesktop ? 30 : isDesktop ? 20 : 18;
+
+  const {
+    data: catalogData,
+    isLoading,
+    isFetching,
+  } = useGetProductsQuery(
+    {
+      page,
+      query,
+      category,
+      limit,
+      sortValue,
+      isRetail: !isB2B,
+      filters,
+    },
+    { skip: isFavoritePage },
+  );
+
+  const products = isFavoritePage ? [] : catalogData?.products || [];
+  const totalPages = isFavoritePage
+    ? Math.ceil(favorites.length / 10) || 1
+    : catalogData?.totalPages || 1;
+  const total = isFavoritePage ? favorites.length : catalogData?.total || 0;
+  const tableLoading = !isFavoritePage && (isLoading || isFetching);
 
   let productsData = products;
   if (isFavoritePage) {
@@ -118,48 +140,34 @@ const ProductList = ({ isFavoritePage = false }) => {
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  const limit = isWideDesktop ? 30 : isDesktop ? 20 : 18;
-  useEffect(() => {
-    if (!isFavoritePage) {
-      dispatch(
-        fetchMainTableDataThunk({
-          page,
-          query,
-          category,
-          limit,
-          sortValue,
-          isRetail: !isB2B,
-          filters,
-        }),
-      );
-    }
-  }, [dispatch, page, query, category, isFavoritePage, limit, sortValue, isB2B, filters]);
-
-  function handleFavoriteClick(id: number) {
+  async function handleFavoriteClick(id: number) {
     if (isAuth) {
-      if (favoritesIdList.includes(id)) {
-        dispatch(deleteFavoriteProductThunk(id));
-      } else {
-        dispatch(addFavoriteProductThunk(id));
+      try {
+        if (favoritesIdList.includes(id)) {
+          await deleteFavorite(id).unwrap();
+        } else {
+          await addFavorite(id).unwrap();
+        }
+      } catch {
+        toast.error('Не вдалося оновити обране');
       }
     } else {
       toast.error('Для додавання в обране потрібно увійти в профіль');
     }
   }
 
-  const handleCartClick = (id: number, productName: string) => {
+  const handleCartClick = async (id: number, productName: string) => {
     if (isAuth) {
-      dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: id,
           quantity: 1,
           isRetail: !isB2B,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          toast.success(`${productName} додано в кошик`);
-        });
+        }).unwrap();
+        toast.success(`${productName} додано в кошик`);
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
+      }
     } else {
       const product = productsData.find((product) => product.id === id);
       if (!product) {
@@ -204,7 +212,11 @@ const ProductList = ({ isFavoritePage = false }) => {
       )}
       {tableLoading && productsData.length === 0 ? (
         <div className="w-full">
-          <FiltersBlock listType={isB2B ? 'partner' : 'retail'} />
+          <FiltersBlock
+            listType={isB2B ? 'partner' : 'retail'}
+            total={total}
+            shownCount={productsData.length}
+          />
           <ul className="grid w-full grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: limit }).map((_, index) => (
               <CardSkeleton key={index} />
@@ -234,7 +246,11 @@ const ProductList = ({ isFavoritePage = false }) => {
               </div>
             </div>
           )}
-          <FiltersBlock listType={isB2B ? 'partner' : 'retail'} />
+          <FiltersBlock
+            listType={isB2B ? 'partner' : 'retail'}
+            total={total}
+            shownCount={productsData.length}
+          />
           <ProductBlockList
             favoritesIdList={favoritesIdList}
             listType={isB2B ? 'partner' : 'retail'}

@@ -7,14 +7,16 @@ import Image from 'next/image';
 import { SubmitEvent, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
 import {
-  addProductToCartThunk,
-  createRetailOrderThunk,
-  deleteProductFromCartThunk,
-} from '@/lib/appState/user/operation';
+  useGetCartQuery,
+  useAddToCartMutation,
+  useDeleteFromCartMutation,
+} from '@/lib/appState/api/cartApi';
+import { useCreateRetailOrderMutation } from '@/lib/appState/api/ordersApi';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import {
+  clearLocalStorageCart,
   decreaseProductQuantityInLocalStorageCart,
   increaseProductQuantityInLocalStorageCart,
   removeProductFromLocalStorageCart,
@@ -46,7 +48,7 @@ const RetailCartTable = () => {
 
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const userState = useAppSelector((state) => state.persistedAuthReducer.user);
-  const retailCart = userState?.retailCart;
+  const { data: serverCart } = useGetCartQuery({ isRetail: true }, { skip: !isAuth });
   const firstName = userState?.firstName || '';
   const lastName = userState?.lastName || '';
   const surName = userState?.surName || '';
@@ -54,17 +56,21 @@ const RetailCartTable = () => {
   const email = userState?.email || '';
   const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart);
 
+  const [addToCart] = useAddToCartMutation();
+  const [deleteFromCart] = useDeleteFromCartMutation();
+  const [createRetailOrder, { isLoading: isSubmitting }] = useCreateRetailOrderMutation();
+
   const selectedCart = useMemo<CartData>(() => {
-    const cart = isAuth ? retailCart : localStorageCart;
+    const cart = isAuth ? (serverCart ?? userState?.retailCart) : localStorageCart;
     return (cart as CartData) || [];
-  }, [isAuth, retailCart, localStorageCart]);
+  }, [isAuth, serverCart, userState?.retailCart, localStorageCart]);
 
   const handleQuantityChange = (id: number, operation: string) => {
     if (isAuth) {
       if (operation === 'increment') {
-        dispatch(addProductToCartThunk({ productId: id, quantity: 1, isRetail: true }));
+        addToCart({ productId: id, quantity: 1, isRetail: true });
       } else {
-        dispatch(deleteProductFromCartThunk({ productId: id, quantity: 1, isRetail: true }));
+        deleteFromCart({ productId: id, quantity: 1, isRetail: true });
       }
     } else {
       if (operation === 'increment') {
@@ -196,13 +202,11 @@ const RetailCartTable = () => {
                 className="absolute top-0 -right-7 fill-gray-400 hover:fill-red-500"
                 onClick={() => {
                   if (isAuth) {
-                    dispatch(
-                      deleteProductFromCartThunk({
-                        productId: row.original.id,
-                        quantity: row.original.quantityCol,
-                        isRetail: true,
-                      }),
-                    );
+                    deleteFromCart({
+                      productId: row.original.id,
+                      quantity: row.original.quantityCol,
+                      isRetail: true,
+                    });
                   } else {
                     dispatch(removeProductFromLocalStorageCart(row.original.id));
                   }
@@ -225,7 +229,7 @@ const RetailCartTable = () => {
     }, 0),
   );
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
@@ -260,22 +264,21 @@ const RetailCartTable = () => {
       email,
       comment,
       turnstileToken,
-      token: localStorage.getItem('token') || '',
     };
-    dispatch(createRetailOrderThunk(order))
-      .unwrap()
-      .then((data) => {
-        toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
-        setTurnstileKey((prev) => prev + 1);
-        setTurnstileToken('');
-        form.reset();
-      })
-      .catch((err) => {
-        setTurnstileKey((prev) => prev + 1);
-        setTurnstileToken('');
-        const errMsg = err?.message || 'Помилка при оформленні замовлення';
-        toast.error(errMsg);
-      });
+
+    try {
+      const data = await createRetailOrder(order).unwrap();
+      toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
+      dispatch(clearLocalStorageCart());
+      form.reset();
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      const errMsg = error?.data?.message || error?.message || 'Помилка при оформленні замовлення';
+      toast.error(errMsg);
+    } finally {
+      setTurnstileKey((prev) => prev + 1);
+      setTurnstileToken('');
+    }
   };
 
   return selectedCart.length > 0 ? (
@@ -385,9 +388,10 @@ const RetailCartTable = () => {
           />
           <button
             type="submit"
-            className="bg-brand-dark mt-auto ml-auto block h-fit w-fit rounded-lg px-2 py-2 text-lg text-white"
+            disabled={isSubmitting}
+            className="bg-brand-dark mt-auto ml-auto block h-fit w-fit cursor-pointer rounded-lg px-2 py-2 text-lg text-white transition-opacity disabled:opacity-50"
           >
-            Підтвердити замовлення
+            {isSubmitting ? 'Оформлення...' : 'Підтвердити замовлення'}
           </button>
         </div>
       </form>

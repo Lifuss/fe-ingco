@@ -2,8 +2,7 @@
 import { FormEvent, useState } from 'react';
 import Modal from 'react-modal';
 import CategoryForm from '../forms/CategoryForm';
-import { useAppDispatch } from '@/lib/hooks';
-import { createCategoryThunk } from '@/lib/appState/main/operations';
+import { useCreateCategoryMutation } from '@/lib/appState/api/categoriesApi';
 import { toast } from 'react-toastify';
 
 export const customModalStyles: Modal.Styles = {
@@ -31,7 +30,7 @@ export const customModalStyles: Modal.Styles = {
 
 export const CategoryModalCreate = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useAppDispatch();
+  const [createCategory] = useCreateCategoryMutation();
   const openModal = () => setIsOpen(true);
   const closeModal = () => {
     setIsOpen(false);
@@ -53,22 +52,25 @@ export const CategoryModalCreate = () => {
       const parentId = parentIdSelect && parentIdSelect.value ? Number(parentIdSelect.value) : null;
       const showInMenu = showInMenuInput ? showInMenuInput.checked : true;
 
-      dispatch(
-        createCategoryThunk({
-          name,
-          slug,
-          seoKeywords,
-          parentId,
-          showInMenu,
-        }),
-      )
+      createCategory({
+        name,
+        slug,
+        seoKeywords,
+        parentId,
+        showInMenu,
+      })
         .unwrap()
-        .then(() => closeModal())
-        .catch(
-          (err) =>
-            (err?.status === 409 || err?.response?.status === 409) &&
-            toast.error('Категорія з такою назвою вже існує'),
-        );
+        .then(() => {
+          toast.success('Категорію успішно створено');
+          closeModal();
+        })
+        .catch((err) => {
+          if (err?.status === 409 || err?.response?.status === 409) {
+            toast.error('Категорія з такою назвою вже існує');
+          } else {
+            toast.error('Не вдалося створити категорію');
+          }
+        });
     }
   };
   return (

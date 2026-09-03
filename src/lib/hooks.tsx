@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { trackProductClickThunk } from './appState/main/operations';
 import Slider from 'react-slick';
-import { Category } from '@/lib/types';
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
@@ -105,11 +105,11 @@ export const useActiveCategory = () => {
   const searchParams = useSearchParams();
   const params = useParams<{ categorySlug?: string }>();
   const categorySlug = params?.categorySlug;
-  const rawCategories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: rawCategories = [] } = useGetCategoriesQuery('');
 
   return useMemo(() => {
     const categories = rawCategories || [];
-    let activeCategory: Category | undefined = undefined;
+    let activeCategory = undefined;
 
     if (categorySlug && categories.length > 0) {
       activeCategory = categories.find((c) => c.slug === categorySlug);

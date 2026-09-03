@@ -5,6 +5,64 @@
 
 ---
 
+## [2.5.0] — 2026-09-03
+
+### [Refactor] RTK Query Full Architecture Migration — Phase 5 (Final Cleanup & Audit)
+
+- **Остаточна ліквідація мертвого коду**:
+  - Повністю видалено директорію [`src/lib/appState/dashboard/`](file:///f:/code/repos/fe-ingco/src/lib/appState/dashboard/) (`operations.ts`, `statsOperations.ts`, `slice.ts`).
+  - З [`store.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/store.ts) вилучено імпорт та монтування `dashboardSlice`.
+  - Зведено `mainSlice` до єдиного стану інтерфейсу `shopView: 'table' | 'list'`.
+  - Перевірено відсутність невикористовуваних санок та побічних ефектів у редукторах.
+  - Оновлено документацію та правила проєкту в [`AGENTS.md`](file:///f:/code/repos/fe-ingco/AGENTS.md) та архітектурному плані [`docs/plans/rtk-query-migration-plan.md`](file:///f:/code/repos/fe-ingco/docs/plans/rtk-query-migration-plan.md).
+
+### [Refactor] RTK Query Migration — Phase 4 (Cart, Favorites, Orders & History)
+
+- **Нові модулі API та виділена типізація**:
+  - `cartApi.ts` та [`cartApi.types.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/api/cartApi.types.ts): реалізовано `getCart`, `addToCart`, `deleteFromCart` для B2B (`/users/cart`) та B2C (`/users/cart/retail`) з автоматичною нормалізацією цін через `normalizeProduct` та тегами `Cart`.
+  - `favoritesApi.ts` та [`favoritesApi.types.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/api/favoritesApi.types.ts): реалізовано мутації `addFavorite` та `deleteFavorite` за контрактом `be-ingco-v2` (`POST/DELETE /users/favorites/:productId`) із авто-синхронізацією масиву обраного в Redux `authSlice.user.favorites` через `onQueryStarted`.
+  - `ordersApi.ts` та [`ordersApi.types.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/api/ordersApi.types.ts): реалізовано `createOrder` (B2B, `/orders`), `createRetailOrder` (B2C, `/orders/retail`) з очищенням кошиків та інвалідацією тегів `['Cart', 'Order']`, а також `getOrderHistory` (`/orders`) для заміни застарілої санки `fetchHistoryThunk`.
+- **Міграція компонентів користувацького інтерфейсу**:
+  - [`CartTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/CartTable.tsx): переведено на `useGetCartQuery({ isRetail: false })`, `useAddToCartMutation`, `useDeleteFromCartMutation` та `useCreateOrderMutation`.
+  - [`RetailCartTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/RetailCartTable.tsx): переведено на `useGetCartQuery({ isRetail: true })`, `useAddToCartMutation`, `useDeleteFromCartMutation` та `useCreateRetailOrderMutation`, додано автоматичне очищення гостьового `localStorageCart` при оформленні.
+  - [`HistoryTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/HistoryTable.tsx): вилучено `useEffect` та санку `fetchHistoryThunk`; переведено на `useGetOrderHistoryQuery({ page, q, isRetail })`.
+  - [`HeaderActions.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/header/HeaderActions.tsx) та [`MobileActions.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/header/MobileActions.tsx): лічильники кошика підключено до реактивного кешу `useGetCartQuery`.
+  - [`ProductCard.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductCard.tsx), [`ProductPageClient.tsx`](file:///f:/code/repos/fe-ingco/src/app/%28retail-catalog%29/%5BproductSlug%5D/ProductPageClient.tsx), [`ProductList.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductList.tsx), [`ShopTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopTable.tsx), [`ShopList.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopList.tsx), [`HotOffers.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/home/HotOffers.tsx), [`SeriesComparison.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/home/SeriesComparison.tsx), [`ProductModal.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/modals/ProductModal.tsx): переведено всі дії додавання/видалення з кошика та обраного на мутації RTK Query.
+- **Очищення Redux Slice та ліквідація санок**:
+  - Додано редуктори `clearLocalStorageCart`, `setFavorites`, `setB2bCart`, `setRetailCart` у [`authSlice`](file:///f:/code/repos/fe-ingco/src/lib/appState/user/slice.ts) та вилучено застарілі `extraReducers`.
+  - З [`mainSlice`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/slice.ts) вилучено стан `history` та пагінацію, зведено слайс до єдиного стану UI `shopView`.
+  - З [`user/operation.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/user/operation.ts) вилучено 7 санок: `getUserCartThunk`, `addProductToCartThunk`, `deleteProductFromCartThunk`, `addFavoriteProductThunk`, `deleteFavoriteProductThunk`, `createOrderThunk`, `createRetailOrderThunk`.
+  - З [`main/operations.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/operations.ts) вилучено санку `fetchHistoryThunk`.
+
+### [Refactor] RTK Query Migration — Phase 3 (Products Catalog & Admin Products)
+
+- **Модуль `productsApi.ts` та типізація `productsApi.types.ts`**:
+  - Реалізовано запити каталогу `getProducts` з мапінгом пошукового параметра `q`, приведенням `category` до числового типу, сортуванням, фільтрами характеристик та автоматичною гідратацією через `normalizeProduct`.
+  - Реалізовано `getProductBySlug` та `getProductById` з кешуванням за числовим тегом `{ type: 'Product', id }`.
+  - Реалізовано мутації `createProduct` та `updateProduct` з підтримкою `FormData` (файли зображень, JSON-масиви `characteristics`, `categoryIds`, `badgeIds`, `existingImages`), а також `deleteProduct` з інвалідацією тегів `{ type: 'Product', id }` та `LIST`.
+- **Міграція компонентів каталогу та адмін-панелі**:
+  - [`ProductList.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ProductList.tsx) та [`ShopTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/product/ShopTable.tsx): вилучено `useEffect` з багатопараметричними залежностями та `fetchMainTableDataThunk`; переведено на декларативний хук `useGetProductsQuery` з прапорцем `skip: isFavoritePage`.
+  - [`FiltersBlock.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/catalog/FiltersBlock.tsx): ізольовано від глобального масиву товарів, додано пропси `total` та `shownCount`.
+  - [`ProductTable.tsx`](file:///f:/code/repos/fe-ingco/src/app/dashboard/tables/ProductTable.tsx): переведено на `useGetProductsQuery` та `useDeleteProductMutation` з автоматичним оновленням таблиці після видалення.
+  - [`AdminProductForm.tsx`](file:///f:/code/repos/fe-ingco/src/app/ui/forms/AdminProductForm.tsx): замінено санки створення та оновлення на `useCreateProductMutation` та `useUpdateProductMutation`, додано блокування кнопок від повторних натискань.
+  - [`ProductPageClient.tsx`](file:///f:/code/repos/fe-ingco/src/app/%28retail-catalog%29/%5BproductSlug%5D/ProductPageClient.tsx): замінено селектори `reduxProduct`/`products` на `useGetProductBySlugQuery` та усунуто прямий виклик `apiIngco.get('/products', ...)` для B2B рекомендацій через `useGetProductsQuery`.
+  - [`[productId]/page.tsx`](file:///f:/code/repos/fe-ingco/src/app/dashboard/product/edit/%5BproductId%5D/page.tsx): переведено на `useGetProductByIdQuery(productId)`, усунуто ручний стан завантаження та `useEffect`.
+- **Очищення Redux Slice та ліквідація санок**:
+  - З [`mainSlice`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/slice.ts) видалено поля `products`, `product`, `tableLoading`, `productLoading`, `total`.
+  - З [`main/operations.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/main/operations.ts) видалено санки `fetchMainTableDataThunk`, `getProductByIdThunk`, `getProductBySlugThunk`, `deleteProductThunk`.
+  - З [`dashboard/operations.ts`](file:///f:/code/repos/fe-ingco/src/lib/appState/dashboard/operations.ts) видалено санки `createProductThunk` та `updateProductThunk`.
+
+### [Refactor] RTK Query Migration — Phase 2 (CRM & Admin Dashboard)
+
+- **Модуль `dashboardApi.ts`**:
+  - Реалізовано ендпоінти RTK Query для керування користувачами (`getUsers`, `createUser`, `updateUser`, `deleteUser`, `restoreUser`) з обов'язковою нормалізацією `normalizeUser` та тегами `User`, `LIST`, `DashboardStats`.
+  - Реалізовано замовлення CRM (`getDashboardOrders` за маршрутом `/orders/all` та `updateDashboardOrder` з підтримкою роздрібного/гуртового роутингу) з тегами `Order` та `LIST`.
+  - Реалізовано тікети підтримки (`getSupportTickets`, `updateSupportTicket`), аналітику (`getUsersStats`, `getProductClicks`, `getUserActivity`) та синхронізацію з Google Merchant Center (`getGmcStatus`, `syncGmcProducts`).
+- **Міграція компонентів та усунення побічних ефектів**:
+  - Переведено на хуки RTK Query компоненти `UserTable`, `OrderTable`, `SupportTable`, `UsersStats`, `UserActivityChart`, `PieChart`, `GoogleMerchantSyncCard`, модальні вікна `AdminUserModal`, `AdminOrderModal`, `SupportTicketModal` та сторінку `users/create`.
+  - Вилучено побічні ефекти (`toast.success` та `toast.error`) з редукторів `dashboardSlice` — перенесено в компоненти через `.unwrap()`.
+  - Очищено `dashboardSlice` від дублюючого серверного стану.
+
 ## [2.4.0] — 2026-08-31
 
 ### [UI/UX] SubHeader Contrast & Navigation Polish

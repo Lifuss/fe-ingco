@@ -1,17 +1,15 @@
 'use no memo';
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useActiveCategory, useAppDispatch, useAppSelector, useProductStats } from '@/lib/hooks';
-import { fetchMainTableDataThunk } from '@/lib/appState/main/operations';
+import { useActiveCategory, useAppSelector, useProductStats } from '@/lib/hooks';
+import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
+import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
-import {
-  addFavoriteProductThunk,
-  addProductToCartThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import clsx from 'clsx';
 import Table from '@/app/ui/Table';
 import ModalProduct from '@/app/ui/modals/ProductModal';
@@ -41,15 +39,11 @@ type ShopTableRow = {
 
 const ShopTable = ({ isFavoritePage = false }) => {
   const searchParams = useSearchParams();
-  const dispatch = useAppDispatch();
-  const {
-    products,
-    total,
-    totalPages,
-    currencyRates: { USD = 0 },
-    shopView,
-    tableLoading,
-  } = useAppSelector((state) => state.persistedMainReducer);
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
+  const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
+  const USD = useAppSelector(selectUSDRate);
   const user = useAppSelector((state) => state.persistedAuthReducer.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -84,6 +78,32 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
 
+  const {
+    data: catalogData,
+    isLoading,
+    isFetching,
+  } = useGetProductsQuery(
+    {
+      page,
+      query,
+      category,
+      isRetail: false,
+      sortValue,
+      filters,
+    },
+    { skip: isFavoritePage },
+  );
+
+  const products = useMemo(
+    () => (isFavoritePage ? [] : catalogData?.products || []),
+    [isFavoritePage, catalogData],
+  );
+  const total = isFavoritePage ? favorites.length : catalogData?.total || 0;
+  const totalPages = isFavoritePage
+    ? Math.ceil(favorites.length / 10) || 1
+    : catalogData?.totalPages || 1;
+  const tableLoading = !isFavoritePage && (isLoading || isFetching);
+
   let productsData = products;
   if (isFavoritePage) {
     productsData = favorites;
@@ -104,34 +124,23 @@ const ShopTable = ({ isFavoritePage = false }) => {
     productsData = productsData.slice((page - 1) * 10, page * 10);
   }
 
-  useEffect(() => {
-    if (!isFavoritePage) {
-      dispatch(
-        fetchMainTableDataThunk({
-          page,
-          query,
-          category,
-          isRetail: false,
-          sortValue,
-          filters,
-        }),
-      );
-    }
-  }, [dispatch, page, query, category, isFavoritePage, sortValue, filters]);
-
   const handleFavoriteClick = useCallback(
-    (id: number) => {
-      if (favoritesList.includes(id)) {
-        dispatch(deleteFavoriteProductThunk(id));
-      } else {
-        dispatch(addFavoriteProductThunk(id));
+    async (id: number) => {
+      try {
+        if (favoritesList.includes(id)) {
+          await deleteFavorite(id).unwrap();
+        } else {
+          await addFavorite(id).unwrap();
+        }
+      } catch {
+        toast.error('Не вдалося оновити обране');
       }
     },
-    [dispatch, favoritesList],
+    [addFavorite, deleteFavorite, favoritesList],
   );
 
   const handleCartClick = useCallback(
-    (id: number, productName: string) => {
+    async (id: number, productName: string) => {
       const product = productsData.find((p) => p.id === id);
       if (product && (!product.price || product.price <= 0)) {
         toast.info('Ціна на цей товар уточнюється. Зверніться до менеджера для замовлення.');
@@ -140,34 +149,21 @@ const ShopTable = ({ isFavoritePage = false }) => {
 
       const input = document.getElementsByName(String(id))[0] as HTMLInputElement | undefined;
       const qty = input ? parseInt(input.value) || 0 : 0;
+      const finalQty = qty > 0 ? qty : 1;
 
-      if (qty > 0) {
-        dispatch(
-          addProductToCartThunk({
-            productId: id,
-            quantity: qty,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`${qty} шт. - ${productName} додано в кошик`);
-          });
+      try {
+        await addToCart({
+          productId: id,
+          quantity: finalQty,
+          isRetail: false,
+        }).unwrap();
+        toast.success(`${finalQty} шт. - ${productName} додано в кошик`);
         if (input) input.value = '';
-      } else {
-        dispatch(
-          addProductToCartThunk({
-            productId: id,
-            quantity: 1,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            toast.success(`1 шт. - ${productName} додано в кошик`);
-          });
-        if (input) input.value = '';
+      } catch {
+        toast.error('Не вдалося додати товар у кошик');
       }
     },
-    [dispatch, productsData],
+    [addToCart, productsData],
   );
 
   const data = useMemo<ShopTableRow[]>(() => {
@@ -346,8 +342,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
     [favoritesList, handleCartClick, handleFavoriteClick, logProductClick],
   );
 
-  const totalPage = isFavoritePage ? Math.ceil(favorites.length / 10) : totalPages;
-
   return (
     <>
       {tableLoading && products.length === 0 ? (
@@ -379,7 +373,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
                 </div>
               </div>
             )}
-            <FiltersBlock listType="partner" />
+            <FiltersBlock listType="partner" total={total} shownCount={productsData.length} />
             <div>
               {shopView === 'table' ? (
                 <Table<ShopTableRow> columns={columns} data={data} scrollTrigger={page} />
@@ -396,7 +390,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
               {`${(page - 1) * 30 + 1} - ${(page - 1) * 30 + 30 > total ? total : (page - 1) * 30 + 30} з ${total}`}
             </div>
             <div className="mx-auto mt-5 w-fit pb-10">
-              <Pagination totalPages={totalPage} />
+              <Pagination totalPages={totalPages} />
             </div>
           </div>
 

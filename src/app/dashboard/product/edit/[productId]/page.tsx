@@ -1,12 +1,10 @@
 'use client';
 
 import AdminProductForm from '@/app/ui/forms/AdminProductForm';
-import { getProductByIdThunk } from '@/lib/appState/main/operations';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { Product } from '@/lib/types';
+import { useGetProductByIdQuery } from '@/lib/appState/api/productsApi';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 type PageProps = {
@@ -18,50 +16,20 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const { productId } = use(params);
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
-  const reduxProduct = useAppSelector((state) =>
-    state.persistedMainReducer.products.find((p) => String(p.id) === productId),
-  );
-
-  const [fetchedProduct, setFetchedProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(!reduxProduct);
-
-  const product = reduxProduct || fetchedProduct;
+  const { data: product, isLoading, isError } = useGetProductByIdQuery(productId);
 
   useEffect(() => {
-    if (reduxProduct) return;
+    if (isError) {
+      toast.error('Товар не знайдено');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(`ingco_product_edit_draft_${productId}`);
+      }
+      router.push('/dashboard');
+    }
+  }, [isError, productId, router]);
 
-    let isMounted = true;
-
-    dispatch(getProductByIdThunk(productId))
-      .unwrap()
-      .then((data: Product) => {
-        if (isMounted) {
-          if (data && data.id) {
-            setFetchedProduct(data);
-            setIsLoading(false);
-          } else {
-            throw new Error('Товар не знайдено');
-          }
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          toast.error('Товар не знайдено');
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem(`ingco_product_edit_draft_${productId}`);
-          }
-          router.push('/dashboard');
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [dispatch, productId, reduxProduct, router]);
-
-  if (isLoading && !product) {
+  if (isLoading) {
     return (
       <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-3">
         <Loader2 className="text-primary-500 h-9 w-9 animate-spin" />

@@ -24,20 +24,18 @@ import {
   Phone,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
-import { isProductOnSale, normalizeProduct } from '@/lib/utils';
+import { isProductOnSale } from '@/lib/utils';
 
 import { getYoutubeEmbedUrl } from '@/lib/utils';
 import { generateProductJsonLd } from '@/lib/metadata';
 
+import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import { useGetProductBySlugQuery, useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 
-import {
-  apiIngco,
-  addProductToCartThunk,
-  addFavoriteProductThunk,
-  deleteFavoriteProductThunk,
-} from '@/lib/appState/user/operation';
+import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
 import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import Breadcrumbs from '~/ui/Breadcrumbs';
 import { ProductReviewsSection } from '~/ui/product/ProductReviewsSection';
@@ -76,10 +74,11 @@ export default function ProductPageClient({
   const isAdminClient = isClient && (user?.role === 'ADMIN' || user?.role === 'admin');
   const isAdmin = Boolean(isAdminServer || isAdminClient);
 
-  const reduxProduct = useAppSelector((state) => state.persistedMainReducer.product);
-  const products = useAppSelector((state) => state.persistedMainReducer.products || []);
+  const { data: queriedProduct } = useGetProductBySlugQuery(productSlug);
+  // Use initialProduct as fallback to ensure zero layout shift during SSR/Hydration
+  const product = queriedProduct || initialProduct;
 
-  const categories = useAppSelector((state) => state.persistedMainReducer.categories);
+  const { data: categories = [] } = useGetCategoriesQuery('');
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
   const favoritesState = useAppSelector(
     (state) => state.persistedAuthReducer.user?.favorites || [],
@@ -89,37 +88,28 @@ export default function ProductPageClient({
   );
   const usdRate = useAppSelector(selectUSDRate);
 
-  // Use initialProduct as fallback to ensure zero layout shift during SSR/Hydration
-  const product = reduxProduct && reduxProduct.slug === productSlug ? reduxProduct : initialProduct;
+  // Client-side B2B related products query
+  const { data: b2bRelatedData } = useGetProductsQuery(
+    {
+      page: 1,
+      limit: 5,
+      isRetail: false,
+      category: product?.category?.id ? String(product.category.id) : undefined,
+      sortValue: 'default',
+    },
+    { skip: !isB2b || !product?.category?.id },
+  );
 
   // UI state
-  const [clientRelatedProducts, setClientRelatedProducts] = useState<Product[] | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState<number | ''>(1);
   const [activeSection, setActiveSection] = useState('about-product');
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (isB2b && product?.category?.id) {
-      apiIngco
-        .get('/products', {
-          params: {
-            page: 1,
-            limit: 5,
-            isRetail: false,
-            category: product.category.id,
-            sortValue: 'default',
-          },
-        })
-        .then(({ data }) => {
-          if (Array.isArray(data?.products)) {
-            setClientRelatedProducts(data.products.map(normalizeProduct));
-          }
-        })
-        .catch((err) => console.error('Failed to fetch B2B related products:', err));
-    }
-  }, [isB2b, product?.category?.id]);
+  const [addToCart] = useAddToCartMutation();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [deleteFavorite] = useDeleteFavoriteMutation();
 
   const barcodeRef = useRef<SVGSVGElement | null>(null);
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
@@ -184,17 +174,21 @@ export default function ProductPageClient({
 
   // Favorite toggle
   const isFavorite = favoritesIdList.includes(product.id);
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = async () => {
     if (!isAuth) {
       toast.info('Будь ласка, увійдіть, щоб додавати товари до обраного.');
       return;
     }
-    if (isFavorite) {
-      dispatch(deleteFavoriteProductThunk(product.id));
-      toast.success('Товар вилучено з обраного');
-    } else {
-      dispatch(addFavoriteProductThunk(product.id));
-      toast.success('Товар додано до обраного');
+    try {
+      if (isFavorite) {
+        await deleteFavorite(product.id).unwrap();
+        toast.success('Товар вилучено з обраного');
+      } else {
+        await addFavorite(product.id).unwrap();
+        toast.success('Товар додано до обраного');
+      }
+    } catch {
+      toast.error('Не вдалося оновити обране');
     }
   };
 
@@ -202,26 +196,27 @@ export default function ProductPageClient({
   const handleAddToCart = async () => {
     const qty = typeof quantity === 'number' ? quantity : 1;
     if (isAuth) {
-      await dispatch(
-        addProductToCartThunk({
+      try {
+        await addToCart({
           productId: product.id,
           quantity: qty,
           isRetail: !isB2b,
-        }),
-      ).unwrap();
+        }).unwrap();
+        toast.success(`Товар додано до кошика (${qty} шт.)`);
+      } catch {
+        toast.error('Не вдалося додати товар до кошика');
+      }
     } else {
       const { price: _price, priceBulk: _priceBulk, ...normalizeProduct } = product;
-      await Promise.resolve(
-        dispatch(
-          addProductToLocalStorageCart({
-            productId: normalizeProduct,
-            quantity: qty,
-            id: product.id,
-          }),
-        ),
+      dispatch(
+        addProductToLocalStorageCart({
+          productId: normalizeProduct,
+          quantity: qty,
+          id: product.id,
+        }),
       );
+      toast.success(`Товар додано до кошика (${qty} шт.)`);
     }
-    toast.success(`Товар додано до кошика (${qty} шт.)`);
   };
 
   // Qty helpers
@@ -321,11 +316,12 @@ export default function ProductPageClient({
   };
 
   // Filter out the current product from recommendations
-  const baseRelated = clientRelatedProducts ?? initialRelatedProducts;
+  const baseRelated =
+    (isB2b && b2bRelatedData?.products ? b2bRelatedData.products : null) ?? initialRelatedProducts;
   const relatedProducts =
     baseRelated && baseRelated.length > 0
       ? baseRelated.filter((p) => p.id !== product.id).slice(0, 4)
-      : products.filter((p) => p.id !== product.id).slice(0, 4);
+      : [];
 
   return (
     <>
