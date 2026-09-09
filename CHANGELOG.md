@@ -5,6 +5,24 @@
 
 ---
 
+## [2.6.0] — 2026-09-09
+
+### [Added] Payment Gateway & Monobank Acquiring Integration
+
+- **Вибір способів оплати**: у роздрібному кошику (`RetailCartTable.tsx`) та оптовому кошику (`CartTable.tsx`) додано інтерактивний вибір:
+  - `CARD` — оплата карткою онлайн (Monobank / Visa / Mastercard).
+  - `CASH` — оплата при отриманні (післяплата у відділенні).
+  - `ENTERPRISE` — оплата за реквізитами (IBAN для юридичних осіб та ФОП).
+- **Автоматичний перехід на оплату**: при виборі онлайн-оплати користувач безпосередньо після оформлення перенаправляється на платіжну сторінку банку (`data.paymentUrl`).
+- **Обробка результатів оплати**: реалізовано показ тостів стану оплати при поверненні на `/cart?payment=status` з автоматичним безшовним очищенням адресного рядка через `window.history.replaceState`.
+- **Оновлена типізація**: розширено типи `Order`, `PaymentMethod`, payload замовлень новими платіжними полями (`paymentMethod`, `paymentStatus`, `paymentUrl`, `paymentInvoiceId`).
+
+### [Refactor] / [UX] Cart Architecture & Guest Migration
+
+- **Уніфікований хук `useCart` (`src/lib/useCart.ts`)**: ліквідовано дублювання логіки між роздрібним та оптовим кошиками; уніфіковано роботу з товарами, синхронізацію кількостей та розрахунок підсумкових сум.
+- **Батч-синхронізація гостьового кошика**: у `user/operation.ts` впроваджено автоматичну міграцію товарів з `localStorageCart` до бази даних при вході користувача через нові ендпоінти `POST /api/users/cart/retail/sync` та `POST /api/users/cart/sync`.
+- **Усунення блокуючих викликів**: замінено виклики `window.confirm()` у `OrderTable.tsx` на кастомний доступний модальний компонент `ConfirmModal`.
+
 ## [2.5.0] — 2026-09-03
 
 ### [Refactor] RTK Query Full Architecture Migration — Phase 5 (Final Cleanup & Audit)
