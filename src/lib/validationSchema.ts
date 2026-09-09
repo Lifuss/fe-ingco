@@ -46,3 +46,26 @@ export const registerClientSchema = z
     message: 'Паролі повинні збігатися',
     path: ['checkPassword'],
   });
+
+const baseDeliverySchema = z.object({
+  city: z.string().min(1, 'Оберіть населений пункт'),
+  warehouse: z.string().min(1, 'Оберіть відділення Нової Пошти'),
+  comment: z.string().optional(),
+});
+
+export const retailCheckoutSchema = baseDeliverySchema.extend({
+  firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
+  lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
+  surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
+  phone: basePhoneSchema,
+  email: baseEmailSchema,
+  paymentMethod: z.enum(['CARD', 'CASH', 'ENTERPRISE']),
+});
+
+export type RetailCheckoutFormValues = z.infer<typeof retailCheckoutSchema>;
+
+export const b2bCheckoutSchema = baseDeliverySchema.extend({
+  paymentMethod: z.enum(['ENTERPRISE', 'CASH']),
+});
+
+export type B2bCheckoutFormValues = z.infer<typeof b2bCheckoutSchema>;

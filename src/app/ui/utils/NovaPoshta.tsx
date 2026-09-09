@@ -14,9 +14,25 @@ type CityOption = {
   };
 };
 
-const NovaPoshtaComponent = () => {
+export type NovaPoshtaComponentProps = {
+  onCityChange?: (city: string) => void;
+  onWarehouseChange?: (warehouse: string) => void;
+  cityError?: string;
+  warehouseError?: string;
+};
+
+const NovaPoshtaComponent = ({
+  onCityChange,
+  onWarehouseChange,
+  cityError,
+  warehouseError,
+}: NovaPoshtaComponentProps = {}) => {
   const [warehouses, setWarehouses] = useState<NovaPoshtaWarehouse[]>([]);
   const [selectedCity, setSelectedCity] = useState<CityOption | null>(null);
+  const [selectedWarehouse, setSelectedWarehouse] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const novaPoshta = useMemo(() => new NovaPoshta(), []);
@@ -63,6 +79,9 @@ const NovaPoshtaComponent = () => {
 
   const handleChange = async (city: CityOption | null) => {
     setSelectedCity(city);
+    setSelectedWarehouse(null);
+    onCityChange?.(city ? city.value.fullDescription : '');
+    onWarehouseChange?.('');
 
     if (!city) {
       setWarehouses([]);
@@ -74,6 +93,11 @@ const NovaPoshtaComponent = () => {
       setWarehouses(data);
     });
     setIsLoading(false);
+  };
+
+  const handleWarehouseChange = (option: { label: string; value: string } | null) => {
+    setSelectedWarehouse(option);
+    onWarehouseChange?.(option ? option.value : '');
   };
 
   return (
@@ -92,6 +116,7 @@ const NovaPoshtaComponent = () => {
           required
           name="city"
         />
+        {cityError && <span className="mt-1 block text-xs text-rose-600">{cityError}</span>}
       </label>
       <label title="Оберіть відділення, якщо не доступно оберіть спочатку місто">
         Відділення <span className="text-red-600">*</span>
@@ -100,6 +125,8 @@ const NovaPoshtaComponent = () => {
             label: warehouse.Description,
             value: warehouse.Description,
           }))}
+          value={selectedWarehouse}
+          onChange={handleWarehouseChange}
           placeholder="Оберіть відділення"
           isLoading={isLoading}
           noOptionsMessage={() => 'Відділення не знайдено'}
@@ -107,6 +134,9 @@ const NovaPoshtaComponent = () => {
           required
           name="warehouse"
         />
+        {warehouseError && (
+          <span className="mt-1 block text-xs text-rose-600">{warehouseError}</span>
+        )}
       </label>
     </div>
   );

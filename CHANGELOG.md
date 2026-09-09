@@ -19,6 +19,7 @@
 
 ### [Refactor] / [UX] Cart Architecture & Guest Migration
 
+- **Композиційна уніфікація кошика (`src/app/ui/cart/`)**: ліквідовано монолітні дубльовані файли `CartTable.tsx` та `RetailCartTable.tsx`. Створено модульні компоненти `CartView`, `CartItemsTable`, `CartQuantityControl`, `PaymentMethodSelector`, `NovaPoshtaDelivery`. Форми чекауту переведено на React Hook Form + Zod згідно зі стандартами проєкту.
 - **Уніфікований хук `useCart` (`src/lib/useCart.ts`)**: ліквідовано дублювання логіки між роздрібним та оптовим кошиками; уніфіковано роботу з товарами, синхронізацію кількостей та розрахунок підсумкових сум.
 - **Батч-синхронізація гостьового кошика**: у `user/operation.ts` впроваджено автоматичну міграцію товарів з `localStorageCart` до бази даних при вході користувача через нові ендпоінти `POST /api/users/cart/retail/sync` та `POST /api/users/cart/sync`.
 - **Усунення блокуючих викликів**: замінено виклики `window.confirm()` у `OrderTable.tsx` на кастомний доступний модальний компонент `ConfirmModal`.
