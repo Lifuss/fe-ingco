@@ -132,6 +132,10 @@ export interface Order {
   totalPrice: number;
   status: OrderStatusEnum;
   isPaid: boolean;
+  paymentMethod?: 'CASH' | 'CARD' | 'ENTERPRISE';
+  paymentStatus?: 'PAID' | 'UNPAID';
+  paymentUrl?: string;
+  paymentInvoiceId?: string;
   comment: string;
   createdAt: string;
   updatedAt: string;

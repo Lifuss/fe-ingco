@@ -86,18 +86,16 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
     if (!form) return;
 
     // FIXME
-    // @ts-expect-error : form.status.value is a string
-    const status = OrderStatusEnum[form.status.value];
+    const status =
+      OrderStatusEnum[form.status.value as keyof typeof OrderStatusEnum] || form.status.value;
     const declarationNumber = form.declarationNumber.value;
     const normalizeProducts =
       selectedOrder.products
         ?.filter((product) => product?.product?.id)
         ?.map((product) => ({
           id: product.id,
+          productId: product.product.id,
           quantity: product.quantity || 0,
-          totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
-          product: product.product.id,
-          price: product.price || 0,
         })) || [];
 
     const filteredOutCount =
@@ -109,23 +107,17 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
       );
     }
 
-    const updatedOrder = {
-      ...selectedOrder,
-      products: normalizeProducts,
+    const payload = {
       status,
-      declarationNumber,
+      declarationNumber: declarationNumber ?? undefined,
+      comment: selectedOrder.comment ?? undefined,
+      shippingAddress: selectedOrder.shippingAddress ?? undefined,
+      items: normalizeProducts,
     };
-    const {
-      user: _user,
-      orderCode: _orderCode,
-      createdAt: _createdAt,
-      updatedAt: _updatedAt,
-      ...updatedOrderWithoutUser
-    } = updatedOrder;
 
     updateOrder({
       orderId: selectedOrder.id,
-      updateOrder: updatedOrderWithoutUser,
+      data: payload,
       isRetail,
     })
       .unwrap()
@@ -133,8 +125,12 @@ const AdminOrderModal = ({ isOpen, closeModal, order, isRetail }: AdminOrderModa
         toast.success('Замовлення успішно змінено');
         closeModal();
       })
-      .catch(() => {
-        toast.error('Помилка при оновленні замовлення');
+      .catch((err: unknown) => {
+        const errorMsg =
+          (err as { message?: string; data?: { message?: string } })?.message ||
+          (err as { data?: { message?: string } })?.data?.message ||
+          'Помилка при оновленні замовлення';
+        toast.error(errorMsg);
       });
   };
 

@@ -12,6 +12,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import AdminOrderModal from '@/app/ui/modals/AdminOrderModal';
+import ConfirmModal from '@/app/ui/modals/ConfirmModal';
 import { Order, OrderStatusEnum } from '@/lib/types';
 import { useGetCurrencyRatesQuery } from '@/lib/appState/api/currencyApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
@@ -67,6 +68,15 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [openDropdownCode, setOpenDropdownCode] = useState<string | null>(null);
+  const [statusConfirm, setStatusConfirm] = useState<{
+    isOpen: boolean;
+    order: Order | null;
+    newStatus: OrderStatusEnum | null;
+  }>({
+    isOpen: false,
+    order: null,
+    newStatus: null,
+  });
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -106,57 +116,37 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
   );
   const closeModal = () => setIsOpen(false);
 
-  const handleStatusChange = useCallback(
-    (order: Order, newStatus: OrderStatusEnum) => {
-      if (order.status === newStatus) return;
+  const handleStatusChange = useCallback((order: Order, newStatus: OrderStatusEnum) => {
+    if (order.status === newStatus) return;
+    setOpenDropdownCode(null);
+    setStatusConfirm({
+      isOpen: true,
+      order,
+      newStatus,
+    });
+  }, []);
 
-      if (
-        confirm(
-          `Ви впевнені, що хочете змінити статус замовлення №${order.orderCode} на "${newStatus}"?`,
-        )
-      ) {
-        const normalizeProducts =
-          order.products
-            ?.filter((product) => product?.product?.id)
-            ?.map((product) => ({
-              id: product.id,
-              quantity: product.quantity || 0,
-              totalPriceByOneProduct: product.totalPriceByOneProduct || 0,
-              product: product.product.id,
-              price: product.price || 0,
-            })) || [];
+  const executeStatusChange = useCallback(() => {
+    if (!statusConfirm.order || !statusConfirm.newStatus) return;
+    const { order, newStatus } = statusConfirm;
 
-        const updatedOrder = {
-          ...order,
-          products: normalizeProducts,
-          status: newStatus,
-        };
-
-        const {
-          user: _user,
-          orderCode: _orderCode,
-          createdAt: _createdAt,
-          updatedAt: _updatedAt,
-          usdRate: _usdRate,
-          ...updatedOrderWithoutUser
-        } = updatedOrder;
-
-        updateOrder({
-          orderId: order.id,
-          updateOrder: updatedOrderWithoutUser,
-          isRetail,
-        })
-          .unwrap()
-          .then(() => {
-            toast.success('Замовлення успішно змінено');
-          })
-          .catch(() => {
-            toast.error('Не вдалося оновити статус замовлення');
-          });
-      }
-    },
-    [isRetail, updateOrder],
-  );
+    updateOrder({
+      orderId: order.id,
+      data: { status: newStatus },
+      isRetail,
+    })
+      .unwrap()
+      .then(() => {
+        toast.success(`Статус замовлення №${order.orderCode} змінено на "${newStatus}"`);
+      })
+      .catch((err: unknown) => {
+        const errorMsg =
+          (err as { message?: string; data?: { message?: string } })?.message ||
+          (err as { data?: { message?: string } })?.data?.message ||
+          'Не вдалося оновити статус замовлення';
+        toast.error(errorMsg);
+      });
+  }, [statusConfirm, updateOrder, isRetail]);
 
   const handleExcelClick = async (e: React.MouseEvent, order: Order) => {
     e.stopPropagation();
@@ -574,6 +564,17 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
         isOpen={isOpen}
         order={selectedOrder}
         isRetail={isRetail}
+      />
+
+      <ConfirmModal
+        isOpen={statusConfirm.isOpen}
+        onClose={() => setStatusConfirm({ isOpen: false, order: null, newStatus: null })}
+        onConfirm={executeStatusChange}
+        title="Зміна статусу замовлення"
+        message={`Ви впевнені, що хочете змінити статус замовлення №${statusConfirm.order?.orderCode} на "${statusConfirm.newStatus}"?`}
+        confirmText="Змінити статус"
+        cancelText="Скасувати"
+        type={statusConfirm.newStatus === 'замовлення скасовано' ? 'danger' : 'warning'}
       />
     </div>
   );

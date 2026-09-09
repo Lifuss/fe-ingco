@@ -2,32 +2,21 @@
 'use client';
 
 import Table from '@/app/ui/Table';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppSelector, useCart } from '@/lib/hooks';
 import Image from 'next/image';
-import { SubmitEvent, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { SubmitEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
-import {
-  useGetCartQuery,
-  useAddToCartMutation,
-  useDeleteFromCartMutation,
-} from '@/lib/appState/api/cartApi';
 import { useCreateRetailOrderMutation } from '@/lib/appState/api/ordersApi';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
-import {
-  clearLocalStorageCart,
-  decreaseProductQuantityInLocalStorageCart,
-  increaseProductQuantityInLocalStorageCart,
-  removeProductFromLocalStorageCart,
-} from '@/lib/appState/user/slice';
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
 import TurnstileWidget from '@/app/ui/utils/TurnstileWidget';
 import { type ColumnDef } from '@tanstack/react-table';
-import { getEffectiveRetailPrice } from '@/lib/utils';
+import { getEffectiveRetailPrice, extractNovaPoshtaAddress } from '@/lib/utils';
 
-type CartData = { quantity: number; id: number; productId: Product }[];
 type RetailCartRow = {
   codeCol: string;
   nameCol: string;
@@ -40,58 +29,52 @@ type RetailCartRow = {
 };
 
 const RetailCartTable = () => {
+  const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileKey, setTurnstileKey] = useState<number>(0);
-  const dispatch = useAppDispatch();
+  const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'CASH' | 'ENTERPRISE'>('CARD');
 
-  const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
+  useEffect(() => {
+    const payment = searchParams?.get('payment');
+    const orderCode = searchParams?.get('orderCode');
+    if (payment === 'status' && orderCode) {
+      toast.success(`Замовлення #${orderCode} передано в обробку. Дякуємо за покупку!`);
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/cart');
+      }
+    }
+  }, [searchParams]);
+
+  const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
   const userState = useAppSelector((state) => state.persistedAuthReducer.user);
-  const { data: serverCart } = useGetCartQuery({ isRetail: true }, { skip: !isAuth });
   const firstName = userState?.firstName || '';
   const lastName = userState?.lastName || '';
   const surName = userState?.surName || '';
   const phone = userState?.phone || '';
   const email = userState?.email || '';
-  const localStorageCart = useAppSelector((state) => state.persistedAuthReducer.localStorageCart);
 
-  const [addToCart] = useAddToCartMutation();
-  const [deleteFromCart] = useDeleteFromCartMutation();
   const [createRetailOrder, { isLoading: isSubmitting }] = useCreateRetailOrderMutation();
 
-  const selectedCart = useMemo<CartData>(() => {
-    const cart = isAuth ? (serverCart ?? userState?.retailCart) : localStorageCart;
-    return (cart as CartData) || [];
-  }, [isAuth, serverCart, userState?.retailCart, localStorageCart]);
+  const handleQuantityChange = useCallback(
+    (id: number, operation: 'increment' | 'decrement') => {
+      updateQuantity(id, operation);
+    },
+    [updateQuantity],
+  );
 
-  const handleQuantityChange = (id: number, operation: string) => {
-    if (isAuth) {
-      if (operation === 'increment') {
-        addToCart({ productId: id, quantity: 1, isRetail: true });
-      } else {
-        deleteFromCart({ productId: id, quantity: 1, isRetail: true });
-      }
-    } else {
-      if (operation === 'increment') {
-        dispatch(increaseProductQuantityInLocalStorageCart(id));
-      } else {
-        dispatch(decreaseProductQuantityInLocalStorageCart(id));
-      }
-    }
-  };
-
-  const openProductModal = (product: Product) => {
+  const openProductModal = useCallback((product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const closeProductModal = () => {
+  const closeProductModal = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
   const data = useMemo<RetailCartRow[]>(() => {
-    return selectedCart.map((item) => {
+    return items.map((item) => {
       const effectivePrice = getEffectiveRetailPrice(item.productId);
       return {
         codeCol: item.productId.article,
@@ -104,7 +87,7 @@ const RetailCartTable = () => {
         product: item.productId,
       };
     });
-  }, [selectedCart]);
+  }, [items]);
 
   const columns = useMemo<ColumnDef<RetailCartRow>[]>(
     () => [
@@ -201,15 +184,7 @@ const RetailCartTable = () => {
               <button
                 className="absolute top-0 -right-7 fill-gray-400 hover:fill-red-500"
                 onClick={() => {
-                  if (isAuth) {
-                    deleteFromCart({
-                      productId: row.original.id,
-                      quantity: row.original.quantityCol,
-                      isRetail: true,
-                    });
-                  } else {
-                    dispatch(removeProductFromLocalStorageCart(row.original.id));
-                  }
+                  removeItem(row.original.id, row.original.quantityCol);
                 }}
               >
                 <Icon icon="delete" className="h-5 w-5 fill-inherit" />
@@ -219,15 +194,10 @@ const RetailCartTable = () => {
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch],
+    [removeItem, handleQuantityChange, openProductModal],
   );
 
-  const sum = Math.ceil(
-    selectedCart.reduce((acc, item) => {
-      return acc + getEffectiveRetailPrice(item.productId) * item.quantity;
-    }, 0),
-  );
+  const sum = Math.ceil(totalPrice);
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -239,23 +209,17 @@ const RetailCartTable = () => {
     const surName = (form.elements.namedItem('surName') as HTMLInputElement)?.value;
     const phone = (form.elements.namedItem('phone') as HTMLInputElement)?.value;
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value;
-    const city = (form.elements.namedItem('city') as HTMLInputElement)?.value;
-    const warehouse = (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
-
-    const shippingAddress = `${city}, ${warehouse}`;
+    const shippingAddress = extractNovaPoshtaAddress(form);
+    if (!shippingAddress) {
+      toast.error('Будь ласка, оберіть населений пункт та відділення Нової Пошти');
+      return;
+    }
 
     const order = {
-      products: selectedCart.map((item) => {
-        const unitPrice = getEffectiveRetailPrice(item.productId);
-        return {
-          productId: item.productId.id,
-          quantity: item.quantity,
-          price: Math.ceil(unitPrice),
-          totalPriceByOneProduct: Math.ceil(unitPrice * item.quantity),
-        };
-      }),
-
-      totalPrice: sum,
+      items: items.map((item) => ({
+        productId: item.productId.id,
+        quantity: item.quantity,
+      })),
       shippingAddress,
       firstName,
       lastName,
@@ -264,13 +228,20 @@ const RetailCartTable = () => {
       email,
       comment,
       turnstileToken,
+      paymentMethod,
     };
 
     try {
       const data = await createRetailOrder(order).unwrap();
-      toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
-      dispatch(clearLocalStorageCart());
+      clearCart();
       form.reset();
+
+      if (data.paymentUrl) {
+        toast.info(`Замовлення #${data.orderCode} створено! Перенаправляємо на сторінку оплати...`);
+        window.location.href = data.paymentUrl;
+      } else {
+        toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
+      }
     } catch (err: unknown) {
       const error = err as { data?: { message?: string }; message?: string };
       const errMsg = error?.data?.message || error?.message || 'Помилка при оформленні замовлення';
@@ -281,7 +252,7 @@ const RetailCartTable = () => {
     }
   };
 
-  return selectedCart.length > 0 ? (
+  return items.length > 0 ? (
     <div className="">
       <Table columns={columns} data={data} />
       <div className="mt-2 ml-auto flex w-fit gap-2 border-b-2 text-lg">
@@ -354,6 +325,80 @@ const RetailCartTable = () => {
                 className="rounded-e-lg border-1 border-gray-400 p-2"
               />
             </label>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2">
+            <h3 className="text-base font-medium">Спосіб оплати</h3>
+            <div className="flex flex-col gap-2">
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                  paymentMethod === 'CARD'
+                    ? 'border-amber-500 bg-amber-50/40'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethodRadio"
+                  value="CARD"
+                  checked={paymentMethod === 'CARD'}
+                  onChange={() => setPaymentMethod('CARD')}
+                  className="mt-1 accent-amber-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Оплата карткою онлайн</div>
+                  <div className="text-xs text-gray-500">
+                    Monobank / Visa / Mastercard / Apple Pay / Google Pay
+                  </div>
+                </div>
+              </label>
+
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                  paymentMethod === 'CASH'
+                    ? 'border-amber-500 bg-amber-50/40'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethodRadio"
+                  value="CASH"
+                  checked={paymentMethod === 'CASH'}
+                  onChange={() => setPaymentMethod('CASH')}
+                  className="mt-1 accent-amber-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Оплата при отриманні</div>
+                  <div className="text-xs text-gray-500">
+                    Накладений платіж у відділенні Нової Пошти
+                  </div>
+                </div>
+              </label>
+
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                  paymentMethod === 'ENTERPRISE'
+                    ? 'border-amber-500 bg-amber-50/40'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethodRadio"
+                  value="ENTERPRISE"
+                  checked={paymentMethod === 'ENTERPRISE'}
+                  onChange={() => setPaymentMethod('ENTERPRISE')}
+                  className="mt-1 accent-amber-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Оплата за реквізитами (IBAN)</div>
+                  <div className="text-xs text-gray-500">
+                    Безготівковий розрахунок для юридичних осіб та ФОП
+                  </div>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 

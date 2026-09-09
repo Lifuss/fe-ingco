@@ -1,31 +1,15 @@
 import { baseApi } from './baseApi';
 import { Order } from '@/lib/types';
 import { normalizeOrder } from '@/lib/utils';
-import { clearLocalStorageCart, setB2bCart, setRetailCart } from '../user/slice';
+import { clearLocalStorageCart } from '../user/slice';
 import {
   CreateOrderB2bPayload,
   CreateOrderRetailPayload,
   GetOrderHistoryParams,
   GetOrderHistoryResponse,
-  OrderItemPayload,
 } from './ordersApi.types';
 
 export * from './ordersApi.types';
-
-const extractOrderItems = (order: {
-  items?: OrderItemPayload[];
-  products?: OrderItemPayload[];
-}): OrderItemPayload[] => {
-  return (
-    order.items ??
-    (order.products
-      ? order.products.map((p) => ({
-          productId: p.productId,
-          quantity: p.quantity,
-        }))
-      : [])
-  );
-};
 
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -34,22 +18,15 @@ export const ordersApi = baseApi.injectEndpoints({
         url: '/orders',
         method: 'POST',
         data: {
-          items: extractOrderItems(order),
+          items: order.items,
           shippingAddress: order.shippingAddress,
           comment: order.comment,
           usdRate: order.usdRate,
+          paymentMethod: order.paymentMethod,
         },
       }),
       transformResponse: normalizeOrder,
       invalidatesTags: ['Cart', 'Order'],
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(setB2bCart([]));
-        } catch {
-          // Handled in component
-        }
-      },
     }),
 
     createRetailOrder: build.mutation<Order, CreateOrderRetailPayload>({
@@ -57,7 +34,7 @@ export const ordersApi = baseApi.injectEndpoints({
         url: '/orders/retail',
         method: 'POST',
         data: {
-          items: extractOrderItems(order),
+          items: order.items,
           shippingAddress: order.shippingAddress,
           comment: order.comment,
           firstName: order.firstName,
@@ -66,6 +43,7 @@ export const ordersApi = baseApi.injectEndpoints({
           phone: order.phone,
           email: order.email,
           turnstileToken: order.turnstileToken,
+          paymentMethod: order.paymentMethod,
         },
       }),
       transformResponse: normalizeOrder,
@@ -74,7 +52,6 @@ export const ordersApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(clearLocalStorageCart());
-          dispatch(setRetailCart([]));
         } catch {
           // Handled in component
         }

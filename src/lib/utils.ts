@@ -282,3 +282,14 @@ export function slugifyCyrillicToLatin(text: string): string {
     .trim()
     .replace(/\s+/g, '_');
 }
+
+export function extractNovaPoshtaAddress(form: HTMLFormElement): string | null {
+  const city = (form.elements.namedItem('city') as HTMLInputElement)?.value?.trim();
+  const warehouse = (form.elements.namedItem('warehouse') as HTMLInputElement)?.value?.trim();
+
+  if (!city || !warehouse || city === 'undefined' || warehouse === 'undefined') {
+    return null;
+  }
+
+  return `${city}, ${warehouse}`;
+}

@@ -6,26 +6,24 @@ export interface OrderItemPayload {
 }
 
 export interface CreateOrderB2bPayload {
-  products?: OrderItemPayload[];
-  items?: OrderItemPayload[];
-  shippingAddress?: string;
+  items: OrderItemPayload[];
+  shippingAddress: string;
   comment?: string;
   usdRate?: number;
-  totalPrice?: number;
+  paymentMethod?: 'CASH' | 'CARD' | 'ENTERPRISE';
 }
 
 export interface CreateOrderRetailPayload {
-  products?: OrderItemPayload[];
-  items?: OrderItemPayload[];
-  shippingAddress?: string;
+  items: OrderItemPayload[];
+  shippingAddress: string;
   comment?: string;
   email: string;
   firstName: string;
   lastName: string;
   surName: string;
   phone: string;
-  turnstileToken?: string;
-  totalPrice?: number;
+  turnstileToken: string;
+  paymentMethod?: 'CASH' | 'CARD' | 'ENTERPRISE';
 }
 
 export interface GetOrderHistoryParams {

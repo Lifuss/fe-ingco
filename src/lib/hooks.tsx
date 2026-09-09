@@ -135,3 +135,5 @@ export const useActiveCategory = () => {
     };
   }, [categorySlug, searchParams, rawCategories]);
 };
+
+export { useCart, type UnifiedCartItem } from './useCart';

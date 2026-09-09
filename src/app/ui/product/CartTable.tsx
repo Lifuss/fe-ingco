@@ -2,26 +2,20 @@
 'use client';
 
 import Table from '@/app/ui/Table';
-import { useAppSelector } from '@/lib/hooks';
+import { useCart } from '@/lib/hooks';
 import Image from 'next/image';
 import { SubmitEvent, useCallback, useMemo, useState } from 'react';
 import { Product } from '@/lib/types';
-import {
-  useGetCartQuery,
-  useAddToCartMutation,
-  useDeleteFromCartMutation,
-} from '@/lib/appState/api/cartApi';
 import { useCreateOrderMutation } from '@/lib/appState/api/ordersApi';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import { toast } from 'react-toastify';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
 import Icon from '@/app/ui/assets/Icon';
 import NovaPoshtaComponent from '@/app/ui/utils/NovaPoshta';
-import { selectCurrency } from '@/lib/appState/main/selectors';
 import { type ColumnDef } from '@tanstack/react-table';
 import PricingTooltip from '@/app/ui/PricingTooltip';
+import { extractNovaPoshtaAddress } from '@/lib/utils';
 
-type CartData = { quantity: number; id: number; productId: Product }[];
 type CartTableRow = {
   codeCol: string;
   nameCol: string;
@@ -38,27 +32,16 @@ type CartTableRow = {
 const CartTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { data: cartData } = useGetCartQuery({ isRetail: false });
-  const rawCart = useAppSelector((state) => state.persistedAuthReducer.user?.cart);
-  const selectedCart = useMemo<CartData>(
-    () => (cartData as CartData) ?? (rawCart as CartData) ?? [],
-    [cartData, rawCart],
-  );
-  const selectedCurrency = useAppSelector(selectCurrency);
+  const [paymentMethod, setPaymentMethod] = useState<'ENTERPRISE' | 'CASH'>('ENTERPRISE');
+  const { items, updateQuantity, removeItem, currency, totalPrice } = useCart();
 
-  const [addToCart] = useAddToCartMutation();
-  const [deleteFromCart] = useDeleteFromCartMutation();
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
 
   const handleQuantityChange = useCallback(
-    (id: number, operation: string) => {
-      if (operation === 'increment') {
-        addToCart({ productId: id, quantity: 1, isRetail: false });
-      } else {
-        deleteFromCart({ productId: id, quantity: 1, isRetail: false });
-      }
+    (id: number, operation: 'increment' | 'decrement') => {
+      updateQuantity(id, operation);
     },
-    [addToCart, deleteFromCart],
+    [updateQuantity],
   );
 
   const openProductModal = useCallback((product: Product) => {
@@ -71,19 +54,26 @@ const CartTable = () => {
   }, []);
 
   const data = useMemo<CartTableRow[]>(() => {
-    return selectedCart.map((item) => ({
-      codeCol: item.productId.article,
-      nameCol: item.productId.name,
-      photoCol: item.productId.image,
-      priceCol: item.productId.price,
-      priceUahCol: Math.ceil(item.productId.price * selectedCurrency.USD),
-      rrcCol: item.productId.priceRetailRecommendation,
-      quantityCol: item.quantity,
-      totalCol: `${(item.productId.price * item.quantity).toFixed(2)}$ | ${Math.ceil(item.productId.price * selectedCurrency.USD * item.quantity)}грн`,
-      id: item.productId.id,
-      product: item.productId,
-    }));
-  }, [selectedCart, selectedCurrency.USD]);
+    return items.map((item) => {
+      const priceUsd = Number(item.productId.price);
+      const priceUah = Math.ceil(priceUsd * currency.USD);
+      const itemTotalUsd = (priceUsd * item.quantity).toFixed(2);
+      const itemTotalUah = priceUah * item.quantity;
+
+      return {
+        codeCol: item.productId.article,
+        nameCol: item.productId.name,
+        photoCol: item.productId.image,
+        priceCol: priceUsd,
+        priceUahCol: priceUah,
+        rrcCol: Number(item.productId.priceRetailRecommendation),
+        quantityCol: item.quantity,
+        totalCol: `${itemTotalUsd}$ | ${itemTotalUah}грн`,
+        id: item.productId.id,
+        product: item.productId,
+      };
+    });
+  }, [items, currency.USD]);
 
   const columns = useMemo<ColumnDef<CartTableRow>[]>(
     () => [
@@ -207,11 +197,7 @@ const CartTable = () => {
           <button
             className="mx-auto flex cursor-pointer items-center justify-center text-neutral-400 transition-transform duration-200 hover:scale-110 hover:text-rose-500"
             onClick={() => {
-              deleteFromCart({
-                productId: row.original.id,
-                quantity: row.original.quantityCol,
-                isRetail: false,
-              });
+              removeItem(row.original.id, row.original.quantityCol);
             }}
             aria-label={`Видалити ${row.original.nameCol} з кошика`}
           >
@@ -220,57 +206,49 @@ const CartTable = () => {
         ),
       },
     ],
-    [deleteFromCart, handleQuantityChange, openProductModal],
+    [removeItem, handleQuantityChange, openProductModal],
   );
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const comment = (form.elements.namedItem('comment') as HTMLInputElement)?.value;
-    const address =
-      (form.elements.namedItem('city') as HTMLInputElement)?.value +
-      ', ' +
-      (form.elements.namedItem('warehouse') as HTMLInputElement)?.value;
+    const shippingAddress = extractNovaPoshtaAddress(form);
+    if (!shippingAddress) {
+      toast.error('Будь ласка, оберіть населений пункт та відділення Нової Пошти');
+      return;
+    }
+
     const order = {
-      products: selectedCart.map((item) => ({
+      items: items.map((item) => ({
         productId: item.productId.id,
         quantity: item.quantity,
-        price: Number(Number(item.productId.price).toFixed(2)),
-        totalPriceByOneProduct: Number((item.productId.price * item.quantity).toFixed(2)),
       })),
-      shippingAddress: address,
-      totalPrice: Number(
-        selectedCart
-          .reduce((acc, item) => {
-            return acc + item.productId.price * item.quantity;
-          }, 0)
-          .toFixed(2),
-      ),
+      shippingAddress,
       comment,
-      usdRate: selectedCurrency.USD,
+      usdRate: currency.USD,
+      paymentMethod,
     };
 
     try {
-      await createOrder(order).unwrap();
-      toast.success('Замовлення успішно оформлено');
-    } catch {
-      toast.error('Не вдалося оформити замовлення');
+      const created = await createOrder(order).unwrap();
+      toast.success(`Замовлення #${created.orderCode} успішно оформлено`);
+      form.reset();
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      toast.error(error?.data?.message || error?.message || 'Не вдалося оформити замовлення');
     }
   };
 
-  const sum = selectedCart
-    .reduce((acc, item) => {
-      return acc + item.productId.price * item.quantity;
-    }, 0)
-    .toFixed(2);
+  const sum = totalPrice.toFixed(2);
 
-  return selectedCart.length > 0 ? (
+  return items.length > 0 ? (
     <div className="">
       <Table columns={columns} data={data} />
       <div className="mt-2 ml-auto flex w-fit gap-2 border-b-2 text-lg">
         <p>Загальна сума</p>
         <p>
-          {sum}$ | {Math.ceil(+sum * selectedCurrency.USD)}грн
+          {sum}$ | {Math.ceil(totalPrice * currency.USD)}грн
         </p>
       </div>
       <div className="flex justify-between gap-20">
@@ -307,6 +285,55 @@ const CartTable = () => {
                 placeholder="Коментарій до замовлення"
               />
             </label>
+
+            <div className="mt-4 flex flex-col gap-2">
+              <span className="text-base font-medium">Спосіб оплати</span>
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                  paymentMethod === 'ENTERPRISE'
+                    ? 'border-amber-500 bg-amber-50/40'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="b2bPaymentMethod"
+                  value="ENTERPRISE"
+                  checked={paymentMethod === 'ENTERPRISE'}
+                  onChange={() => setPaymentMethod('ENTERPRISE')}
+                  className="mt-1 accent-amber-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Безготівковий розрахунок (IBAN)</div>
+                  <div className="text-xs text-gray-500">
+                    Оплата за виставленим рахунком-фактурою для юридичних осіб / ФОП
+                  </div>
+                </div>
+              </label>
+
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                  paymentMethod === 'CASH'
+                    ? 'border-amber-500 bg-amber-50/40'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="b2bPaymentMethod"
+                  value="CASH"
+                  checked={paymentMethod === 'CASH'}
+                  onChange={() => setPaymentMethod('CASH')}
+                  className="mt-1 accent-amber-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Оплата при отриманні</div>
+                  <div className="text-xs text-gray-500">
+                    Накладений платіж у відділенні перевізника
+                  </div>
+                </div>
+              </label>
+            </div>
 
             <button
               type="submit"
