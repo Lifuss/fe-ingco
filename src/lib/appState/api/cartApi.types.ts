@@ -23,3 +23,13 @@ export interface RemoveFromCartPayload {
   quantity?: number;
   isRetail?: boolean;
 }
+
+export interface SyncCartItemPayload {
+  productId: number;
+  quantity: number;
+}
+
+export interface SyncCartPayload {
+  items: SyncCartItemPayload[];
+  isRetail?: boolean;
+}

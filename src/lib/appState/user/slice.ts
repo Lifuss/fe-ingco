@@ -15,8 +15,6 @@ interface AuthUserState {
   login: string;
   role: string;
   favorites: Product[];
-  cart: { quantity: number; id: number; productId: Product }[];
-  retailCart: { quantity: number; id: number; productId: Product }[];
   firstName: string;
   lastName: string;
   surName: string;
@@ -43,8 +41,6 @@ const initialState: AuthState = {
     login: '',
     role: '',
     favorites: [],
-    cart: [],
-    retailCart: [],
     firstName: '',
     lastName: '',
     surName: '',
@@ -70,12 +66,6 @@ const authStateSlice = createSlice({
     },
     setFavorites: (state, { payload }) => {
       state.user.favorites = payload;
-    },
-    setB2bCart: (state, { payload }) => {
-      state.user.cart = payload;
-    },
-    setRetailCart: (state, { payload }) => {
-      state.user.retailCart = payload;
     },
     addProductToLocalStorageCart: (state, { payload }) => {
       const product = state.localStorageCart.find((p) => p.id === payload.id);
@@ -137,16 +127,6 @@ const authStateSlice = createSlice({
           state.user.login = normalizedUser.login;
           state.user.role = normalizedUser.role;
           state.user.favorites = normalizedUser.favorites as unknown as Product[];
-          state.user.cart = normalizedUser.cart as unknown as {
-            quantity: number;
-            id: number;
-            productId: Product;
-          }[];
-          state.user.retailCart = (normalizedUser.cartRetail || []) as unknown as {
-            quantity: number;
-            id: number;
-            productId: Product;
-          }[];
           state.user.firstName = normalizedUser.firstName;
           state.user.lastName = normalizedUser.lastName;
           state.user.email = normalizedUser.email;
@@ -183,8 +163,6 @@ export const {
   clearAuthState,
   clearLocalStorageCart,
   setFavorites,
-  setB2bCart,
-  setRetailCart,
   addProductToLocalStorageCart,
   increaseProductQuantityInLocalStorageCart,
   decreaseProductQuantityInLocalStorageCart,

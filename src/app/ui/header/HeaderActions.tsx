@@ -2,24 +2,13 @@
 
 import Link from 'next/link';
 import { Heart, ShoppingBasket } from 'lucide-react';
-import { useAppSelector, useIsB2B } from '@/lib/hooks';
-import { useGetCartQuery } from '@/lib/appState/api/cartApi';
+import { useAppSelector, useCart } from '@/lib/hooks';
 import UserModal from '~/ui/modals/UserModal';
 import Icon from '~/ui/assets/Icon';
 
 export default function HeaderActions() {
-  const isB2b = useIsB2B();
-  const { isAuthenticated, user, localStorageCart } = useAppSelector(
-    (state) => state.persistedAuthReducer,
-  );
-  const { data: serverCart } = useGetCartQuery({ isRetail: !isB2b }, { skip: !isAuthenticated });
-
-  // Calculate items in cart based on B2B status
-  const itemsInCart = isB2b
-    ? (serverCart ?? user?.cart)?.length || 0
-    : isAuthenticated
-      ? (serverCart ?? user?.retailCart)?.length || 0
-      : localStorageCart?.length || 0;
+  const { isAuthenticated } = useAppSelector((state) => state.persistedAuthReducer);
+  const { itemCount: itemsInCart } = useCart();
 
   return (
     <div className="hidden shrink-0 items-center gap-6 lg:flex">

@@ -6,10 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Minus, Plus, Star, Phone } from 'lucide-react';
-import { useAppDispatch, useAppSelector, useIsB2B } from '@/lib/hooks';
-import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
+import { useAppSelector, useCart, useIsB2B } from '@/lib/hooks';
 import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
-import { addProductToLocalStorageCart } from '@/lib/appState/user/slice';
 import { toast } from 'react-toastify';
 import OutOfStockModal from '../modals/OutOfStockModal';
 import ConsultationModal from '../modals/ConsultationModal';
@@ -36,7 +34,6 @@ const ProductCard = ({
   handleDirectToProduct: _handleDirectToProduct,
   USDCurrency,
 }: ProductCardProps) => {
-  const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.persistedAuthReducer);
   const storeUsdRate = useAppSelector(selectUSDRate);
   const usdRate = USDCurrency || storeUsdRate;
@@ -48,7 +45,7 @@ const ProductCard = ({
   const [isOutOfStockOpen, setIsOutOfStockOpen] = useState(false);
   const [isConsultOpen, setIsConsultOpen] = useState(false);
 
-  const [addToCart] = useAddToCartMutation();
+  const { addToCart } = useCart();
   const [addFavorite] = useAddFavoriteMutation();
   const [deleteFavorite] = useDeleteFavoriteMutation();
 
@@ -128,28 +125,11 @@ const ProductCard = ({
   // Add to cart handler
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isAuth) {
-      try {
-        await addToCart({
-          productId: id,
-          quantity,
-          isRetail: !isB2BUser,
-        }).unwrap();
-        toast.success(`${quantity} шт. - ${name} додано в кошик`);
-      } catch {
-        toast.error('Не вдалося додати товар у кошик');
-      }
-    } else {
-      // Guest local cart
-      const { price: _price, priceBulk: _priceBulk, ...restProduct } = product;
-      dispatch(
-        addProductToLocalStorageCart({
-          productId: restProduct,
-          quantity,
-          id,
-        }),
-      );
+    try {
+      await addToCart(product, quantity);
       toast.success(`${quantity} шт. - ${name} додано в кошик`);
+    } catch {
+      toast.error('Не вдалося додати товар у кошик');
     }
   };
 

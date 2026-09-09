@@ -1,6 +1,12 @@
 import { baseApi } from './baseApi';
 import { normalizeProduct } from '@/lib/utils';
-import { CartItem, GetCartParams, AddToCartPayload, RemoveFromCartPayload } from './cartApi.types';
+import {
+  CartItem,
+  GetCartParams,
+  AddToCartPayload,
+  RemoveFromCartPayload,
+  SyncCartPayload,
+} from './cartApi.types';
 
 export * from './cartApi.types';
 
@@ -61,8 +67,23 @@ export const cartApi = baseApi.injectEndpoints({
       transformResponse: normalizeCartResponse,
       invalidatesTags: (_result, _error, arg) => getCartTag(arg.isRetail),
     }),
+
+    syncCart: build.mutation<CartItem[], SyncCartPayload>({
+      query: ({ items, isRetail }) => ({
+        url: isRetail ? '/users/cart/retail/sync' : '/users/cart/sync',
+        method: 'POST',
+        data: { items },
+      }),
+      transformResponse: normalizeCartResponse,
+      invalidatesTags: (_result, _error, arg) => getCartTag(arg.isRetail),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetCartQuery, useAddToCartMutation, useDeleteFromCartMutation } = cartApi;
+export const {
+  useGetCartQuery,
+  useAddToCartMutation,
+  useDeleteFromCartMutation,
+  useSyncCartMutation,
+} = cartApi;

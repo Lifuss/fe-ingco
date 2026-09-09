@@ -2,6 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { AppStore, RootState } from '../store';
 import { toast } from 'react-toastify';
+import { baseApi } from '../api/baseApi';
+import { clearLocalStorageCart } from './slice';
 
 interface Register {
   email: string;
@@ -161,7 +163,7 @@ export const clearToken = () => {
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
+  async (credentials: LoginCredentials, { dispatch, getState, rejectWithValue }) => {
     try {
       const response = await apiIngco.post('/users/login', credentials);
 
@@ -170,6 +172,29 @@ export const loginThunk = createAsyncThunk(
       }
 
       setToken(response.data.token, response.data.role);
+
+      // Auto-migrate guest cart from localStorageCart
+      const state = getState() as RootState;
+      const guestCart = state.persistedAuthReducer?.localStorageCart;
+      if (guestCart && guestCart.length > 0) {
+        const isRetail = !(response.data.isB2b || response.data.isB2B);
+        const syncUrl = isRetail ? '/users/cart/retail/sync' : '/users/cart/sync';
+        try {
+          await apiIngco.post(syncUrl, {
+            items: guestCart.map((item) => ({
+              productId: item.productId?.id || item.id,
+              quantity: item.quantity,
+            })),
+          });
+          dispatch(clearLocalStorageCart());
+          dispatch(
+            baseApi.util.invalidateTags([{ type: 'Cart', id: isRetail ? 'RETAIL' : 'B2B' }]),
+          );
+        } catch (syncErr) {
+          console.error('Failed to auto-migrate guest cart on login:', syncErr);
+        }
+      }
+
       return response.data;
     } catch (error) {
       return rejectWithValue(serializeAxiosError(error));
@@ -209,16 +234,21 @@ export const registerClientThunk = createAsyncThunk(
   },
 );
 
-export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
-  try {
-    const response = await apiIngco.delete('/users/logout');
-    clearToken();
-    return response.data;
-  } catch (error) {
-    clearToken();
-    return rejectWithValue(serializeAxiosError(error));
-  }
-});
+export const logoutThunk = createAsyncThunk(
+  'auth/logout',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await apiIngco.delete('/users/logout');
+      clearToken();
+      dispatch(baseApi.util.resetApiState());
+      return response.data;
+    } catch (error) {
+      clearToken();
+      dispatch(baseApi.util.resetApiState());
+      return rejectWithValue(serializeAxiosError(error));
+    }
+  },
+);
 
 export const refreshTokenThunk = createAsyncThunk(
   'auth/refreshToken',
