@@ -1,5 +1,3 @@
-'use client';
-
 export const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-6418216331';
 export const GOOGLE_ADS_CONVERSION_LABEL =
   process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL || '';
