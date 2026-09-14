@@ -19,8 +19,9 @@
   - Додано пам'ятку для менеджерів та перелік IP Whitelist (`13.53.52.37`, `16.16.42.238`, `13.50.222.109`, `16.171.78.185`, `13.48.150.45`).
 - **Картка Prom.ua (`PromUaCard`)**:
   - Розміщено посилання на автоматичний XML-фід та кнопки швидкого експорту файлів XLSX.
-- **Проксі-роути для monoмаркет (`/api/feed/monomarket`, `/api/feed/monomarket/prices`)**:
+- **Проксі-роути для маркетплейсів (`/api/feed/monomarket`, `/api/feed/monomarket/prices`, `/api/feed/prom`)**:
   - Створено надшвидкі роути в Next.js App Router, що проксують відповіді від оптимізованого NestJS бекенду.
+  - Повністю оптимізовано Prom.ua фід: замінено важкий клієнтський цикл з 25 HTTP-запитів на миттєвий проксі до бекенду.
   - Налаштовано кешування на 180 хвилин (3 години / 10 800 секунд) з HTTP-заголовком `Cache-Control: public, s-maxage=10800, stale-while-revalidate=1800`.
 - **Типізація**:
   - Додано суворі інтерфейси `MonomarketPriceFeedResponse`, `IntegrationFeedLink`, `IntegrationCardConfig` у `src/lib/types/integrations.types.ts` без слабких типів чи `any`.
