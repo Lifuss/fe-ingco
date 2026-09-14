@@ -1,20 +1,53 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useCart } from '@/lib/hooks';
 import { Product } from '@/lib/types';
 import ModalProduct from '@/app/ui/modals/ProductModal';
 import TextPlaceholder from '@/app/ui/TextPlaceholder';
+import OrderSuccessView, { CompletedOrderSummary } from './OrderSuccessView';
 import CartItemsTable from './CartItemsTable';
 import RetailCheckoutForm from './RetailCheckoutForm';
 import B2bCheckoutForm from './B2bCheckoutForm';
+
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export default function CartView() {
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [placedOrder, setPlacedOrder] = useState<CompletedOrderSummary | null>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
+
+  const isClient = useSyncExternalStore(emptySubscribe, getClientSnapshot, getServerSnapshot);
+
+  const payment = searchParams?.get('payment');
+  const orderCode = searchParams?.get('orderCode');
+
+  const monobankOrder = useMemo<CompletedOrderSummary | null>(() => {
+    if (!isClient || payment !== 'status' || !orderCode) return null;
+    const cached = typeof window !== 'undefined' ? sessionStorage.getItem('lastRetailOrder') : null;
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as CompletedOrderSummary;
+        if (String(parsed.orderCode) === String(orderCode)) {
+          return parsed;
+        }
+      } catch {
+        // Ignore parse error
+      }
+    }
+    return {
+      orderCode,
+      email: '',
+    };
+  }, [isClient, payment, orderCode]);
+
+  const completedOrder = !isDismissed ? placedOrder || monobankOrder : null;
 
   const {
     items,
@@ -29,15 +62,14 @@ export default function CartView() {
   } = useCart();
 
   useEffect(() => {
-    const payment = searchParams?.get('payment');
-    const orderCode = searchParams?.get('orderCode');
     if (payment === 'status' && orderCode) {
       toast.success(`Замовлення #${orderCode} передано в обробку. Дякуємо за покупку!`);
       if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('lastRetailOrder');
         window.history.replaceState({}, '', '/cart');
       }
     }
-  }, [searchParams]);
+  }, [payment, orderCode]);
 
   const openProductModal = useCallback((product: Product) => {
     setSelectedProduct(product);
@@ -47,6 +79,18 @@ export default function CartView() {
   const closeProductModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
+
+  if (completedOrder) {
+    return (
+      <OrderSuccessView
+        order={completedOrder}
+        onReset={() => {
+          setPlacedOrder(null);
+          setIsDismissed(true);
+        }}
+      />
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -89,7 +133,14 @@ export default function CartView() {
       {isB2b ? (
         <B2bCheckoutForm items={items} usdRate={currency.USD} clearCart={clearCart} />
       ) : (
-        <RetailCheckoutForm items={items} clearCart={clearCart} />
+        <RetailCheckoutForm
+          items={items}
+          clearCart={clearCart}
+          onOrderSuccess={(order) => {
+            setIsDismissed(false);
+            setPlacedOrder(order);
+          }}
+        />
       )}
 
       <ModalProduct

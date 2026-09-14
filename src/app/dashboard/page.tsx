@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Search from '../ui/search';
 import ProductTable from './tables/ProductTable';
-import GoogleMerchantSyncCard from './GoogleMerchantSyncCard';
 
 const Page = () => {
   return (
@@ -29,9 +28,6 @@ const Page = () => {
         </div>
       </div>
       <ProductTable />
-      <div className="mt-8">
-        <GoogleMerchantSyncCard />
-      </div>
     </div>
   );
 };

@@ -17,6 +17,7 @@ import {
   PanelLeftOpen,
   X,
   Store,
+  Share2,
 } from 'lucide-react';
 
 export const listData = [
@@ -64,6 +65,11 @@ export const listData = [
     title: 'Статистика',
     link: '/dashboard/statistics',
     svg: <PieChart size={20} />,
+  },
+  {
+    title: 'Інтеграції',
+    link: '/dashboard/integrations',
+    svg: <Share2 size={20} />,
   },
 ];
 

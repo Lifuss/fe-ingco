@@ -1,11 +1,13 @@
 import '@/app/globals.css';
 import { Metadata } from 'next';
+import Script from 'next/script';
 import StoreProvider from './service/StoreProvider';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
+import { GOOGLE_ADS_ID, GA4_MEASUREMENT_ID } from '@/lib/analytics';
 import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
 
@@ -250,6 +252,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+        />
+        <Script
+          id="google-tags-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GOOGLE_ADS_ID}', {
+                allow_enhanced_conversions: true
+              });
+              ${
+                GA4_MEASUREMENT_ID
+                  ? `gtag('config', '${GA4_MEASUREMENT_ID}', { send_page_view: true });`
+                  : ''
+              }
+            `,
+          }}
+        />
         <StoreProvider>
           <ToastContainer
             position="bottom-right"

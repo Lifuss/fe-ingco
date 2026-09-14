@@ -12,13 +12,19 @@ import NovaPoshtaDelivery from './NovaPoshtaDelivery';
 import PaymentMethodSelector, { PaymentMethod } from './PaymentMethodSelector';
 import { retailCheckoutSchema, RetailCheckoutFormValues } from '@/lib/validationSchema';
 import { UnifiedCartItem } from '@/lib/useCart';
+import { CompletedOrderSummary } from './OrderSuccessView';
 
 interface RetailCheckoutFormProps {
   items: UnifiedCartItem[];
   clearCart: () => void;
+  onOrderSuccess?: (order: CompletedOrderSummary) => void;
 }
 
-export default function RetailCheckoutForm({ items, clearCart }: RetailCheckoutFormProps) {
+export default function RetailCheckoutForm({
+  items,
+  clearCart,
+  onOrderSuccess,
+}: RetailCheckoutFormProps) {
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileKey, setTurnstileKey] = useState<number>(0);
 
@@ -76,11 +82,35 @@ export default function RetailCheckoutForm({ items, clearCart }: RetailCheckoutF
       clearCart();
       reset();
 
+      const orderSummary: CompletedOrderSummary = {
+        orderCode: data.orderCode,
+        email: values.email,
+        totalPrice: Number(data.totalPrice),
+        recipientName: `${values.firstName} ${values.lastName}`.trim(),
+        phone: values.phone,
+        shippingAddress: `${values.city}, ${values.warehouse}`,
+        products: items.map((item, idx) => {
+          const p = data.products?.[idx];
+          return {
+            id: p?.product?.id || item.productId.id,
+            name: p?.product?.name || item.productId.name,
+            article: item.productId.article,
+            gtin: p?.product?.barcode || item.productId.barcode || null,
+            price: p?.price ?? item.unitPrice,
+            quantity: p?.quantity ?? item.quantity,
+          };
+        }),
+      };
+
       if (values.paymentMethod === 'CARD' && data.paymentUrl) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('lastRetailOrder', JSON.stringify(orderSummary));
+        }
         toast.info(`Замовлення #${data.orderCode} створено! Перенаправляємо на сторінку оплати...`);
         window.location.href = data.paymentUrl;
       } else {
         toast.success(`Замовлення #${data.orderCode} успішно оформлено`);
+        onOrderSuccess?.(orderSummary);
       }
     } catch (err: unknown) {
       const error = err as { data?: { message?: string }; message?: string };

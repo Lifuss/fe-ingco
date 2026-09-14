@@ -86,7 +86,7 @@ interface RawOrderItem {
   totalPrice: string | number;
   productId: number;
   productName?: string | null;
-  product?: { name?: string | null } | null;
+  product?: { name?: string | null; barcode?: string | null } | null;
   priceUsd?: string | number | null;
   priceUah?: string | number | null;
   priceRrc?: string | number | null;
@@ -120,6 +120,7 @@ export function normalizeOrder(order: unknown): Order {
           item.productName ||
           (item.product && item.product.name) ||
           'Продукт застарів та видалений з бази',
+        barcode: item.product?.barcode || null,
       },
     })),
   } as Order;

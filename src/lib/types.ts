@@ -120,6 +120,7 @@ export interface Order {
     product: {
       id: number;
       name: string;
+      barcode?: string | null;
     };
     quantity: number;
     price: number;
