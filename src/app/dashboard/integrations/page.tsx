@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Share2, Radio, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Share2, Radio, CheckCircle } from 'lucide-react';
 import MonomarketCard from './cards/MonomarketCard';
 import PromUaCard from './cards/PromUaCard';
 import GoogleMerchantCard from './cards/GoogleMerchantCard';
@@ -55,19 +55,6 @@ export default function IntegrationsPage() {
         <div className="xl:col-span-2">
           <GoogleMerchantCard />
         </div>
-      </div>
-
-      {/* Future Integrations Banner */}
-      <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/50 p-6 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-200 text-neutral-500">
-          <ShieldCheck className="h-6 w-6" />
-        </div>
-        <h3 className="mt-3 text-sm font-semibold text-neutral-800">
-          Потрібна інтеграція з новим маркетплейсом?
-        </h3>
-        <p className="mt-1 text-xs text-neutral-500 max-w-md mx-auto">
-          Архітектура хабу підтримує швидке підключення фідових потоків для Rozetka, Hotline, Price.ua, Facebook Catalog та інших агрегаторів.
-        </p>
       </div>
     </div>
   );
