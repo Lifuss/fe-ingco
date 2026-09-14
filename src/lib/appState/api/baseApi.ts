@@ -49,6 +49,8 @@ export const baseApi = createApi({
     'Currency',
     'GmcStatus',
     'DashboardStats',
+    'SyncLog',
+    'SystemSetting',
   ],
   endpoints: () => ({}), // Endpoints injected via code-splitting in separate files
 });

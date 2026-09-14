@@ -5,6 +5,22 @@
 
 ---
 
+## [2.8.0] — 2026-09-14
+
+### [Added] Integration Sync Logs & Audit History UI
+
+- **Модальне вікно історії запусків (`SyncHistoryModal.tsx`)**:
+  - Розроблено модальне вікно перегляду історії синхронізацій із деталізацією: статус виконання (кольоровий бейдж), дата й точний час, тривалість у секундах, ініціатор запуску (користувач або система), лічильники позицій (всього, успішно, з помилкою) та блок помилки.
+  - Додано кнопку «Історія запусків» у шапку `GoogleMerchantCard`.
+- **RTK Query Endpoints & Caching (`dashboardApi.ts`, `baseApi.ts`)**:
+  - Додано нові теги `SyncLog` та `SystemSetting` у `baseApi`.
+  - Реалізовано хуки `useGetSyncLogsQuery`, `useGetSystemSettingsQuery`, `useUpdateSystemSettingMutation`.
+  - Налаштовано автоматичну інвалідацію тегу `SyncLog` при виконанні мутації `syncGmcProductsMutation`.
+- **Типізація (`dashboardApi.types.ts`)**:
+  - Додано суворі інтерфейси `SyncLogItem`, `SyncLogUser`, `SyncServiceType`, `SyncStatus`, `SystemSettingItem`, `GetSyncLogsParams` без `any`.
+
+---
+
 ## [2.7.0] — 2026-09-14
 
 ### [Added] Integrations Hub & Monomarket Feeds

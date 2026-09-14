@@ -11,6 +11,9 @@ import {
   GetUsersResponse,
   GmcStatusType,
   GmcSyncResponse,
+  GetSyncLogsParams,
+  SyncLogItem,
+  SystemSettingItem,
   StatsDateRangeParams,
   UpdateDashboardOrderPayload,
   UpdateSupportTicketPayload,
@@ -229,7 +232,38 @@ export const dashboardApi = baseApi.injectEndpoints({
         url: '/google-merchant/sync',
         method: 'POST',
       }),
-      invalidatesTags: ['GmcStatus'],
+      invalidatesTags: ['GmcStatus', 'SyncLog'],
+    }),
+
+    // ----------------- 6. SYSTEM SETTINGS & SYNC LOGS -----------------
+    getSyncLogs: build.query<SyncLogItem[], GetSyncLogsParams | void>({
+      query: (params) => ({
+        url: '/settings/sync-logs',
+        params: params
+          ? {
+              service: params.service,
+              limit: params.limit,
+            }
+          : undefined,
+      }),
+      providesTags: ['SyncLog'],
+    }),
+
+    getSystemSettings: build.query<SystemSettingItem[], void>({
+      query: () => ({ url: '/settings' }),
+      providesTags: ['SystemSetting'],
+    }),
+
+    updateSystemSetting: build.mutation<
+      { success: boolean; key: string },
+      { key: string; value: unknown; description?: string }
+    >({
+      query: ({ key, value, description }) => ({
+        url: `/settings/${key}`,
+        method: 'PATCH',
+        data: { value, description },
+      }),
+      invalidatesTags: ['SystemSetting'],
     }),
   }),
 });
@@ -249,4 +283,7 @@ export const {
   useGetUserActivityQuery,
   useGetGmcStatusQuery,
   useSyncGmcProductsMutation,
+  useGetSyncLogsQuery,
+  useGetSystemSettingsQuery,
+  useUpdateSystemSettingMutation,
 } = dashboardApi;

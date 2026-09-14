@@ -114,3 +114,42 @@ export interface GmcSyncResponse {
   count: number;
   error?: string;
 }
+
+export type SyncServiceType = 'GOOGLE_MERCHANT' | 'PROMU_EXCEL' | 'ROZETKA' | 'HOTLINE';
+export type SyncStatus = 'IN_PROGRESS' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
+
+export interface SyncLogUser {
+  id: number;
+  login: string;
+  firstName?: string | null;
+  lastName?: string | null;
+}
+
+export interface SyncLogItem {
+  id: number;
+  service: SyncServiceType;
+  status: SyncStatus;
+  totalItems: number;
+  successItems: number;
+  failedItems: number;
+  errorMessage?: string | null;
+  details?: Record<string, unknown> | null;
+  durationMs?: number | null;
+  triggeredBy: string;
+  createdAt: string;
+  user?: SyncLogUser | null;
+}
+
+export interface GetSyncLogsParams {
+  service?: SyncServiceType;
+  limit?: number;
+}
+
+export interface SystemSettingItem {
+  id: number;
+  key: string;
+  value: unknown;
+  description?: string | null;
+  updatedAt: string;
+  updatedBy?: SyncLogUser | null;
+}
