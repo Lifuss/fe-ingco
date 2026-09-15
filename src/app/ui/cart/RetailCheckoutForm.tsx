@@ -123,87 +123,102 @@ export default function RetailCheckoutForm({
   };
 
   return (
-    <form
-      className="mb-20 flex flex-col justify-between gap-8 lg:flex-row"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="flex flex-1 flex-col gap-4">
-        <div>
-          <h3 className="mb-2 text-base font-medium text-neutral-900">Дані для доставки</h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <label className="flex flex-col text-sm">
-              <span className="mb-1 text-neutral-700">
-                Ім&apos;я<span className="text-red-600">*</span>
-              </span>
-              <input
-                type="text"
-                {...register('firstName')}
-                className="rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
-              />
-              {errors.firstName && (
-                <span className="mt-1 text-xs text-rose-600">{errors.firstName.message}</span>
-              )}
-            </label>
-            <label className="flex flex-col text-sm">
-              <span className="mb-1 text-neutral-700">
-                Прізвище<span className="text-red-600">*</span>
-              </span>
-              <input
-                type="text"
-                {...register('lastName')}
-                className="rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
-              />
-              {errors.lastName && (
-                <span className="mt-1 text-xs text-rose-600">{errors.lastName.message}</span>
-              )}
-            </label>
-            <label className="flex flex-col text-sm">
-              <span className="mb-1 text-neutral-700">
-                По батькові<span className="text-red-600">*</span>
-              </span>
-              <input
-                type="text"
-                {...register('surName')}
-                className="rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
-              />
-              {errors.surName && (
-                <span className="mt-1 text-xs text-rose-600">{errors.surName.message}</span>
-              )}
-            </label>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+    <form id="retail-checkout-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">1. Контактні дані</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="flex flex-col text-sm">
-            <span className="mb-1 text-neutral-700">
+            <span className="mb-1 font-medium text-neutral-700">
+              Ім&apos;я<span className="text-red-600">*</span>
+            </span>
+            <input
+              type="text"
+              placeholder="Іван"
+              {...register('firstName')}
+              className="rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            />
+            {errors.firstName && (
+              <span className="mt-1 text-xs text-rose-600">{errors.firstName.message}</span>
+            )}
+          </label>
+          <label className="flex flex-col text-sm">
+            <span className="mb-1 font-medium text-neutral-700">
+              Прізвище<span className="text-red-600">*</span>
+            </span>
+            <input
+              type="text"
+              placeholder="Петренко"
+              {...register('lastName')}
+              className="rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            />
+            {errors.lastName && (
+              <span className="mt-1 text-xs text-rose-600">{errors.lastName.message}</span>
+            )}
+          </label>
+          <label className="flex flex-col text-sm">
+            <span className="mb-1 font-medium text-neutral-700">
               Телефон<span className="text-red-600">*</span>
             </span>
             <input
               type="tel"
               placeholder="+380..."
               {...register('phone')}
-              className="rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
+              className="rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
             />
             {errors.phone && (
               <span className="mt-1 text-xs text-rose-600">{errors.phone.message}</span>
             )}
           </label>
           <label className="flex flex-col text-sm">
-            <span className="mb-1 text-neutral-700">
+            <span className="mb-1 font-medium text-neutral-700">
               Email<span className="text-red-600">*</span>
             </span>
             <input
               type="email"
               placeholder="example@mail.com"
               {...register('email')}
-              className="rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
+              className="rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
             />
             {errors.email && (
               <span className="mt-1 text-xs text-rose-600">{errors.email.message}</span>
             )}
           </label>
         </div>
+        <div className="mt-4">
+          <label className="flex flex-col text-sm">
+            <span className="mb-1 font-medium text-neutral-700">
+              По батькові{' '}
+              <span className="text-xs font-normal text-neutral-400">(необов&apos;язково)</span>
+            </span>
+            <input
+              type="text"
+              placeholder="Олександрович"
+              {...register('surName')}
+              className="rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            />
+            {errors.surName && (
+              <span className="mt-1 text-xs text-rose-600">{errors.surName.message}</span>
+            )}
+          </label>
+        </div>
+      </div>
 
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">
+          2. Доставка Новою Поштою
+        </h3>
+        <NovaPoshtaDelivery
+          onCityChange={(city) => setValue('city', city, { shouldValidate: true })}
+          onWarehouseChange={(warehouse) =>
+            setValue('warehouse', warehouse, { shouldValidate: true })
+          }
+          cityError={errors.city?.message}
+          warehouseError={errors.warehouse?.message}
+        />
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">3. Спосіб оплати</h3>
         <PaymentMethodSelector
           value={selectedPaymentMethod}
           onChange={(method: PaymentMethod) =>
@@ -213,37 +228,32 @@ export default function RetailCheckoutForm({
         />
       </div>
 
-      <div className="flex w-full flex-col gap-4 lg:w-[450px]">
-        <NovaPoshtaDelivery
-          onCityChange={(city) => setValue('city', city, { shouldValidate: true })}
-          onWarehouseChange={(warehouse) =>
-            setValue('warehouse', warehouse, { shouldValidate: true })
-          }
-          cityError={errors.city?.message}
-          warehouseError={errors.warehouse?.message}
-        />
-
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">
+          4. Коментар до замовлення
+        </h3>
         <label className="flex flex-col text-sm">
-          <span className="mb-1 text-neutral-700">Коментарій</span>
           <textarea
             {...register('comment')}
-            className="h-24 w-full rounded-lg border border-gray-400 p-2 outline-none focus:border-amber-500"
-            placeholder="Коментарій до замовлення"
+            className="h-24 w-full rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            placeholder="Вкажіть побажання щодо замовлення чи доставки..."
           />
         </label>
+      </div>
 
+      <div className="flex flex-col items-end gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
         <TurnstileWidget
           key={turnstileKey}
           action="checkout_retail"
           onVerify={setTurnstileToken}
           onExpire={() => setTurnstileToken('')}
-          className="my-2 flex justify-end"
+          className="my-1 flex w-full justify-end"
         />
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand-dark ml-auto block h-fit w-full cursor-pointer rounded-lg px-6 py-3 text-lg font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:w-fit"
+          className="flex w-full cursor-pointer items-center justify-center rounded-xl bg-amber-500 px-8 py-3.5 text-base font-bold text-white shadow-md transition-all hover:bg-amber-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isSubmitting ? 'Оформлення...' : 'Підтвердити замовлення'}
         </button>

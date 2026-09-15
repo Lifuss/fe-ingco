@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
-import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import React, { useMemo, useState } from 'react';
+import {
+  useGetCategoriesQuery,
+  useGetCategoryFiltersQuery,
+} from '@/lib/appState/api/categoriesApi';
 import { Category } from '@/lib/types';
 
 interface CategoryNode extends Category {
@@ -84,10 +87,10 @@ const CategoryForm = ({
   const { data: rawCategoriesList = [] } = useGetCategoriesQuery('');
   const categoriesList = useMemo(() => rawCategoriesList || [], [rawCategoriesList]);
 
-  const [detectedFilters, setDetectedFilters] = useState<
-    { code: string; name: string; unit?: string | null }[]
-  >([]);
-  const [isLoadingFilters, setIsLoadingFilters] = useState(Boolean(defaultValue?.id));
+  const { data: detectedFilters = [], isLoading: isLoadingFilters } = useGetCategoryFiltersQuery(
+    defaultValue?.id as number,
+    { skip: !defaultValue?.id },
+  );
   const [filterSearchQuery, setFilterSearchQuery] = useState('');
 
   const filteredDetectedFilters = useMemo(() => {
@@ -100,20 +103,6 @@ const CategoryForm = ({
         (f.unit && f.unit.toLowerCase().includes(q)),
     );
   }, [detectedFilters, filterSearchQuery]);
-
-  useEffect(() => {
-    if (defaultValue?.id) {
-      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${defaultValue.id}/filters`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setDetectedFilters(data);
-          }
-        })
-        .catch((err) => console.error('Failed to fetch category filters:', err))
-        .finally(() => setIsLoadingFilters(false));
-    }
-  }, [defaultValue?.id]);
 
   const defaultKeywords = useMemo(() => {
     if (defaultValue && defaultValue.seoKeywords) {

@@ -5,6 +5,29 @@
 
 ---
 
+## [2.9.0] — 2026-09-15
+
+### [Added] Google Ads & GA4 E-Commerce Conversion Tracking
+
+- **Модуль аналітики (`src/lib/analytics.ts`)**: централізований трекінг конверсій Google Ads (`AW-6418216331`) та GA4 `purchase` події.
+- **Enhanced Conversions**: передача хешованого/нормалізованого номера телефону та email покупця для точного обліку в iOS/Safari.
+- **Root Layout (`src/app/layout.tsx`)**: інтеграція Google Tag `gtag.js` через `<Script strategy="afterInteractive" />`.
+- **Захист від дублікатів**: дедуплікація повторних фіксацій транзакції через `sessionStorage`.
+
+### [Changed] Cart UI/UX Redesign & Responsiveness
+
+- **Мобільна адаптивність (`CartItemsTable.tsx`)**: окремий картковий макет для екранів `< 768px`, що повністю ліквідував горизонтальний скрол та зробив кнопки видалення і степери легкодоступними.
+- **Числовий ввід кількості (`CartQuantityControl.tsx`, `useCart.ts`, `slice.ts`)**: підтримка прямого набору цифр з клавіатури з фіксацією на `Enter` або `onBlur` та синхронізацією зі стейтом.
+- **2-колонковий Desktop макет (`CartView.tsx`)**: 65% робоча зона списку та форм + 35% фіксована картка «Разом до сплати» з бейджами гарантії, повернення 14 днів та фірмовою кнопкою INGCO Amber.
+- **Спрощення оформлення (`RetailCheckoutForm.tsx`, `ordersApi.types.ts`, `validationSchema.ts`)**: 2×2 сітка контактів, необов'язкове поле «По батькові» без зірочки, чистий блоковий дизайн.
+- **Порожній кошик (`CartView.tsx`)**: інтерактивний екран із закликом до дії та кнопкою «Перейти до каталогу».
+
+### [Refactored] Categories Filter API & Anti-Pattern Cleanup
+
+- **RTK Query інтеграція (`categoriesApi.ts`, `CatalogSidebar.tsx`, `CategoryForm.tsx`)**: додано ендпоінт `getCategoryFilters`, замінено прямі виклики `fetch` у компонентах на декларативний хук `useGetCategoryFiltersQuery`, забезпечивши автоматичне кешування та дотримання єдиного джерела правди.
+
+---
+
 ## [2.8.0] — 2026-09-14
 
 ### [Added] Integration Sync Logs & Audit History UI

@@ -17,16 +17,15 @@ export default function PromUaCard() {
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h3 className="text-xl font-bold tracking-tight text-neutral-900">
-                  Prom.ua
-                </h3>
+                <h3 className="text-xl font-bold tracking-tight text-neutral-900">Prom.ua</h3>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Активно
                 </span>
               </div>
               <p className="mt-1 text-xs text-neutral-500">
-                Інтеграція з торговельним майданчиком Prom.ua через стандартний YML/XML фід та Excel-файли.
+                Інтеграція з торговельним майданчиком Prom.ua через стандартний YML/XML фід та
+                Excel-файли.
               </p>
             </div>
           </div>
@@ -64,14 +63,14 @@ export default function PromUaCard() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1">
             <ExportButton sheetType="prom" title="Завантажити XLSX для Prom.ua" />
-            <span className="text-[11px] text-neutral-500 text-center">
+            <span className="text-center text-[11px] text-neutral-500">
               Шаблон зі 47 обов’язковими колонками Prom
             </span>
           </div>
 
           <div className="flex flex-col gap-1">
             <ExportButton sheetType="price" title="Завантажити Прайс-лист" />
-            <span className="text-[11px] text-neutral-500 text-center">
+            <span className="text-center text-[11px] text-neutral-500">
               Прайс із фотографіями (USD та UAH)
             </span>
           </div>

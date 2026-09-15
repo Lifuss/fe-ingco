@@ -25,14 +25,15 @@ export default function IntegrationsPage() {
             </h1>
           </div>
           <p className="mt-1 text-sm text-neutral-500">
-            Централізований хаб для керування підключеними маркетплейсами, онлайн-фідами та автоматичною синхронізацією каталогу
+            Централізований хаб для керування підключеними маркетплейсами, онлайн-фідами та
+            автоматичною синхронізацією каталогу
           </p>
         </div>
 
         {/* Quick summary status badge */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-2xs">
-            <Radio className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
+            <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-500" />
             <span>3 підключені сервіси</span>
           </div>
 

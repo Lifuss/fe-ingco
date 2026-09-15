@@ -2,11 +2,7 @@
 
 import React from 'react';
 import Modal from 'react-modal';
-import {
-  SyncLogItem,
-  SyncServiceType,
-  useGetSyncLogsQuery,
-} from '@/lib/appState/api/dashboardApi';
+import { SyncLogItem, SyncServiceType, useGetSyncLogsQuery } from '@/lib/appState/api/dashboardApi';
 import {
   X,
   Clock,
@@ -31,10 +27,12 @@ export default function SyncHistoryModal({
   service = 'GOOGLE_MERCHANT',
   title = 'Історія синхронізацій Google Merchant',
 }: SyncHistoryModalProps) {
-  const { data: logs = [], isLoading, isFetching, refetch } = useGetSyncLogsQuery(
-    { service, limit: 30 },
-    { skip: !isOpen },
-  );
+  const {
+    data: logs = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetSyncLogsQuery({ service, limit: 30 }, { skip: !isOpen });
 
   const formatDateTime = (dateStr: string) => {
     try {
@@ -77,8 +75,7 @@ export default function SyncHistoryModal({
       case 'IN_PROGRESS':
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-600/20">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            В процесі
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />В процесі
           </span>
         );
       default:
@@ -126,9 +123,7 @@ export default function SyncHistoryModal({
           </div>
           <div>
             <h3 className="text-base font-bold text-neutral-900">{title}</h3>
-            <p className="text-xs text-neutral-500">
-              Журнал останніх запусків та деталі обробки
-            </p>
+            <p className="text-xs text-neutral-500">Журнал останніх запусків та деталі обробки</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

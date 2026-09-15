@@ -56,7 +56,11 @@ const baseDeliverySchema = z.object({
 export const retailCheckoutSchema = baseDeliverySchema.extend({
   firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
   lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
-  surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
+  surName: z
+    .string()
+    .regex(nameRegex, 'По батькові може містити тільки літери')
+    .optional()
+    .or(z.literal('')),
   phone: basePhoneSchema,
   email: baseEmailSchema,
   paymentMethod: z.enum(['CARD', 'CASH', 'ENTERPRISE']),

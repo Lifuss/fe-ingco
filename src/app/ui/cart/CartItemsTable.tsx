@@ -29,6 +29,7 @@ interface CartItemsTableProps {
   isB2b: boolean;
   currencyUsdRate: number;
   onUpdateQuantity: (id: number, operation: 'increment' | 'decrement') => void;
+  onSetQuantity?: (id: number, quantity: number) => void;
   onRemoveItem: (id: number, quantity?: number) => void;
   onOpenModal: (product: Product) => void;
   isUpdating?: boolean;
@@ -39,6 +40,7 @@ export default function CartItemsTable({
   isB2b,
   currencyUsdRate,
   onUpdateQuantity,
+  onSetQuantity,
   onRemoveItem,
   onOpenModal,
   isUpdating = false,
@@ -143,6 +145,7 @@ export default function CartItemsTable({
             quantity={row.original.quantityCol}
             onIncrement={() => onUpdateQuantity(row.original.id, 'increment')}
             onDecrement={() => onUpdateQuantity(row.original.id, 'decrement')}
+            onSetQuantity={(qty) => onSetQuantity?.(row.original.id, qty)}
             disabled={isUpdating}
             productName={row.original.nameCol}
           />
@@ -177,9 +180,90 @@ export default function CartItemsTable({
     );
 
     return baseCols;
-  }, [isB2b, onOpenModal, onUpdateQuantity, onRemoveItem, isUpdating]);
+  }, [isB2b, onOpenModal, onUpdateQuantity, onSetQuantity, onRemoveItem, isUpdating]);
 
-  return <Table columns={columns} data={data} />;
+  return (
+    <>
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <Table columns={columns} data={data} />
+      </div>
+
+      {/* Mobile Responsive Cards View */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {data.map((row) => {
+          const imgSrc = row.photoCol
+            ? `${process.env.NEXT_PUBLIC_API}${row.photoCol}`
+            : '/placeholder.webp';
+
+          return (
+            <div
+              key={row.id}
+              className="flex gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-xs"
+            >
+              <div
+                className="relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-lg bg-neutral-50 p-1"
+                onClick={() => onOpenModal(row.product)}
+              >
+                <Image
+                  src={imgSrc}
+                  alt={row.nameCol || 'Зображення товару'}
+                  width={80}
+                  height={80}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+
+              <div className="flex flex-1 flex-col justify-between">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-[11px] font-medium text-neutral-400">
+                      АРТ: {row.codeCol}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onOpenModal(row.product)}
+                      className="line-clamp-2 text-left text-sm font-medium text-neutral-800 transition-colors hover:text-amber-600"
+                    >
+                      {row.nameCol}
+                    </button>
+                  </div>
+                  <button
+                    className="p-1 text-neutral-400 transition-colors hover:text-rose-500"
+                    onClick={() => onRemoveItem(row.id, row.quantityCol)}
+                    aria-label={`Видалити ${row.nameCol} з кошика`}
+                    type="button"
+                  >
+                    <Icon icon="delete" className="h-5 w-5 fill-current" />
+                  </button>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between">
+                  <CartQuantityControl
+                    quantity={row.quantityCol}
+                    onIncrement={() => onUpdateQuantity(row.id, 'increment')}
+                    onDecrement={() => onUpdateQuantity(row.id, 'decrement')}
+                    onSetQuantity={(qty) => onSetQuantity?.(row.id, qty)}
+                    disabled={isUpdating}
+                    productName={row.nameCol}
+                  />
+
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-neutral-900">{row.totalCol}</span>
+                    {row.quantityCol > 1 && (
+                      <div className="text-[11px] text-neutral-500">
+                        {isB2b ? `${row.priceUahCol} грн/шт` : `${row.rrcCol} грн/шт`}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
 }
 
 function showImagePreview(e: React.MouseEvent, src: string, alt: string) {

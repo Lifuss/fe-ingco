@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation';
 import { useIsB2B } from '@/lib/hooks';
-import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import {
+  useGetCategoriesQuery,
+  useGetCategoryFiltersQuery,
+} from '@/lib/appState/api/categoriesApi';
 import { ShieldCheck, Filter, Phone, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import CallbackModal from '../modals/CallbackModal';
-import { Category, ProductAttribute } from '@/lib/types';
-
-interface FilterAttribute extends ProductAttribute {
-  activeValues: string[];
-}
+import { Category } from '@/lib/types';
+import { apiIngco } from '@/lib/appState/user/operation';
 
 const CatalogSidebar = () => {
   const router = useRouter();
@@ -95,7 +95,10 @@ const CatalogSidebar = () => {
     if (!activeCategoryId) return null;
     return categoryTree.map.get(Number(activeCategoryId)) || null;
   }, [activeCategoryId, categoryTree]);
-  const [dynamicFilters, setDynamicFilters] = useState<FilterAttribute[]>([]);
+
+  const { data: dynamicFilters = [] } = useGetCategoryFiltersQuery(activeCategoryId, {
+    skip: !activeCategoryId,
+  });
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
 
   const visibleFilters = useMemo(() => {
@@ -129,9 +132,6 @@ const CatalogSidebar = () => {
     setShowAllSubcategories(false);
     setUserToggledFilters({});
     setShowAllFilters(false);
-    if (!activeCategoryId) {
-      setDynamicFilters([]);
-    }
   }
 
   const urlFilters = searchParams.get('filters');
@@ -149,20 +149,6 @@ const CatalogSidebar = () => {
     setSelectedFilters(nextFilters);
     setFloatingWidget((prev) => ({ ...prev, visible: false }));
   }
-
-  // Fetch filters dynamically when category changes
-  useEffect(() => {
-    if (activeCategoryId) {
-      fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/${activeCategoryId}/filters`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setDynamicFilters(data);
-          }
-        })
-        .catch((err) => console.error('Failed to fetch category filters:', err));
-    }
-  }, [activeCategoryId]);
 
   // Helper to update URL params
   const updateUrlParams = useCallback(
@@ -262,10 +248,9 @@ const CatalogSidebar = () => {
         params.set('filters', JSON.stringify(nextFilters));
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/products?${params.toString()}`, {
+      const { data } = await apiIngco.get<{ total?: number }>(`/products?${params.toString()}`, {
         signal: controller.signal,
       });
-      const data = await res.json();
 
       setFloatingWidget((prev) => ({
         ...prev,

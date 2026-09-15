@@ -63,11 +63,11 @@ export default function B2bCheckoutForm({ items, usdRate, clearCart }: B2bChecko
   };
 
   return (
-    <form
-      className="mb-20 flex flex-col justify-between gap-12 lg:flex-row"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="flex-1">
+    <form id="b2b-checkout-form" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">
+          1. Доставка Новою Поштою
+        </h3>
         <NovaPoshtaDelivery
           onCityChange={(city) => setValue('city', city, { shouldValidate: true })}
           onWarehouseChange={(warehouse) =>
@@ -78,28 +78,8 @@ export default function B2bCheckoutForm({ items, usdRate, clearCart }: B2bChecko
         />
       </div>
 
-      <div className="flex w-full flex-col lg:w-[500px]">
-        <ul className="mb-4 flex flex-col gap-1 rounded-xl border border-gray-200 p-4 text-base text-neutral-700">
-          <li>
-            <p>Після оформлення з вами зв&apos;яжеться менеджер для уточнення.</p>
-          </li>
-          <li>
-            <p>
-              В коментарі можете вказати бажаний тип зв&apos;язку, а також неявні деталі по типу
-              розділеного замовлення тощо.
-            </p>
-          </li>
-        </ul>
-
-        <label className="flex flex-col text-sm">
-          <span className="mb-1 text-neutral-700">Коментарій</span>
-          <textarea
-            {...register('comment')}
-            className="block h-24 w-full rounded-lg border border-gray-500 p-2 outline-none focus:border-amber-500"
-            placeholder="Коментарій до замовлення"
-          />
-        </label>
-
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">2. Спосіб оплати</h3>
         <PaymentMethodSelector
           value={selectedPaymentMethod}
           onChange={(method) =>
@@ -108,11 +88,36 @@ export default function B2bCheckoutForm({ items, usdRate, clearCart }: B2bChecko
           allowedMethods={['ENTERPRISE', 'CASH']}
           errorMessage={errors.paymentMethod?.message}
         />
+      </div>
 
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
+        <ul className="mb-4 flex flex-col gap-1 rounded-xl border border-amber-200/60 bg-amber-50/50 p-4 text-sm text-neutral-700">
+          <li className="font-medium text-amber-900">
+            Після оформлення з вами зв&apos;яжеться персональний B2B менеджер.
+          </li>
+          <li className="text-neutral-600">
+            В коментарі ви можете зазначити бажаний тип зв&apos;язку або деталі щодо виставлення
+            рахунку.
+          </li>
+        </ul>
+
+        <h3 className="mb-4 text-base font-bold text-neutral-900 md:text-lg">
+          3. Коментар до замовлення
+        </h3>
+        <label className="flex flex-col text-sm">
+          <textarea
+            {...register('comment')}
+            className="h-24 w-full rounded-lg border border-gray-300 p-2.5 transition-colors outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            placeholder="Вкажіть коментар або реквізити підприємства..."
+          />
+        </label>
+      </div>
+
+      <div className="flex justify-end rounded-2xl border border-gray-200 bg-white p-5 shadow-xs md:p-6">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand-dark mx-auto mt-6 w-full cursor-pointer rounded-lg p-3 text-xl font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:w-fit md:px-8"
+          className="flex w-full cursor-pointer items-center justify-center rounded-xl bg-amber-500 px-8 py-3.5 text-base font-bold text-white shadow-md transition-all hover:bg-amber-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {isSubmitting ? 'Оформлення...' : 'Оформити замовлення'}
         </button>

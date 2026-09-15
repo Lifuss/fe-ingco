@@ -26,16 +26,15 @@ export default function MonomarketCard() {
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h3 className="text-xl font-bold tracking-tight text-neutral-900">
-                  monoмаркет
-                </h3>
+                <h3 className="text-xl font-bold tracking-tight text-neutral-900">monoмаркет</h3>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   Готовий до підключення
                 </span>
               </div>
               <p className="mt-1 text-xs text-neutral-500">
-                Офіційний маркетплейс від monobank. Підтримує роздільну схему контенту та динамічних цін.
+                Офіційний маркетплейс від monobank. Підтримує роздільну схему контенту та динамічних
+                цін.
               </p>
             </div>
           </div>
@@ -90,7 +89,7 @@ export default function MonomarketCard() {
         </button>
 
         {showDetails && (
-          <div className="mt-3 rounded-xl bg-amber-50/50 p-3.5 text-xs text-neutral-700 border border-amber-200/60">
+          <div className="mt-3 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3.5 text-xs text-neutral-700">
             <div className="mb-2 font-bold text-neutral-900">
               IP-адреси серверів monoмаркет для завантаження фотографій:
             </div>
@@ -107,13 +106,16 @@ export default function MonomarketCard() {
 
             <ul className="mt-3 list-disc space-y-1 pl-4 text-neutral-600">
               <li>
-                <strong>Фільтрація:</strong> У фід потрапляють тільки нові товари в наявності (залишок &gt; 0) з наявним штрихкодом.
+                <strong>Фільтрація:</strong> У фід потрапляють тільки нові товари в наявності
+                (залишок &gt; 0) з наявним штрихкодом.
               </li>
               <li>
-                <strong>Гарантія:</strong> Автоматично передається як виробнича гарантія (в місяцях).
+                <strong>Гарантія:</strong> Автоматично передається як виробнича гарантія (в
+                місяцях).
               </li>
               <li>
-                <strong>Розстрочка:</strong> По замовчуванню встановлено «Покупку частинами» до 6 платежів.
+                <strong>Розстрочка:</strong> По замовчуванню встановлено «Покупку частинами» до 6
+                платежів.
               </li>
             </ul>
           </div>

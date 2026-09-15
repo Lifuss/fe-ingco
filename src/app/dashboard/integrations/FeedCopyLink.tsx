@@ -55,7 +55,7 @@ export default function FeedCopyLink({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span
-            className={`rounded-md border px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${badgeStyle}`}
+            className={`rounded-md border px-2 py-0.5 text-xs font-bold tracking-wider uppercase ${badgeStyle}`}
           >
             {format}
           </span>
@@ -63,9 +63,7 @@ export default function FeedCopyLink({
         </div>
 
         {recommendedFrequency && (
-          <span className="text-xs text-neutral-400">
-            Оновлення: {recommendedFrequency}
-          </span>
+          <span className="text-xs text-neutral-400">Оновлення: {recommendedFrequency}</span>
         )}
       </div>
 
@@ -76,7 +74,7 @@ export default function FeedCopyLink({
           type="button"
           onClick={handleCopy}
           title="Натисніть, щоб скопіювати посилання"
-          className="group flex flex-1 items-center justify-between gap-2 overflow-hidden rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left text-xs font-mono text-neutral-700 shadow-2xs transition-all hover:border-amber-400 hover:bg-amber-50/30 active:scale-[0.99]"
+          className="group flex flex-1 items-center justify-between gap-2 overflow-hidden rounded-lg border border-neutral-200 bg-white px-3 py-2 text-left font-mono text-xs text-neutral-700 shadow-2xs transition-all hover:border-amber-400 hover:bg-amber-50/30 active:scale-[0.99]"
         >
           <span className="truncate select-all">{fullUrl}</span>
           <span className="flex shrink-0 items-center gap-1 font-sans text-xs font-medium text-neutral-500 group-hover:text-amber-600">

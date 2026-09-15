@@ -13,6 +13,7 @@ import {
   removeProductFromLocalStorageCart,
   increaseProductQuantityInLocalStorageCart,
   decreaseProductQuantityInLocalStorageCart,
+  setProductQuantityInLocalStorageCart,
   clearLocalStorageCart,
 } from '@/lib/appState/user/slice';
 import { Product } from '@/lib/types';
@@ -112,6 +113,30 @@ export function useCart() {
     [isAuthenticated, isRetail, addToCartMutation, deleteFromCartMutation, dispatch],
   );
 
+  const setQuantity = useCallback(
+    async (productId: number, newQuantity: number) => {
+      const targetQty = Math.max(1, Math.floor(newQuantity));
+      const currentItem = items.find((i) => i.productId.id === productId);
+      if (!currentItem || currentItem.quantity === targetQty) return;
+
+      if (isAuthenticated) {
+        const delta = targetQty - currentItem.quantity;
+        if (delta > 0) {
+          return addToCartMutation({ productId, quantity: delta, isRetail }).unwrap();
+        } else if (delta < 0) {
+          return deleteFromCartMutation({
+            productId,
+            quantity: Math.abs(delta),
+            isRetail,
+          }).unwrap();
+        }
+      } else {
+        dispatch(setProductQuantityInLocalStorageCart({ id: productId, quantity: targetQty }));
+      }
+    },
+    [isAuthenticated, isRetail, items, addToCartMutation, deleteFromCartMutation, dispatch],
+  );
+
   const removeItem = useCallback(
     async (productId: number, quantity?: number) => {
       if (isAuthenticated) {
@@ -142,6 +167,7 @@ export function useCart() {
     currency,
     addToCart,
     updateQuantity,
+    setQuantity,
     removeItem,
     clearCart,
   };

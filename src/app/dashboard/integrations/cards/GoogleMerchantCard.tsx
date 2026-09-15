@@ -2,7 +2,14 @@
 
 import React, { useState } from 'react';
 import { useGetGmcStatusQuery, useSyncGmcProductsMutation } from '@/lib/appState/api/dashboardApi';
-import { RefreshCw, CheckCircle2, AlertTriangle, ShoppingBag, ExternalLink, History } from 'lucide-react';
+import {
+  RefreshCw,
+  CheckCircle2,
+  AlertTriangle,
+  ShoppingBag,
+  ExternalLink,
+  History,
+} from 'lucide-react';
 import { toast } from 'react-toastify';
 import SyncHistoryModal from '../SyncHistoryModal';
 
@@ -73,12 +80,13 @@ export default function GoogleMerchantCard() {
                   )}
                 </div>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Автоматична синхронізація каталогу для товарної реклами Google Shopping через Content API v1.
+                  Автоматична синхронізація каталогу для товарної реклами Google Shopping через
+                  Content API v1.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen(true)}

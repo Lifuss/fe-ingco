@@ -94,6 +94,15 @@ const authStateSlice = createSlice({
         product.id === payload ? { ...product, quantity: product.quantity + 1 } : product,
       );
     },
+    setProductQuantityInLocalStorageCart: (
+      state,
+      { payload }: { payload: { id: number; quantity: number } },
+    ) => {
+      const product = state.localStorageCart.find((p) => p.id === payload.id);
+      if (product) {
+        product.quantity = Math.max(1, payload.quantity);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -165,6 +174,7 @@ export const {
   setFavorites,
   addProductToLocalStorageCart,
   increaseProductQuantityInLocalStorageCart,
+  setProductQuantityInLocalStorageCart,
   decreaseProductQuantityInLocalStorageCart,
   removeProductFromLocalStorageCart,
 } = authStateSlice.actions;

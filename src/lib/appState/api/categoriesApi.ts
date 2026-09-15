@@ -1,6 +1,6 @@
 import { baseApi } from './baseApi';
 import { apiIngco } from '../user/operation';
-import { Category } from '@/lib/types';
+import { Category, FilterAttribute } from '@/lib/types';
 import { toast } from 'react-toastify';
 
 export const categoriesApi = baseApi.injectEndpoints({
@@ -118,12 +118,22 @@ export const categoriesApi = baseApi.injectEndpoints({
         { type: 'Category', id: 'LIST' },
       ],
     }),
+
+    getCategoryFilters: build.query<FilterAttribute[], number | string>({
+      query: (categoryId) => ({
+        url: `/categories/${categoryId}/filters`,
+      }),
+      providesTags: (_result, _err, categoryId) => [
+        { type: 'Category', id: `filters-${categoryId}` },
+      ],
+    }),
   }),
   overrideExisting: false,
 });
 
 export const {
   useGetCategoriesQuery,
+  useGetCategoryFiltersQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useReorderCategoriesMutation,

@@ -20,7 +20,7 @@ export interface CreateOrderRetailPayload {
   email: string;
   firstName: string;
   lastName: string;
-  surName: string;
+  surName?: string;
   phone: string;
   turnstileToken: string;
   paymentMethod?: 'CASH' | 'CARD' | 'ENTERPRISE';

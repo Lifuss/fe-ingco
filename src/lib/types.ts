@@ -170,6 +170,10 @@ export interface ProductAttribute {
   isMultiple?: boolean;
 }
 
+export interface FilterAttribute extends ProductAttribute {
+  activeValues: string[];
+}
+
 export interface ProductCharacteristic {
   code: string;
   name: string;
