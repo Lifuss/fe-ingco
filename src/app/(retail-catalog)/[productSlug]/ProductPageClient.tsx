@@ -43,6 +43,8 @@ import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import ConsultationModal from '~/ui/modals/ConsultationModal';
 import ProductSkeleton from '~/ui/skeletons/ProductSkeleton';
 import ProductCard from '@/app/ui/product/ProductCard';
+import ProductImageMagnifier from '~/ui/product/ProductImageMagnifier';
+import ProductLightboxModal from '~/ui/product/ProductLightboxModal';
 import { Product } from '@/lib/types';
 
 type ProductPageClientProps = {
@@ -106,6 +108,7 @@ export default function ProductPageClient({
   const [activeSection, setActiveSection] = useState('about-product');
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const [addToCart] = useAddToCartMutation();
   const [addFavorite] = useAddFavoriteMutation();
@@ -160,7 +163,7 @@ export default function ProductPageClient({
 
   if (!product || !product.id) {
     return (
-      <main className="flex flex-col gap-4 bg-white px-[60px] pt-8 xl:flex-row 2xl:gap-14">
+      <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 bg-white px-4 pt-8 md:px-8 xl:flex-row xl:px-[60px] 2xl:gap-14">
         <CatalogSidebar />
         <div className="min-h-[550px] w-full">
           <ProductSkeleton />
@@ -325,15 +328,15 @@ export default function ProductPageClient({
 
   return (
     <>
-      <main className="flex min-h-[600px] flex-col gap-4 bg-neutral-50 px-4 pt-8 md:px-[60px]">
+      <main className="flex min-h-[600px] flex-col gap-4 bg-neutral-50 pt-8">
         {/* Dynamic breadcrumbs */}
-        <div className="mx-auto w-full max-w-[1680px]">
+        <div className="mx-auto w-full max-w-[1680px] px-4 md:px-8 xl:px-[60px]">
           <Breadcrumbs items={breadcrumbsItems} />
         </div>
 
         {/* ScrollSpy Tabs navigation */}
-        <div className="sticky top-0 z-40 -mx-4 border-b border-neutral-200 bg-white px-4 shadow-sm md:-mx-[60px] md:px-[60px]">
-          <div className="scrollbar-none mx-auto flex max-w-[1680px] gap-6 overflow-x-auto py-3.5 md:gap-10">
+        <div className="sticky top-0 z-40 w-full border-b border-neutral-200 bg-white shadow-sm">
+          <div className="scrollbar-none mx-auto flex max-w-[1680px] gap-6 overflow-x-auto px-4 py-3.5 md:gap-10 md:px-8 xl:px-[60px]">
             {[
               { id: 'about-product', label: 'Про товар' },
               { id: 'specifications', label: 'Характеристики' },
@@ -356,7 +359,7 @@ export default function ProductPageClient({
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 py-6 xl:flex-row 2xl:gap-14">
+        <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-4 py-6 md:px-8 xl:flex-row xl:px-[60px] 2xl:gap-14">
           <CatalogSidebar />
 
           <div className="flex w-full flex-col gap-10">
@@ -366,7 +369,7 @@ export default function ProductPageClient({
               className="grid scroll-mt-24 grid-cols-1 gap-8 lg:grid-cols-12"
             >
               {/* Left Column: Gallery & Micro Features */}
-              <div className="flex flex-col gap-6 lg:col-span-7">
+              <div className="flex flex-col gap-6 lg:col-span-6">
                 {/* Product Name Title on Mobile */}
                 <div className="block lg:hidden">
                   <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
@@ -390,35 +393,17 @@ export default function ProductPageClient({
                 </div>
 
                 {/* Main Media Box */}
-                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm select-none">
-                  {/* Badges absolute top-left */}
-                  {product.badges && product.badges.length > 0 && (
-                    <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-                      {product.badges.map((badge) => (
-                        <span
-                          key={badge.id}
-                          style={{
-                            backgroundColor: badge.backgroundColor,
-                            color: badge.textColor,
-                          }}
-                          className="rounded px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shadow-sm select-none md:text-xs"
-                        >
-                          {badge.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {galleryImages[activeImageIndex].type === 'image' ? (
-                    <Image
-                      src={galleryImages[activeImageIndex].url || '/placeholder-image.jpg'}
-                      alt={product.name}
-                      width={500}
-                      height={500}
-                      className={`max-h-[350px] w-auto object-contain transition-transform duration-300 ${galleryImages[activeImageIndex].className}`}
-                      priority
-                    />
-                  ) : (
+                {galleryImages[activeImageIndex].type === 'image' ? (
+                  <ProductImageMagnifier
+                    src={galleryImages[activeImageIndex].url || '/placeholder-image.jpg'}
+                    alt={product.name}
+                    badges={product.badges}
+                    priority
+                    className={galleryImages[activeImageIndex].className}
+                    onOpenLightbox={() => setIsLightboxOpen(true)}
+                  />
+                ) : (
+                  <div className="relative mx-auto flex aspect-square w-full max-w-[580px] items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm select-none md:p-4">
                     <div
                       onClick={() => setIsVideoModalOpen(true)}
                       className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl bg-neutral-100/50 transition-colors hover:bg-neutral-100"
@@ -430,11 +415,11 @@ export default function ProductPageClient({
                         Дивитися відеоогляд
                       </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Thumbnails row */}
-                <div className="grid grid-cols-4 gap-3 select-none">
+                <div className="mx-auto grid w-full max-w-[580px] grid-cols-4 gap-3 select-none">
                   {galleryImages.map((item, idx) => (
                     <button
                       key={idx}
@@ -474,11 +459,11 @@ export default function ProductPageClient({
                 {/* Specific layout short badges */}
                 {product.characteristics && product.characteristics.length > 0 && (
                   <div
-                    className={`grid gap-3 text-center ${
+                    className={`mx-auto grid w-full max-w-[580px] gap-3 text-center ${
                       product.characteristics.slice(0, 3).length === 1
-                        ? 'mx-auto max-w-[180px] grid-cols-1'
+                        ? 'max-w-[180px] grid-cols-1'
                         : product.characteristics.slice(0, 3).length === 2
-                          ? 'mx-auto max-w-[360px] grid-cols-2'
+                          ? 'max-w-[360px] grid-cols-2'
                           : 'grid-cols-3'
                     }`}
                   >
@@ -507,7 +492,7 @@ export default function ProductPageClient({
               </div>
 
               {/* Right Column: Buy Box Card */}
-              <div className="relative lg:col-span-5">
+              <div className="relative lg:col-span-6">
                 <div className="flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:sticky lg:top-[128px]">
                   {/* Name Header and Wishlist on Desktop */}
                   <div className="hidden items-start justify-between gap-4 lg:flex">
@@ -1051,6 +1036,18 @@ export default function ProductPageClient({
           className="h-full w-full"
         ></iframe>
       </Modal>
+
+      {isLightboxOpen && (
+        <ProductLightboxModal
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          images={galleryImages}
+          initialIndex={activeImageIndex}
+          productTitle={product.name}
+          productArticle={product.article}
+          onIndexChange={setActiveImageIndex}
+        />
+      )}
     </>
   );
 }
