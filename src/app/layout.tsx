@@ -4,7 +4,6 @@ import Script from 'next/script';
 import StoreProvider from './service/StoreProvider';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
 import { GOOGLE_ADS_ID, GA4_MEASUREMENT_ID } from '@/lib/analytics';
@@ -289,7 +288,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             theme="light"
             transition={Bounce}
           />
-          <SpeedInsights />
           <Analytics />
           {children}
         </StoreProvider>
