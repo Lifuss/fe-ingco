@@ -1,16 +1,7 @@
-import Statistics from '@/app/ui/dashboard/Statistics';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
-  return (
-    <div className="">
-      <div>
-        <h1 className="mb-10 text-4xl">Статистика</h1>
-      </div>
-      <section>
-        <Statistics />
-      </section>
-    </div>
-  );
+  redirect('/dashboard');
 };
 
 export default Page;

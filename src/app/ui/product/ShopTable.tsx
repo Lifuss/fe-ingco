@@ -3,7 +3,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useActiveCategory, useAppSelector, useProductStats } from '@/lib/hooks';
+import { useActiveCategory, useAppSelector } from '@/lib/hooks';
 import { useGetProductsQuery } from '@/lib/appState/api/productsApi';
 import { selectUSDRate } from '@/lib/appState/main/selectors';
 import { useSearchParams } from 'next/navigation';
@@ -49,7 +49,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ src: string; alt: string } | null>(null);
-  const { logProductClick } = useProductStats();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -199,7 +198,6 @@ const ShopTable = ({ isFavoritePage = false }) => {
             className="w-full min-w-[180px] text-left transition-colors hover:text-blue-500 lg:min-w-[220px] xl:min-w-[250px]"
             onClick={() => {
               setSelectedProduct(row.original.product);
-              logProductClick(row.original.product.id);
               openModal();
             }}
           >
@@ -339,7 +337,7 @@ const ShopTable = ({ isFavoritePage = false }) => {
       },
     ],
 
-    [favoritesList, handleCartClick, handleFavoriteClick, logProductClick],
+    [favoritesList, handleCartClick, handleFavoriteClick],
   );
 
   return (

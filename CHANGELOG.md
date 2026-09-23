@@ -5,6 +5,15 @@
 
 ---
 
+## [Unreleased]
+
+### [Changed] Dashboard Navigation & Analytics Cleanup
+
+- **Вимкнення сторінки статистики (`Sidebar.tsx`, `statistics/page.tsx`)**: вилучено розділ «Статистика» з бічної панелі навігації дешборду та налаштовано миттєвий редирект із `/dashboard/statistics` на `/dashboard`.
+- **Деактивація трекінгу кліків (`ProductBlockList.tsx`, `ShopTable.tsx`, `hooks.tsx`, `operations.ts`)**: відключено фонову відправку мережевих запитів (`trackProductClickThunk`) при кліках на товари в каталозі та B2B-таблиці, усунувши зайвий мережевий оверхед.
+
+---
+
 ## [2.10.0] — 2026-09-20
 
 ### [Added] Product Image Magnifier & Fullscreen Lightbox Gallery

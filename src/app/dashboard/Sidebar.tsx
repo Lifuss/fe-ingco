@@ -8,7 +8,6 @@ import {
   Inbox,
   Mails,
   PackageOpen,
-  PieChart,
   ScanBarcode,
   Users,
   SlidersHorizontal,
@@ -60,11 +59,6 @@ export const listData = [
     title: 'Відгуки',
     link: '/dashboard/reviews',
     svg: <MessageSquare size={20} />,
-  },
-  {
-    title: 'Статистика',
-    link: '/dashboard/statistics',
-    svg: <PieChart size={20} />,
   },
   {
     title: 'Інтеграції',

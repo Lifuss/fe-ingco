@@ -52,12 +52,8 @@ export const supportTicketThunk = createAsyncThunk(
 
 export const trackProductClickThunk = createAsyncThunk(
   'product/trackProductClick',
-  async (productId: number, { rejectWithValue }) => {
-    try {
-      await apiIngco.get(`/stats/products/${productId}`);
-      return productId;
-    } catch (error) {
-      return rejectWithValue(serializeAxiosError(error));
-    }
+  async (productId: number) => {
+    // Click tracking is disabled
+    return productId;
   },
 );

@@ -1,6 +1,5 @@
 'use client';
 
-import { useProductStats } from '@/lib/hooks';
 import { Product } from '@/lib/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
@@ -20,16 +19,13 @@ const ProductBlockList = ({
   USDCurrency,
   favoritesIdList,
 }: ProductBlockListProps) => {
-  const { logProductClick } = useProductStats();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const viewParam = searchParams.get('view') || 'grid';
   const isListView = listType === 'partner' ? false : viewParam === 'list';
 
-  const handleDirectToProduct = (id: number, slug: string) => {
-    logProductClick(id);
-
+  const handleDirectToProduct = (_id: number, slug: string) => {
     const base = `/${slug}`;
     const qs = searchParams ? searchParams.toString() : '';
     const link = qs ? `${base}?${qs}` : base;
