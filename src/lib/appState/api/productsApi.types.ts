@@ -25,3 +25,30 @@ export interface UpdateProductPayload {
   productId: string | number;
   formData: FormData;
 }
+
+export interface QuickUpdateProductFields {
+  name?: string;
+  priceRetailRecommendation?: number;
+  rrcSale?: number;
+  countInStock?: number;
+}
+
+export interface QuickUpdateProductPayload {
+  id: number;
+  data: QuickUpdateProductFields;
+}
+
+export interface BatchQuickUpdateItem {
+  id: number;
+  data: QuickUpdateProductFields;
+}
+
+export interface BatchQuickUpdatePayload {
+  items: BatchQuickUpdateItem[];
+}
+
+export interface BatchQuickUpdateResponse {
+  success: boolean;
+  updatedCount: number;
+  items: Product[];
+}

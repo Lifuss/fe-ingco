@@ -17,6 +17,7 @@ import {
   X,
   Store,
   Share2,
+  TableProperties,
 } from 'lucide-react';
 
 export const listData = [
@@ -24,6 +25,11 @@ export const listData = [
     title: 'Продукт',
     link: '/dashboard',
     svg: <ScanBarcode size={22} />,
+  },
+  {
+    title: 'Швидкий редактор',
+    link: '/dashboard/product/sheets',
+    svg: <TableProperties size={20} />,
   },
   {
     title: 'Категорії',

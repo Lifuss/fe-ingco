@@ -1,7 +1,14 @@
 import { baseApi } from './baseApi';
 import { Product } from '@/lib/types';
 import { normalizeProduct } from '@/lib/utils';
-import { GetProductsParams, GetProductsResponse, UpdateProductPayload } from './productsApi.types';
+import {
+  GetProductsParams,
+  GetProductsResponse,
+  UpdateProductPayload,
+  QuickUpdateProductPayload,
+  BatchQuickUpdatePayload,
+  BatchQuickUpdateResponse,
+} from './productsApi.types';
 
 export * from './productsApi.types';
 
@@ -112,6 +119,33 @@ export const productsApi = baseApi.injectEndpoints({
         { type: 'Product', id: 'LIST' },
       ],
     }),
+
+    quickUpdateProduct: build.mutation<Product, QuickUpdateProductPayload>({
+      query: ({ id, data }) => ({
+        url: `/products/${id}/quick`,
+        method: 'PATCH',
+        data,
+      }),
+      transformResponse: (res: unknown) => normalizeProduct(res),
+      invalidatesTags: (result, _err, { id }) => [
+        { type: 'Product', id: result ? result.id : id },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    batchQuickUpdateProduct: build.mutation<BatchQuickUpdateResponse, BatchQuickUpdatePayload>({
+      query: (payload) => ({
+        url: '/products/batch-quick',
+        method: 'PATCH',
+        data: payload,
+      }),
+      transformResponse: (res: { success: boolean; updatedCount: number; items: unknown[] }) => ({
+        success: res.success,
+        updatedCount: res.updatedCount,
+        items: (res.items || []).map(normalizeProduct),
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -122,4 +156,6 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
+  useQuickUpdateProductMutation,
+  useBatchQuickUpdateProductMutation,
 } = productsApi;
