@@ -28,6 +28,7 @@ export interface UpdateProductPayload {
 
 export interface QuickUpdateProductFields {
   name?: string;
+  price?: number;
   priceRetailRecommendation?: number;
   rrcSale?: number;
   countInStock?: number;

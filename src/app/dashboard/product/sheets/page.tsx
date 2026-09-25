@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Layers,
+  DollarSign,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
@@ -26,6 +27,7 @@ import {
   useBatchQuickUpdateProductMutation,
 } from '@/lib/appState/api/productsApi';
 import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
+import { useGetCurrencyRatesQuery } from '@/lib/appState/api/currencyApi';
 import { Product } from '@/lib/types';
 import clsx from 'clsx';
 
@@ -35,6 +37,7 @@ import clsx from 'clsx';
 
 interface DraftProduct {
   name: string;
+  price?: number;
   priceRetailRecommendation: number;
   rrcSale: number;
   countInStock: number;
@@ -69,6 +72,7 @@ function ProductSheetsContent() {
   const searchQuery = searchParams?.get('q') || '';
   const selectedCategory = searchParams?.get('cat') || 'all';
   const activeTab = (searchParams?.get('tab') as TabType) || 'all';
+  const showB2bPrice = searchParams?.get('b2b') === '1';
   const currentPage = Math.max(1, Number(searchParams?.get('page')) || 1);
   const pageSizeParam = searchParams?.get('pageSize') || '50';
   const pageSize = pageSizeParam === 'all' ? 1000 : Number(pageSizeParam);
@@ -88,6 +92,8 @@ function ProductSheetsContent() {
   });
 
   const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: currencyData } = useGetCurrencyRatesQuery();
+  const usdRate = currencyData?.USD || 44.0;
 
   const [quickUpdateProduct] = useQuickUpdateProductMutation();
   const [batchQuickUpdateProduct, { isLoading: isBatchSaving }] =
@@ -104,7 +110,8 @@ function ProductSheetsContent() {
           val === null ||
           val === '' ||
           (key === 'cat' && val === 'all') ||
-          (key === 'tab' && val === 'all')
+          (key === 'tab' && val === 'all') ||
+          (key === 'b2b' && val !== '1')
         ) {
           params.delete(key);
         } else {
@@ -136,7 +143,7 @@ function ProductSheetsContent() {
     const entries = Object.entries(drafts);
     if (entries.length === 0) return;
 
-    // Pre-validation: ensure no items exceed 100 chars
+    // Pre-validation 1: ensure no items exceed 100 chars
     const invalidItems = entries.filter(([, draft]) => draft.name.length > 100);
     if (invalidItems.length > 0) {
       toast.error(
@@ -146,11 +153,26 @@ function ProductSheetsContent() {
       return;
     }
 
+    // Pre-validation 2: Sanity check to avoid confusing USD and UAH
+    const suspiciousItems = entries.filter(([, draft]) => {
+      if (draft.price !== undefined && draft.priceRetailRecommendation > 0) {
+        return Number(draft.price) > Number(draft.priceRetailRecommendation);
+      }
+      return false;
+    });
+    if (suspiciousItems.length > 0) {
+      toast.error(
+        `Неможливо зберегти: у ${suspiciousItems.length} товар(ів) оптова ціна в $ більша за РРЦ у грн. Можливо, введено грн замість $? Перевірте ціни.`,
+      );
+      return;
+    }
+
     try {
       const items = entries.map(([idStr, draft]) => ({
         id: Number(idStr),
         data: {
           name: draft.name.trim(),
+          ...(draft.price !== undefined ? { price: Number(draft.price) } : {}),
           priceRetailRecommendation: Number(draft.priceRetailRecommendation),
           rrcSale: Number(draft.rrcSale),
           countInStock: Number(draft.countInStock),
@@ -189,6 +211,7 @@ function ProductSheetsContent() {
     setDrafts((prev) => {
       const currentDraft: DraftProduct = prev[product.id] || {
         name: product.name,
+        price: Number(product.price) || 0,
         priceRetailRecommendation: Number(product.priceRetailRecommendation) || 0,
         rrcSale: Number(product.rrcSale) || 0,
         countInStock: Number(product.countInStock) || 0,
@@ -202,6 +225,7 @@ function ProductSheetsContent() {
       // Check if draft matches server product exactly
       const isOriginal =
         updatedDraft.name === product.name &&
+        Number(updatedDraft.price ?? product.price ?? 0) === Number(product.price || 0) &&
         Number(updatedDraft.priceRetailRecommendation) ===
           Number(product.priceRetailRecommendation || 0) &&
         Number(updatedDraft.rrcSale) === Number(product.rrcSale || 0) &&
@@ -253,12 +277,25 @@ function ProductSheetsContent() {
       return;
     }
 
+    // Sanity check before single save
+    if (
+      draft.price !== undefined &&
+      draft.priceRetailRecommendation > 0 &&
+      Number(draft.price) > Number(draft.priceRetailRecommendation)
+    ) {
+      toast.error(
+        `Увага: оптова ціна $${draft.price} для "${product.article}" перевищує РРЦ (${draft.priceRetailRecommendation} ₴). Перевірте валюту перед збереженням.`,
+      );
+      return;
+    }
+
     setSavingId(product.id);
     try {
       await quickUpdateProduct({
         id: product.id,
         data: {
           name: draft.name.trim(),
+          ...(draft.price !== undefined ? { price: Number(draft.price) } : {}),
           priceRetailRecommendation: Number(draft.priceRetailRecommendation),
           rrcSale: Number(draft.rrcSale),
           countInStock: Number(draft.countInStock),
@@ -537,6 +574,26 @@ function ProductSheetsContent() {
             >
               Немає на складі ({totalOutOfStockCount})
             </button>
+
+            {/* B2B Price Toggle */}
+            <div className="mx-1 hidden h-5 w-px bg-neutral-300 sm:block" />
+            <button
+              type="button"
+              onClick={() => updateUrlParam({ b2b: showB2bPrice ? null : '1' })}
+              className={clsx(
+                'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all',
+                showB2bPrice
+                  ? 'bg-emerald-600 text-white shadow-xs hover:bg-emerald-700'
+                  : 'border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100',
+              )}
+              title="Показати або сховати колонку оптових цін у доларах ($)"
+            >
+              <DollarSign
+                size={13}
+                className={showB2bPrice ? 'text-emerald-100' : 'text-emerald-600'}
+              />
+              <span>{showB2bPrice ? 'Опт ($) увімкнено' : 'Показати опт ($)'}</span>
+            </button>
           </div>
 
           {/* Page Size & Result summary */}
@@ -581,6 +638,14 @@ function ProductSheetsContent() {
                     </span>
                   </div>
                 </th>
+                {showB2bPrice && (
+                  <th className="w-32 px-3 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1 font-bold text-emerald-700">
+                      <DollarSign size={13} className="text-emerald-600" />
+                      <span>Опт, $</span>
+                    </div>
+                  </th>
+                )}
                 <th className="w-28 px-3 py-3 text-right">РРЦ, ₴</th>
                 <th className="w-28 px-3 py-3 text-right">Акція, ₴</th>
                 <th className="w-24 px-3 py-3 text-right">Склад, шт</th>
@@ -590,7 +655,7 @@ function ProductSheetsContent() {
             <tbody className="divide-y divide-neutral-200">
               {isProductsLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-16 text-center">
+                  <td colSpan={showB2bPrice ? 9 : 8} className="py-16 text-center">
                     <div className="flex flex-col items-center justify-center gap-2 text-neutral-500">
                       <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
                       <p className="text-sm">Завантаження товарів...</p>
@@ -599,7 +664,7 @@ function ProductSheetsContent() {
                 </tr>
               ) : paginatedProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-16 text-center">
+                  <td colSpan={showB2bPrice ? 9 : 8} className="py-16 text-center">
                     <div className="flex flex-col items-center justify-center gap-2 text-neutral-500">
                       <Search className="h-8 w-8 text-neutral-300" />
                       <p className="font-semibold text-neutral-700">Товарів не знайдено</p>
@@ -615,6 +680,7 @@ function ProductSheetsContent() {
                   const isDirty = Boolean(draft);
 
                   const nameValue = draft?.name ?? product.name;
+                  const priceUsdValue = draft?.price ?? product.price ?? 0;
                   const priceRecValue =
                     draft?.priceRetailRecommendation ?? product.priceRetailRecommendation;
                   const rrcSaleValue = draft?.rrcSale ?? product.rrcSale ?? 0;
@@ -720,6 +786,52 @@ function ProductSheetsContent() {
                           </p>
                         )}
                       </td>
+
+                      {/* B2B Wholesale Price ($) */}
+                      {showB2bPrice && (
+                        <td className="px-3 py-2 text-right">
+                          <div className="flex flex-col items-end">
+                            <div className="relative">
+                              <span className="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 font-mono text-xs font-bold text-emerald-600">
+                                $
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={priceUsdValue}
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    product,
+                                    'price',
+                                    Math.max(0, parseFloat(e.target.value) || 0),
+                                  )
+                                }
+                                onKeyDown={(e) => handleInputKeyDown(e, product)}
+                                className={clsx(
+                                  'w-28 rounded-lg border py-1.5 pr-2 pl-5 text-right font-mono text-xs font-bold transition-colors focus:ring-2 focus:outline-none',
+                                  'border-emerald-300 bg-emerald-50/40 text-emerald-950 focus:border-emerald-600 focus:bg-white focus:ring-emerald-500/20',
+                                  isDirty &&
+                                    draft?.price !== undefined &&
+                                    'border-amber-400 bg-amber-50/60',
+                                )}
+                              />
+                            </div>
+                            {Number(priceUsdValue) > 0 && (
+                              <span
+                                className="mt-0.5 font-mono text-[10px] text-neutral-500"
+                                title={`Розрахунок за курсом: ${usdRate.toFixed(2)} грн/$`}
+                              >
+                                ≈{' '}
+                                {Math.round(Number(priceUsdValue) * usdRate).toLocaleString(
+                                  'uk-UA',
+                                )}{' '}
+                                ₴
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      )}
 
                       {/* Retail Recommended Price (РРЦ) */}
                       <td className="px-3 py-2 text-right">
