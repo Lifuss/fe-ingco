@@ -1,31 +1,19 @@
 import React from 'react';
 import Hero from '../about-us/Hero';
 import Features from '../about-us/Features';
-import PartnerGuide from '../about-us/PartnerGuide';
 import AboutBrand from '../about-us/AboutBrand';
 import AboutUs from '../about-us/AboutUs';
-import Footer from '../Footer';
-import Header from '../header/Header';
+import B2BCallout from '../about-us/B2BCallout';
 
-const AboutUsPage = ({ isMainPage = true }: { isMainPage: boolean }) => {
-  return isMainPage ? (
-    <>
-      <Header />
+const AboutUsPage = () => {
+  return (
+    <div className="font-sans">
       <Hero />
       <Features />
-      <PartnerGuide />
       <AboutBrand />
       <AboutUs />
-      <Footer />
-    </>
-  ) : (
-    <>
-      <Hero />
-      <Features />
-      <PartnerGuide />
-      <AboutBrand />
-      <AboutUs />
-    </>
+      <B2BCallout />
+    </div>
   );
 };
 

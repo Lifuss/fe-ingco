@@ -1,19 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 
-const LiClassName =
-  'flex h-[240px] w-[150px] 2xl:w-[300px] md:h-[225px] lg:h-[240px] md:w-[250px] md:p-4 flex-col gap-2 rounded-lg bg-card-tint p-2 shadow-sm';
-
 const guideContent = [
   {
     step: 1,
     title: 'Заповнити заявку',
-    text: 'В формі нового партнера вкажіть свої контактні дані та ключову інформацію про компанію',
-    isButton: true,
+    text: 'У формі нового партнера вкажіть свої контактні дані та ключову інформацію про компанію',
     button: (
       <Link
-        href={'/auth/register?isB2B=true'}
-        className="border-orange-light text-orange-light mt-auto rounded-lg border bg-inherit p-1 text-center text-xs transition-all hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white md:p-2 2xl:text-base"
+        href="/auth/register?isB2B=true"
+        className="mt-auto block rounded-lg border border-amber-400 bg-amber-50 p-2 text-center text-xs font-semibold text-amber-900 transition-all hover:bg-amber-500 hover:text-neutral-900 focus:bg-amber-500 focus:text-neutral-900 sm:text-sm"
       >
         Зареєструвати акаунт партнера
       </Link>
@@ -23,45 +19,51 @@ const guideContent = [
     step: 2,
     title: 'Отримати комерційну пропозицію',
     text: 'Наші спеціалісти підготують індивідуальні умови співпраці, враховуючи особливості вашого бізнесу',
-    isButton: false,
   },
   {
     step: 3,
-    title: 'Підібрати товар',
-    text: 'Допоможемо обрати найкращий асортимент, який задовольнить потреби вашої цільової аудиторії та сприятиме процвітанню компанії',
-    isButton: false,
+    title: 'Підібрати асортимент',
+    text: 'Допоможемо обрати найкращий асортимент, який задовольнить потреби вашої цільової аудиторії',
   },
   {
     step: 4,
     title: 'Перша поставка',
-    text: 'Ви стали партнером компанії Ingco-service. Очікуйте доставку високоякісних інструментів для будівництва та домашніх цілей',
-    isButton: true,
+    text: 'Отримайте статус офіційного партнера, швидку відвантажку та повний пакет бухгалтерських документів',
     button: (
       <Link
-        href={'/about-us/contacts'}
-        className="border-orange-light text-orange-light mt-auto rounded-lg border bg-inherit p-1 text-center text-xs transition-all hover:bg-orange-500 hover:text-white focus:bg-orange-500 focus:text-white md:p-2 2xl:text-base"
+        href="/about-us/contacts"
+        className="mt-auto block rounded-lg border border-amber-400 bg-amber-50 p-2 text-center text-xs font-semibold text-amber-900 transition-all hover:bg-amber-500 hover:text-neutral-900 focus:bg-amber-500 focus:text-neutral-900 sm:text-sm"
       >
         Отримати консультацію
       </Link>
     ),
   },
 ];
+
 const PartnerGuide = () => {
   return (
-    <section className="mb-5 px-5 md:mb-16 md:px-[60px] lg:mb-24">
-      <h2 className="mb-4 text-center text-2xl md:mb-10 md:text-3xl lg:md:text-4xl xl:text-5xl">
+    <section className="mb-8 px-5 md:mb-16 md:px-[60px]" aria-labelledby="partner-guide-heading">
+      <h2
+        id="partner-guide-heading"
+        className="mb-6 text-center text-2xl font-bold tracking-tight text-neutral-900 md:mb-12 md:text-3xl lg:text-4xl"
+      >
         Як розпочати співпрацю
       </h2>
-      <ul className="flex flex-wrap justify-center gap-4 md:gap-10 lg:gap-x-24 xl:gap-x-4 2xl:gap-x-24">
-        {guideContent.map(({ step, button, isButton, text, title }) => (
-          <li key={step} className={LiClassName}>
-            <sub className="text-orange-light text-xs md:text-sm 2xl:text-base">{step} крок</sub>
-            <h4 className="text-sm font-medium md:text-base 2xl:text-lg">{title}</h4>
-            <p className="text-xs text-gray-500 md:text-sm 2xl:text-base">{text}</p>
-            {isButton && button}
-          </li>
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-4">
+        {guideContent.map(({ step, button, text, title }) => (
+          <div
+            key={step}
+            className="flex min-h-[220px] flex-col rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs transition-shadow hover:shadow-md md:p-6"
+          >
+            <span className="mb-2 text-xs font-bold tracking-wider text-amber-700 uppercase">
+              {step} крок
+            </span>
+            <h3 className="mb-2 text-base font-bold text-neutral-900 md:text-lg">{title}</h3>
+            <p className="mb-4 text-xs leading-relaxed text-neutral-600 sm:text-sm">{text}</p>
+            {button}
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   );
 };

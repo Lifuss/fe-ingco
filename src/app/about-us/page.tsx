@@ -3,12 +3,12 @@ import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = generatePageMetadata({
-  title: 'INGCO - Головна сторінка',
+  title: 'Про компанію INGCO Україна | Офіційний імпортер інструменту',
   description:
-    'INGCO - офіційний імпортер професійних інструментів в Україні. Електроінструменти для будівництва та ремонту. Доставка по всій країні!',
+    'INGCO Україна — офіційний імпортер надійного професійного та побутового інструменту. Дізнайтеся більше про компанію, переваги бренду, сервіс та наші фірмові магазини.',
   path: '/about-us',
 });
 
 export default function Page() {
-  return <AboutUsPage isMainPage={false} />;
+  return <AboutUsPage />;
 }
