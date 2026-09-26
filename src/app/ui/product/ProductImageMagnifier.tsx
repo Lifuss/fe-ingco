@@ -116,6 +116,7 @@ export default function ProductImageMagnifier({
           alt={alt}
           width={800}
           height={800}
+          sizes="(max-width: 1024px) 100vw, 580px"
           className={`h-full max-h-full w-full max-w-full object-contain transition-all ${className}`}
           priority={priority}
         />

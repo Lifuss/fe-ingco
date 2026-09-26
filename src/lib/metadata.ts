@@ -86,6 +86,7 @@ export function generateProductMetadata({
   isB2B = false,
 }: ProductMetadataOptions): Metadata {
   const productPrice = price || getEffectiveRetailPrice(product);
+  const article = (product.article || '').trim();
 
   const imageUrl = product.image
     ? product.image.startsWith('http')
@@ -93,16 +94,26 @@ export function generateProductMetadata({
       : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
     : `${SITE_URL}/placeholder.webp`;
   const pageUrl = `${SITE_URL}/${slug}`;
-  const title = `${product.name} - ${product.article} | INGCO`;
-  const description = `${product.name} - ${product.article}. ${(product.description || '').substring(0, 150)}... ${isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою'}.`;
+  const title = `${product.name} - ${article} | INGCO`;
+
+  // Clean description without extra whitespace, HTML tags, or awkward breaks
+  const rawDesc = (product.description || '')
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const maxDescLen = 100;
+  const snippet = rawDesc.length > maxDescLen ? `${rawDesc.substring(0, maxDescLen)}...` : rawDesc;
+  const actionText = isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою';
+  const description =
+    `${product.name} - ${article}. ${snippet ? `${snippet} ` : ''}${actionText}.`.trim();
 
   return {
     title,
     description,
-    keywords: `${product.name}, ${product.article}, INGCO, електроінструменти, ${isB2B ? 'гурт' : 'роздріб'}, купити в Україні`,
+    keywords: `${product.name}, ${article}, INGCO, електроінструменти, ${isB2B ? 'гурт' : 'роздріб'}, купити в Україні`,
     openGraph: {
       title,
-      description: `${product.name} - ${product.article}. ${isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою'}.`,
+      description,
       url: pageUrl,
       siteName: SITE_NAME,
       locale: 'uk_UA',
@@ -119,7 +130,7 @@ export function generateProductMetadata({
     twitter: {
       card: 'summary_large_image',
       title,
-      description: `${product.name} - ${product.article}. ${isB2B ? 'Купити гуртом' : 'Купити в Україні'}.`,
+      description,
       images: [imageUrl],
     },
     alternates: {
@@ -131,6 +142,10 @@ export function generateProductMetadata({
     other: {
       'product:price:amount': productPrice?.toString() || '',
       'product:price:currency': 'UAH',
+      'product:availability': product.countInStock > 0 ? 'in stock' : 'out of stock',
+      'product:condition': 'new',
+      'product:brand': 'INGCO',
+      'product:retailer_item_id': article,
     },
   };
 }
@@ -162,15 +177,30 @@ export function generatePageMetadata({
   });
 }
 
-export function generateProductJsonLd(product: Product) {
-  const imageUrl = product.image
-    ? product.image.startsWith('http')
-      ? product.image
-      : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
-    : `${SITE_URL}/placeholder.webp`;
+export function generateProductJsonLd(product: Product, slug?: string, priceOverride?: number) {
+  const images: string[] =
+    product.images && product.images.length > 0
+      ? product.images.map((img) =>
+          img.startsWith('http') ? img : `${process.env.NEXT_PUBLIC_API || ''}${img}`,
+        )
+      : product.image
+        ? [
+            product.image.startsWith('http')
+              ? product.image
+              : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`,
+          ]
+        : [`${SITE_URL}/placeholder.webp`];
+
+  const article = (product.article || '').trim();
+  const productSlug = slug || product.slug || '';
+  const productPrice =
+    priceOverride !== undefined
+      ? priceOverride
+      : Number(getEffectiveRetailPrice(product) || product.priceRetailRecommendation || 0);
 
   const cleanDescription = (product.description || product.name)
-    .replace(/<[^>]*>?/gm, '')
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
     .substring(0, 300)
     .trim();
 
@@ -178,24 +208,29 @@ export function generateProductJsonLd(product: Product) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    image: [imageUrl],
-    description: cleanDescription,
-    sku: product.article,
-    mpn: product.article,
+    image: images,
+    description:
+      cleanDescription ||
+      `Купити ${product.name} за вигідною ціною в інтернет-магазині INGCO Ukraine.`,
+    sku: article,
+    mpn: article,
     brand: {
       '@type': 'Brand',
       name: 'INGCO',
     },
     offers: {
       '@type': 'Offer',
+      url: productSlug ? `${SITE_URL}/${productSlug}` : SITE_URL,
       priceCurrency: 'UAH',
-      price: Number(getEffectiveRetailPrice(product) || 0),
+      price: productPrice,
+      priceValidUntil: '2028-12-31',
       itemCondition: 'https://schema.org/NewCondition',
       availability:
         product.countInStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       seller: {
         '@type': 'Organization',
         name: SITE_NAME,
+        url: SITE_URL,
       },
     },
     ...(product.reviewCount && product.reviewCount > 0

@@ -312,7 +312,7 @@ const CatalogSidebar = () => {
       {/* Category Hierarchical block */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm select-none">
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <h2 className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</h2>
+          <h3 className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</h3>
           {activeCategoryId && (
             <button
               onClick={handleResetCategory}
@@ -501,10 +501,10 @@ const CatalogSidebar = () => {
         className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
       >
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <h2 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
+          <h3 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
             <Filter size={14} className="text-primary-500" />
             Характеристики
-          </h2>
+          </h3>
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}

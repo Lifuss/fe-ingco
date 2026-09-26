@@ -121,9 +121,9 @@ export const ProductReviewsSection: React.FC<ProductReviewsSectionProps> = ({ pr
             <MessageSquare size={24} />
           </div>
           <div>
-            <h3 className="font-display mb-1 text-base font-semibold text-neutral-800 md:text-lg">
+            <p className="font-display mb-1 text-base font-semibold text-neutral-800 md:text-lg">
               Поки що немає відгуків про цей товар
-            </h3>
+            </p>
             <p className="mx-auto max-w-sm font-sans text-xs leading-relaxed text-neutral-500 md:text-sm">
               Будьте першим, хто залишить відгук! Ваша думка допоможе іншим покупцям зробити
               правильний вибір.

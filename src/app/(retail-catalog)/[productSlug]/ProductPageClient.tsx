@@ -27,7 +27,6 @@ import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
 import { isProductOnSale } from '@/lib/utils';
 
 import { getYoutubeEmbedUrl } from '@/lib/utils';
-import { generateProductJsonLd } from '@/lib/metadata';
 
 import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { useGetProductBySlugQuery, useGetProductsQuery } from '@/lib/appState/api/productsApi';
@@ -366,13 +365,12 @@ export default function ProductPageClient({
             {/* Section 1: Hero Block (Hero & Buy Box) */}
             <section
               id="about-product"
-              className="grid scroll-mt-24 grid-cols-1 gap-8 lg:grid-cols-12"
+              className="grid scroll-mt-24 grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8"
             >
-              {/* Left Column: Gallery & Micro Features */}
-              <div className="flex flex-col gap-6 lg:col-span-6">
-                {/* Product Name Title on Mobile */}
-                <div className="block lg:hidden">
-                  <h1 className="font-display mb-2 text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
+              {/* Unified Product Title Header for ALL viewports */}
+              <div className="flex items-start justify-between gap-4 lg:col-span-12">
+                <div className="flex flex-col gap-1.5">
+                  <h1 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl lg:text-3xl">
                     {product.name}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2">
@@ -392,6 +390,22 @@ export default function ProductPageClient({
                   </div>
                 </div>
 
+                {/* Favorite button on desktop */}
+                <button
+                  onClick={handleFavoriteClick}
+                  className={`hidden cursor-pointer rounded-full border p-2.5 transition-all lg:flex ${
+                    isFavorite
+                      ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
+                      : 'border-neutral-200 bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700'
+                  }`}
+                  title={isFavorite ? 'Вилучити з обраного' : 'Додати в обране'}
+                >
+                  <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
+                </button>
+              </div>
+
+              {/* Left Column: Gallery & Micro Features */}
+              <div className="flex flex-col gap-6 lg:col-span-6">
                 {/* Main Media Box */}
                 {galleryImages[activeImageIndex].type === 'image' ? (
                   <ProductImageMagnifier
@@ -439,7 +453,7 @@ export default function ProductPageClient({
                       {item.type === 'image' ? (
                         <Image
                           src={item.url || '/placeholder-image.jpg'}
-                          alt={`Thumbnail ${idx}`}
+                          alt={`${product.name} — фото ${idx + 1}`}
                           width={80}
                           height={80}
                           className={`max-h-full w-auto object-contain ${item.className}`}
@@ -494,42 +508,6 @@ export default function ProductPageClient({
               {/* Right Column: Buy Box Card */}
               <div className="relative lg:col-span-6">
                 <div className="flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:sticky lg:top-[128px]">
-                  {/* Name Header and Wishlist on Desktop */}
-                  <div className="hidden items-start justify-between gap-4 lg:flex">
-                    <div className="flex flex-col gap-1.5">
-                      <h2 className="font-display text-xl leading-tight font-bold text-neutral-900 md:text-2xl">
-                        {product.name}
-                      </h2>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="w-fit rounded bg-neutral-100 px-2 py-0.5 font-mono text-[11px] font-medium text-neutral-500">
-                          Артикул: {product.article}
-                        </div>
-                        {isAdmin && (
-                          <Link
-                            href={`/dashboard/product/edit/${product.id}`}
-                            className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 transition-colors hover:bg-amber-200"
-                            title="Редагувати в адмінці"
-                          >
-                            <Pencil size={12} />
-                            <span>Редагувати в адмінці</span>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleFavoriteClick}
-                      className={`cursor-pointer rounded-full border p-2.5 transition-all ${
-                        isFavorite
-                          ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
-                          : 'border-neutral-200 bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700'
-                      }`}
-                      title={isFavorite ? 'Вилучити з обраного' : 'Додати в обране'}
-                    >
-                      <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
-                    </button>
-                  </div>
-
                   {/* Stock Availability */}
                   <div className="flex items-center gap-2 border-b border-neutral-100 pb-3">
                     <span className="flex h-2.5 w-2.5 items-center justify-center rounded-full bg-green-500">
@@ -672,6 +650,7 @@ export default function ProductPageClient({
                         <div className="flex h-10 w-[120px] items-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 shadow-inner">
                           <button
                             onClick={decrementQty}
+                            aria-label="Зменшити кількість товару"
                             className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                             type="button"
                           >
@@ -682,10 +661,12 @@ export default function ProductPageClient({
                             value={quantity}
                             onChange={handleQtyInputChange}
                             onBlur={handleQtyBlur}
+                            aria-label="Кількість товару"
                             className="h-full w-10 border-none bg-transparent p-0 text-center font-sans text-sm font-semibold text-neutral-900 outline-none focus:ring-0"
                           />
                           <button
                             onClick={incrementQty}
+                            aria-label="Збільшити кількість товару"
                             className="flex h-full w-10 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:bg-neutral-200"
                             type="button"
                           >
@@ -919,14 +900,6 @@ export default function ProductPageClient({
 
             {/* Section 4: Reviews Section */}
             <ProductReviewsSection product={product} />
-
-            {/* Schema.org JSON-LD for Google SEO Rich Snippets */}
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(generateProductJsonLd(product)),
-              }}
-            />
 
             {/* Section 5: Cross-sell Recommendations */}
             <section id="cross-sell" className="scroll-mt-24 pb-12">

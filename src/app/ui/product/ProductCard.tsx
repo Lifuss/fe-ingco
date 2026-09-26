@@ -216,7 +216,7 @@ const ProductCard = ({
                 alt={name}
                 className="object-contain transition-transform duration-500 group-hover:scale-105"
                 fill={true}
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 280px"
                 loading="lazy"
               />
             </div>
@@ -258,9 +258,9 @@ const ProductCard = ({
             ) : null}
 
             {/* Product Title */}
-            <h2 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">
+            <h3 className="line-clamp-2 h-[40px] shrink-0 text-sm leading-snug font-semibold text-gray-900">
               {name}
-            </h2>
+            </h3>
 
             {/* Technical characteristics: smooth transition fade in on hover */}
             {characteristics.length > 0 && (

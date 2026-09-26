@@ -46,31 +46,36 @@ const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
     href: buildHref(item),
   }));
 
+  // If itemsWithHref doesn't already start with home, prepend it
+  const startsWithHome =
+    itemsWithHref.length > 0 &&
+    (itemsWithHref[0].href === '/' ||
+      itemsWithHref[0].label.toLowerCase() === 'головна' ||
+      itemsWithHref[0].label.toLowerCase() === 'каталог партнера');
+
+  const normalizedItems = startsWithHome
+    ? itemsWithHref
+    : [{ label: 'Головна', href: '/' }, ...itemsWithHref];
+
   const schemaData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Головна',
-        item: SITE_URL,
-      },
-      ...itemsWithHref.map((item, index) => {
-        const itemUrl = item.href
-          ? `${SITE_URL}${item.href}`
-          : index === itemsWithHref.length - 1
-            ? `${SITE_URL}${pathname}`
-            : undefined;
+    itemListElement: normalizedItems.map((item, index) => {
+      const itemUrl = item.href
+        ? item.href === '/'
+          ? SITE_URL
+          : `${SITE_URL}${item.href}`
+        : index === normalizedItems.length - 1
+          ? `${SITE_URL}${pathname}`
+          : undefined;
 
-        return {
-          '@type': 'ListItem',
-          position: index + 2,
-          name: item.label,
-          item: itemUrl,
-        };
-      }),
-    ],
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.label,
+        item: itemUrl,
+      };
+    }),
   };
 
   return (
@@ -78,7 +83,7 @@ const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schemaData, null, 2),
+          __html: JSON.stringify(schemaData, null, 2).replace(/</g, '\\u003c'),
         }}
       />
       <nav aria-label="Breadcrumb" className="mb-4">
