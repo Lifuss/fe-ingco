@@ -37,5 +37,5 @@ export const CONTACTS = {
     { href: 'tel:+380964123628', label: '+380 96-41-23-628' },
   ],
   WORKING_HOURS: ['Пн - Пт : 09:00 - 18:00', 'Сб - Нд : 09:00 - 15:00'],
-  EMAIL: 'sales@ingco.ua',
+  EMAIL: 'service@ingcoua.com.ua',
 };

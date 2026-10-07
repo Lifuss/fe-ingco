@@ -1,5 +1,6 @@
 import { generatePageMetadata } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/metadata';
+import LegalContactSection from '@/app/ui/legal/LegalContactSection';
 
 export const metadata = generatePageMetadata({
   title: 'Політика доставки',
@@ -172,26 +173,11 @@ export default function ShippingPage() {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">8. Контакти</h2>
-        <p className="mb-4 text-lg leading-relaxed">З усіх питань щодо доставки звертайтеся:</p>
-        <p className="mb-4 text-lg leading-relaxed">
-          Електронна адреса:{' '}
-          <a href="mailto:ingco-service@ukr.net" className="text-orange-600 hover:underline">
-            ingco-service@ukr.net
-          </a>
-        </p>
-        <p className="mb-4 text-lg leading-relaxed">
-          Телефони:{' '}
-          <a href="tel:+380988392107" className="text-orange-600 hover:underline">
-            +380 98-83-92-107
-          </a>
-          ,{' '}
-          <a href="tel:+380964123628" className="text-orange-600 hover:underline">
-            +380 96-41-23-628
-          </a>
-        </p>
-      </section>
+      <LegalContactSection
+        sectionNumber={8}
+        title="Контакти"
+        introText="З усіх питань щодо доставки звертайтеся:"
+      />
     </div>
   );
 }

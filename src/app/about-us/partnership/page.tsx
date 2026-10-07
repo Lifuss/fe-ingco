@@ -3,6 +3,7 @@ import PartnerGuide from '@/app/ui/about-us/PartnerGuide';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
 import { Handshake, Award, Truck, Briefcase } from 'lucide-react';
+import { CONTACTS } from '@/lib/constants';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Співпраця та Партнерство | INGCO Україна',
@@ -127,7 +128,7 @@ const PartnershipPage = () => {
           </p>
           <div className="mt-2 flex gap-4">
             <a
-              href="tel:+380800000000"
+              href={CONTACTS.PHONES[0].href}
               className="bg-primary-500 hover:bg-primary-600 rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all"
             >
               Зателефонувати

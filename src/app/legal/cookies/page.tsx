@@ -1,4 +1,5 @@
 import { generatePageMetadata, SITE_URL } from '@/lib/metadata';
+import LegalContactSection from '@/app/ui/legal/LegalContactSection';
 
 export const metadata = generatePageMetadata({
   title: 'Політика використання cookies',
@@ -205,28 +206,11 @@ export default function CookiesPage() {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">8. Контакти</h2>
-        <p className="mb-4 text-lg leading-relaxed">
-          Якщо у Вас є питання щодо використання cookies, звертайтеся:
-        </p>
-        <p className="mb-4 text-lg leading-relaxed">
-          Електронна адреса:{' '}
-          <a href="mailto:ingco-service@ukr.net" className="text-orange-600 hover:underline">
-            ingco-service@ukr.net
-          </a>
-        </p>
-        <p className="mb-4 text-lg leading-relaxed">
-          Телефони:{' '}
-          <a href="tel:+380988392107" className="text-orange-600 hover:underline">
-            +380 98-83-92-107
-          </a>
-          ,{' '}
-          <a href="tel:+380964123628" className="text-orange-600 hover:underline">
-            +380 96-41-23-628
-          </a>
-        </p>
-      </section>
+      <LegalContactSection
+        sectionNumber={8}
+        title="Контакти"
+        introText="Якщо у Вас є питання щодо використання cookies, звертайтеся:"
+      />
     </div>
   );
 }

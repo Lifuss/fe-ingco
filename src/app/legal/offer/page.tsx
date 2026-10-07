@@ -1,5 +1,6 @@
 import { generatePageMetadata } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/metadata';
+import LegalContactSection from '@/app/ui/legal/LegalContactSection';
 
 export const metadata = generatePageMetadata({
   title: 'Публічна оферта',
@@ -134,25 +135,11 @@ export default function OfferPage() {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-4 text-2xl font-semibold">11. Контактна інформація</h2>
-        <p className="mb-4 text-lg leading-relaxed">
-          Усі питання щодо умов цієї Оферти можна надіслати на електронну адресу:{' '}
-          <a href="mailto:ingco-service@ukr.net" className="text-orange-600 hover:underline">
-            ingco-service@ukr.net
-          </a>
-        </p>
-        <p className="mb-4 text-lg leading-relaxed">
-          Телефони для зв&apos;язку:{' '}
-          <a href="tel:+380988392107" className="text-orange-600 hover:underline">
-            +380 98-83-92-107
-          </a>
-          ,{' '}
-          <a href="tel:+380964123628" className="text-orange-600 hover:underline">
-            +380 96-41-23-628
-          </a>
-        </p>
-      </section>
+      <LegalContactSection
+        sectionNumber={11}
+        title="Контактна інформація"
+        introText="Усі питання щодо умов цієї Оферти можна надіслати на нашу електронну адресу або звернутися за телефонами:"
+      />
     </div>
   );
 }

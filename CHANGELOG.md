@@ -3,6 +3,16 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### [Changed] Contact Information Centralization & Legal Pages Refactoring
+
+- **Централізація контактів (`constants.ts`, `AboutUs.tsx`, `ContactsClient.tsx`, `partnership/page.tsx`, `layout.tsx`)**: оновлено робочу адресу електронної пошти на `service@ingcoua.com.ua`, замінено плейсхолдерний телефон `+380800000000` на сторінці партнерства, прив'язано телефони офлайн-магазинів та мікророзмітку JSON-LD Schema до єдиного джерела істини `CONTACTS` (`PHONES`, `EMAIL`) та `SOCIAL_LINKS`.
+- **Спільний компонент `LegalContactSection` (`src/app/ui/legal/LegalContactSection.tsx`)**: усунено дублювання контактного блоку на 6 юридичних сторінках (`offer`, `terms`, `shipping`, `returns`, `privacy`, `cookies`).
+- **Рефакторинг сторінки контактів (`ContactsClient.tsx`)**: видалено бібліотеку `useMediaQuery` та дубльовану розмітку десктоп/мобайл, переведено верстку на чистий адаптивний CSS (Tailwind), усунуто ризики гідратаційного розходження (SSR hydration mismatch).
+
+---
+
 ## [2.11.3] — 2026-09-26
 
 ### [Changed] About Us Page Conceptual & Visual Redesign (`/about-us`)

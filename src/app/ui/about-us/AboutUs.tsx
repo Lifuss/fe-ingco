@@ -1,13 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
+import { CONTACTS } from '@/lib/constants';
 
 const locations = [
   {
     city: 'м. Вижниця',
     region: 'Чернівецька обл.',
     address: 'вул. Українська 100/2',
-    phone: '+380 98-83-92-107',
+    phone: CONTACTS.PHONES[0].label,
     scheduleWeekdays: '08:00 – 18:00',
     scheduleWeekend: '09:00 – 15:00',
     mapsUrl: 'https://maps.app.goo.gl/w4bZJT2iJ7X87DT96',
@@ -16,7 +17,7 @@ const locations = [
     city: 'м. Герца',
     region: 'Чернівецька обл.',
     address: 'вул. Штефана Великого 12',
-    phone: '+380 96-41-23-628',
+    phone: CONTACTS.PHONES[1].label,
     scheduleWeekdays: '08:00 – 18:00',
     scheduleWeekend: '09:00 – 15:00',
     mapsUrl: 'https://maps.google.com/?q=Герца+вул.+Штефана+Великого+12',
@@ -119,11 +120,11 @@ const AboutUs = () => {
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
-              href="mailto:ingco-service@ukr.net"
+              href={`mailto:${CONTACTS.EMAIL}`}
               className="inline-flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-800 shadow-xs hover:border-neutral-300"
             >
               <Mail size={16} className="text-amber-500" />
-              <span>ingco-service@ukr.net</span>
+              <span>{CONTACTS.EMAIL}</span>
             </a>
             <Link
               href="/about-us/contacts"

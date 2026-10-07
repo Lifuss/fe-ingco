@@ -6,6 +6,7 @@ import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
+import { CONTACTS } from '@/lib/constants';
 import { GOOGLE_ADS_ID, GA4_MEASUREMENT_ID } from '@/lib/analytics';
 import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
@@ -121,15 +122,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       height: 60,
     },
     image: `${SITE_URL}/logo.png`,
-    telephone: '+380988392107',
-    email: 'info@ingcoua.com.ua',
+    telephone: CONTACTS.PHONES[0].href.replace('tel:', ''),
+    email: CONTACTS.EMAIL,
     priceRange: '$$',
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer'],
     currenciesAccepted: 'UAH',
     contactPoint: [
       {
         '@type': 'ContactPoint',
-        telephone: '+380988392107',
+        telephone: CONTACTS.PHONES[0].href.replace('tel:', ''),
         contactType: 'customer service',
         areaServed: 'UA',
         availableLanguage: ['Ukrainian', 'English'],
