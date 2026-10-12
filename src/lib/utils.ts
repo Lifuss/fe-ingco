@@ -143,6 +143,7 @@ export function normalizeUser(user: unknown): NormalizedUserResult {
   const isB2BVal = !!(raw.isB2B || raw.isB2b);
   return {
     ...raw,
+    surName: typeof raw.surName === 'string' ? raw.surName : '',
     isB2B: isB2BVal,
     isB2b: isB2BVal,
     role: typeof raw.role === 'string' ? raw.role.toLowerCase() : 'user',

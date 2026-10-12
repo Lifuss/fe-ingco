@@ -21,11 +21,16 @@ const baseNameSchema = z
   .min(2, 'Поле повинно містити принаймні 2 символи')
   .max(60, 'Поле не повинно перевищувати 60 символів');
 
+const optionalSurNameSchema = baseNameSchema
+  .regex(nameRegex, 'По батькові може містити тільки літери')
+  .optional()
+  .or(z.literal(''));
+
 // -----SCHEMAS------
 export const registerPartnerSchema = z.object({
   lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
   firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
-  surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
+  surName: optionalSurNameSchema,
   phone: basePhoneSchema,
   edrpou: z.string().regex(/^\d{8}$/, 'Код ЄДРПОУ повинен містити 8 цифр'),
   email: baseEmailSchema,
@@ -36,7 +41,7 @@ export const registerClientSchema = z
   .object({
     lastName: baseNameSchema.regex(nameRegex, 'Прізвище може містити тільки літери'),
     firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
-    surName: baseNameSchema.regex(nameRegex, 'По батькові може містити тільки літери'),
+    surName: optionalSurNameSchema,
     phone: basePhoneSchema,
     email: baseEmailSchema,
     password: basePasswordSchema,

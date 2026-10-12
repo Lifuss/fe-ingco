@@ -87,14 +87,14 @@ export default function RegisterPartnerForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
-        <div className="flex w-full flex-col gap-2">
-          <div className="flex gap-5">
+        <div className="flex w-full flex-col gap-2.5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-2 block text-base" htmlFor="lastName">
+              <label className="mb-1.5 block text-base" htmlFor="lastName">
                 Прізвище <span className="text-red">*</span>
               </label>
               <input
-                className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="lastName"
                 type="text"
                 placeholder="Прізвище"
@@ -103,11 +103,11 @@ export default function RegisterPartnerForm() {
               {errors.lastName && <p className={errorClassName}>{errors.lastName.message}</p>}
             </div>
             <div>
-              <label className="mb-2 block text-base" htmlFor="firstName">
+              <label className="mb-1.5 block text-base" htmlFor="firstName">
                 Ім&apos;я <span className="text-red">*</span>
               </label>
               <input
-                className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="firstName"
                 type="text"
                 placeholder="Ім'я"
@@ -117,25 +117,25 @@ export default function RegisterPartnerForm() {
             </div>
           </div>
           <div>
-            <label className="mb-2 block text-base" htmlFor="surName">
-              По батькові <span className="text-red">*</span>
+            <label className="mb-1.5 block text-base" htmlFor="surName">
+              По батькові
             </label>
             <input
-              className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="surName"
               type="text"
-              placeholder="По батькові"
+              placeholder="По батькові (необов'язково)"
               {...register('surName')}
             />
             {errors.surName && <p className={errorClassName}>{errors.surName.message}</p>}
           </div>
-          <div className="flex gap-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-2 block text-base" htmlFor="phone">
+              <label className="mb-1.5 block text-base" htmlFor="phone">
                 Номер телефону <span className="text-red">*</span>
               </label>
               <input
-                className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="phone"
                 type="phone"
                 placeholder="+38067..."
@@ -145,25 +145,25 @@ export default function RegisterPartnerForm() {
               {errors.phone && <p className={errorClassName}>{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="mb-2 block text-base" htmlFor="edrpou">
+              <label className="mb-1.5 block text-base" htmlFor="edrpou">
                 Код ЄДРПОУ <span className="text-red">*</span>
               </label>
               <input
-                className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+                className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="edrpou"
                 type="text"
-                placeholder="ЄДРПОУ"
+                placeholder="ЄДРПОУ (8 цифр)"
                 {...register('edrpou')}
               />
               {errors.edrpou && <p className={errorClassName}>{errors.edrpou.message}</p>}
             </div>
           </div>
           <div>
-            <label className="mb-2 block text-base" htmlFor="email">
+            <label className="mb-1.5 block text-base" htmlFor="email">
               Email <span className="text-red">*</span>
             </label>
             <input
-              className="border-input-border block w-full rounded-2xl border py-[20px] pl-4 text-base outline-2 placeholder:text-gray-500"
+              className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
               id="email"
               type="email"
               placeholder="Ваш email"
@@ -172,7 +172,7 @@ export default function RegisterPartnerForm() {
             {errors.email && <p className={errorClassName}>{errors.email.message}</p>}
           </div>
           <div>
-            <label className="mb-2 block text-base" htmlFor="about">
+            <label className="mb-1.5 block text-base" htmlFor="about">
               Розкажіть про себе
             </label>
             <textarea

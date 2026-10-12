@@ -85,9 +85,8 @@ const UserForm: React.FC<UserFormProps> = ({ defaultValues, handleSubmit, isEdit
           <input
             type="text"
             name="surName"
-            required
             className={inputStyle}
-            defaultValue={isEditing ? surName : ''}
+            defaultValue={isEditing ? surName || '' : ''}
           />
         </label>
       </div>

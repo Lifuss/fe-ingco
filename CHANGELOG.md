@@ -3,7 +3,14 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [2.12.0] — 2026-10-12
+
+### [Changed] Registration Role Selection UX Redesign & Optional Patronymic (`/auth/register`)
+
+- **Інтерактивні картки вибору типу акаунту (`SwitchRegisterForms.tsx`)**: замінено малопомітні текстові вкладки `Клієнт | Партнер` на дві великі контрастні картки з іконками (`ShoppingBag` для роздрібного клієнта та `Briefcase` для B2B-партнера), індикатором обраного стану (`CheckCircle2`) та мікро-описом для кожного сегмента.
+- **Контекстний інфо-банер (`SwitchRegisterForms.tsx`)**: додано динамічний пояснювальний банер під картками вибору ролі зі швидкою кнопкою перемикання на вкладку «Партнер (B2B)» для оптових покупців.
+- **Компактна двоколонкова сітка форм (`RegisterClient-form.tsx`, `RegisterPartner-form.tsx`, `register/page.tsx`)**: поля `Прізвище` та `Ім'я` об'єднано в один адаптивний рядок (`grid-cols-1 sm:grid-cols-2`), уніфіковано висоту інпутів (`py-[16px]`) та розширено контейнер сторінки реєстрації до `max-w-[500px]`.
+- **Необов'язкове поле «По батькові» (`validationSchema.ts`, `RegisterClient-form.tsx`, `RegisterPartner-form.tsx`, `UserForm.tsx`, `utils.ts`)**: зроблено `surName` опціональним при реєстрації клієнта, B2B-партнера та створенні користувача в адмін-панелі; додано безпечний фолбек `surName` у `normalizeUser`.
 
 ### [Changed] Contact Information Centralization & Legal Pages Refactoring
 

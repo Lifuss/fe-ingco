@@ -9,7 +9,7 @@ interface Register {
   email: string;
   lastName: string;
   firstName: string;
-  surName: string;
+  surName?: string;
   phone: string;
   turnstileToken?: string;
 }

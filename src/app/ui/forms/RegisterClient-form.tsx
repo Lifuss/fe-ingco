@@ -86,50 +86,52 @@ export default function RegisterClientForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
       <div className="flex-1 rounded-lg pb-4">
-        <div className="flex w-full flex-col gap-2">
-          <div>
-            <label className="mb-2 block text-base" htmlFor="lastName">
-              Прізвище <span className="text-red">*</span>
-            </label>
-            <input
-              className={inputStyle}
-              id="lastName"
-              type="text"
-              placeholder="Прізвище"
-              {...register('lastName')}
-            />
-            {errors.lastName && <p className={errorClassName}>{errors.lastName.message}</p>}
-          </div>
+        <div className="flex w-full flex-col gap-2.5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-base" htmlFor="lastName">
+                Прізвище <span className="text-red">*</span>
+              </label>
+              <input
+                className={inputStyle}
+                id="lastName"
+                type="text"
+                placeholder="Прізвище"
+                {...register('lastName')}
+              />
+              {errors.lastName && <p className={errorClassName}>{errors.lastName.message}</p>}
+            </div>
 
-          <div>
-            <label className="mb-2 block text-base" htmlFor="firstName">
-              Ім&apos;я <span className="text-red">*</span>
-            </label>
-            <input
-              className={inputStyle}
-              id="firstName"
-              type="text"
-              placeholder="Ім'я"
-              {...register('firstName')}
-            />
-            {errors.firstName && <p className={errorClassName}>{errors.firstName.message}</p>}
+            <div>
+              <label className="mb-1.5 block text-base" htmlFor="firstName">
+                Ім&apos;я <span className="text-red">*</span>
+              </label>
+              <input
+                className={inputStyle}
+                id="firstName"
+                type="text"
+                placeholder="Ім'я"
+                {...register('firstName')}
+              />
+              {errors.firstName && <p className={errorClassName}>{errors.firstName.message}</p>}
+            </div>
           </div>
           <div>
-            <label className="mb-2 block text-base" htmlFor="surName">
-              По батькові <span className="text-red">*</span>
+            <label className="mb-1.5 block text-base" htmlFor="surName">
+              По батькові
             </label>
             <input
               className={inputStyle}
               id="surName"
               type="text"
-              placeholder="По батькові"
+              placeholder="По батькові (необов'язково)"
               {...register('surName')}
             />
             {errors.surName && <p className={errorClassName}>{errors.surName.message}</p>}
           </div>
-          <div className="flex gap-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-2 block text-base" htmlFor="phone">
+              <label className="mb-1.5 block text-base" htmlFor="phone">
                 Номер телефону <span className="text-red">*</span>
               </label>
               <input
@@ -143,7 +145,7 @@ export default function RegisterClientForm() {
               {errors.phone && <p className={errorClassName}>{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="mb-2 block text-base" htmlFor="email">
+              <label className="mb-1.5 block text-base" htmlFor="email">
                 <div className="inline-flex w-full items-center justify-between">
                   <div>
                     Email
