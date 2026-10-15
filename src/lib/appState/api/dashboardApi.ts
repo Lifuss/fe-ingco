@@ -19,6 +19,7 @@ import {
   UpdateSupportTicketPayload,
   UpdateUserPayload,
   UsersStatsData,
+  FeedsStatusOverview,
 } from './dashboardApi.types';
 
 export * from './dashboardApi.types';
@@ -265,6 +266,12 @@ export const dashboardApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['SystemSetting'],
     }),
+
+    // ----------------- 7. MARKETPLACE FEEDS -----------------
+    getFeedsStatus: build.query<FeedsStatusOverview, void>({
+      query: () => ({ url: '/feeds/status' }),
+      providesTags: ['FeedsStatus'],
+    }),
   }),
 });
 
@@ -286,4 +293,5 @@ export const {
   useGetSyncLogsQuery,
   useGetSystemSettingsQuery,
   useUpdateSystemSettingMutation,
+  useGetFeedsStatusQuery,
 } = dashboardApi;

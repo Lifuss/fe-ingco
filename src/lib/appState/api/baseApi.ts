@@ -51,6 +51,7 @@ export const baseApi = createApi({
     'DashboardStats',
     'SyncLog',
     'SystemSetting',
+    'FeedsStatus',
   ],
   endpoints: () => ({}), // Endpoints injected via code-splitting in separate files
 });

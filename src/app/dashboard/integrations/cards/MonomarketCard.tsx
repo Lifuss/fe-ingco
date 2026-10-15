@@ -3,17 +3,12 @@
 import React, { useState } from 'react';
 import { Store, ShieldCheck, ChevronDown, ChevronUp, ExternalLink, Info } from 'lucide-react';
 import FeedCopyLink from '../FeedCopyLink';
-
-const MONO_WHITELIST_IPS = [
-  '13.53.52.37',
-  '16.16.42.238',
-  '13.50.222.109',
-  '16.171.78.185',
-  '13.48.150.45',
-];
+import { useGetFeedsStatusQuery } from '@/lib/appState/api/dashboardApi';
 
 export default function MonomarketCard() {
   const [showDetails, setShowDetails] = useState(false);
+  const { data: feedsStatus } = useGetFeedsStatusQuery();
+  const whitelistIps = feedsStatus?.monomarketWhitelistIps;
 
   return (
     <div className="flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs transition-all duration-200 hover:shadow-md">
@@ -93,18 +88,35 @@ export default function MonomarketCard() {
             <div className="mb-2 font-bold text-neutral-900">
               IP-адреси серверів monoмаркет для завантаження фотографій:
             </div>
-            <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
-              {MONO_WHITELIST_IPS.map((ip) => (
-                <span
-                  key={ip}
-                  className="rounded-md border border-amber-200 bg-white px-2 py-0.5 text-neutral-800 shadow-2xs"
-                >
-                  {ip}
-                </span>
-              ))}
-            </div>
+            {whitelistIps && whitelistIps.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                {whitelistIps.map((ip) => (
+                  <span
+                    key={ip}
+                    className="rounded-md border border-amber-200 bg-white px-2 py-0.5 text-neutral-800 shadow-2xs"
+                  >
+                    {ip}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="text-[11px] text-neutral-500 italic">
+                Завантаження переліку довірених IP...
+              </div>
+            )}
 
-            <ul className="mt-3 list-disc space-y-1 pl-4 text-neutral-600">
+            <ul className="mt-3 list-disc space-y-1.5 pl-4 text-neutral-600">
+              <li className="-ml-4 list-none rounded-lg border-l-2 border-amber-500 bg-amber-100/70 p-2 pl-3 text-neutral-800">
+                <strong>⚡ Шеринг товарів (Shop-in-Shop):</strong> Якщо ділитися посиланням на товар
+                безпосередньо з нашої брендової вітрини (shop-in-shop у mono), покупець побачить
+                виключно пропозицію INGCO без конкурентів. Обов&apos;язково використовуйте цю
+                функцію при публікації в соцмережах або надсиланні клієнтам.
+              </li>
+              <li>
+                <strong>Захист хостингу (429 / Timeouts):</strong> Усі 9 IP-адрес повинні бути
+                додані у Whitelist на сервері (Nginx / Cloudflare / Fail2ban) для безперешкодного
+                завантаження зображень краулером.
+              </li>
               <li>
                 <strong>Фільтрація:</strong> У фід потрапляють тільки нові товари в наявності
                 (залишок &gt; 0) з наявним штрихкодом.

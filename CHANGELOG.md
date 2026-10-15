@@ -3,6 +3,16 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
+## [2.12.1] — 2026-10-15
+
+### [Security] Dynamic Monomarket Whitelist & Shop-in-Shop Guidance (`/dashboard/integrations`)
+
+- **Видалення захардкоджених IP-адрес із публічного репозиторію (`MonomarketCard.tsx`)**: видалено константу `MONO_WHITELIST_IPS`. Тепер список довірених IP-адрес для вайтлістингу на сервері підвантажується динамічно через захищений бекенд-ендпоінт `GET /api/feeds/status` лише авторизованим адміністраторам.
+- **RTK Query інтеграція (`dashboardApi.ts`, `dashboardApi.types.ts`, `baseApi.ts`)**: додано тип `FeedsStatusOverview`, тег кешу `FeedsStatus` та хук `useGetFeedsStatusQuery`.
+- **Інструкції щодо Shop-in-Shop шерингу та 429 (`MonomarketCard.tsx`)**: додано роз'яснення щодо переваг шерингу лінків із брендової вітрини у monobank та рекомендації щодо вайтлістингу IP на рівні Nginx / Fail2ban.
+
+---
+
 ## [2.12.0] — 2026-10-12
 
 ### [Changed] Registration Role Selection UX Redesign & Optional Patronymic (`/auth/register`)

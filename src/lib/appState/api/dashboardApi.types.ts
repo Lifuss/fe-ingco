@@ -153,3 +153,13 @@ export interface SystemSettingItem {
   updatedAt: string;
   updatedBy?: SyncLogUser | null;
 }
+
+export interface FeedsStatusOverview {
+  totalProducts: number;
+  inStockProducts: number;
+  eligibleWithBarcode: number;
+  monomarketLastGeneratedAt: string | null;
+  promLastGeneratedAt: string | null;
+  cacheTtlMinutes?: number;
+  monomarketWhitelistIps: string[];
+}
