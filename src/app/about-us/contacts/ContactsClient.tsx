@@ -27,7 +27,7 @@ const BRANCHES: BranchLocation[] = [
     id: 'vyzhnytsia',
     title: 'Вижницьке відділення',
     address: 'м. Вижниця, Чернівецька обл. Вул. Українська 100/2',
-    schedule: ['Пн - Пт : 08:00-18:00', 'Cб - Нд : 09:00-15:00'],
+    schedule: CONTACTS.WORKING_HOURS,
     mapSrc:
       'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1116.994512468906!2d25.19615325692938!3d48.25137099752174!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4736bf9f6f5625a5%3A0xec669a8aaba990f7!2sINGCO!5e0!3m2!1suk!2sua!4v1707399697985!5m2!1suk!2sua',
   },
@@ -35,7 +35,7 @@ const BRANCHES: BranchLocation[] = [
     id: 'hertsa',
     title: 'Герцаївське відділення',
     address: 'м. Герца, Чернівецька обл. Вул. Штефана Великого 12',
-    schedule: ['Пн - Пт : 08:00-18:00', 'Cб - Нд : 09:00-15:00'],
+    schedule: CONTACTS.WORKING_HOURS,
     mapSrc:
       'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2661.983445242985!2d26.259705065174927!3d48.14912438354212!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473470fde4487dad%3A0x867d96e0ac92f7fa!2z0LLRg9C70LjRhtGPINCo0YLQtdGE0LDQvdCwINCS0LXQu9C40LrQvtCz0L4sIDEyLCDQk9C10YDRhtCwLCDQp9C10YDQvdGW0LLQtdGG0YzQutCwINC-0LHQu9Cw0YHRgtGMLCA2MDUwMA!5e0!3m2!1suk!2sua!4v1707399912138!5m2!1suk!2sua',
   },

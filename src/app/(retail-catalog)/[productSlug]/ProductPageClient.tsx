@@ -24,9 +24,8 @@ import {
   Phone,
 } from 'lucide-react';
 import { getSpecIcon, shouldShowBatteryWarning } from '@/lib/productUtils';
-import { isProductOnSale } from '@/lib/utils';
-
-import { getYoutubeEmbedUrl } from '@/lib/utils';
+import { isProductOnSale, normalizeProduct, getYoutubeEmbedUrl } from '@/lib/utils';
+import { CONTACTS } from '@/lib/constants';
 
 import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 import { useGetProductBySlugQuery, useGetProductsQuery } from '@/lib/appState/api/productsApi';
@@ -75,9 +74,11 @@ export default function ProductPageClient({
   const isAdminClient = isClient && (user?.role === 'ADMIN' || user?.role === 'admin');
   const isAdmin = Boolean(isAdminServer || isAdminClient);
 
-  const { data: queriedProduct } = useGetProductBySlugQuery(productSlug);
+  const { data: queriedProduct } = useGetProductBySlugQuery(productSlug, {
+    skip: !isB2b && Boolean(initialProduct),
+  });
   // Use initialProduct as fallback to ensure zero layout shift during SSR/Hydration
-  const product = queriedProduct || initialProduct;
+  const product = queriedProduct || normalizeProduct(initialProduct);
 
   const { data: categories = [] } = useGetCategoriesQuery('');
   const isAuth = useAppSelector((state) => state.persistedAuthReducer.isAuthenticated);
@@ -657,6 +658,8 @@ export default function ProductPageClient({
                             <Minus size={14} />
                           </button>
                           <input
+                            id="product-quantity-input"
+                            name="quantity"
                             type="text"
                             value={quantity}
                             onChange={handleQtyInputChange}
@@ -726,7 +729,7 @@ export default function ProductPageClient({
                           Відправка сьогодні
                         </span>
                         <span className="text-[11px] text-neutral-500">
-                          При замовленні до 16:00
+                          При замовленні до {CONTACTS.SHIPPING_CUTOFF_TIME}
                         </span>
                       </div>
                     </div>

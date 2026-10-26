@@ -32,6 +32,23 @@ interface RawProduct extends Omit<
   badges?: { id: string | number; name: string; backgroundColor?: string; textColor?: string }[];
 }
 
+function cleanCharacteristicString(rawStr: string, unit?: string | null): string {
+  const str = rawStr.trim();
+  if (!str || !unit) return str;
+  const cleanUnit = unit.trim();
+  if (!cleanUnit) return str;
+
+  const unitRegex = /[а-яіїєґА-ЯІЇЄҐa-zA-Z%°"']/;
+  const suffix = ` ${cleanUnit}`;
+  if (str.toLowerCase().endsWith(suffix.toLowerCase())) {
+    const prefix = str.slice(0, str.length - suffix.length).trim();
+    if (unitRegex.test(prefix.replace(/[\d\s.,~≈><±()-]/g, ''))) {
+      return prefix;
+    }
+  }
+  return str;
+}
+
 // Prisma serializes Decimal fields as strings. This converts them back to numbers.
 export function normalizeProduct(p: unknown): Product {
   if (!p || typeof p !== 'object') return p as Product;
@@ -42,8 +59,26 @@ export function normalizeProduct(p: unknown): Product {
       ? Number(raw.priceRetailRecommendation)
       : 0;
 
+  const normalizedCharacteristics = Array.isArray(raw.characteristics)
+    ? raw.characteristics.map((char) => {
+        if (!char || typeof char !== 'object') return char;
+        const unit = char.unit;
+        const value = Array.isArray(char.value)
+          ? char.value.map((v) =>
+              typeof v === 'string' ? cleanCharacteristicString(v, unit) : String(v ?? ''),
+            )
+          : typeof char.value === 'string'
+            ? cleanCharacteristicString(char.value, unit)
+            : char.value;
+        return { ...char, value };
+      })
+    : raw.characteristics;
+
   return {
     ...raw,
+    article: typeof raw.article === 'string' ? raw.article.trim() : raw.article,
+    name: typeof raw.name === 'string' ? raw.name.trim() : raw.name,
+    characteristics: normalizedCharacteristics,
     category: raw.mainCategory || raw.category || null,
     price: priceNum,
     priceBulk:

@@ -192,7 +192,12 @@ const ProductCard = ({
           )}
         >
           {/* Absolute link overlay for SEO and clickability */}
-          <Link href={`/${slug}`} className="absolute inset-0 z-0 rounded-2xl" aria-label={name} />
+          <Link
+            href={`/${slug}`}
+            prefetch={false}
+            className="absolute inset-0 z-0 rounded-2xl"
+            aria-label={name}
+          />
 
           <div className="pointer-events-none relative z-10 flex grow flex-col">
             {/* Image container */}
@@ -398,6 +403,8 @@ const ProductCard = ({
                         <Minus size={13} strokeWidth={2.5} />
                       </button>
                       <input
+                        id={`qty-${id}`}
+                        name="quantity"
                         type="number"
                         min="1"
                         value={quantity}

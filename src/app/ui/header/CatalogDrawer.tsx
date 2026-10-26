@@ -61,14 +61,25 @@ export default function CatalogDrawer({
       }
     });
 
+    // Prune empty leaf categories (count === 0 and no non-empty children)
+    const pruneEmptyNodes = (nodes: CategoryNode[]): CategoryNode[] =>
+      nodes
+        .map((node) => {
+          node.children = pruneEmptyNodes(node.children);
+          return node;
+        })
+        .filter((node) => node.count === undefined || node.count > 0 || node.children.length > 0);
+
+    const nonEmptyRoots = pruneEmptyNodes(roots);
+
     // Sort roots and child branches by renderSort
     const sortNodes = (nodes: CategoryNode[]) => {
       nodes.sort((a, b) => a.renderSort - b.renderSort);
       nodes.forEach((n) => sortNodes(n.children));
     };
-    sortNodes(roots);
+    sortNodes(nonEmptyRoots);
 
-    return { roots, map };
+    return { roots: nonEmptyRoots, map };
   }, [rawCategories]);
 
   const rootCategories = categoryTree.roots;

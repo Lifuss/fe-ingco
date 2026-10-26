@@ -14,6 +14,7 @@ export default function MobileActions() {
     <div className="flex items-center gap-2 lg:hidden">
       <Link
         href="/favorites"
+        prefetch={false}
         className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
         aria-label="Favorites"
       >
@@ -22,6 +23,7 @@ export default function MobileActions() {
 
       <Link
         href="/cart"
+        prefetch={false}
         className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 relative flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
         aria-label="Cart"
       >
@@ -40,6 +42,7 @@ export default function MobileActions() {
       ) : (
         <Link
           href="/auth/login"
+          prefetch={false}
           className="text-primary-600 hover:bg-primary-50 hover:text-primary-800 flex cursor-pointer items-center justify-center rounded-lg p-2 transition-colors"
           aria-label="Profile"
         >

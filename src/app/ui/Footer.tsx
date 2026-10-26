@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Icon from './assets/Icon';
-import { SOCIAL_LINKS, CONTACTS } from '@/lib/constants';
+import { SOCIAL_LINKS, CONTACTS, CATEGORY_IDS } from '@/lib/constants';
 import Logo from './Logo';
 
 interface FooterProps {
@@ -31,7 +31,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
       url: SOCIAL_LINKS.TIKTOK,
       label: 'Перехід до сторінки ingco в tiktok',
     },
-  ];
+  ].filter((social) => Boolean(social.url));
 
   return (
     <footer className="flex w-full flex-col gap-10 border-t border-[#E5E3DD] bg-[#FFFDFB] px-6 py-12 select-none md:px-[60px]">
@@ -49,6 +49,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href={`${baseUrl}?catalog=true`}
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Каталог
@@ -56,7 +57,8 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             </li>
             <li>
               <Link
-                href={`${baseUrl}?query=акція`}
+                href={`${baseUrl}?category=${CATEGORY_IDS.PROMO}`}
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Акції
@@ -65,6 +67,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us/support"
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Підтримка
@@ -73,6 +76,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us/partnership"
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Оптовий каталог
@@ -91,6 +95,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
               <Link
                 href={social.url}
                 key={social.name}
+                prefetch={false}
                 rel="nofollow noopener noreferrer"
                 target="_blank"
                 aria-label={social.label}
@@ -114,6 +119,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us"
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Про нас
@@ -122,6 +128,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/legal/terms"
+                prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >
                 Умови та правила
@@ -137,6 +144,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             <li>
               <Link
                 href="/about-us/contacts"
+                prefetch={false}
                 className="cursor-pointer font-bold text-neutral-900 transition-colors hover:text-amber-700"
               >
                 Фізичні магазини

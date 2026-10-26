@@ -15,6 +15,7 @@ export default function HeaderActions() {
       {/* 1. Favorites Action */}
       <Link
         href="/favorites"
+        prefetch={false}
         className="text-primary-600 hover:text-primary-800 flex cursor-pointer flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold transition-colors select-none"
       >
         <Heart size={22} className="fill-none stroke-current stroke-[2.3]" />
@@ -24,6 +25,7 @@ export default function HeaderActions() {
       {/* 2. Cart Action */}
       <Link
         href="/cart"
+        prefetch={false}
         className="text-primary-600 hover:text-primary-800 relative flex cursor-pointer flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold transition-colors select-none"
       >
         <div className="relative">
@@ -43,6 +45,7 @@ export default function HeaderActions() {
       ) : (
         <Link
           href="/auth/login"
+          prefetch={false}
           className="text-primary-600 hover:text-primary-800 flex cursor-pointer flex-col items-center justify-center gap-1 font-sans text-[11px] font-bold transition-colors select-none"
         >
           <Icon

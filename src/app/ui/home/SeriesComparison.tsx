@@ -424,9 +424,9 @@ function ProductCarouselCard({
         <Image
           src={imageUrl}
           alt={product.name}
-          width={150}
-          height={150}
-          className="h-auto max-h-[140px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="150px"
+          className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
         />
         {/* Sale Tag */}
         {isSale && (
@@ -451,6 +451,7 @@ function ProductCarouselCard({
         {/* Title */}
         <Link
           href={`/${product.slug}`}
+          prefetch={false}
           className="font-display hover:text-primary-500 line-clamp-2 min-h-[40px] text-sm font-semibold text-neutral-800 transition-colors"
         >
           {product.name}

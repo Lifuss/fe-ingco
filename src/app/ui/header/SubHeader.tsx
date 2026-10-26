@@ -82,6 +82,7 @@ function SubHeaderLink({ href, label, active }: SubHeaderLinkProps) {
   return (
     <Link
       href={href}
+      prefetch={false}
       aria-current={active ? 'page' : undefined}
       className={cn(
         'relative inline-flex items-center rounded-md px-2.5 py-1 font-semibold text-neutral-800 transition-all duration-200',

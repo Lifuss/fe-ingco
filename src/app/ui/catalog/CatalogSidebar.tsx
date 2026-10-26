@@ -82,14 +82,30 @@ const CatalogSidebar = () => {
       }
     });
 
+    const pruneEmptyNodes = (nodes: SidebarCategoryNode[]): SidebarCategoryNode[] =>
+      nodes
+        .map((node) => {
+          node.children = pruneEmptyNodes(node.children);
+          return node;
+        })
+        .filter(
+          (node) =>
+            node.count === undefined ||
+            node.count > 0 ||
+            node.children.length > 0 ||
+            String(node.id) === activeCategoryId,
+        );
+
+    const nonEmptyRoots = pruneEmptyNodes(roots);
+
     const sortNodes = (nodes: SidebarCategoryNode[]) => {
       nodes.sort((a, b) => a.renderSort - b.renderSort);
       nodes.forEach((n) => sortNodes(n.children));
     };
-    sortNodes(roots);
+    sortNodes(nonEmptyRoots);
 
-    return { roots, map };
-  }, [productsCategories]);
+    return { roots: nonEmptyRoots, map };
+  }, [productsCategories, activeCategoryId]);
 
   const activeNode = useMemo(() => {
     if (!activeCategoryId) return null;

@@ -112,7 +112,9 @@ export default function ConsultationCTA() {
                 </label>
                 <input
                   id="name-input"
+                  name="name"
                   type="text"
+                  autoComplete="name"
                   placeholder="Введіть ваше ім’я"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -133,7 +135,9 @@ export default function ConsultationCTA() {
                   </span>
                   <input
                     id="phone-input"
+                    name="phone"
                     type="tel"
+                    autoComplete="tel"
                     placeholder="93 123 45 67"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 9))}

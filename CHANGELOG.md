@@ -3,6 +3,31 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
+## [2.12.2] — 2026-10-26
+
+### [Fixed] Catalog Navigation Links, Empty Subcategories, Social Icons & Product Data Normalization
+
+- **Навігація та посилання категорій (`constants.ts`, `CategoryGrid.tsx`, `RetailHero.tsx`, `Footer.tsx`, `HotOffers.tsx`, `productUtils.tsx`)**:
+  - Оновлено ID категорій до актуальних значень БД (`BATTERY_TOOL: '11'`, `HAND_TOOL: '37'`, `POWER_TOOL: '25'`, `MEASURE_TOOL: '21'`, `PROMO: '52'`).
+  - Виправлено посилання карток «Акумуляторний інструмент» (`/?category=11`), «Вимірювальні прилади» (`/?category=21`) та кнопок «Дивитися акції» / «Акції» (`/?category=52`).
+  - Приховано порожні листові підкатегорії (`count: 0`) у клієнтському дереві `CatalogDrawer.tsx` та `CatalogSidebar.tsx`.
+- **Нормалізація даних товарів та форм (`utils.ts`, `ConsultationCTA.tsx`, `ProductCard.tsx`, `ProductPageClient.tsx`)**:
+  - Додано `.trim()` для `article` і `name` та очищення задвоєних одиниць виміру в `normalizeProduct`.
+  - Додано атрибути `id`, `name` та `autoComplete` для полів форми консультації та інпутів кількості товару.
+- **Контакти, графік роботи та SVG-іконки (`constants.ts`, `ContactsClient.tsx`, `legal/shipping/page.tsx`, `layout.tsx`, `sprite.svg`)**:
+  - Уніфіковано час відправки «день у день» (`до 15:00`) та графік роботи відділень і JSON-LD `LocalBusiness` (`Пн - Пт : 09:00 - 18:00`, `Сб - Нд : 09:00 - 15:00`).
+  - Прибрано захардкоджений сторонній TikTok-акаунт із `constants.ts` та JSON-LD `sameAs`; додано фільтрацію порожніх соцмереж у `Footer.tsx`.
+  - Додано `viewBox="0 0 32 32"` для іконок `telegram` та `viber` у `public/icons/sprite.svg`, що усунуло обрізання іконок у футері.
+
+### [Changed] Performance, Licensing & Security Headers (`ProductPageClient.tsx`, `layout.tsx`, `next.config.ts`)
+
+- **Усунення дубльованого запиту товару**: додано `{ skip: !isB2b && Boolean(initialProduct) }` у `useGetProductBySlugQuery` на сторінці товару.
+- **Оптимізація RSC-префетчів та зображень у слайдерах**: додано `prefetch={false}` на картках каталогу, слайдах каруселей і другорядних посиланнях хедера/футера; переведено `<Image>` у `HotOffers` та `SeriesComparison` на `fill` + `sizes`.
+- **Заміна Trial-шрифту на `Manrope`**: видалено `TT_Firs_Neue_Trial` та підключено ліцензійно чистий Google Font `Manrope` (`next/font/google`).
+- **Content-Security-Policy (`next.config.ts`)**: додано заголовок `Content-Security-Policy` для захисту від XSS.
+
+---
+
 ## [2.12.1] — 2026-10-15
 
 ### [Security] Dynamic Monomarket Whitelist & Shop-in-Shop Guidance (`/dashboard/integrations`)

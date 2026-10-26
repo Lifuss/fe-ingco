@@ -6,34 +6,14 @@ import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
-import { CONTACTS } from '@/lib/constants';
+import { CONTACTS, SOCIAL_LINKS } from '@/lib/constants';
 import { GOOGLE_ADS_ID, GA4_MEASUREMENT_ID } from '@/lib/analytics';
-import localFont from 'next/font/local';
+import { Manrope } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
-const ttFirs = localFont({
-  src: [
-    {
-      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Regular.ttf',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: '../lib/fonts/TT-Firs-Neue-Trial/TT-Firs-Neue-Trial-Medium.ttf',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
+const manrope = Manrope({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-sans',
   display: 'swap',
 });
@@ -137,8 +117,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         hoursAvailable: {
           '@type': 'OpeningHoursSpecification',
           dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-          opens: '08:00',
-          closes: '18:00',
+          opens: CONTACTS.WEEKDAY_OPENS,
+          closes: CONTACTS.WEEKDAY_CLOSES,
         },
       },
     ],
@@ -155,18 +135,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       latitude: '48.251556',
       longitude: '25.194722',
     },
-    openingHours: 'Mo-Fr 08:00-18:00, Sa-Su 09:00-15:00',
+    openingHours: CONTACTS.SCHEMA_OPENING_HOURS,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'INGCO Tools Catalog',
       itemListElement: [],
     },
     sameAs: [
-      'https://www.facebook.com/people/INGCO/61556075234289/',
-      'https://t.me/+IePpWvT99J02NTJi',
-      'https://www.tiktok.com/@free107w?_t=8nY92g7z3Rd&_r=1',
-      'https://invite.viber.com/?g=KiAyrPV8FlMrhU2pjsAWT-r7V3jGwmv6',
-    ],
+      SOCIAL_LINKS.FACEBOOK,
+      SOCIAL_LINKS.TELEGRAM,
+      SOCIAL_LINKS.TIKTOK,
+      SOCIAL_LINKS.VIBER,
+    ].filter(Boolean),
     areaServed: {
       '@type': 'Country',
       name: 'Ukraine',
@@ -231,7 +211,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="uk"
       data-scroll-behavior="smooth"
-      className={cn('font-sans', ttFirs.variable)}
+      className={cn('font-sans', manrope.variable)}
       suppressHydrationWarning
     >
       <head>

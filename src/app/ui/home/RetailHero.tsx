@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Percent } from 'lucide-react';
+import { CATEGORY_IDS } from '@/lib/constants';
 
 export default function RetailHero() {
   return (
@@ -51,7 +52,7 @@ export default function RetailHero() {
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/?catalog=true&promo=true"
+              href={`/?category=${CATEGORY_IDS.PROMO}`}
               className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-white/20 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-900 focus:outline-none active:bg-white/30 md:text-base"
               aria-label="Дивитися акції"
             >

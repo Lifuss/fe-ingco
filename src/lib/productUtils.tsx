@@ -88,7 +88,7 @@ export const shouldShowBatteryWarning = (prod: Product): boolean => {
   const articleLower = prod.article?.toLowerCase() || '';
 
   const hasBatteryCategory = prod.categories?.some(
-    (c) => c.name?.toLowerCase().includes('акумулятор') || c.id === 1 || c.id === 4,
+    (c) => c.name?.toLowerCase().includes('акумулятор') || c.id === 11 || c.id === 12,
   );
 
   const isBatteryOrChargerCategory = prod.categories?.some(

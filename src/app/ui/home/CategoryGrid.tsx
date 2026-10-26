@@ -11,7 +11,7 @@ export default function CategoryGrid() {
   const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
   const getCategoryIdByName = (name: string, fallback: string) => {
-    const matched = categoriesList.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    const matched = categoriesList.find((c) => c.name.toLowerCase().includes(name.toLowerCase()));
     return matched ? String(matched.id) : fallback;
   };
 
@@ -37,7 +37,7 @@ export default function CategoryGrid() {
       title: 'Вимірювальні прилади',
       subtitle: '',
       image: '/categories/measuretools.webp',
-      href: '/?query=лазер',
+      href: `/?category=${getCategoryIdByName('Вимірювальна техніка', CATEGORY_IDS.MEASURE_TOOL)}`,
       span: 'h-[220px]',
     },
     {

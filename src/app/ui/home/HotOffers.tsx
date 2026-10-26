@@ -34,7 +34,7 @@ export default function HotOffers({ products }: HotOffersProps) {
   const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
   const batteryToolCategoryId = String(
-    categoriesList.find((c) => c.name.toLowerCase() === 'акумуляторний інструмент')?.id ||
+    categoriesList.find((c) => c.name.toLowerCase().includes('акумуляторний інструмент'))?.id ||
       CATEGORY_IDS.BATTERY_TOOL,
   );
   const p20sLineCategoryId = String(
@@ -365,9 +365,9 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
         <Image
           src={imageUrl}
           alt={product.name}
-          width={180}
-          height={180}
-          className="h-auto max-h-[150px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="180px"
+          className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
@@ -386,6 +386,7 @@ function HotOfferCard({ product, activeTab, isFav, onFavClick, onCartClick }: Ho
         {/* Title */}
         <Link
           href={`/${product.slug}`}
+          prefetch={false}
           className="font-display hover:text-primary-500 line-clamp-2 min-h-[40px] text-sm font-semibold text-neutral-800 transition-colors"
         >
           {product.name}
