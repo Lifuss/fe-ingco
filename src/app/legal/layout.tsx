@@ -1,11 +1,17 @@
 import { generatePageMetadata } from '@/lib/metadata';
 import Link from 'next/link';
 
-export const metadata = generatePageMetadata({
-  title: 'Юридичні документи',
-  description: 'Публічна оферта, політика конфіденційності та інші юридичні документи INGCO',
-  path: '/legal',
-});
+export const metadata = {
+  ...generatePageMetadata({
+    title: 'Юридичні документи',
+    description: 'Публічна оферта, політика конфіденційності та інші юридичні документи INGCO',
+    path: '/legal',
+  }),
+  title: {
+    default: 'Юридичні документи',
+    template: '%s | INGCO',
+  },
+};
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
   const legalPages = [

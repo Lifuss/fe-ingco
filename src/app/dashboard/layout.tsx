@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect, useSyncExternalStore } from 'react';
+import { ReactNode, useState, useEffect, useSyncExternalStore, Suspense } from 'react';
 import Sidebar from './Sidebar';
 import Link from 'next/link';
 import { Menu, Store } from 'lucide-react';
@@ -103,7 +103,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
       {/* Main Content Area */}
       <main className="w-full min-w-0 flex-1 overflow-x-hidden px-4 py-6 sm:px-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
       </main>
     </div>
   );

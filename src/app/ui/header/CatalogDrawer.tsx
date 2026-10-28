@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Category } from '@/lib/types';
-import { CATEGORY_IDS } from '@/lib/constants';
+import { CATEGORY_IDS, CATEGORY_SLUGS } from '@/lib/constants';
 
 interface CatalogDrawerProps {
   isOpen: boolean;
@@ -241,7 +241,7 @@ export default function CatalogDrawer({
 
             {/* Special Promo Item */}
             <Link
-              href={getSearchUrl(CATEGORY_IDS.PROMO)}
+              href={getSearchUrl(CATEGORY_IDS.PROMO, CATEGORY_SLUGS.PROMO)}
               onClick={onClose}
               className="text-primary-600 font-display mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-orange-100 bg-orange-50 px-4 py-3 text-sm font-bold tracking-wider uppercase"
             >
@@ -304,7 +304,7 @@ export default function CatalogDrawer({
 
               {/* Bottom Special: Hot Deals / Offers */}
               <Link
-                href={getSearchUrl(CATEGORY_IDS.PROMO)}
+                href={getSearchUrl(CATEGORY_IDS.PROMO, CATEGORY_SLUGS.PROMO)}
                 onClick={onClose}
                 className="text-primary-600 font-display mt-6 flex cursor-pointer items-center gap-3 rounded-lg border border-orange-200/50 bg-orange-50 px-4 py-3.5 text-sm font-bold tracking-wider uppercase shadow-sm shadow-orange-500/5 transition-all duration-200 hover:bg-orange-100"
               >

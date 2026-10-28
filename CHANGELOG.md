@@ -3,6 +3,27 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
+## [2.12.3] — 2026-10-28
+
+### [Fixed] SSR HTML Rendering, Head Metadata, Soft 404, Sitemap & Category SEO Architecture
+
+- **Розблокування SSR HTML та прискорення LCP (`StoreProvider.tsx`, `RetailHero.tsx`)**:
+  - Видалено блокуючу обгортку `<PersistGate loading={null}>`, яка повертала порожній `<body>` під час SSR на всіх сторінках сайту. Тепер сервер одразу віддає повноцінну HTML-розмітку (`<h1>`, `<h2>`, `<a href>`, JSON-LD), а затримка завантаження LCP-банера на головній зменшилася з `1 627 ms` до `18 ms` (загальний LCP покращився з `1 914 ms` до `619 ms`).
+  - Додано атрибут `fetchPriority="high"` та синхронізовано `aria-label` для головного банера в `RetailHero.tsx`.
+- **Рендеринг мета-тегів у `<head>` та усунення Soft 404 (`next.config.ts`, `[productSlug]/page.tsx`)**:
+  - Додано `htmlLimitedBots: /.*/` у `next.config.ts`, що гарантує рендеринг `<title>`, `<meta name="description">`, `<link rel="canonical">` та OpenGraph-тегів безпосередньо в `<head>` (оцінка Lighthouse SEO зросла з `92` до **`100`** на всіх сторінках).
+  - Об'єднано `generateMetadata` та JSON-LD `Product` у `[productSlug]/page.tsx` і видалено надлишковий `[productSlug]/layout.tsx`, завдяки чому неіснуючі URL товарів повертають коректний статус `HTTP 404` замість `200 OK` (Soft 404).
+- **Внутрішня перелінковка на ЧПУ-категорії `/categories/[slug]` та SSR каталогу (`constants.ts`, `CategoryGrid.tsx`, `RetailHero.tsx`, `Footer.tsx`, `CatalogDrawer.tsx`, `ProductPageClient.tsx`, `categories/[categorySlug]/page.tsx`, `serverData.ts`)**:
+  - Переведено внутрішні посилання категорій і акцій з `noindex`-параметрів `/?category=ID` на індексовані ЧПУ-маршрути `/categories/[slug]`.
+  - Реалізовано побудову повного ланцюжка батьківських категорій (`parentId`) у хлібних крихтах товару та JSON-LD `BreadcrumbList`.
+  - Додано серверне завантаження початкового списку товарів та категорії (`getCategoryBySlug`, `getCategoryProducts`) на `/categories/[categorySlug]` для SSR-рендерингу `<h1>`, карток товарів і JSON-LD `ItemList`.
+- **Оптимізація Sitemap, шаблонів `<title>` та ієрархії заголовків (`next-sitemap.config.js`, `metadata.ts`, `CatalogSidebar.tsx`, `ProductBlockList.tsx`)**:
+  - У `next-sitemap.config.js` додано кореневу сторінку `/` (`priority: 1.0`), виключено закриту сторінку `/export*` та порожні категорії (`count: 0`).
+  - Усунено дублювання артикулів у `<title>` товарів та подвійні суфікси `| INGCO Україна | INGCO` на інформаційних сторінках; відновлено шаблон `%s | INGCO` для `/legal/*`.
+  - Виправлено ієрархію заголовків `h1 -> h2 -> h3` у каталозі (`heading-order`).
+
+---
+
 ## [2.12.2] — 2026-10-26
 
 ### [Fixed] Catalog Navigation Links, Empty Subcategories, Social Icons & Product Data Normalization

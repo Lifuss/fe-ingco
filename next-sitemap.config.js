@@ -17,6 +17,7 @@ module.exports = {
     '/cart',
     '/favorites',
     '/history',
+    '/export*',
     '/retail*',
   ],
 
@@ -42,7 +43,15 @@ module.exports = {
   additionalPaths: async (config) => {
     const apiBase = process.env.NEXT_PUBLIC_API;
     console.log('--- Sitemap generation apiBase:', apiBase);
-    if (!apiBase) return [];
+    const rootPath = [
+      {
+        loc: config.siteUrl,
+        lastmod: new Date().toISOString(),
+        changefreq: 'daily',
+        priority: 1.0,
+      },
+    ];
+    if (!apiBase) return rootPath;
 
     try {
       const limit = 100;
@@ -95,11 +104,17 @@ module.exports = {
         console.log('--- Fetching categories...');
         const catRes = await fetch(`${apiBase}/api/categories`);
         if (catRes.ok) {
-          /** @type {Array<{ slug?: string, updatedAt?: string }>} */
+          /** @type {Array<{ slug?: string, updatedAt?: string, showInMenu?: boolean, count?: number }>} */
           const categories = await catRes.json();
           console.log(`--- Fetched ${categories.length} categories`);
           categoryPaths = categories
-            .filter((c) => typeof c.slug === 'string' && c.slug.length > 0)
+            .filter(
+              (c) =>
+                typeof c.slug === 'string' &&
+                c.slug.length > 0 &&
+                c.showInMenu !== false &&
+                (c.count === undefined || c.count > 0),
+            )
             .map((c) => ({
               loc: `${config.siteUrl}/categories/${c.slug}`,
               lastmod: c.updatedAt || new Date().toISOString(),
@@ -113,11 +128,13 @@ module.exports = {
         console.error('Failed to fetch categories for sitemap:', err);
       }
 
-      console.log(`--- Returning ${categoryPaths.length + productPaths.length} additional paths`);
-      return categoryPaths.concat(productPaths);
+      console.log(
+        `--- Returning ${rootPath.length + categoryPaths.length + productPaths.length} additional paths`,
+      );
+      return rootPath.concat(categoryPaths, productPaths);
     } catch (_error) {
       console.error('--- Sitemap additionalPaths main error:', _error);
-      return [];
+      return rootPath;
     }
   },
 };

@@ -6,11 +6,13 @@ import { useActiveCategory, useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { setShopView } from '@/lib/appState/main/slice';
 import { LayoutGrid, List, ChevronDown } from 'lucide-react';
 import Breadcrumbs from '../Breadcrumbs';
+import { Category } from '@/lib/types';
 
 interface FilterBlockProps {
   listType: 'partner' | 'retail';
   total?: number;
   shownCount?: number;
+  initialCategory?: Category;
 }
 
 export type sortValueType = 'default' | 'popular' | 'cheap' | 'expensive' | 'name';
@@ -22,7 +24,12 @@ const sortOptions: { label: string; sortValue: sortValueType }[] = [
   { label: 'За назвою', sortValue: 'name' },
 ];
 
-const FiltersBlock = ({ listType = 'retail', total, shownCount }: FilterBlockProps) => {
+const FiltersBlock = ({
+  listType = 'retail',
+  total,
+  shownCount,
+  initialCategory,
+}: FilterBlockProps) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,7 +38,9 @@ const FiltersBlock = ({ listType = 'retail', total, shownCount }: FilterBlockPro
   const shopView = useAppSelector((state) => state.persistedMainReducer.shopView);
 
   const currentSort = (searchParams.get('sortValue') as sortValueType) || 'default';
-  const { activeCategory, categoryName } = useActiveCategory();
+  const { activeCategory: hookCategory, categoryName: hookCategoryName } = useActiveCategory();
+  const activeCategory = hookCategory || initialCategory;
+  const categoryName = activeCategory ? activeCategory.name : hookCategoryName;
 
   // Breadcrumbs items
   const breadcrumbItems: { label: string; href?: string }[] = [

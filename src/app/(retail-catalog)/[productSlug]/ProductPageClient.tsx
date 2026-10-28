@@ -245,25 +245,32 @@ export default function ProductPageClient({
   const breadcrumbsItems: { label: string; href?: string }[] = [
     { label: isB2b ? 'Каталог партнера' : 'Головна', href: '/' },
   ];
-  const electroCategory = categories?.find((c) =>
-    c.name?.toLowerCase().includes('електроінструмент'),
-  );
-  if (electroCategory) {
-    breadcrumbsItems.push({
-      label: electroCategory.name,
-      href: `/?category=${electroCategory.id}`,
+
+  const getCategoryHref = (cat: { id: number; slug?: string | null }) =>
+    cat.slug ? `/categories/${cat.slug}` : `/?category=${cat.id}`;
+
+  const categoryTrail: { id: number; name: string; slug?: string | null }[] = [];
+  if (product.category?.id && categories?.length > 0) {
+    let current = categories.find((c) => c.id === product.category?.id);
+    const visited = new Set<number>();
+    while (current && !visited.has(current.id)) {
+      visited.add(current.id);
+      categoryTrail.unshift(current);
+      current = current.parentId ? categories.find((c) => c.id === current?.parentId) : undefined;
+    }
+  } else if (product.category?.id && product.category?.name) {
+    categoryTrail.push(product.category);
+  }
+
+  if (categoryTrail.length > 0) {
+    categoryTrail.forEach((cat) => {
+      breadcrumbsItems.push({
+        label: cat.name,
+        href: getCategoryHref(cat),
+      });
     });
   } else {
-    breadcrumbsItems.push({ label: 'Електроінструмент', href: '/' });
-  }
-  if (
-    product.category?.name &&
-    !product.category.name.toLowerCase().includes('електроінструмент')
-  ) {
-    breadcrumbsItems.push({
-      label: product.category.name,
-      href: `/?category=${product.category.id}`,
-    });
+    breadcrumbsItems.push({ label: 'Каталог', href: '/?catalog=true' });
   }
   breadcrumbsItems.push({ label: product.article || product.name });
 

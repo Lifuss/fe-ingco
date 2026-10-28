@@ -23,6 +23,14 @@ export const CATEGORY_IDS = {
   PROMO: '52', // Акція
 };
 
+export const CATEGORY_SLUGS = {
+  BATTERY_TOOL: 'akumulyatorniy-instrument',
+  HAND_TOOL: 'ruchniy-instrument',
+  POWER_TOOL: 'merezheviy-elektroinstrument',
+  MEASURE_TOOL: 'vimiryuvalna-tehnika',
+  PROMO: 'akciya',
+};
+
 // Social Media Channels
 export const SOCIAL_LINKS = {
   FACEBOOK:

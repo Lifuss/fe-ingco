@@ -79,3 +79,54 @@ export const getServerCategories = cache(async (): Promise<Category[]> => {
     return [];
   }
 });
+
+export interface ServerProductsResponse {
+  products: Product[];
+  total: number;
+  totalPages: number;
+}
+
+/**
+ * Fetch a category by its slug (Server-side with React cache)
+ */
+export const getCategoryBySlug = cache(async (slug: string): Promise<Category | null> => {
+  if (!slug) return null;
+  try {
+    const { data } = await apiIngco.get(`/categories/slug/${slug}`);
+    return data || null;
+  } catch (error) {
+    console.error(`Error fetching category by slug '${slug}':`, error);
+    return null;
+  }
+});
+
+/**
+ * Fetch initial retail products for a category page (SSR)
+ */
+export const getCategoryProducts = cache(
+  async (categoryId: string | number, limit = 20): Promise<ServerProductsResponse> => {
+    const catNum = Number(categoryId);
+    if (!catNum || isNaN(catNum)) {
+      return { products: [], total: 0, totalPages: 1 };
+    }
+    try {
+      const { data } = await apiIngco.get('/products', {
+        params: {
+          page: 1,
+          limit,
+          isRetail: true,
+          category: catNum,
+          sortValue: 'default',
+        },
+      });
+      return {
+        products: Array.isArray(data?.products) ? data.products.map(normalizeProduct) : [],
+        total: typeof data?.total === 'number' ? data.total : 0,
+        totalPages: typeof data?.totalPages === 'number' ? data.totalPages : 1,
+      };
+    } catch (error) {
+      console.error(`Error fetching category products for '${categoryId}':`, error);
+      return { products: [], total: 0, totalPages: 1 };
+    }
+  },
+);

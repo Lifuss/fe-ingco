@@ -1,16 +1,23 @@
 'use client';
 import { Search, X } from 'lucide-react';
 import { useSearchParams, usePathname, useRouter, useParams } from 'next/navigation';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 
-export default function SearchFoo({
-  placeholder,
-  variant = 'default',
-}: {
+interface SearchFooProps {
   placeholder: string;
   variant?: 'default' | 'header' | 'dashboard';
-}) {
+}
+
+export default function SearchFoo(props: SearchFooProps) {
+  return (
+    <Suspense fallback={<div className="h-10 w-full rounded-full bg-neutral-100" />}>
+      <SearchFooContent {...props} />
+    </Suspense>
+  );
+}
+
+function SearchFooContent({ placeholder, variant = 'default' }: SearchFooProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();

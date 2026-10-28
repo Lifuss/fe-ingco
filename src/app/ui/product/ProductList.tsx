@@ -6,7 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import Pagination from '@/app/ui/Pagination';
 import { useAddToCartMutation } from '@/lib/appState/api/cartApi';
 import { useAddFavoriteMutation, useDeleteFavoriteMutation } from '@/lib/appState/api/favoritesApi';
-import { Product } from '@/lib/types';
+import { Product, Category } from '@/lib/types';
+import { ServerProductsResponse } from '@/lib/serverData';
 import { toast } from 'react-toastify';
 import { useMediaQuery } from 'react-responsive';
 import TextPlaceholder from '../TextPlaceholder';
@@ -17,7 +18,17 @@ import { SITE_URL } from '@/lib/metadata';
 import Loader from '../utils/Loader';
 import { CardSkeleton } from '../skeletons/skeletons';
 
-const ProductList = ({ isFavoritePage = false }) => {
+interface ProductListProps {
+  isFavoritePage?: boolean;
+  initialCategory?: Category;
+  initialCatalogData?: ServerProductsResponse;
+}
+
+const ProductList = ({
+  isFavoritePage = false,
+  initialCategory,
+  initialCatalogData,
+}: ProductListProps) => {
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const [addToCart] = useAddToCartMutation();
@@ -39,7 +50,8 @@ const ProductList = ({ isFavoritePage = false }) => {
   const sortValue: sortValueType = (searchParams.get('sortValue') as sortValueType) || 'default';
   const filters = searchParams.get('filters') || '';
 
-  const { activeCategoryId: category } = useActiveCategory();
+  const { activeCategoryId: activeCatFromHook } = useActiveCategory();
+  const category = activeCatFromHook || (initialCategory ? String(initialCategory.id) : '');
 
   // Spec filters from URL
   const minPower = searchParams.get('minPower')
@@ -52,8 +64,17 @@ const ProductList = ({ isFavoritePage = false }) => {
   const mains = searchParams.get('mains') === 'true';
   const limit = isWideDesktop ? 30 : isDesktop ? 20 : 18;
 
+  const canUseInitialData =
+    !isFavoritePage &&
+    !isB2B &&
+    Boolean(initialCatalogData) &&
+    page === 1 &&
+    !query &&
+    !filters &&
+    sortValue === 'default';
+
   const {
-    data: catalogData,
+    data: queriedCatalogData,
     isLoading,
     isFetching,
   } = useGetProductsQuery(
@@ -69,12 +90,14 @@ const ProductList = ({ isFavoritePage = false }) => {
     { skip: isFavoritePage },
   );
 
+  const catalogData = queriedCatalogData || (canUseInitialData ? initialCatalogData : undefined);
+
   const products = isFavoritePage ? [] : catalogData?.products || [];
   const totalPages = isFavoritePage
     ? Math.ceil(favorites.length / 10) || 1
     : catalogData?.totalPages || 1;
   const total = isFavoritePage ? favorites.length : catalogData?.total || 0;
-  const tableLoading = !isFavoritePage && (isLoading || isFetching);
+  const tableLoading = !isFavoritePage && !canUseInitialData && (isLoading || isFetching);
 
   let productsData = products;
   if (isFavoritePage) {
@@ -216,6 +239,7 @@ const ProductList = ({ isFavoritePage = false }) => {
             listType={isB2B ? 'partner' : 'retail'}
             total={total}
             shownCount={productsData.length}
+            initialCategory={initialCategory}
           />
           <ul className="grid w-full grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: limit }).map((_, index) => (
@@ -250,6 +274,7 @@ const ProductList = ({ isFavoritePage = false }) => {
             listType={isB2B ? 'partner' : 'retail'}
             total={total}
             shownCount={productsData.length}
+            initialCategory={initialCategory}
           />
           <ProductBlockList
             favoritesIdList={favoritesIdList}

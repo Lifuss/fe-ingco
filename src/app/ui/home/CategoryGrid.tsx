@@ -4,15 +4,15 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { CATEGORY_IDS } from '@/lib/constants';
+import { CATEGORY_SLUGS } from '@/lib/constants';
 import { useGetCategoriesQuery } from '@/lib/appState/api/categoriesApi';
 
 export default function CategoryGrid() {
   const { data: categoriesList = [] } = useGetCategoriesQuery('');
 
-  const getCategoryIdByName = (name: string, fallback: string) => {
+  const getCategorySlugByName = (name: string, fallbackSlug: string) => {
     const matched = categoriesList.find((c) => c.name.toLowerCase().includes(name.toLowerCase()));
-    return matched ? String(matched.id) : fallback;
+    return matched?.slug ? matched.slug : fallbackSlug;
   };
 
   const categories = [
@@ -21,7 +21,7 @@ export default function CategoryGrid() {
       title: 'Акумуляторний інструмент',
       subtitle: 'Один акумулятор для понад 150 інструментів',
       image: '/categories/accum.webp',
-      href: `/?category=${getCategoryIdByName('Акумуляторний інструмент', CATEGORY_IDS.BATTERY_TOOL)}`,
+      href: `/categories/${getCategorySlugByName('Акумуляторний інструмент', CATEGORY_SLUGS.BATTERY_TOOL)}`,
       span: 'lg:col-span-2 lg:row-span-2 h-[350px] lg:h-[464px]',
     },
     {
@@ -29,7 +29,7 @@ export default function CategoryGrid() {
       title: 'Ручний інструмент',
       subtitle: '',
       image: '/categories/handtools.webp',
-      href: `/?category=${getCategoryIdByName('Ручний інструмент', CATEGORY_IDS.HAND_TOOL)}`,
+      href: `/categories/${getCategorySlugByName('Ручний інструмент', CATEGORY_SLUGS.HAND_TOOL)}`,
       span: 'h-[220px]',
     },
     {
@@ -37,7 +37,7 @@ export default function CategoryGrid() {
       title: 'Вимірювальні прилади',
       subtitle: '',
       image: '/categories/measuretools.webp',
-      href: `/?category=${getCategoryIdByName('Вимірювальна техніка', CATEGORY_IDS.MEASURE_TOOL)}`,
+      href: `/categories/${getCategorySlugByName('Вимірювальна техніка', CATEGORY_SLUGS.MEASURE_TOOL)}`,
       span: 'h-[220px]',
     },
     {
@@ -45,7 +45,7 @@ export default function CategoryGrid() {
       title: 'Мережевий електроінструмент',
       subtitle: '',
       image: '/categories/powertools.webp',
-      href: `/?category=${getCategoryIdByName('Мережевий електроінструмент', CATEGORY_IDS.POWER_TOOL)}`,
+      href: `/categories/${getCategorySlugByName('Мережевий електроінструмент', CATEGORY_SLUGS.POWER_TOOL)}`,
       span: 'md:col-span-2 h-[220px]',
     },
   ];

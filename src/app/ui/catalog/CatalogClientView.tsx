@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useSyncExternalStore } from 'react';
+import React, { useSyncExternalStore, Suspense } from 'react';
 import { useIsB2B } from '@/lib/hooks';
 import ShopTable from '@/app/ui/product/ShopTable';
 import ProductList from '@/app/ui/product/ProductList';
+import { Category } from '@/lib/types';
+import { ServerProductsResponse } from '@/lib/serverData';
 
 const emptySubscribe = () => () => {};
 const getSnapshot = () => true;
@@ -11,9 +13,23 @@ const getServerSnapshot = () => false;
 
 interface CatalogClientViewProps {
   isFavoritePage?: boolean;
+  initialCategory?: Category;
+  initialCatalogData?: ServerProductsResponse;
 }
 
-export default function CatalogClientView({ isFavoritePage = false }: CatalogClientViewProps) {
+export default function CatalogClientView(props: CatalogClientViewProps) {
+  return (
+    <Suspense fallback={<div className="min-h-[550px] w-full" />}>
+      <CatalogClientViewContent {...props} />
+    </Suspense>
+  );
+}
+
+function CatalogClientViewContent({
+  isFavoritePage = false,
+  initialCategory,
+  initialCatalogData,
+}: CatalogClientViewProps) {
   const isB2B = useIsB2B();
   const isClient = useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
 
@@ -31,5 +47,11 @@ export default function CatalogClientView({ isFavoritePage = false }: CatalogCli
     );
   }
 
-  return <ProductList isFavoritePage={isFavoritePage} />;
+  return (
+    <ProductList
+      isFavoritePage={isFavoritePage}
+      initialCategory={initialCategory}
+      initialCatalogData={initialCatalogData}
+    />
+  );
 }

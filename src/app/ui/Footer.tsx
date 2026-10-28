@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Icon from './assets/Icon';
-import { SOCIAL_LINKS, CONTACTS, CATEGORY_IDS } from '@/lib/constants';
+import { SOCIAL_LINKS, CONTACTS, CATEGORY_SLUGS } from '@/lib/constants';
 import Logo from './Logo';
 
 interface FooterProps {
@@ -57,7 +57,7 @@ const Footer = ({ isShop: _isShop = false }: FooterProps) => {
             </li>
             <li>
               <Link
-                href={`${baseUrl}?category=${CATEGORY_IDS.PROMO}`}
+                href={`/categories/${CATEGORY_SLUGS.PROMO}`}
                 prefetch={false}
                 className="cursor-pointer transition-colors hover:text-amber-700"
               >

@@ -28,9 +28,13 @@ export function generateBaseMetadata({
 }: BaseMetadataOptions): Metadata {
   const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`;
   const pageUrl = url ? `${SITE_URL}${url}` : SITE_URL;
+  const cleanTitle = title.replace(/\s*\|\s*INGCO(\s+Україна)?\s*$/i, '').trim();
+  const socialTitle = cleanTitle.toLowerCase().includes('ingco')
+    ? cleanTitle
+    : `${cleanTitle} | INGCO`;
 
   return {
-    title,
+    title: cleanTitle,
     description,
     keywords,
     robots: {
@@ -42,7 +46,7 @@ export function generateBaseMetadata({
       },
     },
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: pageUrl,
       siteName: SITE_NAME,
@@ -53,13 +57,13 @@ export function generateBaseMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: cleanTitle,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: socialTitle,
       description,
       images: [imageUrl],
     },
@@ -87,6 +91,9 @@ export function generateProductMetadata({
 }: ProductMetadataOptions): Metadata {
   const productPrice = price || getEffectiveRetailPrice(product);
   const article = (product.article || '').trim();
+  const cleanName = (product.name || '').trim();
+  const nameIncludesArticle =
+    Boolean(article) && cleanName.toLowerCase().includes(article.toLowerCase());
 
   const imageUrl = product.image
     ? product.image.startsWith('http')
@@ -94,7 +101,8 @@ export function generateProductMetadata({
       : `${process.env.NEXT_PUBLIC_API || ''}${product.image}`
     : `${SITE_URL}/placeholder.webp`;
   const pageUrl = `${SITE_URL}/${slug}`;
-  const title = `${product.name} - ${article} | INGCO`;
+  const baseTitle = nameIncludesArticle || !article ? cleanName : `${cleanName} (${article})`;
+  const socialTitle = `${baseTitle} | INGCO`;
 
   // Clean description without extra whitespace, HTML tags, or awkward breaks
   const rawDesc = (product.description || '')
@@ -104,15 +112,14 @@ export function generateProductMetadata({
   const maxDescLen = 100;
   const snippet = rawDesc.length > maxDescLen ? `${rawDesc.substring(0, maxDescLen)}...` : rawDesc;
   const actionText = isB2B ? 'Купити гуртом' : 'Купити в Україні з доставкою';
-  const description =
-    `${product.name} - ${article}. ${snippet ? `${snippet} ` : ''}${actionText}.`.trim();
+  const description = `${baseTitle}. ${snippet ? `${snippet} ` : ''}${actionText}.`.trim();
 
   return {
-    title,
+    title: baseTitle,
     description,
-    keywords: `${product.name}, ${article}, INGCO, електроінструменти, ${isB2B ? 'гурт' : 'роздріб'}, купити в Україні`,
+    keywords: `${cleanName}, ${article}, INGCO, електроінструменти, ${isB2B ? 'гурт' : 'роздріб'}, купити в Україні`,
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: pageUrl,
       siteName: SITE_NAME,
@@ -123,13 +130,13 @@ export function generateProductMetadata({
           url: imageUrl,
           width: 1200,
           height: 630,
-          alt: product.name,
+          alt: cleanName,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: socialTitle,
       description,
       images: [imageUrl],
     },

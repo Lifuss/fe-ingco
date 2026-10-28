@@ -1,7 +1,6 @@
 'use client';
 import { ReactNode, useEffect, useState, useRef } from 'react';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 import { makePersistor } from '../../lib/appState/store';
 import {
   injectStore,
@@ -49,7 +48,7 @@ function AuthInitializer({ children }: { children: ReactNode }) {
 }
 
 export default function StoreProvider({ children }: { children: ReactNode }) {
-  const [{ store, persistor }] = useState(() => {
+  const [{ store }] = useState(() => {
     const p = makePersistor();
     injectStore(p.store);
     return p;
@@ -57,9 +56,7 @@ export default function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AuthInitializer>{children}</AuthInitializer>
-      </PersistGate>
+      <AuthInitializer>{children}</AuthInitializer>
     </Provider>
   );
 }

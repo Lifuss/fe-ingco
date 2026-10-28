@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation';
 import { useIsB2B } from '@/lib/hooks';
 import {
@@ -13,6 +13,16 @@ import { Category } from '@/lib/types';
 import { apiIngco } from '@/lib/appState/user/operation';
 
 const CatalogSidebar = () => {
+  return (
+    <Suspense
+      fallback={<aside className="flex w-full shrink-0 flex-col gap-6 font-sans xl:w-[280px]" />}
+    >
+      <CatalogSidebarContent />
+    </Suspense>
+  );
+};
+
+const CatalogSidebarContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -328,7 +338,7 @@ const CatalogSidebar = () => {
       {/* Category Hierarchical block */}
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm select-none">
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <h3 className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</h3>
+          <p className="text-sm font-bold tracking-wider text-gray-900 uppercase">Категорії</p>
           {activeCategoryId && (
             <button
               onClick={handleResetCategory}
@@ -517,10 +527,10 @@ const CatalogSidebar = () => {
         className="relative rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
       >
         <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <h3 className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
+          <p className="flex items-center gap-2 text-sm font-bold tracking-wider text-gray-900 uppercase">
             <Filter size={14} className="text-primary-500" />
             Характеристики
-          </h3>
+          </p>
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
@@ -552,7 +562,7 @@ const CatalogSidebar = () => {
                   key={filter.code}
                   className="flex flex-col border-b border-neutral-100/60 pb-3 last:border-b-0 last:pb-0"
                 >
-                  <h3
+                  <div
                     onClick={() =>
                       setUserToggledFilters((prev) => ({ ...prev, [filter.code]: !isExpanded }))
                     }
@@ -589,7 +599,7 @@ const CatalogSidebar = () => {
                         }`}
                       />
                     </div>
-                  </h3>
+                  </div>
                   {isExpanded && (
                     <div className="flex max-h-40 flex-col gap-2 overflow-y-auto pr-1 transition-all duration-200">
                       {filter.activeValues.map((val: string) => {
@@ -689,9 +699,9 @@ const CatalogSidebar = () => {
             <ShieldCheck size={20} />
           </div>
           <div>
-            <h3 className="text-gray-150 text-sm font-bold tracking-wider uppercase">
+            <p className="text-gray-150 text-sm font-bold tracking-wider uppercase">
               Персональний менеджер
-            </h3>
+            </p>
             <p className="text-[11px] font-semibold tracking-wide text-gray-400">
               ДЛЯ B2B ПОКУПЦІВ
             </p>

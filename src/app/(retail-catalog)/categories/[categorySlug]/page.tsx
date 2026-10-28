@@ -2,32 +2,27 @@ import CatalogSidebar from '~/ui/catalog/CatalogSidebar';
 import CatalogClientView from '~/ui/catalog/CatalogClientView';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@/lib/metadata';
+import { getCategoryBySlug, getCategoryProducts } from '@/lib/serverData';
 import { notFound } from 'next/navigation';
 
-async function getCategoryBySlug(slug: string) {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/categories/slug/${slug}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
+type PageProps = {
+  params: Promise<{
+    categorySlug: string;
+  }>;
+};
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ categorySlug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categorySlug } = await params;
   const category = await getCategoryBySlug(categorySlug);
 
   if (!category) {
     return {
-      title: 'Категорія не знайдена | INGCO',
+      title: 'Категорія не знайдена',
       description: 'Категорію не знайдено',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -36,18 +31,12 @@ export async function generateMetadata({
     : `${category.name}, купити ${category.name}, ${category.name} інгко, ${category.name} ingco, інструменти ingco, купити в Україні`;
 
   return generatePageMetadata({
-    title: `${category.name} INGCO | Купити в офіційному інтернет-магазині в Україні`,
+    title: `${category.name} INGCO — купити в Україні`,
     description: `Купити ${category.name} INGCO в офіційному інтернет-магазині в Україні. Гарантія якості, широкий асортимент та швидка доставка по всій країні (Київ, Харків, Одеса, Дніпро, Львів та інші міста). Замовляйте за вигідною ціною!`,
     path: `/categories/${categorySlug}`,
     keywords: seoKeywords,
   });
 }
-
-type PageProps = {
-  params: Promise<{
-    categorySlug: string;
-  }>;
-};
 
 export default async function Page({ params }: PageProps) {
   const { categorySlug } = await params;
@@ -57,11 +46,13 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
+  const initialCatalogData = await getCategoryProducts(category.id, 20);
+
   return (
     <main className="mx-auto flex w-full max-w-[1680px] flex-col gap-4 bg-white px-4 pt-8 md:px-8 xl:flex-row 2xl:gap-10">
       <CatalogSidebar />
       <div className="min-h-[550px] w-full">
-        <CatalogClientView />
+        <CatalogClientView initialCategory={category} initialCatalogData={initialCatalogData} />
       </div>
     </main>
   );

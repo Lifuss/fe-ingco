@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useSearchParams, usePathname } from 'next/navigation';
@@ -16,7 +17,15 @@ interface BreadcrumbsProps {
   items: BreadcrumbItem[];
 }
 
-const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
+const Breadcrumbs = (props: BreadcrumbsProps) => {
+  return (
+    <Suspense fallback={null}>
+      <BreadcrumbsContent {...props} />
+    </Suspense>
+  );
+};
+
+const BreadcrumbsContent = ({ items }: BreadcrumbsProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 

@@ -34,6 +34,7 @@ const ProductBlockList = ({
 
   return (
     <div className="w-full">
+      <h2 className="sr-only">Список товарів</h2>
       <ul
         className={
           isListView

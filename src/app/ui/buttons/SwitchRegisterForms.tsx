@@ -2,7 +2,7 @@
 
 import B2BRegisterForm from '../forms/RegisterPartner-form';
 import B2CRegisterForm from '../forms/RegisterClient-form';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Briefcase, CheckCircle2, Info, ShoppingBag } from 'lucide-react';
 import clsx from 'clsx';
@@ -10,6 +10,14 @@ import clsx from 'clsx';
 const QUERY_KEY = 'isB2B';
 
 export default function SwitchRegisterForms() {
+  return (
+    <Suspense fallback={null}>
+      <SwitchRegisterFormsContent />
+    </Suspense>
+  );
+}
+
+function SwitchRegisterFormsContent() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();

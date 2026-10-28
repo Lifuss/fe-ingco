@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Percent } from 'lucide-react';
-import { CATEGORY_IDS } from '@/lib/constants';
+import { CATEGORY_SLUGS } from '@/lib/constants';
 
 export default function RetailHero() {
   return (
@@ -14,6 +14,7 @@ export default function RetailHero() {
             alt="Широкий асортимент жовтих інструментів INGCO"
             fill
             priority
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover"
           />
@@ -46,13 +47,13 @@ export default function RetailHero() {
             <Link
               href="/?catalog=true"
               className="group bg-primary-500 hover:bg-primary-600 active:bg-primary-700 focus:ring-primary-500 inline-flex cursor-pointer items-center gap-2 rounded-md px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900 focus:outline-none md:text-base"
-              aria-label="Перейти до роздрібного каталогу"
+              aria-label="Перейти до каталогу"
             >
               Перейти до каталогу
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href={`/?category=${CATEGORY_IDS.PROMO}`}
+              href={`/categories/${CATEGORY_SLUGS.PROMO}`}
               className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-white/20 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-900 focus:outline-none active:bg-white/30 md:text-base"
               aria-label="Дивитися акції"
             >

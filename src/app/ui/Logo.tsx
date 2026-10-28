@@ -2,10 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export default function Logo() {
-  const searchParams = useSearchParams();
   const pathname = usePathname();
   const targetUrl = '/';
 
@@ -13,8 +12,8 @@ export default function Logo() {
     // If there are search params in the current URL or if we are not on the root page,
     // we force a clean redirect/reload to '/' to ensure all search, category,
     // and input states are completely reset and cleared across the app.
-    const isFilteredOrNotHome =
-      pathname !== '/' || (searchParams ? Array.from(searchParams.keys()).length > 0 : false);
+    const hasSearch = typeof window !== 'undefined' && window.location.search.length > 0;
+    const isFilteredOrNotHome = pathname !== '/' || hasSearch;
 
     if (isFilteredOrNotHome) {
       e.preventDefault();
