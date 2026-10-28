@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 import JsBarcode from 'jsbarcode';
-import { useMediaQuery } from 'react-responsive';
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -115,7 +114,6 @@ export default function ProductPageClient({
   const [deleteFavorite] = useDeleteFavoriteMutation();
 
   const barcodeRef = useRef<SVGSVGElement | null>(null);
-  const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
 
   useEffect(() => {
     if (product?.barcode && barcodeRef.current) {
@@ -713,19 +711,17 @@ export default function ProductPageClient({
                   )}
 
                   {/* Wishlist toggle for mobile */}
-                  {!isTablet && (
-                    <button
-                      onClick={handleFavoriteClick}
-                      className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border py-2.5 font-sans text-sm font-semibold transition-all ${
-                        isFavorite
-                          ? 'border-red-200 bg-red-50 text-red-500'
-                          : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
-                      <span>{isFavorite ? 'В обраному' : 'Додати в обране'}</span>
-                    </button>
-                  )}
+                  <button
+                    onClick={handleFavoriteClick}
+                    className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border py-2.5 font-sans text-sm font-semibold transition-all lg:hidden ${
+                      isFavorite
+                        ? 'border-red-200 bg-red-50 text-red-500'
+                        : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
+                    <span>{isFavorite ? 'В обраному' : 'Додати в обране'}</span>
+                  </button>
 
                   {/* Trust triggers */}
                   <div className="flex flex-col gap-3 border-t border-neutral-100 pt-4">
