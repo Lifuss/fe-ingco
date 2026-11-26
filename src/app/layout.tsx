@@ -8,12 +8,17 @@ import { Analytics } from '@vercel/analytics/react';
 import { SITE_URL, SITE_NAME } from '@/lib/metadata';
 import { CONTACTS, SOCIAL_LINKS } from '@/lib/constants';
 import { GOOGLE_ADS_ID, GA4_MEASUREMENT_ID } from '@/lib/analytics';
-import { Manrope } from 'next/font/google';
+import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
 
-const manrope = Manrope({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700', '800'],
+const manrope = localFont({
+  src: [
+    { path: './fonts/manrope-400.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/manrope-500.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/manrope-600.woff2', weight: '600', style: 'normal' },
+    { path: './fonts/manrope-700.woff2', weight: '700', style: 'normal' },
+    { path: './fonts/manrope-800.woff2', weight: '800', style: 'normal' },
+  ],
   variable: '--font-sans',
   display: 'swap',
 });

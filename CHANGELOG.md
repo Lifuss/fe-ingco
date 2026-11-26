@@ -13,6 +13,9 @@
 - **Виправлення редагування клієнтів у CRM (`AdminUserModal.tsx`, `UserForm.tsx`, `OrderTable.tsx`)**:
   - Прибрано помилковий атрибут `required` з полів `edrpou` та `surName` у `AdminUserModal.tsx`, який блокував збереження роздрібних (B2C) користувачів без ЄДРПОУ; додано клієнтську перевірку формату непорожнього коду.
   - У таблиці замовлень `OrderTable.tsx` реалізовано динамічний підпис `B2B · ІПН` (10 цифр) та `B2B · ЄДРПОУ` (8 цифр).
+- **Стабільність збірки Turbopack у Vercel (`layout.tsx`, `src/app/fonts/`, `package.json`)**:
+  - Переведено шрифт `Manrope` (`400–800`) з `next/font/google` на локальні `.woff2` файли через `next/font/local`, що усунуло падіння Turbopack при парсингу динамічних Google Fonts URL під час CI/CD деплою у Vercel.
+  - Розширено `engines.node` до `>=22` для сумісності з середовищем Node.js 24 у Vercel.
 
 ---
 
