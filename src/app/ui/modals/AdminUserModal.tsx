@@ -11,6 +11,7 @@ import {
 import { toast } from 'react-toastify';
 import { X, UserRound, KeyRound, MapPin, ClipboardList } from 'lucide-react';
 import { generatePassword } from '@/lib/utils';
+import { edrpouOrIpnRegex } from '@/lib/validationSchema';
 
 type AdminUserModalProps = {
   isOpen: boolean;
@@ -88,7 +89,13 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
       return;
     }
 
-    updateUser(userValidate)
+    const trimmedEdrpou = userValidate.edrpou?.trim() || '';
+    if (trimmedEdrpou && !edrpouOrIpnRegex.test(trimmedEdrpou)) {
+      toast.error('Код ЄДРПОУ або ІПН повинен містити 8 або 10 цифр');
+      return;
+    }
+
+    updateUser({ ...userValidate, edrpou: trimmedEdrpou })
       .unwrap()
       .then(() => {
         toast.success('Користувач успішно змінений');
@@ -195,7 +202,6 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
                   По-батькові
                 </label>
                 <input
-                  required
                   id="surName"
                   type="text"
                   name="surName"
@@ -235,12 +241,13 @@ const AdminUserModal = ({ isOpen, closeModal, user }: AdminUserModalProps) => {
                   htmlFor="edrpou"
                   className="text-[11px] font-bold text-neutral-500 uppercase"
                 >
-                  ЄДРПОУ
+                  ЄДРПОУ / ІПН (РНОКПП)
                 </label>
                 <input
-                  required
                   id="edrpou"
                   type="text"
+                  inputMode="numeric"
+                  placeholder="8 або 10 цифр"
                   name="edrpou"
                   value={edrpou || ''}
                   className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-800 transition-colors focus:ring-1 focus:outline-none"

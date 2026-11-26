@@ -3,6 +3,19 @@
 Усі суттєві зміни у фронтенд-застосунку документуються в цьому файлі.
 Формат базується на [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версіонування — [SemVer](https://semver.org/).
 
+## [2.12.4] — 2026-11-26
+
+### [Fixed] B2B Partner Registration RNOKPP (IPN) Validation & Admin User Modal
+
+- **Підтримка 10-значного ІПН / РНОКПП ФОП у реєстрації партнера (`validationSchema.ts`, `RegisterPartner-form.tsx`, `SwitchRegisterForms.tsx`)**:
+  - Розширено схему `registerPartnerSchema` (`edrpouOrIpnRegex = /^(?:\d{8}|\d{10})$/` з `.trim()`) для підтримки як 8-значного ЄДРПОУ юридичних осіб, так і 10-значного ІПН (РНОКПП) для ФОП.
+  - Оновлено тексти підказок, підписи полів, плейсхолдери та додано `inputMode="numeric"` для мобільних пристроїв.
+- **Виправлення редагування клієнтів у CRM (`AdminUserModal.tsx`, `UserForm.tsx`, `OrderTable.tsx`)**:
+  - Прибрано помилковий атрибут `required` з полів `edrpou` та `surName` у `AdminUserModal.tsx`, який блокував збереження роздрібних (B2C) користувачів без ЄДРПОУ; додано клієнтську перевірку формату непорожнього коду.
+  - У таблиці замовлень `OrderTable.tsx` реалізовано динамічний підпис `B2B · ІПН` (10 цифр) та `B2B · ЄДРПОУ` (8 цифр).
+
+---
+
 ## [2.12.3] — 2026-10-28
 
 ### [Fixed] SSR HTML Rendering, Head Metadata, Soft 404, Sitemap & Category SEO Architecture

@@ -146,13 +146,14 @@ export default function RegisterPartnerForm() {
             </div>
             <div>
               <label className="mb-1.5 block text-base" htmlFor="edrpou">
-                Код ЄДРПОУ <span className="text-red">*</span>
+                Код ЄДРПОУ або ІПН <span className="text-red">*</span>
               </label>
               <input
                 className="border-input-border block w-full rounded-2xl border py-[16px] pl-4 text-base outline-2 placeholder:text-gray-500"
                 id="edrpou"
                 type="text"
-                placeholder="ЄДРПОУ (8 цифр)"
+                inputMode="numeric"
+                placeholder="8 цифр (ЄДРПОУ) або 10 цифр (ІПН ФОП)"
                 {...register('edrpou')}
               />
               {errors.edrpou && <p className={errorClassName}>{errors.edrpou.message}</p>}

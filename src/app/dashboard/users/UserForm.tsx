@@ -172,10 +172,12 @@ const UserForm: React.FC<UserFormProps> = ({ defaultValues, handleSubmit, isEdit
           />
         </label>
         <label>
-          Код ЄДРПОУ
+          Код ЄДРПОУ або ІПН
           <input
             type="text"
             name="edrpou"
+            inputMode="numeric"
+            placeholder="8 або 10 цифр"
             className={inputStyle}
             defaultValue={isEditing ? edrpou : ''}
           />

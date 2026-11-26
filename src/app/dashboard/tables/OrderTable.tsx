@@ -251,7 +251,8 @@ const OrderTable = ({ isRetail = false }: { isRetail: boolean }) => {
               phone = u.phone || '';
               email = u.email || '';
               if (u.edrpou) {
-                subDetails = `B2B · ЄДРПОУ: ${u.edrpou}`;
+                const codeLabel = u.edrpou.trim().length === 10 ? 'ІПН' : 'ЄДРПОУ';
+                subDetails = `B2B · ${codeLabel}: ${u.edrpou}`;
               } else {
                 subDetails = 'B2B Клієнт';
               }

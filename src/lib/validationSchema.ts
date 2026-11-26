@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const nameRegex = /^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ'`]+$/;
+export const edrpouOrIpnRegex = /^(?:\d{8}|\d{10})$/;
 
 export const basePasswordSchema = z
   .string()
@@ -32,7 +33,13 @@ export const registerPartnerSchema = z.object({
   firstName: baseNameSchema.regex(nameRegex, 'Ім’я може містити тільки літери'),
   surName: optionalSurNameSchema,
   phone: basePhoneSchema,
-  edrpou: z.string().regex(/^\d{8}$/, 'Код ЄДРПОУ повинен містити 8 цифр'),
+  edrpou: z
+    .string()
+    .trim()
+    .regex(
+      edrpouOrIpnRegex,
+      'Введіть коректний код ЄДРПОУ (8 цифр) або ІПН / РНОКПП для ФОП (10 цифр)',
+    ),
   email: baseEmailSchema,
   about: z.string().default('').optional(),
 });
